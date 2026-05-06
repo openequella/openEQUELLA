@@ -217,7 +217,7 @@ public final class ComponentHelper {
    * @return a child window matching the attributes, or null if none found.
    */
   public static Window findChildWindow(Window baseWindow, boolean isVisible, boolean isActive) {
-    Window ownedWindows[] = baseWindow.getOwnedWindows();
+    Window[] ownedWindows = baseWindow.getOwnedWindows();
     for (int i = 0; i < ownedWindows.length; ++i) {
       Window w = ownedWindows[i];
 

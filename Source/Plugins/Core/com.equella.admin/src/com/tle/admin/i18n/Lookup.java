@@ -20,6 +20,11 @@ package com.tle.admin.i18n;
 
 import com.tle.common.i18n.StringLookup;
 
-public class Lookup {
+public final class Lookup {
+
+  private Lookup() {
+    throw new UnsupportedOperationException();
+  }
+
   public static StringLookup lookup = StringLookup.prefixed("com.equella.admin");
 }

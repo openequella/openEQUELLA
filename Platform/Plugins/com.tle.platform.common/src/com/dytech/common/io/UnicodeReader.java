@@ -60,7 +60,7 @@ public class UnicodeReader extends Reader {
 
     String encoding;
     int unread;
-    byte bom[] = new byte[BOM_SIZE];
+    byte[] bom = new byte[BOM_SIZE];
     int n = internalIn.read(bom, 0, bom.length);
 
     if ((bom[0] == (byte) 0xEF) && (bom[1] == (byte) 0xBB) && (bom[2] == (byte) 0xBF)) {

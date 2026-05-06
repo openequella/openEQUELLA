@@ -21,7 +21,12 @@ package com.tle.common;
 import com.dytech.common.GeneralConstants;
 import java.text.DecimalFormat;
 
-public class FileSizeUtils {
+public final class FileSizeUtils {
+
+  private FileSizeUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   private static DecimalFormat SIZE_FORMAT = new DecimalFormat("#.##"); // $NON-NLS-1$
 
   @SuppressWarnings("nls")

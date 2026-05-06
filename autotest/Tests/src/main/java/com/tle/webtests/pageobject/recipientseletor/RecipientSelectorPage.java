@@ -289,7 +289,7 @@ public class RecipientSelectorPage extends AbstractPage<RecipientSelectorPage> {
     // ummmm.... so it goes into an infinite recursion until it becomes selected?
     // if( radio == null || !radio.isSelected() )
     // {
-    //	searchUsersOrGroupsOrRoles(searchQuery, type);
+    //    searchUsersOrGroupsOrRoles(searchQuery, type);
     // }
 
     searchField.clear();

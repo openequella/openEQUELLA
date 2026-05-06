@@ -258,10 +258,10 @@ public class TestConfig {
   }
 
   //
-  //	public String getInstitutionUrl()
-  //	{
-  //		return getServerUrl(isSsl()) + testFolder.getName() + '/';
-  //	}
+  //    public String getInstitutionUrl()
+  //    {
+  //        return getServerUrl(isSsl()) + testFolder.getName() + '/';
+  //    }
 
   public String getInstitutionUrl() {
     return getInstitutionUrl(testFolder);
@@ -306,15 +306,15 @@ public class TestConfig {
   }
 
   //
-  //	public String getInstitutionUrlFromShortName(String shortName)
-  //	{
-  //		return getInstitutionUrlFromShortName(shortName, shortName.endsWith("ssl"));
-  //	}
+  //    public String getInstitutionUrlFromShortName(String shortName)
+  //    {
+  //        return getInstitutionUrlFromShortName(shortName, shortName.endsWith("ssl"));
+  //    }
   //
-  //	public String getInstitutionUrlFromShortName(String shortName, boolean https)
-  //	{
-  //		return getServerUrl(https) + shortName + '/';
-  //	}
+  //    public String getInstitutionUrlFromShortName(String shortName, boolean https)
+  //    {
+  //        return getServerUrl(https) + shortName + '/';
+  //    }
 
   public static Config getConfigProps() {
     return config;

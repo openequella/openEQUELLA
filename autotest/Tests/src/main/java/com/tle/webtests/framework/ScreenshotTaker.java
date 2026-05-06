@@ -14,7 +14,11 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
-public class ScreenshotTaker {
+public final class ScreenshotTaker {
+
+  private ScreenshotTaker() {
+    throw new UnsupportedOperationException();
+  }
 
   public static String takeScreenshot(
       WebDriver driver, File screenshotFolder, String filename, boolean chrome) {

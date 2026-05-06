@@ -425,9 +425,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
   private CanvasExternalToolBean findExternalToolForInst(Connector connector, String courseId) {
     Request request = new Request(apiPath(connector, COURSES, courseId, EXTERNAL_TOOLS));
     CanvasExternalToolBean tool = getCanvasExternalToolBean(connector, request);
-    if (tool != null) return tool;
-
-    // couldn't find a tool on the course, check account
+    if (tool != null) {
+      return tool;
+    }
     final CanvasCourseBean course = getCanvasCourse(connector, null, courseId);
 
     // FIXME there's supposed to be root_account prop in the course JSON.
@@ -438,8 +438,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
         Check.isEmpty(account.getRootAccount()) ? account.getId() : account.getRootAccount();
     request = new Request(apiPath(connector, ACCOUNTS, rootAccountId, EXTERNAL_TOOLS));
     tool = getCanvasExternalToolBean(connector, request);
-    if (tool != null) return tool;
-
+    if (tool != null) {
+      return tool;
+    }
     throw new RuntimeException(CurrentLocale.get(getKey("error.notool")));
   }
 

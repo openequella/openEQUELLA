@@ -133,9 +133,9 @@ public class MoodleEquellaRepoList extends AbstractPage<MoodleEquellaRepoList> {
 
       managerSharedId.click();
       // FIXME
-      // 			import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
-      //			JavascriptLibrary javascript = new JavascriptLibrary();
-      //			javascript.callEmbeddedSelenium(driver, "triggerEvent", name, "blur");
+      //             import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
+      //            JavascriptLibrary javascript = new JavascriptLibrary();
+      //            javascript.callEmbeddedSelenium(driver, "triggerEvent", name, "blur");
 
       waitForElement(save);
     }

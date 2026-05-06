@@ -91,9 +91,9 @@ public class JRadioGroup extends JPanel implements ItemListener {
     for (Component comp : container.getComponents()) {
       comp.setEnabled(enabled);
       if (comp instanceof Container /*
-										 * && !(comp instanceof
-										 * JChangeDetectorPanel)
-										 */ && !(comp instanceof JComboBox)) {
+                                         * && !(comp instanceof
+                                         * JChangeDetectorPanel)
+                                         */ && !(comp instanceof JComboBox)) {
         recurse((Container) comp, enabled);
       }
     }

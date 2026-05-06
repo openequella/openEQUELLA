@@ -259,7 +259,8 @@ public class FlickrSearchResultsSection
     try {
       PhotoList<Photo> photoList = invokeService(info, searchEvent);
 
-      int queryTotal = 0, photoListSize = 0;
+      int queryTotal = 0;
+      int photoListSize = 0;
 
       if (photoList != null) {
         photoListSize = photoList.size();

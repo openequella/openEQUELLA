@@ -64,7 +64,7 @@ public class CommentCountGalleryDisplay extends AbstractPrototypeSection<Object>
     List<Item> items = AbstractItemlikeListEntry.getItems(entries);
     // GROSS
     final List<Integer> commentCounts = itemDao.getCommentCounts(items);
-    final int i[] = new int[] {0};
+    final int[] i = new int[] {0};
     return new ProcessEntryCallback<Item, ItemListEntry>() {
       @Override
       public void processEntry(ItemListEntry entry) {

@@ -137,7 +137,10 @@ public class FlickrServiceImpl implements FlickrService {
    */
   private boolean extractUserSearchString(Flickr flickr, FlickrSearchParameters params)
       throws FlickrException {
-    boolean isEmail = false, isFlickrId = false, isFlickrUsername = false, haveFlickrUserId = false;
+    boolean isEmail = false;
+    boolean isFlickrId = false;
+    boolean isFlickrUsername = false;
+    boolean haveFlickrUserId = false;
 
     String strInput = params.getUserRawText();
     if (strInput != null) {

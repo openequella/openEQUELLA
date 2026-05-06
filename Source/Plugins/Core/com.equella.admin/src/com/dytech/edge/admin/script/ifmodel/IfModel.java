@@ -370,147 +370,135 @@ public abstract class IfModel extends DefaultListModel implements ScriptModel {
 
     switch (currentType) {
       case IF:
-        {
-          Block block = (Block) node;
-          switch (chosenType) {
-            case IF:
-              setInBlock(block, comparison);
-              break;
+        Block block = (Block) node;
+        switch (chosenType) {
+          case IF:
+            setInBlock(block, comparison);
+            break;
 
-            case IFB:
-              setInBlock(block, constructBrackets(comparison));
-              break;
+          case IFB:
+            setInBlock(block, constructBrackets(comparison));
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
       case IFB:
-        {
-          Block block = (Block) node;
-          switch (chosenType) {
-            case IF:
-              setInBlock(block, comparison);
-              break;
+        block = (Block) node;
+        switch (chosenType) {
+          case IF:
+            setInBlock(block, comparison);
+            break;
 
-            case IFB:
-              setInBrackets(block, comparison);
-              break;
+          case IFB:
+            setInBrackets(block, comparison);
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
       case AND:
-        {
-          OpTerm term = (OpTerm) node;
-          switch (chosenType) {
-            case AND:
-              setInOpTerm(term, comparison);
-              break;
+        OpTerm term = (OpTerm) node;
+        switch (chosenType) {
+          case AND:
+            setInOpTerm(term, comparison);
+            break;
 
-            case ANDB:
-              setInOpTerm(term, constructBrackets(comparison));
-              break;
+          case ANDB:
+            setInOpTerm(term, constructBrackets(comparison));
+            break;
 
-            case OR:
-              term.setOperator(new OrOperator());
-              setInOpTerm(term, comparison);
-              break;
+          case OR:
+            term.setOperator(new OrOperator());
+            setInOpTerm(term, comparison);
+            break;
 
-            case ORB:
-              term.setOperator(new OrOperator());
-              setInOpTerm(term, constructBrackets(comparison));
-              break;
+          case ORB:
+            term.setOperator(new OrOperator());
+            setInOpTerm(term, constructBrackets(comparison));
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
       case ANDB:
-        {
-          OpTerm term = (OpTerm) node;
-          switch (chosenType) {
-            case AND:
-              setInOpTerm(term, comparison);
-              break;
+        term = (OpTerm) node;
+        switch (chosenType) {
+          case AND:
+            setInOpTerm(term, comparison);
+            break;
 
-            case ANDB:
-              setInBrackets(term, comparison);
-              break;
+          case ANDB:
+            setInBrackets(term, comparison);
+            break;
 
-            case OR:
-              term.setOperator(new OrOperator());
-              setInOpTerm(term, comparison);
-              break;
+          case OR:
+            term.setOperator(new OrOperator());
+            setInOpTerm(term, comparison);
+            break;
 
-            case ORB:
-              term.setOperator(new OrOperator());
-              setInBrackets(term, comparison);
-              break;
+          case ORB:
+            term.setOperator(new OrOperator());
+            setInBrackets(term, comparison);
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
       case OR:
-        {
-          OpTerm term = (OpTerm) node;
-          switch (chosenType) {
-            case AND:
-              term.setOperator(new AndOperator());
-              setInOpTerm(term, comparison);
-              break;
+        term = (OpTerm) node;
+        switch (chosenType) {
+          case AND:
+            term.setOperator(new AndOperator());
+            setInOpTerm(term, comparison);
+            break;
 
-            case ANDB:
-              term.setOperator(new AndOperator());
-              setInOpTerm(term, constructBrackets(comparison));
-              break;
+          case ANDB:
+            term.setOperator(new AndOperator());
+            setInOpTerm(term, constructBrackets(comparison));
+            break;
 
-            case OR:
-              setInOpTerm(term, comparison);
-              break;
+          case OR:
+            setInOpTerm(term, comparison);
+            break;
 
-            case ORB:
-              setInOpTerm(term, constructBrackets(comparison));
-              break;
+          case ORB:
+            setInOpTerm(term, constructBrackets(comparison));
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
       case ORB:
-        {
-          OpTerm term = (OpTerm) node;
-          switch (chosenType) {
-            case AND:
-              term.setOperator(new AndOperator());
-              setInOpTerm(term, comparison);
-              break;
+        term = (OpTerm) node;
+        switch (chosenType) {
+          case AND:
+            term.setOperator(new AndOperator());
+            setInOpTerm(term, comparison);
+            break;
 
-            case ANDB:
-              term.setOperator(new AndOperator());
-              setInBrackets(term, comparison);
-              break;
+          case ANDB:
+            term.setOperator(new AndOperator());
+            setInBrackets(term, comparison);
+            break;
 
-            case OR:
-              setInOpTerm(term, comparison);
-              break;
+          case OR:
+            setInOpTerm(term, comparison);
+            break;
 
-            case ORB:
-              setInBrackets(term, comparison);
-              break;
+          case ORB:
+            setInBrackets(term, comparison);
+            break;
 
-            default:
-              break;
-          }
-          break;
+          default:
+            break;
         }
+        break;
 
       default:
         break;

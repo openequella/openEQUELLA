@@ -9,7 +9,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-public class ChromeHacks {
+public final class ChromeHacks {
+
+  private ChromeHacks() {
+    throw new UnsupportedOperationException();
+  }
 
   // chrome cant switch to object frames
   public static ExpectedCondition<WebDriver> convertObjectToiFrame(

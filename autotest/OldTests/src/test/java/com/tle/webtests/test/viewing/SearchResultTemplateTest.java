@@ -31,7 +31,7 @@ public class SearchResultTemplateTest extends AbstractCleanupTest {
     ShuffleListControl list = wizard.shuffleList(3);
     list.add("value1");
     list.add("value2");
-    wizard.calendar(5).setDate(new Date(0l));
+    wizard.calendar(5).setDate(new Date(0L));
     wizard.editbox(6, "http://www.google.com.au/");
     wizard.save().publish();
 

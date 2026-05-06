@@ -213,16 +213,17 @@ public class TaskResourceImpl implements EquellaTaskResource {
   }
 
   //
-  //	// TODO - Aaron sayeth thusly:
-  //	// "I wouldn't have this. I'd have a top level endpoint called task-filters which returned the
+  //    // TODO - Aaron sayeth thusly:
+  //    // "I wouldn't have this. I'd have a top level endpoint called task-filters which returned
+  // the
   // whole objects (some bean based around the TaskListSubsearch)"
-  //	//
+  //    //
   // https://devops-tools.pearson.com/stash/projects/EQ/repos/equella---master/pull-requests/8/overview?commentId=5539
-  //	@Override
-  //	public Set<String> getTaskFilterNames()
-  //	{
-  //		return;
-  //	}
+  //    @Override
+  //    public Set<String> getTaskFilterNames()
+  //    {
+  //        return;
+  //    }
 
   private UserBean userOrNull(String user) {
     if (!Check.isEmpty(user)) {

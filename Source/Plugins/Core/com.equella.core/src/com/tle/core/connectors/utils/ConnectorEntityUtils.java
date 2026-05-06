@@ -32,7 +32,12 @@ import org.slf4j.LoggerFactory;
 
 // Thread safe, and currently leveraged for the generic LTI flows
 // As/If this class becomes more widely used, the blackboard.beans.* should be generalized.
-public class ConnectorEntityUtils {
+public final class ConnectorEntityUtils {
+
+  private ConnectorEntityUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ConnectorEntityUtils.class);
 
   public static Optional<ConnectorFolder> parseFolder(

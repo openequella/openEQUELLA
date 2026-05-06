@@ -177,7 +177,7 @@ public final class CodeMirrorLibrary {
           ADDON_CSSHINT,
           ADDON_ATUOBRACKET);
 
-  private static String array[] = {"CodeMirror-linenumbers"};
+  private static String[] array = {"CodeMirror-linenumbers"};
 
   private static ObjectExpression FREEMARKER_PARAMS =
       new ObjectExpression(

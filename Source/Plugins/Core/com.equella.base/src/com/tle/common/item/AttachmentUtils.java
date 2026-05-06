@@ -22,7 +22,7 @@ package com.tle.common.item;
 public final class AttachmentUtils {
   public static final String CUSTOM_DISPLAY_KEY = "$EQ-DISPLAY$";
 
-  public AttachmentUtils() {
-    throw new Error();
+  private AttachmentUtils() {
+    throw new UnsupportedOperationException();
   }
 }
