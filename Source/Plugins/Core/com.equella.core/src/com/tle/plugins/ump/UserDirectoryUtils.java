@@ -27,6 +27,7 @@ import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -105,17 +106,14 @@ public final class UserDirectoryUtils {
 
   public static Map<String, RoleBean> getMultipleRoleInfosFromSingleInfos(
       UserDirectory ud, Collection<String> roleIds) {
-    Map<String, RoleBean> rv = null;
+    Map<String, RoleBean> roleInfos = new HashMap<>();
     for (String roleID : roleIds) {
-      RoleBean gb = ud.getInformationForRole(roleID);
-      if (gb != null) {
-        if (rv == null) {
-          rv = Maps.newHashMapWithExpectedSize(roleIds.size());
-        }
-        rv.put(roleID, gb);
+      RoleBean roleInfo = ud.getInformationForRole(roleID);
+      if (roleInfo != null) {
+        roleInfos.put(roleID, roleInfo);
       }
     }
-    return rv;
+    return roleInfos;
   }
 
   public static boolean searchQueryContainsNonWildcards(String query) {

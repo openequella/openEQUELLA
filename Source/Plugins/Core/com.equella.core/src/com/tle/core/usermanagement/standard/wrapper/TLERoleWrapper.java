@@ -71,8 +71,8 @@ public class TLERoleWrapper extends AbstractUserDirectory {
       groups.add(group.getUniqueID());
     }
 
-    return new Pair<ChainResult, Collection<RoleBean>>(
-        ChainResult.CONTINUE, getInformationForRoles(getRolesForUser(state)).values());
+    Collection<RoleBean> roleInfos = getInformationForRoles(getRolesForUser(state)).values();
+    return new Pair<>(ChainResult.CONTINUE, roleInfos);
   }
 
   @Override
