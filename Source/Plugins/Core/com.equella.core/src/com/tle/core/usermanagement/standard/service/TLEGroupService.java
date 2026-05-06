@@ -19,6 +19,7 @@
 package com.tle.core.usermanagement.standard.service;
 
 import com.tle.beans.user.TLEGroup;
+import com.tle.common.beans.exception.NotFoundException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -36,23 +37,27 @@ public interface TLEGroupService {
 
   /**
    * Return the list of user IDs in the specified group. These can then be further resolved via the
-   * RemoteUserService, as they may be TLEUsers, or they could be external users.
+   * UserService, as they may be TLEUsers, or they could be external users.
    *
    * @param parentGroupID The group to get users for.
    * @param recurse Whether to include users in subgroups.
-   * @return The list of user IDs in the group (and subgroups if requested).
+   * @return The list of user IDs in the group (and subgroups if requested). Returns an empty list
+   *     if no users are found.
+   * @throws NotFoundException if the parent group cannot be found.
    */
   List<String> getUsersInGroup(String parentGroupID, boolean recurse);
 
   /**
    * Return the list of user IDs in the specified group. These can then be further resolved via the
-   * RemoteUserService, as they may be TLEUsers, or they could be external users.
+   * UserService, as they may be TLEUsers, or they could be external users.
    *
    * @param parentGroupID The group to get users for.
    * @param recurse Whether to include users in subgroups.
    * @param limit The maximum number of users to return.
    * @param offset The number of users to skip before returning results.
-   * @return The list of user IDs in the group (and subgroups if requested).
+   * @return The list of user IDs in the group (and subgroups if requested). Returns an empty list
+   *     if no users are found.
+   * @throws NotFoundException if the parent group cannot be found.
    */
   List<String> getUsersInGroup(
       String parentGroupID, boolean recurse, Integer limit, Integer offset);
