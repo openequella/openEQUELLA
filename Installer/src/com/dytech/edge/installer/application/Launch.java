@@ -21,7 +21,12 @@ package com.dytech.edge.installer.application;
 import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 
-public class Launch {
+public final class Launch {
+
+  private Launch() {
+    throw new UnsupportedOperationException();
+  }
+
   public static void main(String[] args) throws Exception {
     if (System.getProperty("java.version").compareTo("1.6") < 0) {
       try {

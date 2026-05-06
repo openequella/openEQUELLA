@@ -231,9 +231,9 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
                       t.setId(entity.getId());
                       model.add(t);
                     } catch (Exception e) /*
-											 * InstantiationException,
-											 * IllegalAccessException
-											 */ {
+                                             * InstantiationException,
+                                             * IllegalAccessException
+                                             */ {
                       e.printStackTrace();
                     }
                   }
@@ -322,9 +322,9 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
         int index = queries.indexOf(u);
         fireTableRowsInserted(index, index);
       } catch (Exception e) /*
-								 * InstantiationException,
-								 * IllegalAccessException
-								 */ {
+                                 * InstantiationException,
+                                 * IllegalAccessException
+                                 */ {
         throw new RuntimeApplicationException(e);
       }
     }

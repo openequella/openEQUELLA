@@ -102,7 +102,7 @@ public class TLEGroupServiceImpl
     }
 
     TLEGroup group = new TLEGroup();
-    group.setId(0l);
+    group.setId(0L);
     group.setName(name);
     group.setInstitution(CurrentInstitution.get());
     if (groupId != null) {
@@ -162,23 +162,20 @@ public class TLEGroupServiceImpl
   @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
   @Transactional(propagation = Propagation.REQUIRED)
   public String edit(final TLEGroup group) {
-    boolean parentSame;
-    {
-      // Use the DAO directly rather than calling get() (which is annotated
-      // @Transactional(readOnly=true)). Because Guice AOP intercepts self-calls (unlike Spring
-      // CGLIB proxies), calling get() here would apply readOnly=true semantics to the
-      // already-active
-      // write transaction. On some JDBC driver versions this causes an implicit connection commit,
-      // making the subsequent rollback (on error) fail with:
-      //   "Cannot rollback transaction in current status [COMMITTED]"
-      TLEGroup original = dao.findByUuid(group.getUuid());
-      Optional<TLEGroup> oldParent = Optional.ofNullable(original.getParent());
+    // Use the DAO directly rather than calling get() (which is annotated
+    // @Transactional(readOnly=true)). Because Guice AOP intercepts self-calls (unlike Spring
+    // CGLIB proxies), calling get() here would apply readOnly=true semantics to the
+    // already-active
+    // write transaction. On some JDBC driver versions this causes an implicit connection commit,
+    // making the subsequent rollback (on error) fail with:
+    //   "Cannot rollback transaction in current status [COMMITTED]"
+    TLEGroup original = dao.findByUuid(group.getUuid());
+    Optional<TLEGroup> oldParent = Optional.ofNullable(original.getParent());
 
-      dao.unlinkFromSession(original);
-      oldParent.ifPresent(dao::unlinkFromSession);
+    dao.unlinkFromSession(original);
+    oldParent.ifPresent(dao::unlinkFromSession);
 
-      parentSame = Objects.equals(oldParent.orElse(null), group.getParent());
-    }
+    boolean parentSame = Objects.equals(oldParent.orElse(null), group.getParent());
 
     group.setInstitution(CurrentInstitution.get());
 

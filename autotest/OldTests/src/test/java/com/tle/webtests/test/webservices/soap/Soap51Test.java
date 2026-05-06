@@ -820,7 +820,7 @@ public class Soap51Test extends AbstractCleanupTest {
     try {
       attachmentStream = new FileInputStream(new File(Attachments.get(filename).toURI()));
       data = new ByteArrayOutputStream();
-      byte buffer[] = new byte[4096];
+      byte[] buffer = new byte[4096];
       for (int bytes = attachmentStream.read(buffer, 0, buffer.length);
           bytes != -1;
           bytes = attachmentStream.read(buffer, 0, buffer.length)) {

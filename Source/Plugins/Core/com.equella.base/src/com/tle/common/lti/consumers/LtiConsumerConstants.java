@@ -18,7 +18,12 @@
 
 package com.tle.common.lti.consumers;
 
-public class LtiConsumerConstants {
+public final class LtiConsumerConstants {
+
+  private LtiConsumerConstants() {
+    throw new UnsupportedOperationException();
+  }
+
   public static enum UnknownUser {
     DENY(0),
     IGNORE(1),

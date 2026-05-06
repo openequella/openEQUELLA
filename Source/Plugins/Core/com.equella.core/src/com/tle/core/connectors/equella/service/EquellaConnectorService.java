@@ -282,13 +282,13 @@ public class EquellaConnectorService implements ConnectorRepositoryImplementatio
         attachmentResourceService
             .getViewableResource(
                 info, viewableItemFactory.createNewViewableItem(item.getItemId() /*
-																									* new
-																									* ItemId (
-																									* targetItemUuid
-																									* ,
-																									* targetItemVersion
-																									* )
-																									*/), attachment)
+                                                                                                    * new
+                                                                                                    * ItemId (
+                                                                                                    * targetItemUuid
+                                                                                                    * ,
+                                                                                                    * targetItemVersion
+                                                                                                    * )
+                                                                                                    */), attachment)
             .createDefaultViewerUrl();
     content.setFolderUrl(attachmentUrl.getHref());
 

@@ -30,7 +30,8 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected static final String COLLECTION_SAVESCRIPT = "c7194cd0-f586-49b6-9fcc-4b1c5237efd9";
 
   protected String[] createStaging() throws IOException {
-    HttpResponse stagingResponse = execute(new HttpPost(context.getBaseUrl() + "api/file/"), false);
+    HttpResponse stagingResponse =
+        execute(new HttpPost(context.getBaseUrl() + "api/file/"), false, getToken());
     assertResponse(stagingResponse, 201, "201 not returned from staging creation");
     ObjectNode stagingJson = readJson(mapper, stagingResponse);
     String stagingUuid = stagingJson.get("uuid").asText();
@@ -47,7 +48,7 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
         new InputStreamEntity(file.getInputStream(), file.getContentLength());
     inputStreamEntity.setContentType("application/octet-stream");
     putfile.setEntity(inputStreamEntity);
-    HttpResponse putfileResponse = execute(putfile, true);
+    HttpResponse putfileResponse = execute(putfile, true, getToken());
     assertResponse(putfileResponse, 201, "201 not returned from staging creation");
   }
 

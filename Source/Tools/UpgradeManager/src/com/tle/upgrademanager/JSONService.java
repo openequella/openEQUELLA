@@ -20,7 +20,12 @@ package com.tle.upgrademanager;
 
 import com.google.gson.Gson;
 
-public class JSONService {
+public final class JSONService {
+
+  private JSONService() {
+    throw new UnsupportedOperationException();
+  }
+
   private static Gson gson = new Gson();
 
   public static String toString(Object object) {

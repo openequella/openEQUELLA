@@ -48,8 +48,8 @@
     "test": "jest test --maxWorkers 50%"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "1.7.10",
-    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.2.13",
+    "@atlaskit/pragmatic-drag-and-drop": "1.8.1",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.2.15",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@fontsource/material-icons": "5.2.7",
@@ -61,7 +61,7 @@
     "@mui/x-tree-view": "8.28.3",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "6.3.0",
-    "axios": "1.15.0",
+    "axios": "1.15.2",
     "clsx": "2.1.1",
     "es6-object-assign": "1.1.0",
     "fp-ts": "2.16.11",

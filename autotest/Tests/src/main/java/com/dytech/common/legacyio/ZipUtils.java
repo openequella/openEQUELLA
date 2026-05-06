@@ -11,9 +11,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtils {
-  public ZipUtils() {
-    super();
+public final class ZipUtils {
+
+  private ZipUtils() {
+    throw new UnsupportedOperationException();
   }
 
   public static ZipFilter createZipFilter(String regex) {
@@ -70,7 +71,7 @@ public class ZipUtils {
   public static void addDirectoryTree(ZipOutputStream zipFile, String directory, File inputFile)
       throws IOException {
     if (inputFile.isDirectory()) {
-      File files[] = inputFile.listFiles();
+      File[] files = inputFile.listFiles();
       for (int i = 0; i < files.length; i++) {
         String dir = directory;
         if (files[i].isDirectory()) {

@@ -3,7 +3,11 @@ package com.tle.webtests.pageobject.integration.blackboard;
 import com.tle.webtests.pageobject.AbstractPage;
 import org.openqa.selenium.By;
 
-public class BlackboardPageUtils {
+public final class BlackboardPageUtils {
+
+  private BlackboardPageUtils() {
+    throw new UnsupportedOperationException();
+  }
 
   public static By pageTitleBy(String title) {
     return By.xpath(

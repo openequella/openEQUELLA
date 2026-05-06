@@ -262,7 +262,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117688</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -314,7 +314,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117684</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -509,7 +509,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117669</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1120,7 +1120,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117622</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1562,7 +1562,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>824094</id>
     <expression>
-      <id>821131</id>
+      <id>1683609</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>B:116628</targetObject>

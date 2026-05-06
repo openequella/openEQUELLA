@@ -20,10 +20,14 @@ package com.tle.admin.i18n;
 
 import com.tle.common.i18n.StringLookup;
 
-public class Lookup {
+public final class Lookup {
   private static final String PREFIX = "com.equella.admin";
 
   public static StringLookup lookup = StringLookup.prefixed(PREFIX);
+
+  private Lookup() {
+    throw new UnsupportedOperationException();
+  }
 
   public static StringLookup withPrefix(String prefix) {
     return lookup.prefix(prefix);

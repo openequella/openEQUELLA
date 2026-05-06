@@ -458,7 +458,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
           // e.g. <a>${text}</a>
           retUrl.append("&text=");
           retUrl.append(URLEncoder.encode(link.getName(), "UTF-8"));
-          //					}
+          //                    }
 
           info.forwardToUrl(retUrl.toString());
         }

@@ -90,52 +90,48 @@ public class DRMAccessControlTab extends JPanel {
   public void load(DRMPage page) {
     Contributor contributor = page.getContributor();
     Container container = page.getContainer();
-    {
-      RemoteUserService userService =
-          Driver.instance().getClientService().getService(RemoteUserService.class);
-      List<String> userIds = Collections.emptyList();
-      List<String> groupIds = Collections.emptyList();
-      if (!contributor.getUsers().isEmpty() || !contributor.getGroups().isEmpty()) {
-        usersGroups.setSelectableByContributor(true);
-        userIds = contributor.getUsers();
-        groupIds = contributor.getGroups();
-      } else {
-        userIds = container.getUsers();
-        groupIds = container.getGroups();
-      }
-      Collection<NameValue> users = new ArrayList<NameValue>();
-      Collection<NameValue> groups = new ArrayList<NameValue>();
+    RemoteUserService userService =
+        Driver.instance().getClientService().getService(RemoteUserService.class);
+    List<String> userIds = Collections.emptyList();
+    List<String> groupIds = Collections.emptyList();
+    if (!contributor.getUsers().isEmpty() || !contributor.getGroups().isEmpty()) {
+      usersGroups.setSelectableByContributor(true);
+      userIds = contributor.getUsers();
+      groupIds = contributor.getGroups();
+    } else {
+      userIds = container.getUsers();
+      groupIds = container.getGroups();
+    }
+    Collection<NameValue> users = new ArrayList<NameValue>();
+    Collection<NameValue> groups = new ArrayList<NameValue>();
 
-      for (String userId : userIds) {
-        users.add(UserBeanUtils.getUser(userService, userId));
-      }
-      for (String groupId : groupIds) {
-        groups.add(UserBeanUtils.getGroup(userService, groupId));
-      }
-      if (users.size() > 0 || groups.size() > 0) {
-        usersGroups.addUsersAndGroups(users, groups);
-      }
+    for (String userId : userIds) {
+      users.add(UserBeanUtils.getUser(userService, userId));
+    }
+    for (String groupId : groupIds) {
+      groups.add(UserBeanUtils.getGroup(userService, groupId));
+    }
+    if (users.size() > 0 || groups.size() > 0) {
+      usersGroups.addUsersAndGroups(users, groups);
     }
 
-    {
-      Set<com.dytech.edge.wizard.beans.DRMPage.Network> networks;
-      if (!contributor.getNetworks().isEmpty()) {
-        network.setSelectableByContributor(true);
-        networks = contributor.getNetworks();
-      } else {
-        networks = container.getNetworks();
-      }
+    Set<com.dytech.edge.wizard.beans.DRMPage.Network> networks;
+    if (!contributor.getNetworks().isEmpty()) {
+      network.setSelectableByContributor(true);
+      networks = contributor.getNetworks();
+    } else {
+      networks = container.getNetworks();
+    }
 
-      network.removeAllNetworks();
-      if (networks != null) {
-        for (com.dytech.edge.wizard.beans.DRMPage.Network pagenetwork : networks) {
-          Network nw = new Network();
-          nw.setName(pagenetwork.getName());
-          nw.setMin(pagenetwork.getMin());
-          nw.setMax(pagenetwork.getMax());
+    network.removeAllNetworks();
+    if (networks != null) {
+      for (com.dytech.edge.wizard.beans.DRMPage.Network pagenetwork : networks) {
+        Network nw = new Network();
+        nw.setName(pagenetwork.getName());
+        nw.setMin(pagenetwork.getMin());
+        nw.setMax(pagenetwork.getMax());
 
-          network.addNetwork(nw);
-        }
+        network.addNetwork(nw);
       }
     }
 

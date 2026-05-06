@@ -59,12 +59,12 @@ import javax.swing.tree.TreeModel;
  * <pre>
  * public void watch(JSomeComponent c)
  * {
- * 	c.addSomeListener(listener);
+ *     c.addSomeListener(listener);
  * }
  *
  * public void ignore(JSomeComponent c)
  * {
- * 	c.removeSomeListener(listener);
+ *     c.removeSomeListener(listener);
  * }
  * </pre>
  *

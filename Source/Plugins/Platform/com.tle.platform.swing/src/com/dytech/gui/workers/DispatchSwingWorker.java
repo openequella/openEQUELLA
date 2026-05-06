@@ -39,7 +39,7 @@ import java.lang.reflect.Method;
  *        int code = doSomethingBig();
  *        switch( code )
  *        {
- * 		    case 0:  return "allGood";
+ *             case 0:  return "allGood";
  *          default: return "badStuff";
  *        }
  *     }

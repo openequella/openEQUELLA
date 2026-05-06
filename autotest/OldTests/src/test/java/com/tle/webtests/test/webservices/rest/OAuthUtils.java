@@ -5,7 +5,12 @@ import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.portal.MenuSection;
 
-public class OAuthUtils {
+public final class OAuthUtils {
+
+  private OAuthUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   public static OAuthClient createClient(PageContext context, OAuthClient client) {
     OAuthSettingsPage oauth = openOAuthSettingsPage(context);
     return oauth.addClient(client);

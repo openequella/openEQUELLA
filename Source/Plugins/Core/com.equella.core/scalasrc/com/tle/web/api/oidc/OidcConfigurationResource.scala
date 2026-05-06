@@ -50,7 +50,8 @@ final case class CommonDetailsResponse(
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
-    enabled: Boolean
+    enabled: Boolean,
+    seamlessSso: Boolean
 )
 
 sealed trait IdentityProviderResponse {
@@ -76,7 +77,8 @@ object IdentityProviderResponse {
       defaultRoles = idp.commonDetails.defaultRoles,
       roleConfig = idp.commonDetails.roleConfig,
       userIdAttribute = idp.commonDetails.userIdAttribute,
-      enabled = idp.commonDetails.enabled
+      enabled = idp.commonDetails.enabled,
+      seamlessSso = idp.commonDetails.seamlessSso
     )
 
     idp match {

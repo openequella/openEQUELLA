@@ -93,7 +93,7 @@ public class TLEUserServiceImpl
     Check.checkNotNull(newUser);
 
     newUser.setInstitution(CurrentInstitution.get());
-    newUser.setId(0l);
+    newUser.setId(0L);
 
     if (Check.isEmpty(newUser.getUuid())) {
       newUser.setUuid(UUID.randomUUID().toString());

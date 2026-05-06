@@ -129,7 +129,7 @@ public class CalendarRenderer extends AbstractInputRenderer implements JSDisable
     info.preRender(JQueryDatepicker.getLangPackInclude(CurrentLocale.getLocale()));
 
     ElementId otherDate = notBefore != null ? notBefore : notAfter;
-    boolean primary = notBefore != null ? false : true;
+    boolean primary = notBefore == null;
 
     JSExpression changeExpr = null;
     JSHandler handler = state.getHandler(JSHandler.EVENT_CHANGE);

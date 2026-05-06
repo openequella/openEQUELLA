@@ -239,7 +239,8 @@ public class MyResourcesPage
   public List<String> gatherAllScrapbookTitles(ItemListPage itemsPage, boolean queryForEditDelete) {
     List<String> presumedScrapbookTitles = new ArrayList<String>();
     WebElement pagesDiv = null;
-    int pageCounter = 0, pages = 1; // We'll assume by default
+    int pageCounter = 0;
+    int pages = 1; // We'll assume by default
     // How many pages in this result set?
     try {
       pagesDiv = context.getDriver().findElement(By.id("page"));
@@ -311,7 +312,9 @@ public class MyResourcesPage
     // We expect these three. Allow the test to succeed if there are more.
     // Noting that "Rating' (found in the sort-options for main search)
     // should not be here
-    boolean hasRelevance = false, hasTitle = false, hasDate = false;
+    boolean hasRelevance = false;
+    boolean hasTitle = false;
+    boolean hasDate = false;
     for (WebElement anOption : selectableOptions) {
       String anOptionsText = anOption.getText();
       if (anOptionsText.toLowerCase().contains("Date".toLowerCase())) {

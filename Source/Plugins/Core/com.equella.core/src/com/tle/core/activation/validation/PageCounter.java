@@ -102,7 +102,7 @@ public final class PageCounter {
   }
 
   private static int parseNumber(String string, Boolean[] type) {
-    char chars[] = string.toLowerCase().toCharArray();
+    char[] chars = string.toLowerCase().toCharArray();
     StringBuilder sbuf = new StringBuilder();
     boolean inDigits = false;
     boolean inRoman = false;

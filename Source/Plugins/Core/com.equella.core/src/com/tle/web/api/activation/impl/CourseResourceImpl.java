@@ -54,17 +54,17 @@ public class CourseResourceImpl
     return super.serialize(entity, data, true);
   }
 
-  //	@Override
-  //	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q)
-  //	{
-  //		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-  //		final EnumerateOptions opts = new EnumerateOptions(q, null, 0, 100000, isExport, null);
-  //		if (!Check.isEmpty(code))
-  //		{
-  //			opts.addParameter("code", code);
-  //		}
-  //		return list(opts, isExport);
-  //	}
+  //    @Override
+  //    public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q)
+  //    {
+  //        final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+  //        final EnumerateOptions opts = new EnumerateOptions(q, null, 0, 100000, isExport, null);
+  //        if (!Check.isEmpty(code))
+  //        {
+  //            opts.addParameter("code", code);
+  //        }
+  //        return list(opts, isExport);
+  //    }
 
   @Override
   protected void validate(String uuid, CourseBean bean, boolean isNew) throws InvalidDataException {

@@ -305,10 +305,10 @@ public class DetailsTab extends AbstractItemdefTab
     final int width5 = wizardCategoryAdd.getPreferredSize().width;
     final int gap = 10;
 
-    final int columns[] = {
+    final int[] columns = {
       width4, TableLayout.DOUBLE_FILL, width5, TableLayout.FILL, TableLayout.FILL,
     };
-    final int rows[] = {
+    final int[] rows = {
       height1,
       height1 * 3,
       height2,

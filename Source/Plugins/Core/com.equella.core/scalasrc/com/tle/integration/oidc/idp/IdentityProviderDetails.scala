@@ -55,6 +55,8 @@ import java.net.{URI, URL}
   *   this mapping, a custom attribute must be configured in the IdP to store the OEQ user ID. This
   *   attribute should then be used, along with the standard ID, in an API call to retrieve the OEQ
   *   user ID. If the standard ID is the same as the OEQ user ID, this attribute can be left empty.
+  * @param seamlessSso
+  *   `true` to enable seamless SSO. Default to `false`.
   */
 final case class CommonDetails(
     platform: IdentityProviderPlatform.Value,
@@ -68,7 +70,8 @@ final case class CommonDetails(
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
-    enabled: Boolean
+    enabled: Boolean,
+    seamlessSso: Boolean = false
 )
 
 sealed trait IdentityProviderDetails {
@@ -162,7 +165,8 @@ object IdentityProviderDetails {
       defaultRoles = idp.defaultRoles,
       roleConfig = idp.roleConfig,
       userIdAttribute = idp.userIdAttribute,
-      enabled = idp.enabled
+      enabled = idp.enabled,
+      seamlessSso = idp.seamlessSso
     )
 
   /** Create an instance of `IdentityProviderDetails` from the given `IdentityProvider`. During the

@@ -72,8 +72,8 @@ public class WizardEditor extends Editor {
     JSeparator separator2 = new JSeparator();
     int sh = separator1.getPreferredSize().height;
 
-    final int columns[] = {cssLabel.getPreferredSize().width, TableLayout.FILL};
-    final int rows[] = {
+    final int[] columns = {cssLabel.getPreferredSize().width, TableLayout.FILL};
+    final int[] rows = {
       allowNonSequential.getPreferredSize().height,
       showPageTitlesNextPrev.getPreferredSize().height,
       sh,

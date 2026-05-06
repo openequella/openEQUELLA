@@ -48,9 +48,9 @@ public class MoodleEditResourcePage extends MoodleBasePage<MoodleEditResourcePag
     nameField.clear();
     nameField.sendKeys(name);
     // FIXME
-    //		import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
-    //		JavascriptLibrary javascript = new JavascriptLibrary();
-    //		javascript.callEmbeddedSelenium(driver, "triggerEvent", nameField, "blur");
+    //        import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
+    //        JavascriptLibrary javascript = new JavascriptLibrary();
+    //        javascript.callEmbeddedSelenium(driver, "triggerEvent", nameField, "blur");
   }
 
   public void setDescription(String description) {

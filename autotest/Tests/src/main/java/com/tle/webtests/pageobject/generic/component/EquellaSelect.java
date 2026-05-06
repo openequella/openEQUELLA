@@ -70,7 +70,9 @@ public class EquellaSelect extends AbstractPage<EquellaSelect> {
       List<WebElement> allLinks = dropDiv.findElements(By.xpath(".//a"));
       if (allLinks.size() > index) {
         allLinks.get(index).click();
-      } else throw noseeum;
+      } else {
+        throw noseeum;
+      }
     }
   }
 

@@ -29,8 +29,8 @@ public interface SoapCourseService {
    *
    * @param csvText The contents of a CSV file in the format: <br>
    *     <table>
-   * 	<th>
-   * 	 <td>"Name"</td><td>"Description"</td><td>"Code"</td><td>"Citation"</td><td>"Start"</td>
+   *     <th>
+   *      <td>"Name"</td><td>"Description"</td><td>"Code"</td><td>"Citation"</td><td>"Start"</td>
    *   <td>"End"</td><td>"Students"</td><td>"Type"</td><td>"DepartmentName"</td>
    *  </th>
    *  <tr>
