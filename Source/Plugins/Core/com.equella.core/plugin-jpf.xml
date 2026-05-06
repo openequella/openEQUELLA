@@ -4186,7 +4186,6 @@
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemActionsResource" />
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemLockResource" />
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemModerationResource" />
-    <parameter id="class" value="com.tle.web.api.item.interfaces.FileResource" />
     <parameter id="class" value="com.tle.web.api.item.resource.impl.ItemRelationResourceImpl" />
     <parameter id="class" value="com.tle.web.api.staging.interfaces.StagingResource" />
   </extension>
