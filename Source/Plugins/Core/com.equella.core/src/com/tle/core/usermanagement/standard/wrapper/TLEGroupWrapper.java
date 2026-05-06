@@ -28,6 +28,7 @@ import com.tle.beans.ump.UserManagementSettings;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.valuebean.DefaultGroupBean;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
@@ -117,11 +118,12 @@ public class TLEGroupWrapper extends AbstractUserDirectory {
   @Override
   public Pair<ChainResult, Collection<UserBean>> getUsersForGroup(
       String groupId, boolean recursive) {
-    return new Pair<ChainResult, Collection<UserBean>>(
-        ChainResult.CONTINUE,
-        getChain()
-            .getInformationForUsers(groupService.getUsersInGroup(groupId, recursive))
-            .values());
+    try {
+      List<String> userIds = groupService.getUsersInGroup(groupId, recursive);
+      return new Pair<>(ChainResult.CONTINUE, getChain().getInformationForUsers(userIds).values());
+    } catch (NotFoundException e) {
+      return new Pair<>(ChainResult.CONTINUE, Collections.emptyList());
+    }
   }
 
   @Override

@@ -189,14 +189,16 @@ public interface UserDirectory {
   Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(String userId);
 
   /**
-   * Return a list of all members of a given group. If <code>recurse</code> is false, then only
+   * Return a list of all members of a given group. If <code>recursive</code> is false, then only
    * direct children (in a hierarchical sense) of the given group are to be returned.
    *
-   * @param parentGroupId the group for which all user results must be a member.
-   * @param recurse when false, only members directly in the given group should be returned.
+   * @param groupId the group for which all user results must be a member.
+   * @param recursive when false, only members directly in the given group should be returned.
    *     <i>(optional behaviour)</i> when true, all members of any sub-groups are also to be merged
    *     into the result set.
-   * @return a list of UserBean objects.
+   * @return a pair containing the chain result and a collection of UserBean objects. If the group
+   *     cannot be found, or no matching users can be resolved, the UserBean collection will be
+   *     empty.
    */
   Pair<ChainResult, Collection<UserBean>> getUsersForGroup(String groupId, boolean recursive);
 
