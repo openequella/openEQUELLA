@@ -21,7 +21,7 @@ package com.tle.admin.service
 import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
 import com.tle.beans.user.GroupTreeNode
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{TleGroupApi, TleGroupView}
+import io.github.openequella.graphql.api.{InternalGroupApi, InternalGroupView}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
@@ -40,44 +40,44 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEGroupServiceImpl])
 
   override def add(parentID: String, name: String): String = {
-    LOGGER.debug("Adding group: {}", name)
-    TleGroupApi.createGroup(name, Option(parentID)) match {
-      case Right(TleGroupView(uniqueId, _, newGroupName, _, _, _)) =>
-        LOGGER.debug(s"Group [{}] added with UUID {}", newGroupName, uniqueId)
+    LOGGER.debug("Adding internal group: {}", name)
+    InternalGroupApi.createGroup(name, Option(parentID)) match {
+      case Right(InternalGroupView(uniqueId, _, newGroupName, _, _, _)) =>
+        LOGGER.debug(s"Internal group [{}] added with UUID {}", newGroupName, uniqueId)
         uniqueId
       case Left(errors) =>
-        throw new ClientRequestException(s"Error adding group: $name", errors)
+        throw new ClientRequestException(s"Error adding internal group: $name", errors)
     }
   }
 
   override def edit(group: BasicGroupDetails): String = {
     val uuid = group.getUuid
-    LOGGER.debug("Editing group: {}", uuid)
-    TleGroupApi.updateGroup(
+    LOGGER.debug("Editing internal group: {}", uuid)
+    InternalGroupApi.updateGroup(
       uniqueId = uuid,
       name = Option(group.getName),
       description = group.getDescription.toScala,
       users = Some(group.getUsers.asScala.toList)
     ) match {
-      case Right(TleGroupView(uniqueId, _, newGroupName, _, _, _)) =>
-        LOGGER.debug(s"Group '{}' [{}] updated", newGroupName, uniqueId)
+      case Right(InternalGroupView(uniqueId, _, newGroupName, _, _, _)) =>
+        LOGGER.debug(s"Internal group '{}' [{}] updated", newGroupName, uniqueId)
         uniqueId
       case Left(errors) =>
-        throw new ClientRequestException(s"Error editing group: $uuid", errors)
+        throw new ClientRequestException(s"Error editing internal group: $uuid", errors)
     }
   }
 
   override def delete(groupID: String, deleteChildren: Boolean): Unit = {
-    LOGGER.debug("Deleting group: {}", groupID)
+    LOGGER.debug("Deleting internal group: {}", groupID)
     val deleteResult =
-      if (deleteChildren) TleGroupApi.deleteGroup(groupID)
-      else TleGroupApi.deleteGroupOnly(groupID)
+      if (deleteChildren) InternalGroupApi.deleteGroup(groupID)
+      else InternalGroupApi.deleteGroupOnly(groupID)
 
     deleteResult match {
       case Right(_) =>
-        LOGGER.debug("Group [{}] deleted", groupID)
+        LOGGER.debug("Internal group [{}] deleted", groupID)
       case Left(errors) =>
-        throw new ClientRequestException(s"Error deleting group: $groupID", errors)
+        throw new ClientRequestException(s"Error deleting internal group: $groupID", errors)
     }
   }
 
@@ -85,15 +85,17 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
     getGroup(id).map(toBasicGroupDetails).toJava
 
   override def getByName(name: String): Optional[BasicGroupDetails] = {
-    LOGGER.debug("Retrieving group by name: {}", name)
-    getEntity("Group [by name]", name, TleGroupApi.getByName).map(toBasicGroupDetails).toJava
+    LOGGER.debug("Retrieving internal group by name: {}", name)
+    getEntity("Internal group [by name]", name, InternalGroupApi.getByName)
+      .map(toBasicGroupDetails)
+      .toJava
   }
 
   override def getInformationForGroups(
       groups: util.Collection[String]
   ): util.List[BasicGroupDetails] =
     getAll() {
-      TleGroupApi.getGroupsByIds(_, groups.asScala.toSet)
+      InternalGroupApi.getGroupsByIds(_, groups.asScala.toSet)
     }.map(toBasicGroupDetails).asJava
 
   override def search(query: String): util.List[BasicGroupDetails] =
@@ -102,28 +104,28 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
   override def searchTree(query: String): GroupTreeNode = {
     val builder = new GroupTreeBuilder(
       getGroupsByQuery = q => getGroupsByQuery(q),
-      getListGroups = parentId => getAll() { TleGroupApi.listGroups(_, parentId) },
+      getListGroups = parentId => getAll() { InternalGroupApi.listGroups(_, parentId) },
       getGroup = id => getGroup(id)
     )
     builder.buildSearchTree(query)
   }
 
-  private def getGroupsByQuery(query: String): List[TleGroupView] = {
-    LOGGER.debug("Searching for groups: [{}]", query)
+  private def getGroupsByQuery(query: String): List[InternalGroupView] = {
+    LOGGER.debug("Searching for internal groups: [{}]", query)
     getAll() {
-      TleGroupApi.searchGroups(_, query)
+      InternalGroupApi.searchGroups(_, query)
     }
   }
 
-  private def getGroup(id: String): Option[TleGroupView] = {
-    LOGGER.debug("Retrieving group by ID: {}", id)
-    getEntity("Group [by UUID]", id, TleGroupApi.getByUniqueId)
+  private def getGroup(id: String): Option[InternalGroupView] = {
+    LOGGER.debug("Retrieving internal group by ID: {}", id)
+    getEntity("Internal group [by UUID]", id, InternalGroupApi.getByUniqueId)
   }
 
-  private def toBasicGroupDetails(view: TleGroupView): BasicGroupDetails = {
-    LOGGER.debug("Retrieving users for group: {}", view.uniqueId)
+  private def toBasicGroupDetails(view: InternalGroupView): BasicGroupDetails = {
+    LOGGER.debug("Retrieving internal users for group: {}", view.uniqueId)
     val users = getAll() {
-      TleGroupApi.listGroupUsers(_, view.uniqueId)
+      InternalGroupApi.listGroupUsers(_, view.uniqueId)
     }
     new BasicGroupDetails(
       view.uniqueId,

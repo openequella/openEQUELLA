@@ -26,7 +26,11 @@ import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEGroupService
 import com.tle.web.remoting.graphql.ErrorCode
 import com.tle.web.remoting.graphql.schema.{Page, paginationOffsetLimit}
-import com.tle.web.remoting.graphql.schema.types.{Group, GroupConnection, StringConnection}
+import com.tle.web.remoting.graphql.schema.types.{
+  InternalGroup,
+  InternalGroupConnection,
+  StringConnection
+}
 import org.slf4j.LoggerFactory
 
 import javax.inject.{Inject, Singleton}
@@ -48,18 +52,19 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
   /** Retrieval of TLEGroup objects often result in `null` values, so this helper `implicit`
     * conversion is used to convert `null` to `None`.
     */
-  private implicit def optionalGroup(g: TLEGroup): Option[Group] = Option(g).map(toGroup)
+  private implicit def optionalGroup(g: TLEGroup): Option[InternalGroup] = Option(g).map(toGroup)
 
-  /** Convert a `TLEGroup` to a `Group`. Done as a method rather than a Group companion object due
-    * to the need for the `tleGroupService` to check for children and users.
+  /** Convert an entity of `TLEGroup` to a GraphQL type `TLEGroup`. Done as a method rather than a
+    * Group companion object due to the need for the `tleGroupService` to check for children and
+    * users.
     *
     * @param g
-    *   the `TLEGroup` to convert
+    *   the `TLEGroup` entity to convert
     * @return
-    *   the `Group` representation
+    *   the GraphQL `TLEGroup` representation
     */
-  private def toGroup(g: TLEGroup): Group = {
-    Group(
+  private def toGroup(g: TLEGroup): InternalGroup = {
+    InternalGroup(
       uniqueId = g.getUuid,
       name = g.getName,
       description = Option(g.getDescription),
@@ -85,12 +90,12 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
   def listGroups(
       parentId: Option[String],
       pagination: Pagination[Base64Cursor]
-  ): Either[ProviderError, GroupConnection] = {
+  ): Either[ProviderError, InternalGroupConnection] = {
     def getSubGroups(
         group: Option[TLEGroup],
         limit: Int,
         offset: Int
-    ): Either[ProviderError, List[Group]] = Try(
+    ): Either[ProviderError, List[InternalGroup]] = Try(
       tleGroupService.getGroupsInGroup(group.orNull, limit, offset)
     ) match {
       case Failure(exception) =>
@@ -108,7 +113,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       (offset, limit) = paginationOffsetLimit(pagination, groupCount)
       groups <- getSubGroups(parent, limit, offset)
       page = Page(groups, groupCount, offset, limit)
-    } yield GroupConnection(page)
+    } yield InternalGroupConnection(page)
   }
 
   /** List groups by their unique IDs, invalid IDs are ignored.
@@ -124,7 +129,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
   def listGroupsByIds(
       ids: Set[String],
       pagination: Pagination[Base64Cursor]
-  ): Either[ProviderError, GroupConnection] = {
+  ): Either[ProviderError, InternalGroupConnection] = {
     def countValidGroups(ids: Set[String]): Either[ProviderError, Int] = Try(
       tleGroupService.countValidGroups(ids.asJava).toInt
     ) match {
@@ -137,7 +142,11 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
         Right(count)
     }
 
-    def getGroups(ids: Set[String], limit: Int, offset: Int): Either[ProviderError, List[Group]] =
+    def getGroups(
+        ids: Set[String],
+        limit: Int,
+        offset: Int
+    ): Either[ProviderError, List[InternalGroup]] =
       Try(
         tleGroupService.getInformationForGroups(ids.asJava, limit, offset)
       ) match {
@@ -152,7 +161,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       (offset, limit) = paginationOffsetLimit(pagination, groupCount)
       groups <- getGroups(ids, limit, offset)
       page = Page(groups, groupCount, offset, limit)
-    } yield GroupConnection(page)
+    } yield InternalGroupConnection(page)
   }
 
   /** Search for groups by name using a wildcard query.
@@ -165,7 +174,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   a list of `Group` objects matching the query
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchGroups(query: String, pagination: Pagination[Base64Cursor]): GroupConnection = {
+  def searchGroups(query: String, pagination: Pagination[Base64Cursor]): InternalGroupConnection = {
     val wildcardQuery   = tleGroupService.prepareQuery(query)
     val maxSearchResult = tleGroupService.countGroupsForQuery(wildcardQuery).toInt
     val (offset, limit) = paginationOffsetLimit(pagination, maxSearchResult)
@@ -173,7 +182,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     val searchResult =
       tleGroupService.search(wildcardQuery, limit, offset).asScala.map(toGroup).toList
 
-    GroupConnection(Page(searchResult, maxSearchResult, offset, limit))
+    InternalGroupConnection(Page(searchResult, maxSearchResult, offset, limit))
   }
 
   /** Retrieve a group by its unique ID.
@@ -184,7 +193,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   the `Group` object with the specified unique ID, or `None` if no group is found
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def groupById(uniqueId: String): Option[Group] =
+  def groupById(uniqueId: String): Option[InternalGroup] =
     tleGroupService.get(uniqueId)
 
   /** Retrieve a group by its name.
@@ -195,7 +204,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   the `Group` object with the specified name, or `None` if no group is found
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def groupByName(name: String): Option[Group] =
+  def groupByName(name: String): Option[InternalGroup] =
     tleGroupService.getByName(name)
 
   /** List user IDs for all users in the specified group.
@@ -228,7 +237,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   could not be created
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def createGroup(name: String, parentId: Option[String]): Either[ProviderError, Group] = {
+  def createGroup(name: String, parentId: Option[String]): Either[ProviderError, InternalGroup] = {
     val newGroupId = tleGroupService.add(parentId.orNull, name)
     Option(tleGroupService.get(newGroupId))
       .map(toGroup)
@@ -276,7 +285,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       description: Option[String],
       parentId: Option[String],
       users: Option[Set[String]]
-  ): Either[ProviderError, Group] = {
+  ): Either[ProviderError, InternalGroup] = {
     def updateParent(g: TLEGroup, parentId: Option[String]) = parentId match {
       case Some(pid) =>
         getParentGroup(pid).map(parent => {

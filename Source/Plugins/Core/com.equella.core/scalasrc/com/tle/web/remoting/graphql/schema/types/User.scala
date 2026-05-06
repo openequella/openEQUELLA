@@ -20,7 +20,7 @@ package com.tle.web.remoting.graphql.schema.types
 
 import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo}
 import caliban.schema.Annotations.GQLDescription
-import com.tle.beans.user.TLEUser
+import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.web.remoting.graphql.schema.Page
 
 /** A universal representation of users, for which the various user types in oEQ will be mapped to.
@@ -36,7 +36,7 @@ case class User(
 /** Companion object for `User` to provide a conversion from the various oEQ user types.
   */
 object User {
-  def apply(u: TLEUser): User =
+  def apply(u: UserBean): User =
     User(u.getUniqueID, u.getUsername, Option(u.getEmailAddress), u.getFirstName, u.getLastName)
 }
 

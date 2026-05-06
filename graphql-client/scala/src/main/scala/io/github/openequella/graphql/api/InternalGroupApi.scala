@@ -38,7 +38,7 @@ import io.github.openequella.graphql.client._
   * @param hasUsers
   *   Whether this group has users.
   */
-final case class TleGroupView(
+final case class InternalGroupView(
     uniqueId: String,
     parentId: Option[String],
     name: String,
@@ -49,7 +49,7 @@ final case class TleGroupView(
 
 /** Provides access to the openEQUELLA internal group API.
   */
-object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutations] {
+object InternalGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutations] {
 
   override protected def queryWrapper[A]
       : SelectionBuilder[InternalGroupQueries, A] => SelectionBuilder[RootQuery, A] =
@@ -62,13 +62,16 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
       ] = Mutations.internalGroups
 
   private val tleGroup =
-    (Group.uniqueId ~ Group.parentId ~ Group.name ~ Group.description ~ Group.hasGroups ~ Group.hasUsers)
-      .mapN(TleGroupView)
+    (InternalGroup.uniqueId ~ InternalGroup.parentId ~ InternalGroup.name ~ InternalGroup.description ~ InternalGroup.hasGroups ~ InternalGroup.hasUsers)
+      .mapN(InternalGroupView)
   private val groupEdge =
-    (GroupEdge.cursor ~ GroupEdge.node { tleGroup }).mapN(NodeWithCursorView[TleGroupView](_, _))
+    (InternalGroupEdge.cursor ~ InternalGroupEdge.node { tleGroup })
+      .mapN(NodeWithCursorView[InternalGroupView](_, _))
   private val groupConnection =
-    (GroupConnection.pageInfo { PageInfoView.selector } ~ GroupConnection.edges { groupEdge })
-      .mapN(ConnectionView[TleGroupView](_, _))
+    (InternalGroupConnection.pageInfo { PageInfoView.selector } ~ InternalGroupConnection.edges {
+      groupEdge
+    })
+      .mapN(ConnectionView[InternalGroupView](_, _))
 
   /** Retrieves the details of an individual group by its unique identifier.
     *
@@ -82,7 +85,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def getByUniqueId(uniqueId: String)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[TleGroupView]] = {
+  ): Either[List[ApiError], Option[InternalGroupView]] = {
     val q = InternalGroupQueries.byId(uniqueId) {
       tleGroup
     }
@@ -102,7 +105,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def getByName(name: String)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[TleGroupView]] = {
+  ): Either[List[ApiError], Option[InternalGroupView]] = {
     val q = InternalGroupQueries.byName(name) {
       tleGroup
     }
@@ -125,7 +128,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def getGroupsByIds(pagination: Pagination, groupIds: Set[String])(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], PaginationResult[TleGroupView]] =
+  ): Either[List[ApiError], PaginationResult[InternalGroupView]] =
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalGroupQueries.listByIds(groupIds.toList, first, last, before, after) {
         groupConnection
@@ -145,7 +148,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def createGroup(name: String, parentId: Option[String] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], TleGroupView] =
+  ): Either[List[ApiError], InternalGroupView] =
     flatMutate(InternalGroupMutations.create(name, parentId) { tleGroup })
 
   /** Deletes a group and all its child subgroups and all contained users.
@@ -210,7 +213,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
       users: Option[List[String]] = None
   )(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], TleGroupView] =
+  ): Either[List[ApiError], InternalGroupView] =
     flatMutate(
       InternalGroupMutations.update(uniqueId, name, description, parentId, users) { tleGroup }
     )
@@ -231,7 +234,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def listGroups(pagination: Pagination, parentId: Option[String] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], PaginationResult[TleGroupView]] =
+  ): Either[List[ApiError], PaginationResult[InternalGroupView]] =
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalGroupQueries.list(parentId, first, last, before, after) {
         groupConnection
@@ -284,7 +287,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def searchGroups(pagination: Pagination, query: String)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], PaginationResult[TleGroupView]] =
+  ): Either[List[ApiError], PaginationResult[InternalGroupView]] =
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalGroupQueries.search(query, first, last, before, after) {
         groupConnection

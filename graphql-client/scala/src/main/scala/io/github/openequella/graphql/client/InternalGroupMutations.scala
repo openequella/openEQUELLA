@@ -26,7 +26,7 @@ object InternalGroupMutations {
   /** Create a new group
     */
   def create[A](name: String, parentId: scala.Option[String] = None)(
-      innerSelection: SelectionBuilder[Group, A]
+      innerSelection: SelectionBuilder[InternalGroup, A]
   )(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[String]]
@@ -61,7 +61,7 @@ object InternalGroupMutations {
       description: scala.Option[String] = None,
       parentId: scala.Option[String] = None,
       users: scala.Option[List[String]] = None
-  )(innerSelection: SelectionBuilder[Group, A])(implicit
+  )(innerSelection: SelectionBuilder[InternalGroup, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[String]],
       encoder2: ArgEncoder[scala.Option[List[String]]]

@@ -1,7 +1,7 @@
 name := "graphql-client"
 
 ThisBuild / scalaVersion     := "2.13.18"
-ThisBuild / version          := "0.9.0-SNAPSHOT"
+ThisBuild / version          := "0.10.0-SNAPSHOT"
 ThisBuild / organization     := "io.github.openequella"
 ThisBuild / organizationName := "openEQUELLA GraphQL Client"
 

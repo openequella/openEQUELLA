@@ -19,19 +19,33 @@
 package com.tle.web.remoting.graphql.schema.types
 
 import caliban.schema.Annotations.GQLDescription
-import com.tle.common.usermanagement.user.valuebean.GroupBean
 
-/** Represents a group sourced from the user directory system, providing a unified view of roles
-  * across all configured user management plugins.
+/** An entry in the result of fetching multiple users by IDs.
   */
 @GQLDescription(
-  "A group from the user directory system, representing a group from any configured user management plugin."
+  "An entry in the result of fetching multiple users by IDs."
 )
-case class Group(
-    @GQLDescription("The unique identifier for the group") uniqueId: String,
-    @GQLDescription("The name of the group") name: String
+case class UserWithId(
+    @GQLDescription("The requested user ID") id: String,
+    @GQLDescription("The resolved user") user: User
 )
 
-object Group {
-  def apply(g: GroupBean): Group = Group(g.getUniqueID, g.getName)
-}
+/** An entry in the result of fetching multiple groups by IDs.
+  */
+@GQLDescription(
+  "An entry in the result of fetching multiple groups by IDs."
+)
+case class GroupWithId(
+    @GQLDescription("The requested group ID") id: String,
+    @GQLDescription("The resolved group") group: Group
+)
+
+/** An entry in the result of fetching multiple roles by IDs.
+  */
+@GQLDescription(
+  "An entry in the result of fetching multiple roles by IDs."
+)
+case class RoleWithId(
+    @GQLDescription("The requested role ID") id: String,
+    @GQLDescription("The resolved role") role: Role
+)

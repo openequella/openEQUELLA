@@ -19,7 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.beans.user.GroupTreeNode
-import io.github.openequella.graphql.api.TleGroupView
+import io.github.openequella.graphql.api.InternalGroupView
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.tailrec
@@ -30,16 +30,17 @@ import scala.collection.mutable
   * while also maintaining the hierarchical relationships between groups and their subgroups.
   *
   * @param getGroupsByQuery
-  *   A function that retrieves a list of `TleGroupView` objects based on a search query.
+  *   A function that retrieves a list of `InternalGroupView` objects based on a search query.
   * @param getListGroups
-  *   A function that retrieves a list of `TleGroupView` objects based on an optional parent ID.
+  *   A function that retrieves a list of `InternalGroupView` objects based on an optional parent
+  *   ID.
   * @param getGroup
-  *   A function that retrieves a single `TleGroupView` object based on its unique ID.
+  *   A function that retrieves a single `InternalGroupView` object based on its unique ID.
   */
 class GroupTreeBuilder(
-    getGroupsByQuery: String => List[TleGroupView],
-    getListGroups: Option[String] => List[TleGroupView],
-    getGroup: String => Option[TleGroupView]
+    getGroupsByQuery: String => List[InternalGroupView],
+    getListGroups: Option[String] => List[InternalGroupView],
+    getGroup: String => Option[InternalGroupView]
 ) {
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[GroupTreeBuilder])
 
@@ -119,14 +120,14 @@ class GroupTreeBuilder(
     * @param parentNode
     *   The parent node to which the child groups will be added.
     * @param childGroups
-    *   A list of `TleGroupView` objects representing the child groups.
+    *   A list of `InternalGroupView` objects representing the child groups.
     * @return
     *   A list of tuples containing representing groups which have subgroups and thereby need to be
     *   processed further.
     */
   private def processChildNodes(
       parentNode: GroupTreeNode,
-      childGroups: List[TleGroupView]
+      childGroups: List[InternalGroupView]
   ): List[(GroupTreeNode, Option[String])] =
     childGroups.foldLeft(List[(GroupTreeNode, Option[String])]()) { (nodesWithChildren, g) =>
       val node = newNode(g)
@@ -154,7 +155,7 @@ class GroupTreeBuilder(
         childNode
     }
 
-  /** Creates or retrieves a `GroupTreeNode` for the given `TleGroupView`.
+  /** Creates or retrieves a `GroupTreeNode` for the given `InternalGroupView`.
     *
     * This function ensures that each group in the tree is represented by a single `GroupTreeNode`
     * instance. It uses a cache (`nodeCache`) to store and retrieve nodes by their unique ID. This
@@ -163,11 +164,11 @@ class GroupTreeBuilder(
     * and child relationships.
     *
     * @param group
-    *   The `TleGroupView` representing the group for which a node is created or retrieved.
+    *   The `InternalGroupView` representing the group for which a node is created or retrieved.
     * @return
     *   The `GroupTreeNode` corresponding to the given group.
     */
-  private def newNode(group: TleGroupView): GroupTreeNode = {
+  private def newNode(group: InternalGroupView): GroupTreeNode = {
     val id = group.uniqueId
     nodeCache.getOrElseUpdate(id, new GroupTreeNode(id, group.name))
   }

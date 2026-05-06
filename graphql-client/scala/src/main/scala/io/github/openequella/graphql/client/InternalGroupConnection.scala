@@ -21,13 +21,13 @@ package io.github.openequella.graphql.client
 import caliban.client.FieldBuilder._
 import caliban.client._
 
-object GroupConnection {
+object InternalGroupConnection {
   def pageInfo[A](
       innerSelection: SelectionBuilder[PageInfo, A]
-  ): SelectionBuilder[GroupConnection, A] =
+  ): SelectionBuilder[InternalGroupConnection, A] =
     _root_.caliban.client.SelectionBuilder.Field("pageInfo", Obj(innerSelection))
   def edges[A](
-      innerSelection: SelectionBuilder[GroupEdge, A]
-  ): SelectionBuilder[GroupConnection, List[A]] =
+      innerSelection: SelectionBuilder[InternalGroupEdge, A]
+  ): SelectionBuilder[InternalGroupConnection, List[A]] =
     _root_.caliban.client.SelectionBuilder.Field("edges", ListOf(Obj(innerSelection)))
 }

@@ -40,7 +40,7 @@ class AdminTLEUserServiceImpl @Inject() (implicit
 ) extends AdminTLEUserService {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
 
-  private implicit def tleUserViewToTleUser(view: TleUserView): TLEUser = {
+  private implicit def InternalUserViewToTleUser(view: InternalUserView): TLEUser = {
     val u = new TLEUser()
     u.setUuid(view.uniqueId)
     u.setUsername(view.username)
@@ -51,12 +51,12 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     u
   }
 
-  private implicit def optionalViewToUser(view: Option[TleUserView]): Optional[TLEUser] =
+  private implicit def optionalViewToUser(view: Option[InternalUserView]): Optional[TLEUser] =
     view.fold[Optional[TLEUser]](Optional.empty())(u => Optional.of(u))
 
   override def add(user: TLEUser): String = {
-    LOGGER.debug("Adding user: " + user.getUsername)
-    TleUserApi.createUser(
+    LOGGER.debug("Adding internal user: " + user.getUsername)
+    InternalUserApi.createUser(
       user.getUsername,
       Option(user.getEmailAddress),
       user.getFirstName,
@@ -64,18 +64,21 @@ class AdminTLEUserServiceImpl @Inject() (implicit
       user.getPassword
     ) match {
       case Right(newUser) =>
-        LOGGER.debug(s"User [${newUser.username}] added with UUID: ${newUser.uniqueId}")
+        LOGGER.debug(s"Internal user [${newUser.username}] added with UUID: ${newUser.uniqueId}")
         newUser.uniqueId
       case Left(errors) =>
-        throw new ClientRequestException(s"Error adding user [${user.getUsername}]", errors)
+        throw new ClientRequestException(
+          s"Error adding internal user [${user.getUsername}]",
+          errors
+        )
     }
   }
 
   override def get(uniqueId: String): Optional[TLEUser] =
-    getEntity("User [by UUID]", uniqueId, TleUserApi.getByUniqueId)
+    getEntity("Internal user [by UUID]", uniqueId, InternalUserApi.getByUniqueId)
 
   override def getByUsername(username: String): Optional[TLEUser] =
-    getEntity("User [by username]", username, TleUserApi.getByUsername)
+    getEntity("Internal user [by username]", username, InternalUserApi.getByUsername)
 
   /** Delete a user by UUID.
     *
@@ -85,10 +88,11 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     *   if there are any errors deleting the user
     */
   override def delete(uuid: String): Unit = {
-    LOGGER.debug("Deleting user with UUID: " + uuid)
-    TleUserApi.deleteUser(uuid) match {
-      case Right(_)     => LOGGER.debug(s"User [$uuid] deleted")
-      case Left(errors) => throw new ClientRequestException(s"Error deleting user [$uuid]", errors)
+    LOGGER.debug("Deleting internal user with UUID: " + uuid)
+    InternalUserApi.deleteUser(uuid) match {
+      case Right(_)     => LOGGER.debug(s"Internal user [$uuid] deleted")
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error deleting internal user [$uuid]", errors)
     }
   }
 
@@ -102,8 +106,8 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     */
   override def edit(user: TLEUser): String = {
     val uuid = user.getUuid
-    LOGGER.debug("Editing user: {}", uuid)
-    TleUserApi.updateUser(
+    LOGGER.debug("Editing internal user: {}", uuid)
+    InternalUserApi.updateUser(
       uuid,
       Option(user.getUsername),
       Option(user.getEmailAddress),
@@ -112,23 +116,23 @@ class AdminTLEUserServiceImpl @Inject() (implicit
       Option(user.getPassword)
     ) match {
       case Right(updatedUser) =>
-        LOGGER.debug("User {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
+        LOGGER.debug("Internal user {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
         updatedUser.uniqueId
       case Left(errors) =>
-        throw new ClientRequestException(s"Error updating user [$uuid]", errors)
+        throw new ClientRequestException(s"Error updating internal user [$uuid]", errors)
     }
   }
 
   override def searchUsers(query: String): java.util.List[TLEUser] = {
-    LOGGER.debug("Searching for users with query: {}", query)
+    LOGGER.debug("Searching for internal users with query: {}", query)
     val users = getAll() {
-      TleUserApi.searchUsers(_, Option(query))
+      InternalUserApi.searchUsers(_, Option(query))
     }
     LOGGER.debug("Found {} users", users.size)
 
     // We convert the following to a ListBuffer to ensure a proper mutable list is returned on the Java
     // side. This is especially important, as the main caller of this method in the Admin Console
     // calls java.util.List.sort() on the result.
-    users.map(tleUserViewToTleUser).to(ListBuffer).asJava
+    users.map(InternalUserViewToTleUser).to(ListBuffer).asJava
   }
 }
