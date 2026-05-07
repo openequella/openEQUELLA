@@ -32,17 +32,17 @@ import com.tle.core.xml.service.XmlService
 final case class CollectionDefinition(
     @GQLDescription("Common details of the collection definition, including UUID and owner.")
     details: EntityDetails,
-    @GQLDescription("ID of the metadata schema associated with this collection, if any.")
+    @GQLDescription("ID of the metadata schema associated with this collection.")
     schemaId: Option[Long],
     @GQLDescription("Category identifier for the wizard used by this collection.")
     wizardCategory: Option[String],
-    @GQLDescription("ID of the workflow associated with this collection, if any.")
+    @GQLDescription("ID of the workflow associated with this collection.")
     workflowId: Option[Long],
     @GQLDescription(
       "The review period in days. None if no review period is configured for this collection."
     )
     reviewPeriod: Option[Int],
-    @GQLDescription("Name of the XSLT used for SCORM packaging, if any.")
+    @GQLDescription("Name of the XSLT used for SCORM packaging.")
     scormPackagingTransformation: Option[String],
     @GQLDescription("Whether direct contribution by users is denied for this collection.")
     denyDirectContribution: Boolean,
