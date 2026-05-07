@@ -55,7 +55,7 @@
     "@fontsource/material-icons": "5.2.7",
     "@fontsource/roboto": "5.2.10",
     "@mui/icons-material": "9.0.0",
-    "@mui/lab": "7.0.0-beta.17",
+    "@mui/lab": "9.0.0-beta.2",
     "@mui/material": "9.0.0",
     "@mui/x-date-pickers": "9.0.4",
     "@mui/x-tree-view": "9.0.4",
