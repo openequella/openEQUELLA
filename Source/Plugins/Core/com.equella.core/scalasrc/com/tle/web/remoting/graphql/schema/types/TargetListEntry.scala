@@ -19,6 +19,7 @@
 package com.tle.web.remoting.graphql.schema.types
 
 import caliban.schema.Annotations.GQLDescription
+import com.tle.common.security.TargetList
 
 final case class TargetListEntry(
     @GQLDescription("Whether the privilege is granted or revoked")
@@ -49,4 +50,12 @@ object TargetListEntry {
       postfix = entry.getPostfix
     )
   }
+
+  /** Converts a (potentially null) Java `TargetList` to a Scala `List[TargetListEntry]`. Returns an
+    * empty list if `targetList` is `null`.
+    */
+  def fromTargetList(targetList: TargetList): List[TargetListEntry] =
+    Option(targetList)
+      .map(tl => convertJavaList(tl.getEntries)(TargetListEntry(_)))
+      .getOrElse(List.empty)
 }

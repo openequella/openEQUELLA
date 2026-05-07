@@ -18,10 +18,9 @@
 
 package com.tle.web.remoting.graphql.schema
 
-import com.tle.beans.entity.LanguageBundle
-
 import java.time.LocalDateTime
 import java.util.Date
+import scala.jdk.CollectionConverters._
 
 /** This package holds all the custom types for the GraphQL API.
   */
@@ -32,4 +31,11 @@ package object types {
     */
   def toLocalDateTime(date: Date): Option[LocalDateTime] =
     Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
+
+  /** Converts a nullable Java `Collection` to a Scala `List`, applying a mapping function to each
+    * element. Returns an empty list if the Java collection is `null`. Any exception thrown by `f`
+    * propagates naturally to the caller.
+    */
+  def convertJavaList[A, B](list: java.util.Collection[A])(f: A => B): List[B] =
+    Option(list).map(_.asScala.toList.map(f)).getOrElse(List.empty)
 }

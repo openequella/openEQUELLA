@@ -19,11 +19,13 @@
 package com.tle.web.remoting.graphql.provider
 
 import com.tle.common.security.SecurityConstants
+import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.RemoteItemDefinitionService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
+import com.tle.core.xml.service.XmlService
 import com.tle.web.remoting.graphql.schema.types.{
   BaseEntityReference,
   CollectionDefinition,
@@ -53,7 +55,8 @@ import scala.jdk.CollectionConverters._
 @SecureEntity(RemoteItemDefinitionService.ENTITY_TYPE)
 class CollectionProvider @Inject() (
     itemDefinitionService: ItemDefinitionService,
-    stagingService: StagingService
+    stagingService: StagingService,
+    xmlService: XmlService
 ) {
   private val LOGGER = LoggerFactory.getLogger(classOf[CollectionProvider])
 
@@ -66,6 +69,24 @@ class CollectionProvider @Inject() (
   def listCollections(): List[BaseEntityReference] = {
     LOGGER.debug("Listing all collections")
     itemDefinitionService.listEditable().asScala.map(BaseEntityReference(_)).toList
+  }
+
+  /** Start an editing session for a collection. Locks the collection for editing and returns it as
+    * an [[EditableEntity]] ready for modification. Expected to be followed by a `stopEdit` or
+    * `cancelEdit` operation.
+    *
+    * @param id
+    *   the ID of the collection to edit.
+    * @return
+    *   an `EditableEntity` containing the collection definition and staging information.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def startEdit(id: Long): EditableEntity[CollectionDefinition] = {
+    LOGGER.debug(s"Editing collection with id $id")
+    EditableEntity(
+      itemDefinitionService.startEdit(id),
+      (entity: ItemDefinition) => CollectionDefinition(entity, xmlService)
+    )
   }
 
   /** Export a collection as a base64 String representing the contents of a zip file. This can then
@@ -104,7 +125,7 @@ class CollectionProvider @Inject() (
   ): Either[ProviderError, EditableEntity[CollectionDefinition]] = {
     LOGGER.debug("Importing collection from base64 zip")
     importBaseEntity("collection", zipBase64, itemDefinitionService.importEntity)(
-      CollectionDefinition.apply
+      (entity: ItemDefinition) => CollectionDefinition(entity, xmlService)
     )
   }
 
