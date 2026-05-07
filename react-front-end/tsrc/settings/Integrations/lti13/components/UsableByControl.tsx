@@ -110,7 +110,9 @@ const UsableByControl = ({
 
       <ListItem>
         <StyledListItemText
-          secondaryTypographyProps={{ component: "div" }}
+          slotProps={{
+            secondary: { component: "div" },
+          }}
           secondary={<CodeBlock value={readableACLExpressionText} />}
         />
         <ListItemSecondaryAction>
