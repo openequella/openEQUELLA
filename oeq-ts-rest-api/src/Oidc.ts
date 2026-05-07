@@ -77,6 +77,10 @@ interface CommonDetailsBase {
    * Whether the Identity Provider configuration is enabled
    */
   enabled: boolean;
+  /**
+   * Whether seamless SSO is enabled
+   */
+  seamlessSso: boolean;
 }
 
 /**

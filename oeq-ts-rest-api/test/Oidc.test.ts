@@ -36,6 +36,7 @@ const auth0: IdentityProvider = {
   tokenUrl: 'https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token',
   defaultRoles: new Set(['admin']),
   enabled: true,
+  seamlessSso: true,
   apiUrl: 'https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users',
   apiClientId: '1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps',
   apiClientSecret:
