@@ -165,7 +165,7 @@ export const CategorySelector = ({
     expanded,
   }: ShowMoreButtonProps) => (
     <ListItem>
-      <Grid container justifyContent="center">
+      <Grid container sx={{ justifyContent: "center" }}>
         <Grid>
           <Button
             variant="text"
@@ -188,11 +188,11 @@ export const CategorySelector = ({
    */
   const CategoryLabel = ({ term: category, count }: OEQ.SearchFacets.Facet) => (
     <>
-      <Typography display="inline">{category}</Typography>
+      <Typography sx={{ display: "inline" }}>{category}</Typography>
       <Typography
         color="textSecondary"
-        display="inline"
         className={classes.categoryListItemCount}
+        sx={{ display: "inline" }}
       >
         {`(${count})`}
       </Typography>

@@ -154,7 +154,7 @@ export const PortletFavourites = ({
           </Tabs>
           {tabContent}
         </Grid>
-        <Grid display="flex" justifyContent="center">
+        <Grid sx={{ justifyContent: "center", display: "flex" }}>
           <Button variant="outlined" component={Link} to={showAllPathForTab}>
             {strings.actionShowAll}
           </Button>

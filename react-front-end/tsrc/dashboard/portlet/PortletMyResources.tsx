@@ -92,7 +92,7 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
             myResourcesTypesList
           )}
         </Grid>
-        <Grid display="flex" justifyContent="center">
+        <Grid sx={{ justifyContent: "center", display: "flex" }}>
           <Button
             aria-label={showAllText}
             variant="outlined"

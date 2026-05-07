@@ -23,7 +23,7 @@ import * as React from "react";
  * Used to indicate that the page is currently loading or busy.
  */
 const LoadingCircle = () => (
-  <Grid container spacing={1} direction="column" alignItems="center">
+  <Grid container spacing={1} direction="column" sx={{ alignItems: "center" }}>
     <Grid>
       <CircularProgress />
     </Grid>

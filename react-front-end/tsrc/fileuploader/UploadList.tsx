@@ -91,7 +91,12 @@ export const UploadList = ({
         // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
           <ListItem key={fileId} divider component="div">
-            <Grid container spacing={2} alignItems="center" size="grow">
+            <Grid
+              container
+              spacing={2}
+              size="grow"
+              sx={{ alignItems: "center" }}
+            >
               <Grid
                 size={{
                   xs: 6,

@@ -177,7 +177,7 @@ export const ShuffleBox = ({
         </Paper>
       </Grid>
       <Grid size={1}>
-        <Grid container direction="column" alignItems="center">
+        <Grid container direction="column" sx={{ alignItems: "center" }}>
           {buttons.map(([toolTip, handler, icon], idx) => (
             <TooltipIconButton
               key={`${toolTip} ${idx}`}

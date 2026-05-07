@@ -102,7 +102,7 @@ export const DashboardEditor = ({
       }}
     >
       <Grid container spacing={2} direction="column">
-        <Grid container alignItems="center">
+        <Grid container sx={{ alignItems: "center" }}>
           <Grid size="grow">
             <Typography variant="h5">{title}</Typography>
           </Grid>

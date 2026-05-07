@@ -159,7 +159,7 @@ export const RefineSearchPanel = ({
   return (
     <Card>
       <CardContent>
-        <Grid container alignItems="center">
+        <Grid container sx={{ alignItems: "center" }}>
           <Grid size={11}>
             <Typography variant="h5">{title}</Typography>
           </Grid>

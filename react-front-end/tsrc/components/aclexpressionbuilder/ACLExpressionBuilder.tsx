@@ -268,7 +268,7 @@ const ACLExpressionBuilder = ({
     <StyledGrid
       spacing={2}
       container
-      justifyContent="flex-start"
+      sx={{ justifyContent: "flex-start" }}
       direction="column"
     >
       <TabContext value={activeTabValue}>

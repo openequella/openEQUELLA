@@ -300,7 +300,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
   );
 
   return (
-    <StyledGrid container alignItems="flex-end">
+    <StyledGrid container sx={{ alignItems: "flex-end" }}>
       {pipe(
         A.makeBy(ipElements, ipInput),
         A.intersperse(dot()),

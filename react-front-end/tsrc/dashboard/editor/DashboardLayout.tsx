@@ -131,7 +131,7 @@ export const DashboardLayout = () => {
       <Grid>
         <Typography variant="body1">{strings.chooseLayout}</Typography>
       </Grid>
-      <Grid display="flex" justifyContent="center">
+      <Grid sx={{ display: "flex", justifyContent: "center" }}>
         <DashboardLayoutSelector value={activeLayout} onChange={handleChange} />
       </Grid>
     </Grid>

@@ -604,7 +604,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     ) : undefined;
 
   const spinner = (
-    <Grid container justifyContent="center">
+    <Grid container sx={{ justifyContent: "center" }}>
       <Grid>
         <CircularProgress />
       </Grid>
@@ -661,7 +661,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           {isItemFound && selectAllButton()}
           {isItemFound && clearAllButton()}
         </Grid>
-        <Grid container size={6} direction="row" justifyContent="flex-end">
+        <Grid
+          container
+          size={6}
+          direction="row"
+          sx={{ justifyContent: "flex-end" }}
+        >
           {selectButtonElement()}
           {cancelButton()}
         </Grid>

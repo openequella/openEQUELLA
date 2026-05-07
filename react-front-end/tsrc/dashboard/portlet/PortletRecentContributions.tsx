@@ -127,7 +127,7 @@ export const PortletRecentContributions: React.FC<
             />
           )}
         </Grid>
-        <Grid display="flex" justifyContent="center">
+        <Grid sx={{ justifyContent: "center", display: "flex" }}>
           <Button variant="outlined" onClick={goToSearchPage}>
             {strings.actionShowAll}
           </Button>

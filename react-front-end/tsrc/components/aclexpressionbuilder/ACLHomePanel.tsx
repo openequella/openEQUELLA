@@ -123,7 +123,7 @@ const ACLHomePanel = ({
 
   return (
     <FormControl fullWidth component="fieldset">
-      <Grid spacing={4} container direction="row" alignItems="center">
+      <Grid spacing={4} container direction="row" sx={{ alignItems: "center" }}>
         <Grid>
           <FormLabel>{typeLabel}</FormLabel>
         </Grid>
