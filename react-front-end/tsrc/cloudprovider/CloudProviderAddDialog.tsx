@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { styled } from "@mui/material/styles";
 import {
   Button,
   Dialog,
@@ -27,10 +25,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { cloudProviderLangStrings } from "./CloudProviderModule";
-import { commonString } from "../util/commonstrings";
 import Link from "@mui/material/Link";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
+import { commonString } from "../util/commonstrings";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
+import { cloudProviderLangStrings } from "./CloudProviderModule";
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(1),
@@ -89,6 +89,12 @@ class CloudProviderAddDialog extends React.Component<
     });
   };
 
+  handleClose = (_: React.SyntheticEvent, reason: string) => {
+    if (reason !== "escapeKeyDown") {
+      this.props.onCancel();
+    }
+  };
+
   render() {
     const { open, onCancel, onRegister } = this.props;
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
@@ -97,9 +103,8 @@ class CloudProviderAddDialog extends React.Component<
       <div>
         <Dialog
           open={open}
-          onClose={onCancel}
+          onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
-          disableEscapeKeyDown
           fullWidth
         >
           <DialogTitle>
