@@ -15,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Checkbox, TextField } from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { Autocomplete } from "@mui/material";
-import { AutocompleteGetTagProps } from "@mui/material";
+import {
+  Autocomplete,
+  AutocompleteGetItemProps,
+  Checkbox,
+  TextField,
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
-import { useContext, useEffect, useState } from "react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import * as ORD from "fp-ts/Ord";
 import * as O from "fp-ts/Option";
+import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
+import * as React from "react";
+import { useContext, useEffect, useState } from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import {
   Collection,
@@ -111,9 +114,9 @@ export const CollectionSelector = ({
     <Autocomplete
       multiple
       limitTags={2}
-      renderTags={(
+      renderValue={(
         collections: Collection[],
-        getTagProps: AutocompleteGetTagProps,
+        getItemProps: AutocompleteGetItemProps<true>,
       ) =>
         collections.map((collection: Collection, index: number) => (
           <TooltipChip
@@ -121,7 +124,7 @@ export const CollectionSelector = ({
             id={`collectionChip-${collection.uuid}`}
             title={collection.name}
             maxWidth={200}
-            tagProps={getTagProps({ index })}
+            itemProps={getItemProps({ index })}
           />
         ))
       }

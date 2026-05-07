@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import {
-  Checkbox,
-  TextField,
-  AutocompleteRenderGetTagProps,
-} from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { Autocomplete } from "@mui/material";
+import {
+  Autocomplete,
+  AutocompleteGetItemProps,
+  Checkbox,
+  TextField,
+} from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import { languageStrings } from "../../util/langstrings";
@@ -56,16 +56,16 @@ export const MimeTypeFilterSelector = ({
 }: MimeTypeFilterSelectorProps) => (
   <Autocomplete
     multiple
-    renderTags={(
+    renderValue={(
       filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
-      getTagProps: AutocompleteRenderGetTagProps,
+      getItemProps: AutocompleteGetItemProps<true>,
     ) =>
       filters.map((filter, index) => (
         <TooltipChip
           key={filter.id}
           title={filter.name}
           maxWidth={200}
-          tagProps={getTagProps({ index })}
+          itemProps={getItemProps({ index })}
         />
       ))
     }

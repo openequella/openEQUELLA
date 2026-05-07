@@ -17,6 +17,7 @@
  */
 import {
   Autocomplete,
+  AutocompleteGetItemProps,
   Chip,
   FormControl,
   FormControlLabel,
@@ -28,9 +29,9 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useContext, useState } from "react";
-import ConfirmDialog from "./ConfirmDialog";
 import { AppContext } from "../mainui/App";
 import { languageStrings } from "../util/langstrings";
+import ConfirmDialog from "./ConfirmDialog";
 
 const { selectVersion, toThisVersion, versionOptions } =
   languageStrings.selectItemVersionDialog;
@@ -106,9 +107,12 @@ const SelectItemVersionDialog = ({
             <Autocomplete
               multiple
               freeSolo
-              renderTags={(value: string[], getTagProps) =>
+              renderValue={(
+                value: string[],
+                getItemProps: AutocompleteGetItemProps<true>,
+              ) =>
                 value.map((option: string, index: number) => (
-                  <Chip label={option} {...getTagProps({ index })} />
+                  <Chip label={option} {...getItemProps({ index })} />
                 ))
               }
               renderInput={(params) => (
