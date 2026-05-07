@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as t from "io-ts";
 import { Grid, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { constant, constFalse, pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
-import * as S from "fp-ts/string";
-import * as React from "react";
-import { createRef, RefObject, useState, useRef } from "react";
-import * as N from "fp-ts/number";
-import * as NEA from "fp-ts/NonEmptyArray";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
+import * as S from "fp-ts/string";
+import * as t from "io-ts";
+import * as React from "react";
+import { createRef, RefObject, useRef, useState } from "react";
 import { simpleUnionMatch } from "../util/match";
 
 /**
@@ -280,8 +280,14 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
         id={`ip-${index}-input`}
         size="small"
         type="tel"
-        inputProps={{
-          onKeyDown: (event) => handleKeyDownEvent(event, index, currentValue),
+        slotProps={{
+          htmlInput: {
+            onKeyDown: (
+              event: React.KeyboardEvent<
+                HTMLInputElement | HTMLTextAreaElement
+              >,
+            ) => handleKeyDownEvent(event, index, currentValue),
+          },
         }}
         inputRef={ipInputRefs.current[index]}
         className={classes.ipInput}
@@ -313,9 +319,15 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
           id="netmask-input"
           type="tel"
           inputRef={netmaskInputRef}
-          inputProps={{
-            onKeyDown: (key) => {
-              handleKeyDownEvent(key, ipElements, netmask);
+          slotProps={{
+            htmlInput: {
+              onKeyDown: (
+                event: React.KeyboardEvent<
+                  HTMLInputElement | HTMLTextAreaElement
+                >,
+              ) => {
+                handleKeyDownEvent(event, ipElements, netmask);
+              },
             },
           }}
           className={classes.ipInput}

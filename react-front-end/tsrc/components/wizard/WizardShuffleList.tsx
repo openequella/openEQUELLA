@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Grid,
   List,
@@ -23,8 +25,6 @@ import {
   ListItemText,
   TextField,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as RA from "fp-ts/ReadonlyArray";
@@ -101,7 +101,7 @@ export const WizardShuffleList = ({
                   label={shuffleListStrings.newEntry}
                   value={newEntry}
                   onChange={(event) => setNewEntry(event.target.value)}
-                  onKeyPress={(event) =>
+                  onKeyDown={(event) =>
                     event.key === "Enter" ? handleOnChange() : undefined
                   }
                 />
