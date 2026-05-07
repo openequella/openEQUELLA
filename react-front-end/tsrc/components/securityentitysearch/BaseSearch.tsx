@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import {
   Button,
   CircularProgress,
@@ -27,8 +29,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import ErrorOutline from "@mui/icons-material/ErrorOutline";
-import InfoIcon from "@mui/icons-material/Info";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
@@ -38,11 +38,11 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
+import * as S from "fp-ts/string";
 import * as TASK from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import * as RSET from "fp-ts/ReadonlySet";
-import * as S from "fp-ts/string";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 import {
@@ -51,10 +51,10 @@ import {
 } from "../../modules/ACLEntityModule";
 import {
   eqGroupById,
+  findGroupsByIds,
   groupIds,
   groupOrd,
   searchGroups,
-  findGroupsByIds,
 } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import { CheckboxList } from "../CheckboxList";
@@ -505,7 +505,9 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const warningMessage = (
     <ListItem>
       <ListItemIcon>
-        <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
+        <ErrorOutlineOutlinedIcon
+          color={errorMessage ? "secondary" : "inherit"}
+        />
       </ListItemIcon>
       <ListItemText
         secondary={

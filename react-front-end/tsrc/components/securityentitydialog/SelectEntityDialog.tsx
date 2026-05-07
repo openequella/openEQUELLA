@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
   Button,
   Divider,
@@ -26,6 +26,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
 import { pipe } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
@@ -37,7 +38,6 @@ import { useEffect, useState } from "react";
 import { BaseSecurityEntity } from "../../modules/ACLEntityModule";
 import { languageStrings } from "../../util/langstrings";
 import ConfirmDialog from "../ConfirmDialog";
-import * as A from "fp-ts/Array";
 import SecurityEntityEntrySkeleton from "./SecurityEntityEntrySkeleton";
 
 const { removeAll: removeAllLabel } = languageStrings.common.action;
@@ -156,7 +156,7 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
     ) : (
       <ListItem>
         <ListItemIcon>
-          <ErrorOutline />
+          <ErrorOutlineOutlinedIcon />
         </ListItemIcon>
         <ListItemText secondary={addEntityMessage} />
       </ListItem>

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
   Button,
   Divider,
@@ -38,13 +38,15 @@ import TableRow from "@mui/material/TableRow";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constVoid, flow, pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as RS from "fp-ts/ReadonlySet";
 import * as SET from "fp-ts/Set";
-import { useEffect, useState } from "react";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { getRoleNameByUrn } from "../modules/Lti13PlatformsModule";
+import { eqRoleById, ordRole } from "../modules/RoleModule";
+import { languageStrings } from "../util/langstrings";
 import { isNonEmptyString } from "../util/validation";
 import ConfirmDialog from "./ConfirmDialog";
 import {
@@ -53,11 +55,9 @@ import {
   customRoleOrd,
   CustomRolesDetailsMappings,
 } from "./CustomRoleHelper";
+import SecurityEntityEntry from "./securityentitydialog/SecurityEntityEntry";
 import SecurityEntityEntrySkeleton from "./securityentitydialog/SecurityEntityEntrySkeleton";
 import RoleSearch from "./securityentitysearch/RoleSearch";
-import SecurityEntityEntry from "./securityentitydialog/SecurityEntityEntry";
-import { eqRoleById, ordRole } from "../modules/RoleModule";
-import { languageStrings } from "../util/langstrings";
 
 const {
   title,
@@ -371,7 +371,7 @@ const SelectCustomRoleDialog = ({
     M.isEmpty(rolesMappings) ? (
       <ListItem>
         <ListItemIcon>
-          <ErrorOutline />
+          <ErrorOutlineOutlinedIcon />
         </ListItemIcon>
         <ListItemText secondary={addRoles} />
       </ListItem>
