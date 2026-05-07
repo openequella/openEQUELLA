@@ -66,7 +66,7 @@ export interface UsableByControlProps
 }
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
-  "&": { marginRight: theme.spacing(5) },
+  "&": { marginRight: theme.spacing(9) },
 }));
 
 const editIconTitle = `${editLabel} ${usableBy}`;
