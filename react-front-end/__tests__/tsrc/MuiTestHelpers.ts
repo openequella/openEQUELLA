@@ -150,6 +150,23 @@ export const inputMuiTextFieldByAriaLabel = async (
 };
 
 /**
+ * Helper to get Mui switch field by aria label.
+ *
+ * @param container The container element.
+ * @param label The aria label of the switch field.
+ */
+export const getMuiSwitchByAriaLabel = (
+  container: HTMLElement,
+  label: string,
+): Element => {
+  const input = container.querySelector(`span[aria-label='${label}'] input`);
+  if (!input) {
+    throw new Error(`Unable to get text field: ${label}`);
+  }
+  return input;
+};
+
+/**
  * Check if a MUI Toggle Button is currently in a 'checked' state.
  *
  * @param container The container element to search within.

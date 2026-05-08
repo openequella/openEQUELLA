@@ -21,6 +21,7 @@ import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import { mockRoleAndGroupApis } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   inputMuiTextFieldByAriaLabel,
+  getMuiSwitchByAriaLabel,
   getMuiTextFieldByAriaLabel,
   getMuiTextFieldValueByAriaLabel,
 } from "../../../MuiTestHelpers";
@@ -50,6 +51,8 @@ const {
   keysetUrl: keysetUrlLabel,
   tokenUrl: tokenUrlLabel,
   usernameClaim: usernameClaimLabel,
+  enable: enableLabel,
+  seamlessSso: seamlessSsoLabel,
 } = languageStrings.settings.integration.oidc.generalDetails;
 const {
   generic: {
@@ -73,6 +76,7 @@ const mockedOidcSettings: OEQ.Oidc.IdentityProvider = {
   usernameClaim: "",
   defaultRoles: new Set(),
   enabled: false,
+  seamlessSso: false,
   apiUrl: "https://test.com",
   apiClientId: "test ID",
 };
@@ -88,12 +92,25 @@ describe("General details section", () => {
     usernameClaimLabel,
   ];
 
+  const allSwitchFields = [enableLabel, seamlessSsoLabel];
+
   it.each(allTextFields)(
     "should render the text field with label '%s'",
     async (label) => {
       const { container } = await renderOidcSettings();
 
       const textField = getMuiTextFieldByAriaLabel(container, label);
+
+      expect(textField).toBeInTheDocument();
+    },
+  );
+
+  it.each(allSwitchFields)(
+    "should render the switch field with label '%s'",
+    async (label) => {
+      const { container } = await renderOidcSettings();
+
+      const textField = getMuiSwitchByAriaLabel(container, label);
 
       expect(textField).toBeInTheDocument();
     },
@@ -306,6 +323,7 @@ describe("Oidc settings page", () => {
       authUrl: "https://test.login.com",
       defaultRoles: new Set(),
       platform: "ENTRA_ID",
+      seamlessSso: false,
       apiUrl: "",
       authCodeClientId: "test ID",
       authCodeClientSecret: "test secret",
