@@ -161,7 +161,7 @@ export const getMuiSwitchByAriaLabel = (
 ): Element => {
   const input = container.querySelector(`span[aria-label='${label}'] input`);
   if (!input) {
-    throw new Error(`Unable to get text field: ${label}`);
+    throw new Error(`Unable to get switch field: ${label}`);
   }
   return input;
 };
