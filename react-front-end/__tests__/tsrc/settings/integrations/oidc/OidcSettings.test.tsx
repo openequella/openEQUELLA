@@ -110,9 +110,9 @@ describe("General details section", () => {
     async (label) => {
       const { container } = await renderOidcSettings();
 
-      const textField = getMuiSwitchByAriaLabel(container, label);
+      const switchField = getMuiSwitchByAriaLabel(container, label);
 
-      expect(textField).toBeInTheDocument();
+      expect(switchField).toBeInTheDocument();
     },
   );
 });
