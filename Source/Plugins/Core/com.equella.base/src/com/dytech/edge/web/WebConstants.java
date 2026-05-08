@@ -38,7 +38,11 @@ public final class WebConstants {
   public static final String DASHBOARD_PAGE = "home.do";
   public static final String DASHBOARD_PAGE_PRIVILEGE = "DASHBOARD_PAGE";
 
+  public static final String HTTP = "http";
+  public static final String HTTPS = "https";
   public static final String LOGIN_PAGE = "logon.do";
+  public static final String LOGOUT = "logout";
+  public static final String NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
 
   public static final String SEARCHING_PAGE = "searching.do";
   public static final String SEARCH_PAGE_PRIVILEGE = "SEARCH_PAGE";

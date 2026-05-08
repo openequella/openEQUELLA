@@ -18,6 +18,8 @@
 
 package com.tle.web.login;
 
+import static com.dytech.edge.web.WebConstants.NO_AUTO_LOGIN;
+
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -37,6 +39,10 @@ import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.UsernameNotFoundException;
+import com.tle.integration.oidc.idp.CommonDetails;
+import com.tle.integration.oidc.idp.IdentityProviderDetails;
+import com.tle.integration.oidc.service.OidcAuthService;
+import com.tle.integration.oidc.service.OidcConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.resources.PluginResourceHelper;
@@ -72,6 +78,7 @@ import hurl.build.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,6 +111,9 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
   @Inject private AuditLogService auditLogService;
   @Inject private PluginTracker<LoginLink> loginLinkTracker;
   @Inject LoginNoticeService loginNoticeService;
+
+  @Inject private OidcAuthService oidcAuthService;
+  @Inject private OidcConfigurationService oidcConfigurationService;
 
   @ViewFactory private FreemarkerFactory viewFactory;
   @EventFactory private EventGenerator events;
@@ -211,46 +221,36 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     }
   }
 
+  /**
+   * In New UI, this Legacy Section method is responsible for returning the login page content for
+   * logon requests sent via the Legacy Content API (/content/submit/logon.do). Since we do not have
+   * a New UI login page yet by 2026.1, this method is updated to provide the Seamless SSO support
+   * implemented in {@link com.tle.integration.oidc.OidcLogonFilter}.
+   */
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    LogonModel model = getModel(context);
-    password.setValue(context, "");
-    context.getBody().addReadyStatements(LOGON_READY);
-    Decorations decorations = Decorations.getDecorations(context);
-    decorations.setTitle(TITLE_LABEL);
-    decorations.setMenuMode(MenuMode.HIDDEN);
-    PreLoginNotice preLoginNotice = new PreLoginNotice();
-    try {
-      preLoginNotice = loginNoticeService.getPreLoginNotice();
-    } catch (IOException e) {
-      model.setFailed(e.getMessage());
-    }
-    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
-      model.setLoginNotice(preLoginNotice.getNotice());
-    }
-    model.setChildSections(
-        renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
-    final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
-    for (LoginLink link : loginLinkTracker.getBeanList()) {
-      link.setup(context, model);
-      final SectionRenderable linkRenderer = renderSection(context, link);
-      if (linkRenderer != null) {
-        loginLinksRenderables.add(linkRenderer);
-      }
-    }
-    model.setLoginLinks(loginLinksRenderables);
 
-    // In New UI, if a login token error is captured and saved in Session, update the model
-    // to show the error and then clear the error from Session.
-    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
-        .filter(err -> RenderNewTemplate.isNewUIEnabled())
-        .ifPresent(
-            err -> {
-              model.setError(err);
-              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
-            });
+    SectionResult page =
+        oidcConfigurationService
+            .get()
+            .toOption()
+            .map(IdentityProviderDetails::commonDetails)
+            .filter(CommonDetails::enabled)
+            .filter(CommonDetails::seamlessSso)
+            .filter((details) -> isAutoLogin(context))
+            .fold(
+                () -> renderLegacyLoginPage(context),
+                details -> {
+                  String u =
+                      oidcAuthService.buildAuthUrl(
+                          details.authUrl().toString(),
+                          details.authCodeClientId(),
+                          getModel(context).getPage());
+                  context.forwardToUrl(u);
+                  return null;
+                });
 
-    return viewFactory.createResult("logon/logon.ftl", context);
+    return page;
   }
 
   private WebAuthenticationDetails getDetails(SectionInfo info) {
@@ -333,6 +333,56 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
         model.setError(exception.getLocalizedMessage());
       }
     }
+  }
+
+  private SectionResult renderLegacyLoginPage(RenderEventContext context) {
+    LogonModel model = getModel(context);
+
+    password.setValue(context, "");
+    context.getBody().addReadyStatements(LOGON_READY);
+    Decorations decorations = Decorations.getDecorations(context);
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setMenuMode(MenuMode.HIDDEN);
+    PreLoginNotice preLoginNotice = new PreLoginNotice();
+    try {
+      preLoginNotice = loginNoticeService.getPreLoginNotice();
+    } catch (IOException e) {
+      model.setFailed(e.getMessage());
+    }
+    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
+      model.setLoginNotice(preLoginNotice.getNotice());
+    }
+    model.setChildSections(
+        renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
+    final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
+    for (LoginLink link : loginLinkTracker.getBeanList()) {
+      link.setup(context, model);
+      final SectionRenderable linkRenderer = renderSection(context, link);
+      if (linkRenderer != null) {
+        loginLinksRenderables.add(linkRenderer);
+      }
+    }
+    model.setLoginLinks(loginLinksRenderables);
+
+    // In New UI, if a login token error is captured and saved in Session, update the model
+    // to show the error and then clear the error from Session.
+    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
+        .filter(err -> RenderNewTemplate.isNewUIEnabled())
+        .ifPresent(
+            err -> {
+              model.setError(err);
+              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
+            });
+
+    return viewFactory.createResult("logon/logon.ftl", context);
+  }
+
+  private boolean isAutoLogin(RenderEventContext context) {
+    return Optional.ofNullable(context.getParameterMap().get(NO_AUTO_LOGIN))
+        .map(Arrays::asList)
+        .map(List::getFirst)
+        .filter(Boolean::parseBoolean)
+        .isEmpty();
   }
 
   @NonNullByDefault(false)

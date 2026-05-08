@@ -20,12 +20,12 @@ package com.tle.integration.oidc
 
 import com.dytech.edge.web.WebConstants
 import com.tle.common.institution.CurrentInstitution
+import com.tle.common.util.UrlUtils.isAbsoluteHttpUrl
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.oauth2.error.HasCode
 import com.tle.integration.oidc.service.OidcAuthService
 import com.tle.integration.util.NO_FURTHER_INFO
-import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 
 import javax.inject.{Inject, Named, Singleton}
@@ -78,12 +78,12 @@ class OidcCallbackServlet @Inject() (
       case Right(targetPage) =>
         val institution = CurrentInstitution.get().getUrl
         val redirectTo  = targetPage match {
-          case Some(p) =>
-            new URIBuilder(s"$institution${WebConstants.LOGIN_PAGE}").addParameter(".page", p)
-          case None => new URIBuilder(s"$institution${WebConstants.DASHBOARD_PAGE}")
+          case Some(p) if isAbsoluteHttpUrl(p) => p
+          case Some(p)                         => s"$institution$p"
+          case None                            => s"$institution${WebConstants.DASHBOARD_PAGE}"
         }
 
-        resp.sendRedirect(redirectTo.build().toString)
+        resp.sendRedirect(redirectTo)
       case Left(e) =>
         val msg     = e.msg.getOrElse(NO_FURTHER_INFO)
         val fullMsg = e match {
