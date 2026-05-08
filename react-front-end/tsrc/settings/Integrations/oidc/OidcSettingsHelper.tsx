@@ -59,6 +59,8 @@ const {
   tokenUrlDesc,
   usernameClaim: usernameClaimLabel,
   usernameClaimDesc,
+  seamlessSso: seamlessSsoLabel,
+  seamlessSsoDesc,
 } = languageStrings.settings.integration.oidc.generalDetails;
 const {
   platform: platformLabel,
@@ -105,6 +107,7 @@ export const defaultConfig: OEQ.Oidc.IdentityProvider = {
   keysetUrl: "",
   tokenUrl: "",
   defaultRoles: new Set(),
+  seamlessSso: false,
   ...defaultApiDetails,
 };
 
@@ -150,6 +153,7 @@ export const generateGeneralDetails = (
     keysetUrl,
     tokenUrl,
     usernameClaim,
+    seamlessSso,
   }: OEQ.Oidc.IdentityProvider,
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
@@ -163,6 +167,7 @@ export const generateGeneralDetails = (
         required
         checked={enabled}
         onChange={(event) => onChange("enabled", event.target.checked)}
+        aria-label={enableLabel}
       />
     ),
   },
@@ -274,6 +279,18 @@ export const generateGeneralDetails = (
       onChange: (value) => onChange("usernameClaim", value),
       showValidationErrors,
     }),
+  },
+  seamlessSso: {
+    label: seamlessSsoLabel,
+    desc: seamlessSsoDesc,
+    required: false,
+    component: (
+      <Switch
+        checked={seamlessSso}
+        onChange={(event) => onChange("seamlessSso", event.target.checked)}
+        aria-label={seamlessSsoLabel}
+      />
+    ),
   },
 });
 
