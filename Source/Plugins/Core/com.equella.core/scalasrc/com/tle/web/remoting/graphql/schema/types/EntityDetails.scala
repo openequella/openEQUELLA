@@ -19,6 +19,7 @@
 package com.tle.web.remoting.graphql.schema.types
 
 import caliban.schema.Annotations.GQLDescription
+import org.slf4j.{Logger, LoggerFactory}
 
 import java.time.LocalDateTime
 import scala.jdk.CollectionConverters._
@@ -68,6 +69,7 @@ final case class EntityDetails(
     disabled: Boolean
 )
 object EntityDetails {
+  val LOGGER: Logger = LoggerFactory.getLogger(classOf[EntityDetails])
 
   /** Converts a BaseEntity into EntityDetails, extracting relevant fields and converting types as
     * necessary. This is typically used when fetching entity details from the database.
@@ -85,7 +87,70 @@ object EntityDetails {
     dateModified = toLocalDateTime(entity.getDateModified),
     nameBundle = Option(entity.getName).map(LanguageBundle.apply),
     descriptionBundle = Option(entity.getDescription).map(LanguageBundle.apply),
-    attributes = entity.getAttributes.asScala.toMap,
+    attributes = convertAttributes(entity.getAttributes),
     disabled = entity.isDisabled
   )
+
+  /** Converts the java `Map` of attributes to a suitable scala representation, ensuring to navigate
+    * possible nulls to ensure compatibility with Caliban.
+    */
+  private def convertAttributes(
+      attributes: java.util.Map[String, String]
+  ): Map[String, String] = sanitiseAttributes(attributes.asScala.toMap)
+
+  /** Validates that the attributes map contains no null keys.
+    *
+    * @param attributes
+    *   the map of attributes to validate
+    * @return
+    *   `Right` with the original map if all keys are non-null, or `Left` with an
+    *   [[IllegalArgumentException]] describing how many null keys were found
+    */
+  private[types] def rejectNullKeys(
+      attributes: Map[String, String]
+  ): Either[IllegalArgumentException, Map[String, String]] = {
+    val nullKeyCount = attributes.keys.count(_ == null)
+    if (nullKeyCount > 0)
+      Left(
+        new IllegalArgumentException(
+          s"Attributes map contains $nullKeyCount null keys, which is not allowed."
+        )
+      )
+    else
+      Right(attributes)
+  }
+
+  /** Drops any entries whose value is null, logging the affected keys as an error.
+    *
+    * @param attributes
+    *   the map of attributes to filter
+    * @return
+    *   a new map with all null-valued entries removed
+    */
+  private[types] def dropNullValues(
+      attributes: Map[String, String]
+  ): Map[String, String] = {
+    val keysWithNullValues = attributes.collect { case (k, null) => k }
+    if (keysWithNullValues.nonEmpty)
+      LOGGER.warn(
+        "The following attributes contain null values, which is not allowed and will be dropped: {}",
+        keysWithNullValues.mkString(", ")
+      )
+    attributes.filterNot { case (_, v) => v == null }
+  }
+
+  /** Sanitises the attributes map by composing [[rejectNullKeys]] and [[dropNullValues]]. Caliban
+    * follows standard Scala typing and expects nulls to be represented as Options, but we're
+    * converting from Java where nulls are more common, so we need to ensure that the resulting Map
+    * does not contain any null keys or values.
+    *
+    * @param attributes
+    *   the map of attributes to sanitise
+    * @return
+    *   the sanitised map, or throws an [[IllegalArgumentException]] if null keys are present
+    */
+  private def sanitiseAttributes(
+      attributes: Map[String, String]
+  ): Map[String, String] =
+    rejectNullKeys(attributes).map(dropNullValues).fold(throw _, identity)
 }
