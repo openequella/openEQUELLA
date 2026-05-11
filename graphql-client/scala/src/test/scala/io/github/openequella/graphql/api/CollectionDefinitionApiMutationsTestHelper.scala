@@ -19,7 +19,10 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  CollectionDefinitionEditView
+}
 import io.github.openequella.graphql.test.BaseEntityApiTestHelper
 
 /** Helper object for CollectionDefinitionApi tests containing collection utilities. */
@@ -50,5 +53,24 @@ object CollectionDefinitionApiMutationsTestHelper {
       CollectionDefinitionApi.listCollections _,
       CollectionDefinitionApi.clone,
       CollectionDefinitionApi.delete
+    )(test)
+
+  /** Loan-pattern helper for edit sessions that guarantees an edit session is cancelled and the
+    * collection is unlocked even when assertions fail.
+    *
+    * @param collectionId
+    *   The numeric ID of the collection to edit.
+    * @param test
+    *   The test body, receiving the `CollectionDefinitionEditView` from `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    */
+  def withEditSession(collectionId: Long)(test: CollectionDefinitionEditView => Unit)(implicit
+      cfg: ClientConfiguration
+  ): Unit =
+    BaseEntityApiTestHelper.withEditSession(
+      collectionId,
+      CollectionDefinitionApi.startEdit,
+      CollectionDefinitionApi.cancelEditForced
     )(test)
 }

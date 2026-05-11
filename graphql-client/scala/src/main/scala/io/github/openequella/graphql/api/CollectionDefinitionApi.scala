@@ -82,6 +82,26 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     query(q)
   }
 
+  /** Start editing a collection by its ID.
+    *
+    * @param id
+    *   The ID of the collection to start editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a CollectionDefinitionEditView representing the editable
+    *   collection.
+    */
+  def startEdit(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], CollectionDefinitionEditView] = {
+    val mutation = CollectionMutations.startEdit(id) {
+      CollectionDefinitionEditView.selector
+    }
+
+    mutate(mutation)
+  }
+
   /** Exports a collection as a ZIP file, without security information.
     *
     * @param id
