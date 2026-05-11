@@ -91,7 +91,7 @@ object EntityDetails {
     disabled = entity.isDisabled
   )
 
-  /** Converts the java `Map` of attributes to a suitable scala representation, ensuring to navigate
+  /** Converts the java `Map` of attributes to a suitable scala representation, ensuring to sanitise
     * possible nulls to ensure compatibility with Caliban.
     */
   private def convertAttributes(
@@ -106,18 +106,19 @@ object EntityDetails {
     *   `Right` with the original map if all keys are non-null, or `Left` with an
     *   [[IllegalArgumentException]] describing how many null keys were found
     */
-  private[types] def rejectNullKeys(
+  private def rejectNullKeys(
       attributes: Map[String, String]
   ): Either[IllegalArgumentException, Map[String, String]] = {
     val nullKeyCount = attributes.keys.count(_ == null)
-    if (nullKeyCount > 0)
+    if (nullKeyCount > 0) {
       Left(
         new IllegalArgumentException(
           s"Attributes map contains $nullKeyCount null keys, which is not allowed."
         )
       )
-    else
+    } else {
       Right(attributes)
+    }
   }
 
   /** Drops any entries whose value is null, logging the affected keys as an error.
@@ -127,15 +128,17 @@ object EntityDetails {
     * @return
     *   a new map with all null-valued entries removed
     */
-  private[types] def dropNullValues(
+  private def dropNullValues(
       attributes: Map[String, String]
   ): Map[String, String] = {
     val keysWithNullValues = attributes.collect { case (k, null) => k }
-    if (keysWithNullValues.nonEmpty)
+    if (keysWithNullValues.nonEmpty) {
       LOGGER.warn(
         "The following attributes contain null values, which is not allowed and will be dropped: {}",
         keysWithNullValues.mkString(", ")
       )
+    }
+
     attributes.filterNot { case (_, v) => v == null }
   }
 
