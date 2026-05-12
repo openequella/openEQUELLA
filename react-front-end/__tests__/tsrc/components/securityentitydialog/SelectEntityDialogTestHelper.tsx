@@ -15,26 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import userEvent from "@testing-library/user-event";
-import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { getMuiButtonByText, queryMuiTextField } from "../../MuiQueries";
 import {
   findByText,
   getByText,
   RenderResult,
   waitFor,
+  within,
 } from "@testing-library/react";
-import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
-import {
-  findRolesByIds,
-  searchRoles,
-} from "../../../../__mocks__/RoleModule.mock";
+import userEvent from "@testing-library/user-event";
 import {
   findGroupsByIds,
   searchGroups,
 } from "../../../../__mocks__/GroupModule.mock";
+import {
+  findRolesByIds,
+  searchRoles,
+} from "../../../../__mocks__/RoleModule.mock";
 import * as GroupModule from "../../../../tsrc/modules/GroupModule";
 import * as RoleModule from "../../../../tsrc/modules/RoleModule";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { getMuiButtonByText, queryMuiTextField } from "../../MuiQueries";
+import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 
 const {
   cancel: cancelLabel,
@@ -117,8 +118,15 @@ export const clickDeleteIconForEntity = async (
   dialog: HTMLElement,
   name: string,
 ): Promise<void> => {
-  const deleteIcon = (await findByText(dialog, name)).parentElement
-    ?.parentElement?.nextElementSibling?.firstElementChild;
+  const nameElement = await findByText(dialog, name);
+
+  const listItem = nameElement.closest("li");
+  if (!listItem) {
+    throw Error(`Can't find ListItem for role with name: ${name}`);
+  }
+
+  // Find the delete button within that specific list item
+  const deleteIcon = within(listItem).getByRole("button", { name: "Delete" });
   if (!deleteIcon) {
     throw Error(`Can't find delete icon for role with name: ${name}`);
   }
