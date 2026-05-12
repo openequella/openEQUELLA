@@ -30,7 +30,7 @@ val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.0"
 val luceneVersion     = "10.4.0"
-val nettyVersion      = "4.2.12.Final"
+val nettyVersion      = "4.2.13.Final"
 val rampartVersion    = "1.8.0"
 
 libraryDependencies ++= Seq(
