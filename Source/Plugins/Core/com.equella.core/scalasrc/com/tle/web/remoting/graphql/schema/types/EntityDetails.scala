@@ -133,7 +133,7 @@ object EntityDetails {
   ): Map[String, String] = {
     val keysWithNullValues = attributes.collect { case (k, null) => k }
     if (keysWithNullValues.nonEmpty) {
-      LOGGER.warn(
+      LOGGER.debug(
         "The following attributes contain null values, which is not allowed and will be dropped: {}",
         keysWithNullValues.mkString(", ")
       )
