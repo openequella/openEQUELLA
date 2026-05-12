@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
+import { Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import Add from "@mui/icons-material/Add";
-import Remove from "@mui/icons-material/Remove";
+import * as React from "react";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
-import { Button, Grid } from "@mui/material";
 import { languageStrings } from "../util/langstrings";
 
 const PREFIX = "SchemaNodeSelector";
@@ -147,8 +147,10 @@ export default function SchemaNodeSelector({
         expandedItems={expanded}
         onExpandedItemsChange={(_, paths) => setExpanded(paths)}
         onItemSelectionToggle={(_, nodePath) => {
-          setSelected(nodePath);
-          setSelectedNode(nodePath);
+          if (typeof nodePath === "string") {
+            setSelected(nodePath);
+            setSelectedNode(nodePath);
+          }
         }}
       >
         {renderedTree}
