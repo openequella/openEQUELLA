@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "javax.jws"                 % "javax.jws-api"            % "1.1",
   "org.apache.commons"        % "commons-lang3"            % "3.20.0",
   "org.seleniumhq.selenium"   % "selenium-java"            % "4.43.0",
-  "com.codeborne"             % "selenide"                 % "7.16.0",
+  "com.codeborne"             % "selenide"                 % "7.16.1",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
   "xalan"                     % "xalan"                    % "2.7.3",
