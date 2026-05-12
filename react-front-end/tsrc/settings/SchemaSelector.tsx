@@ -17,10 +17,10 @@
  */
 import {
   FormHelperText,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
+  Stack,
 } from "@mui/material";
 import * as React from "react";
 import { ReactElement, useContext } from "react";
@@ -93,39 +93,35 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   }, [schemaNodePath, setSchemaNode]);
 
   return (
-    <Grid container direction="column" spacing={0}>
-      <Grid>
-        {schemaList && (
-          <>
-            <Select
-              fullWidth
-              label={
-                <InputLabel shrink id="select-label">
-                  {strings.schema}
-                </InputLabel>
-              }
-              value={selectedSchema ?? ""}
-              displayEmpty
-              onChange={(event) => {
-                setSelectedSchema(event.target.value as string | undefined);
-              }}
-              variant="standard"
-            >
-              {schemaList}
-            </Select>
-            <FormHelperText>{strings.permissionsHelperText}</FormHelperText>
-          </>
-        )}
-      </Grid>
-      <Grid>
-        {schema && (
-          <SchemaNodeSelector
-            expandControls
-            tree={schema}
-            setSelectedNode={setSchemaNodePath}
-          />
-        )}
-      </Grid>
-    </Grid>
+    <Stack>
+      {schemaList && (
+        <>
+          <Select
+            fullWidth
+            label={
+              <InputLabel shrink id="select-label">
+                {strings.schema}
+              </InputLabel>
+            }
+            value={selectedSchema ?? ""}
+            displayEmpty
+            onChange={(event) => {
+              setSelectedSchema(event.target.value as string | undefined);
+            }}
+            variant="standard"
+          >
+            {schemaList}
+          </Select>
+          <FormHelperText>{strings.permissionsHelperText}</FormHelperText>
+        </>
+      )}
+      {schema && (
+        <SchemaNodeSelector
+          expandControls
+          tree={schema}
+          setSelectedNode={setSchemaNodePath}
+        />
+      )}
+    </Stack>
   );
 }
