@@ -98,7 +98,11 @@ object EntityDetails {
       attributes: java.util.Map[String, String]
   ): Map[String, String] = sanitiseAttributes(attributes.asScala.toMap)
 
-  /** Validates that the attributes map contains no null keys.
+  /** Validates that the attributes map contains no null keys, which would be a critical issue for
+    * the integrity of the data and the functioning of the system.
+    *
+    * This has been added as a safeguard after seeing some other dubious data. However, it's not
+    * expected to be fail. If it does then the data flow needs close inspection and resolution.
     *
     * @param attributes
     *   the map of attributes to validate
@@ -146,6 +150,12 @@ object EntityDetails {
     * follows standard Scala typing and expects nulls to be represented as Options, but we're
     * converting from Java where nulls are more common, so we need to ensure that the resulting Map
     * does not contain any null keys or values.
+    *
+    * '''Error Handling Strategy:'''
+    *   - Null keys are rejected with an exception (fail-fast) because they indicate a fundamental
+    *     data corruption that should never occur.
+    *   - Null values are silently dropped (fail-safe) with a warning because they commonly appear
+    *     in legacy data from Java Map conversions and can be safely omitted.
     *
     * @param attributes
     *   the map of attributes to sanitise
