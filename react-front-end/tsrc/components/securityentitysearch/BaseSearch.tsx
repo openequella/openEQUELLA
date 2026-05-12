@@ -18,6 +18,7 @@
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import InfoIcon from "@mui/icons-material/Info";
 import {
+  Box,
   Button,
   CircularProgress,
   Grid,
@@ -25,6 +26,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Stack,
   TextField,
   Tooltip,
   Typography,
@@ -614,66 +616,59 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   );
 
   return showGroupFilterSearch ? (
-    <Grid container direction="column">
-      <Grid>
-        <GroupSearch
-          id="GroupFilter"
-          mode={{
-            type: "checkbox",
-            onChange: setGroupFilterSearchGroupDetails,
-            selections: groupFilterSearchGroupDetails,
-            selectButton: {
-              disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
-              onClick: () => {
-                setGroupDetails(groupFilterSearchGroupDetails);
-                setShowGroupFilterSearch(false);
-              },
-            },
-            enableMultiSelection: true,
-          }}
-          strings={languageStrings.groupSearchComponent}
-          onCancel={() => {
-            setGroupFilterSearchGroupDetails(groupDetails);
+    <GroupSearch
+      id="GroupFilter"
+      mode={{
+        type: "checkbox",
+        onChange: setGroupFilterSearchGroupDetails,
+        selections: groupFilterSearchGroupDetails,
+        selectButton: {
+          disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
+          onClick: () => {
+            setGroupDetails(groupFilterSearchGroupDetails);
             setShowGroupFilterSearch(false);
-          }}
-          listHeight={listHeight}
-          groupFilter={RSET.empty}
-          groupFilterEditable={false}
-          search={groupSearch}
-          showHelpText
-        />
-      </Grid>
-    </Grid>
+          },
+        },
+        enableMultiSelection: true,
+      }}
+      strings={languageStrings.groupSearchComponent}
+      onCancel={() => {
+        setGroupFilterSearchGroupDetails(groupDetails);
+        setShowGroupFilterSearch(false);
+      }}
+      listHeight={listHeight}
+      groupFilter={RSET.empty}
+      groupFilterEditable={false}
+      search={groupSearch}
+      showHelpText
+    />
   ) : (
-    <Grid id={genId()} container direction="column" spacing={1}>
+    <Stack id={genId()} spacing={1}>
       {showHelpText && (
-        <Grid>
+        <Box>
           <Typography variant="h6" gutterBottom>
             {helpTitle}
           </Typography>
           <Typography variant="body1">{helpDesc}</Typography>
-        </Grid>
+        </Box>
       )}
 
-      <Grid>{queryBar}</Grid>
+      <Box>{queryBar}</Box>
       {groupFilterContent()}
-      <Grid>{showSpinner ? spinner : itemList()}</Grid>
-      <Grid container direction="row">
-        <Grid container size={6}>
-          {isItemFound && selectAllButton()}
-          {isItemFound && clearAllButton()}
-        </Grid>
-        <Grid
-          container
-          size={6}
-          direction="row"
-          sx={{ justifyContent: "flex-end" }}
-        >
+      <Box>{showSpinner ? spinner : itemList()}</Box>
+      <Grid container>
+        {isItemFound && (
+          <Grid container size={6}>
+            {selectAllButton()}
+            {clearAllButton()}
+          </Grid>
+        )}
+        <Grid container size="grow" sx={{ justifyContent: "flex-end" }}>
           {selectButtonElement()}
           {cancelButton()}
         </Grid>
       </Grid>
-    </Grid>
+    </Stack>
   );
 };
 

@@ -16,7 +16,16 @@
  * limitations under the License.
  */
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Alert, Box, Drawer, Grid, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Drawer,
+  Grid,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
@@ -101,7 +110,7 @@ export const DashboardEditor = ({
         },
       }}
     >
-      <Grid container spacing={2} direction="column">
+      <Stack spacing={2}>
         <Grid container sx={{ alignItems: "center" }}>
           <Grid size="grow">
             <Typography variant="h5">{title}</Typography>
@@ -116,22 +125,14 @@ export const DashboardEditor = ({
             </TooltipIconButton>
           </Grid>
         </Grid>
-        <Grid>
-          <Alert severity="info">{alertInfo}</Alert>
-        </Grid>
-        <Grid>
-          <Tabs
-            onChange={handleTabChange}
-            variant="fullWidth"
-            value={activeTab}
-          >
-            <Tab label={dashLayoutLabel} />
-            <Tab label={createPortletLabel} />
-            <Tab label={restorePortletLabel} />
-          </Tabs>
-        </Grid>
-        <Grid>{tabContent}</Grid>
-      </Grid>
+        <Alert severity="info">{alertInfo}</Alert>
+        <Tabs onChange={handleTabChange} variant="fullWidth" value={activeTab}>
+          <Tab label={dashLayoutLabel} />
+          <Tab label={createPortletLabel} />
+          <Tab label={restorePortletLabel} />
+        </Tabs>
+        {tabContent}
+      </Stack>
     </Drawer>
   );
 };

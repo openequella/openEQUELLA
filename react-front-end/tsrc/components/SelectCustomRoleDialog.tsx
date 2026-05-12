@@ -17,6 +17,7 @@
  */
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -25,6 +26,7 @@ import {
   ListItemIcon,
   ListItemText,
   Skeleton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -390,35 +392,37 @@ const SelectCustomRoleDialog = ({
       maxWidth="lg"
     >
       <Grid container>
-        <Grid container direction="column" rowSpacing={2} size="grow">
-          <Grid>
+        <Grid size="grow">
+          <Stack spacing={2}>
             {customRoleSelector?.(setSelectedCustomRole, selectedCustomRole) ??
               defaultCustomRoleSelector}
-          </Grid>
-          <Grid>{selectOeqRole}</Grid>
+            <Box>{selectOeqRole}</Box>
+          </Stack>
         </Grid>
 
         <StyledDivider orientation="vertical" flexItem sx={{ opacity: 0.6 }} />
 
-        <Grid container rowSpacing={2} direction="column" size="grow">
-          <Grid>
-            <Typography variant="h6" gutterBottom>
-              {currentMappings}
-            </Typography>
-            {hasInitialized ? renderMappingsTable() : <TableSkeleton />}
-          </Grid>
+        <Grid size="grow">
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {currentMappings}
+              </Typography>
+              {hasInitialized ? renderMappingsTable() : <TableSkeleton />}
+            </Box>
 
-          {!M.isEmpty(rolesMappings) && (
-            <Grid>
-              <Button
-                color="secondary"
-                onClick={() => setRolesMappings(new Map())}
-                sx={{ float: "right" }}
-              >
-                {removeAllLabel}
-              </Button>
-            </Grid>
-          )}
+            {!M.isEmpty(rolesMappings) && (
+              <Box>
+                <Button
+                  color="secondary"
+                  onClick={() => setRolesMappings(new Map())}
+                  sx={{ float: "right" }}
+                >
+                  {removeAllLabel}
+                </Button>
+              </Box>
+            )}
+          </Stack>
         </Grid>
       </Grid>
     </ConfirmDialog>

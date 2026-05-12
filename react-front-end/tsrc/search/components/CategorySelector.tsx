@@ -22,6 +22,7 @@ import {
   Grid,
   List,
   ListItem,
+  Stack,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -328,29 +329,23 @@ export const CategorySelector = ({
       const orderedCategories = getOrderedCategories(classification);
       return (
         <ListItem divider key={id}>
-          <Grid container direction="column">
-            <Grid>
-              <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
-                {name}
-              </Typography>
-            </Grid>
-            <Grid>
-              <StyledList
-                className={expanded ? classes.classificationList : ""}
-              >
-                <ListCategories
-                  classification={{
-                    ...classification,
-                    categories: orderedCategories,
-                  }}
-                  expanded={expanded}
-                />
-                {orderedCategories.length > maxDisplay && (
-                  <ShowMoreButton classificationID={id} expanded={expanded} />
-                )}
-              </StyledList>
-            </Grid>
-          </Grid>
+          <Stack>
+            <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+              {name}
+            </Typography>
+            <StyledList className={expanded ? classes.classificationList : ""}>
+              <ListCategories
+                classification={{
+                  ...classification,
+                  categories: orderedCategories,
+                }}
+                expanded={expanded}
+              />
+              {orderedCategories.length > maxDisplay && (
+                <ShowMoreButton classificationID={id} expanded={expanded} />
+              )}
+            </StyledList>
+          </Stack>
         </ListItem>
       );
     });

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
 import * as React from "react";
 
 /**
@@ -23,11 +23,9 @@ import * as React from "react";
  * Used to indicate that the page is currently loading or busy.
  */
 const LoadingCircle = () => (
-  <Grid container spacing={1} direction="column" sx={{ alignItems: "center" }}>
-    <Grid>
-      <CircularProgress />
-    </Grid>
-  </Grid>
+  <Stack sx={{ alignItems: "center" }}>
+    <CircularProgress />
+  </Stack>
 );
 
 export default LoadingCircle;

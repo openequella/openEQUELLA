@@ -15,17 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  Autocomplete,
   debounce,
-  Grid,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Stack,
   TextField,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Autocomplete } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
@@ -180,51 +180,47 @@ export const WizardSimpleTermSelector = ({
         description={description}
         labelFor={id}
       />
-      <Grid container direction="column" id={id}>
-        <Grid>
-          <Autocomplete
-            loading={loading}
-            loadingText={loadingText}
-            options={options}
-            onChange={(_, value: OEQ.Taxonomy.Term | null) => {
-              pipe(
-                value,
-                O.fromNullable,
-                O.map(({ term, fullTerm }) =>
-                  termStorageFormat === "LEAF_ONLY" ? term : fullTerm,
-                ),
-                O.map(insertSingleTerm),
-              );
+      <Stack id={id}>
+        <Autocomplete
+          loading={loading}
+          loadingText={loadingText}
+          options={options}
+          onChange={(_, value: OEQ.Taxonomy.Term | null) => {
+            pipe(
+              value,
+              O.fromNullable,
+              O.map(({ term, fullTerm }) =>
+                termStorageFormat === "LEAF_ONLY" ? term : fullTerm,
+              ),
+              O.map(insertSingleTerm),
+            );
 
-              // Clear the value as we don't want to show the value in the TextField.
-              setInputValue("");
-            }}
-            value={null} // We don't really want to select an option for the autocomplete so make the value always null.
-            inputValue={inputValue}
-            onInputChange={(event, value, reason) => {
-              // If this event is triggered by selecting an option where the reason is `reset`,
-              // there is no need to search for terms.
-              if (reason === "reset") {
-                return;
-              }
+            // Clear the value as we don't want to show the value in the TextField.
+            setInputValue("");
+          }}
+          value={null} // We don't really want to select an option for the autocomplete so make the value always null.
+          inputValue={inputValue}
+          onInputChange={(event, value, reason) => {
+            // If this event is triggered by selecting an option where the reason is `reset`,
+            // there is no need to search for terms.
+            if (reason === "reset") {
+              return;
+            }
 
-              setInputValue(value);
-              pipe(
-                value.trim(),
-                O.fromPredicate(not(S.isEmpty)),
-                O.map(searchTerms),
-              );
-            }}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" label={placeholder} />
-            )}
-            getOptionLabel={({ fullTerm }) => fullTerm}
-          />
-        </Grid>
-        <Grid>
-          <List id={`${id}-term-list`}>{terms}</List>
-        </Grid>
-      </Grid>
+            setInputValue(value);
+            pipe(
+              value.trim(),
+              O.fromPredicate(not(S.isEmpty)),
+              O.map(searchTerms),
+            );
+          }}
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" label={placeholder} />
+          )}
+          getOptionLabel={({ fullTerm }) => fullTerm}
+        />
+        <List id={`${id}-term-list`}>{terms}</List>
+      </Stack>
     </>
   );
 };

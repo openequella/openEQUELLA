@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -114,8 +114,8 @@ export const PortletRecentContributions: React.FC<
 
   return (
     <DraggablePortlet portlet={cfg} isLoading={loading} {...restProps}>
-      <Grid container direction="column" spacing={2}>
-        <Grid>
+      <Stack spacing={2}>
+        <Box>
           {A.isEmpty(items) ? (
             <PortletSearchResultNoneFound
               noneFoundMessage={strings.noneFound}
@@ -126,13 +126,13 @@ export const PortletRecentContributions: React.FC<
               hideDescription={cfg.isShowTitleOnly}
             />
           )}
-        </Grid>
-        <Grid sx={{ justifyContent: "center", display: "flex" }}>
+        </Box>
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
           <Button variant="outlined" onClick={goToSearchPage}>
             {strings.actionShowAll}
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
     </DraggablePortlet>
   );
 };

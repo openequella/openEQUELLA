@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
@@ -39,16 +39,10 @@ export const NonStandardDrmTerms = ({
 }) => {
   return (
     <StyledLi key={title}>
-      <Grid container direction="column">
-        <Grid>
-          <Typography>{title}</Typography>
-        </Grid>
-        <Grid>
-          {terms.map((term) => (
-            <Typography key={term}>{term}</Typography>
-          ))}
-        </Grid>
-      </Grid>
+      <Typography>{title}</Typography>
+      {terms.map((term) => (
+        <Typography key={term}>{term}</Typography>
+      ))}
     </StyledLi>
   );
 };

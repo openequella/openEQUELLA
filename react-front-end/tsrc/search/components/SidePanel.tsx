@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import * as React from "react";
 import { CategorySelectorProps } from "./CategorySelector";
 
@@ -40,16 +40,16 @@ export const SidePanel = ({
   refinePanelProps,
   classificationsPanelProps,
 }: SidePanelProps) => (
-  <Grid container direction="column" spacing={2}>
-    <Grid id="refine-panel">
+  <Stack spacing={2}>
+    <Box id="refine-panel">
       <RefineSearchPanel {...refinePanelProps} />
-    </Grid>
+    </Box>
     {classificationsPanelProps?.classifications.some(
       (c) => c.categories.length > 0,
     ) && (
-      <Grid id="classification-panel">
+      <Box id="classification-panel">
         <ClassificationsPanel {...classificationsPanelProps} />
-      </Grid>
+      </Box>
     )}
-  </Grid>
+  </Stack>
 );

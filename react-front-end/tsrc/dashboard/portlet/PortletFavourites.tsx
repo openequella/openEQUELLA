@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Alert, Button, Grid, Tab, Tabs } from "@mui/material";
+import { Alert, Box, Button, Stack, Tab, Tabs } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -146,20 +146,20 @@ export const PortletFavourites = ({
 
   return (
     <DraggablePortlet portlet={cfg} isLoading={isLoading} {...restProps}>
-      <Grid container direction="column" spacing={2}>
-        <Grid>
+      <Stack spacing={2}>
+        <Box>
           <Tabs value={activeTab} onChange={handleTabChange}>
             <Tab label={strings.resourcesTabName} />
             <Tab label={strings.searchesTabName} />
           </Tabs>
           {tabContent}
-        </Grid>
-        <Grid sx={{ justifyContent: "center", display: "flex" }}>
+        </Box>
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
           <Button variant="outlined" component={Link} to={showAllPathForTab}>
             {strings.actionShowAll}
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
     </DraggablePortlet>
   );
 };

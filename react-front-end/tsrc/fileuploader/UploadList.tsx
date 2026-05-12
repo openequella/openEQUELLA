@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, List, ListItem } from "@mui/material";
+import { Grid, List, ListItem, Stack } from "@mui/material";
 import * as React from "react";
 import {
   isUploadedFile,
@@ -81,10 +81,10 @@ export const UploadList = ({
           return isUploadedFile(file) && !file.errorMessage ? (
             primaryText
           ) : (
-            <Grid container direction="column" spacing={1} wrap="nowrap">
-              <Grid>{primaryText}</Grid>
-              <Grid>{secondaryText}</Grid>
-            </Grid>
+            <Stack>
+              {primaryText}
+              {secondaryText}
+            </Stack>
           );
         };
 

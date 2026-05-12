@@ -18,13 +18,14 @@
 import {
   Autocomplete,
   AutocompleteGetItemProps,
+  Box,
   Chip,
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   Radio,
   RadioGroup,
+  Stack,
   TextField,
 } from "@mui/material";
 import * as React from "react";
@@ -101,33 +102,31 @@ const SelectItemVersionDialog = ({
       onCancel={closeDialog}
       confirmButtonText={languageStrings.common.action.ok}
     >
-      <Grid container direction="column" spacing={2}>
+      <Stack spacing={2}>
         {tagDescription && (
-          <Grid>
-            <Autocomplete
-              multiple
-              freeSolo
-              renderValue={(
-                value: string[],
-                getItemProps: AutocompleteGetItemProps<true>,
-              ) =>
-                value.map((option: string, index: number) => (
-                  <Chip label={option} {...getItemProps({ index })} />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  variant="standard"
-                  {...params}
-                  label={tagDescription}
-                />
-              )}
-              options={[]}
-              onChange={(_, value: string[]) => setTags(value)}
-            />
-          </Grid>
+          <Autocomplete
+            multiple
+            freeSolo
+            renderValue={(
+              value: string[],
+              getItemProps: AutocompleteGetItemProps<true>,
+            ) =>
+              value.map((option: string, index: number) => (
+                <Chip label={option} {...getItemProps({ index })} />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                variant="standard"
+                {...params}
+                label={tagDescription}
+              />
+            )}
+            options={[]}
+            onChange={(_, value: string[]) => setTags(value)}
+          />
         )}
-        <Grid>
+        <Box>
           {isLatestVersion ? (
             <FormControl>
               <FormLabel>{selectVersion}</FormLabel>
@@ -153,8 +152,8 @@ const SelectItemVersionDialog = ({
           ) : (
             toThisVersion
           )}
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
     </ConfirmDialog>
   );
 };

@@ -17,6 +17,7 @@
  */
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -24,6 +25,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Stack,
   Typography,
 } from "@mui/material";
 import * as A from "fp-ts/Array";
@@ -183,33 +185,35 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
           sx={{ opacity: 0.6, margin: "5px" }}
         />
 
-        <Grid container direction="column" rowSpacing={2} size="grow">
-          <Grid>
-            {/*paddingLeft is used to align title with the list item below it*/}
-            <Typography variant="h6" sx={{ paddingLeft: 2 }} gutterBottom>
-              {currentSelectionsLabel}
-            </Typography>
+        <Grid size="grow">
+          <Stack spacing={2}>
+            <Box>
+              {/*paddingLeft is used to align title with the list item below it*/}
+              <Typography variant="h6" sx={{ paddingLeft: 2 }} gutterBottom>
+                {currentSelectionsLabel}
+              </Typography>
 
-            <List disablePadding>
-              {hasInitialized
-                ? renderSelectedEntities()
-                : pipe(
-                    A.makeBy(3, (i) => i + 1),
-                    A.map((i) => <SecurityEntityEntrySkeleton key={i} />),
-                  )}
-            </List>
-          </Grid>
-          {!RS.isEmpty(selectedEntities) && (
-            <Grid>
-              <Button
-                color="secondary"
-                onClick={() => setSelectedEntities(RS.empty)}
-                sx={{ float: "right" }}
-              >
-                {removeAllLabel}
-              </Button>
-            </Grid>
-          )}
+              <List disablePadding>
+                {hasInitialized
+                  ? renderSelectedEntities()
+                  : pipe(
+                      A.makeBy(3, (i) => i + 1),
+                      A.map((i) => <SecurityEntityEntrySkeleton key={i} />),
+                    )}
+              </List>
+            </Box>
+            {!RS.isEmpty(selectedEntities) && (
+              <Box>
+                <Button
+                  color="secondary"
+                  onClick={() => setSelectedEntities(RS.empty)}
+                  sx={{ float: "right" }}
+                >
+                  {removeAllLabel}
+                </Button>
+              </Box>
+            )}
+          </Stack>
         </Grid>
       </Grid>
     </ConfirmDialog>
