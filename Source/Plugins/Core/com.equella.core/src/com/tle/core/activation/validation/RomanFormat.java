@@ -104,9 +104,11 @@ public class RomanFormat extends NumberFormat {
 
     String s = text.substring(parsePosition.getIndex());
 
-    long tot = 0, max = 0;
-    char ch[] = s.toUpperCase().toCharArray();
-    int i, p;
+    long tot = 0;
+    long max = 0;
+    char[] ch = s.toUpperCase().toCharArray();
+    int i;
+    int p;
     for (p = ch.length - 1; p >= 0; p--) {
       for (i = 0; i < syms.size(); i++) {
         if (syms.get(i).symbol == ch[p]) {
@@ -134,9 +136,11 @@ public class RomanFormat extends NumberFormat {
    * @return The integer representation of the Numerals
    */
   public static long toLong(String s) {
-    long tot = 0, max = 0;
-    char ch[] = s.toUpperCase().toCharArray();
-    int i, p;
+    long tot = 0;
+    long max = 0;
+    char[] ch = s.toUpperCase().toCharArray();
+    int i;
+    int p;
     for (p = ch.length - 1; p >= 0; p--) {
       for (i = 0; i < syms.size(); i++) {
         if (syms.get(i).symbol == ch[p]) {

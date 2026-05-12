@@ -126,7 +126,9 @@ public abstract class AbstractRootFavouritesSection
     SectionTree addedTree = model.getAddedTree();
     if (addedTree != tree) {
       MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-      if (addedTree != null) minfo.removeTree(addedTree);
+      if (addedTree != null) {
+        minfo.removeTree(addedTree);
+      }
       minfo.addTreeToBottom(tree, params);
       model.setAddedTree(tree);
     }

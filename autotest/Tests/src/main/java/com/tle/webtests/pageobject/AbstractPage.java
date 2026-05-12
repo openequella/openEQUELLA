@@ -251,7 +251,9 @@ public abstract class AbstractPage<T extends PageObject>
   public WaitingPageObject<T> acceptAlert() {
     if (context.getTestConfig().isAlertSupported()) {
       return ExpectWaiter.waiter(ExpectedConditions2.acceptAlert(), this);
-    } else return this;
+    } else {
+      return this;
+    }
   }
 
   protected void acceptConfirmation(String alertText) {
@@ -545,9 +547,11 @@ public abstract class AbstractPage<T extends PageObject>
   }
 
   protected By byForPageTitle(String title) {
-    if (context.getTestConfig().isNewUI())
+    if (context.getTestConfig().isNewUI()) {
       return By.xpath("//header/div/div/h5[text()=" + quoteXPath(title) + "]");
-    else return By.xpath("id('header-inner')/div[text()=" + quoteXPath(title) + "]");
+    } else {
+      return By.xpath("id('header-inner')/div[text()=" + quoteXPath(title) + "]");
+    }
   }
 
   public ErrorPage errorPage() {

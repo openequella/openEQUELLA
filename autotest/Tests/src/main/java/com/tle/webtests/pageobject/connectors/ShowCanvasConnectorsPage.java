@@ -2,7 +2,12 @@ package com.tle.webtests.pageobject.connectors;
 
 import com.tle.webtests.pageobject.PrefixedName;
 
-public class ShowCanvasConnectorsPage {
+public final class ShowCanvasConnectorsPage {
+
+  private ShowCanvasConnectorsPage() {
+    throw new UnsupportedOperationException();
+  }
+
   public static ShowConnectorsPage createConnector(
       ShowConnectorsPage showConnectorsPage, PrefixedName name, String token) {
     EditCanvasConnectorPage canvasEditor =

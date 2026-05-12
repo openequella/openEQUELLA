@@ -37,7 +37,7 @@ public class WizardStateOperation extends AbstractStandardWorkflowOperation {
   @Override
   public boolean execute() {
     Item item = state.getItem();
-    params.setItemKey(new ItemId(item.getUuid(), item.getVersion()), 0l);
+    params.setItemKey(new ItemId(item.getUuid(), item.getVersion()), 0L);
     params.setItemPack(new ItemPack(item, state.getItemxml(), state.getStagingId()));
     params.setUpdateSecurity(true);
     return false;

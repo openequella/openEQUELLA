@@ -32,7 +32,8 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.View;
 
 public class FlatterTabbedPaneUI extends BasicTabbedPaneUI implements Serializable {
-  private Color selected, deselected;
+  private Color selected;
+  private Color deselected;
 
   /** Creates a new instance of JFlatTabbedPaneUI */
   public FlatterTabbedPaneUI() {

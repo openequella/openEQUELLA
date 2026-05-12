@@ -145,14 +145,14 @@ public final class Check {
    * Performs the standard checks, and then does a callback if necessary. See the following web page
    * for why this is like this: http://www.javaworld.com/javaworld/jw-06-2004/jw-0614-equals.html
    * Example: <code>
-   * 	public boolean equals(Object obj)
-   * 	{
-   * 		return Check.commonEquals(this, obj, this);
-   * 	}
+   *     public boolean equals(Object obj)
+   *     {
+   *         return Check.commonEquals(this, obj, this);
+   *     }
    *
    *  public boolean checkFields(SomeClass rhs)
    *  {
-   *  	return this.field.equals(rhs.field);
+   *      return this.field.equals(rhs.field);
    *  }
    * </code>
    */

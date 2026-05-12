@@ -76,8 +76,11 @@ public class EventListenerBeanChecker implements BeanChecker {
 
   private boolean isForThisClass(String listenerClass, Class<?> actualClass, PluginDescriptor pd) {
     int prefixLen = -1;
-    if (listenerClass.startsWith("bean:")) prefixLen = 5;
-    else if (listenerClass.startsWith("object:")) prefixLen = 7;
+    if (listenerClass.startsWith("bean:")) {
+      prefixLen = 5;
+    } else if (listenerClass.startsWith("object:")) {
+      prefixLen = 7;
+    }
     if (prefixLen == -1) {
       throw new RuntimeException(
           "All listenerClass values should be for bean name, and that in turn should be a class"

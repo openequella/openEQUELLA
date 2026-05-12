@@ -19,6 +19,7 @@
 package com.tle.core.connectors.canvas.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -93,5 +94,10 @@ public class CanvasCourseBean {
       equals |= ((CanvasCourseBean) obj).getId().equals(this.getId());
     }
     return equals;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 }

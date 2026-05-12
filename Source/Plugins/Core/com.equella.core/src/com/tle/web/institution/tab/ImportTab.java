@@ -149,7 +149,6 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel> 
     }
     final String uuid = upload.getUuid();
     final ImportFile stagingFile = new ImportFile(filename + "-" + uuid);
-    ;
     long length = fileSystemService.fileLength(stagingFile, ARCHIVE_FILE);
 
     final String stagingUuid = stagingFile.getMyPathComponent();

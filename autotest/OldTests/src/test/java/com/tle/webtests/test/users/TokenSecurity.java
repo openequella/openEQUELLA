@@ -9,7 +9,12 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-public class TokenSecurity {
+public final class TokenSecurity {
+
+  private TokenSecurity() {
+    throw new UnsupportedOperationException();
+  }
+
   public static long timedifmax = 30 * TimeUnit.MINUTES.toMillis(1);
 
   public static void setTimeDifferenceMax(long minutes) {

@@ -996,6 +996,9 @@ export const languageStrings = {
           usernameClaimDesc:
             "By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
           enable: "Enable",
+          seamlessSso: "Enable Seamless SSO",
+          seamlessSsoDesc:
+            "Once enabled, users will automatically log in to openEquella if they have established a session with the configured Identity Provider.",
         },
         apiDetails: {
           title: "Identity Provider API",

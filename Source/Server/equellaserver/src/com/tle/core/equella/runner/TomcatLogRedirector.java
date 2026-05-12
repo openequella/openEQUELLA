@@ -28,7 +28,12 @@ import org.slf4j.LoggerFactory;
 
 /** Writes Tomcat JDK log messages to log4j log. */
 @SuppressWarnings("nls")
-public class TomcatLogRedirector {
+public final class TomcatLogRedirector {
+
+  private TomcatLogRedirector() {
+    throw new UnsupportedOperationException();
+  }
+
   static JDKLogHandler activeHandler;
 
   /** Activates this feature. */

@@ -63,9 +63,9 @@ public class AddOAuthTokenUniqueConstraintMigration extends AbstractHibernateMig
             // @formatter:off
             session
                 .createSQLQuery(
-                    "Delete From OAuth_Token Where id in (	Select Oat.id From OAuth_Token Oat 	Join"
-                        + " OAuth_Token chaff on (		oat.client_id = chaff.client_id and oat.user_id"
-                        + " = chaff.user_id)	Where Oat.id <> chaff.id)")
+                    "Delete From OAuth_Token Where id in (    Select Oat.id From OAuth_Token Oat   "
+                        + "  Join OAuth_Token chaff on (        oat.client_id = chaff.client_id and"
+                        + " oat.user_id = chaff.user_id)    Where Oat.id <> chaff.id)")
                 .executeUpdate();
             session
                 .createSQLQuery(

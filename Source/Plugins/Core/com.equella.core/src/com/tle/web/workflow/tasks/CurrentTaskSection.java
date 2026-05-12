@@ -367,11 +367,11 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
     /*
     if( commentSize != 1 )
     {
-    	showButton.setLabel(context, new KeyLabel(KEY_SHOWCOMMENTS, commentSize));
+        showButton.setLabel(context, new KeyLabel(KEY_SHOWCOMMENTS, commentSize));
     }
     if( commentSize == 0 )
     {
-    	showButton.disable(context);
+        showButton.disable(context);
     }*/
     if (taskListSize != 1) {
       if (selectedTaskList != null) {
@@ -608,7 +608,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 
   /*public Button getShowButton()
   {
-  	return showButton;
+      return showButton;
   }*/
 
 }

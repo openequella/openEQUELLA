@@ -75,7 +75,7 @@ public class ItemListCommentsDisplaySection extends AbstractPrototypeSection<Obj
       ListSettings<ItemListEntry> settings) {
     List<Item> items = AbstractItemlikeListEntry.getItems(entries);
     final List<Integer> commentCounts = itemDao.getCommentCounts(items);
-    final int i[] = new int[] {0};
+    final int[] i = new int[] {0};
     return new ProcessEntryCallback<Item, ItemListEntry>() {
       @Override
       public void processEntry(ItemListEntry entry) {

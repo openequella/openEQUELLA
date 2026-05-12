@@ -8,7 +8,12 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class ReceiptPage {
+public final class ReceiptPage {
+
+  private ReceiptPage() {
+    throw new UnsupportedOperationException();
+  }
+
   private static final By BY_RECEIPT = By.xpath("//div[@id='receipt-message']/span");
   private static final By BY_CLOSE = By.xpath("//div[@id='receipt-message']/button");
 

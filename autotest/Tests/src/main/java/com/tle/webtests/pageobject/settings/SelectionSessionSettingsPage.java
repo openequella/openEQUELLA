@@ -77,14 +77,20 @@ public class SelectionSessionSettingsPage extends AbstractPage<SelectionSessionS
         "Expected either one or none checked, but there are "
             + allCheckedSize
             + " View Options checked");
-    if (allCheckedSize == 1) return allChecked.get(0);
-    else return null;
+    if (allCheckedSize == 1) {
+      return allChecked.get(0);
+    } else {
+      return null;
+    }
   }
 
   public String getCheckedViewOptionValue() {
     WebElement checkedOption = getCheckedViewOption();
-    if (checkedOption != null) return checkedOption.getAttribute("value");
-    else return null;
+    if (checkedOption != null) {
+      return checkedOption.getAttribute("value");
+    } else {
+      return null;
+    }
   }
 
   public void selectVersionViewOptionByIndex(int index) {

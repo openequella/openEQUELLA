@@ -96,7 +96,9 @@ public class MessageToModeratorTest extends AbstractCleanupTest {
 
     assertTrue(checkComments(approvalComment, expectedApproval));
 
-    if (rejectionComment == null || rejectionComment.isEmpty()) return true;
+    if (rejectionComment == null || rejectionComment.isEmpty()) {
+      return true;
+    }
 
     taskList = new TaskListPage(context).load();
     mv = taskList.exactQuery(itemFullName).moderate(itemFullName);

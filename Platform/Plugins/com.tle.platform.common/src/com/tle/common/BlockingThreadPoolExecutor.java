@@ -91,7 +91,7 @@ public class BlockingThreadPoolExecutor extends ThreadPoolExecutor {
             } catch (Exception e) {
               throw new RejectedExecutionException(e);
             }
-            if (result == false) {
+            if (!result) {
               throw new RejectedExecutionException(
                   "User decided to stop waiting for task insertion");
             } else {

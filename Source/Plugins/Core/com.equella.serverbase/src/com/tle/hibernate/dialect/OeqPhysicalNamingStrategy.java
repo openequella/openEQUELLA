@@ -147,21 +147,15 @@ public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
     String resultantName = null;
     switch (transform) {
       case COLUMN:
-        {
-          resultantName = super.propertyToColumnName(getColumnName(name.getText()));
-          break;
-        }
+        resultantName = super.propertyToColumnName(getColumnName(name.getText()));
+        break;
       case TABLE:
-        {
-          resultantName = postProcess(super.classToTableName(name.getText()));
-          break;
-        }
+        resultantName = postProcess(super.classToTableName(name.getText()));
+        break;
       case OTHER:
       default:
-        {
-          resultantName = name.getText();
-          break;
-        }
+        resultantName = name.getText();
+        break;
     }
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace(

@@ -48,7 +48,7 @@ public class FileWrapper extends File {
       if (directory != null) {
         directory.visit(this);
       }
-      FileWrapper files[] = listFileWrappers();
+      FileWrapper[] files = listFileWrappers();
       for (int i = 0; i < files.length; i++) {
         files[i].recurse(file, directory);
       }
@@ -59,7 +59,7 @@ public class FileWrapper extends File {
 
   public void recursiveDelete() throws IOException {
     if (isDirectory()) {
-      FileWrapper files[] = listFileWrappers();
+      FileWrapper[] files = listFileWrappers();
       for (int i = 0; i < files.length; i++) {
         files[i].recursiveDelete();
       }
@@ -72,8 +72,8 @@ public class FileWrapper extends File {
   }
 
   public FileWrapper[] listFileWrappers() {
-    File files[] = listFiles();
-    FileWrapper wrappers[] = new FileWrapper[files.length];
+    File[] files = listFiles();
+    FileWrapper[] wrappers = new FileWrapper[files.length];
     for (int i = 0; i < files.length; i++) {
       wrappers[i] = new FileWrapper(files[i].toString());
     }
@@ -81,7 +81,7 @@ public class FileWrapper extends File {
   }
 
   public String getVolume() throws IOException {
-    File roots[] = File.listRoots();
+    File[] roots = File.listRoots();
     String path = getCanonicalPath();
     for (int i = 0; i < roots.length; i++) {
       String root = roots[i].toString();
@@ -189,7 +189,7 @@ public class FileWrapper extends File {
       throw new IOException("Could not create/confirm directory " + target.getAbsolutePath());
     }
 
-    FileWrapper files[] = listFileWrappers();
+    FileWrapper[] files = listFileWrappers();
     for (int i = 0; i < files.length; i++) {
       String from = files[i].getPath();
       String to = target.getPath() + from.substring(from.lastIndexOf(separator));

@@ -21,9 +21,9 @@ package com.tle.web.wizard.scripting;
 import java.util.Map;
 
 public interface WizardScriptObjectContributor /*
-												 * extends
-												 * ScriptObjectContributor
-												 */ {
+                                                 * extends
+                                                 * ScriptObjectContributor
+                                                 */ {
   void addWizardScriptObjects(
       Map<String, Object> objects, WizardScriptContextCreationParams params);
 }

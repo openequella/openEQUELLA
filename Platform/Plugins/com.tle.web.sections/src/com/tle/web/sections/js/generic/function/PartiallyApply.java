@@ -24,7 +24,11 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
 
-public class PartiallyApply {
+public final class PartiallyApply {
+
+  private PartiallyApply() {
+    throw new UnsupportedOperationException();
+  }
 
   public static JSAssignable partial(JSCallable func, int extra, Object... params) {
     ScriptVariable[] extraParams = JSUtils.createParameters(extra);

@@ -402,30 +402,30 @@ public class CXFHandler extends CXFNonSpringServlet {
 
       if (ex instanceof QuietlyLoggable) {
         final QuietlyLoggable ql = (QuietlyLoggable) ex;
-        if (ql.isSilent()) {
-          // Nada
-        } else if (!ql.isShowStackTrace()) {
-          if (ql.isWarnOnly()) {
-            LOGGER.warn(description + ": " + ex.getMessage());
+        if (!ql.isSilent()) {
+          if (!ql.isShowStackTrace()) {
+            if (ql.isWarnOnly()) {
+              LOGGER.warn(description + ": " + ex.getMessage());
+            } else {
+              LOGGER.error(description + ": " + ex.getMessage());
+            }
           } else {
-            LOGGER.error(description + ": " + ex.getMessage());
-          }
-        } else {
-          if (ql.isWarnOnly()) {
-            LOGGER.warn(description, ex);
-          } else {
-            LOGGER.error(description, ex);
+            if (ql.isWarnOnly()) {
+              LOGGER.warn(description, ex);
+            } else {
+              LOGGER.error(description, ex);
+            }
           }
         }
       } else if (ex instanceof IllegalArgumentException) {
         LOGGER.warn(ex.getMessage());
-        //				HttpServletResponse response = (HttpServletResponse)
+        //                HttpServletResponse response = (HttpServletResponse)
         // message.getExchange().getInMessage()
-        //					.get(AbstractHTTPDestination.HTTP_RESPONSE);
-        //				if( response != null )
-        //				{
-        //					response.setStatus(400);
-        //				}
+        //                    .get(AbstractHTTPDestination.HTTP_RESPONSE);
+        //                if( response != null )
+        //                {
+        //                    response.setStatus(400);
+        //                }
       } else {
         LOGGER.error(description, ex);
       }

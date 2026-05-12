@@ -80,7 +80,9 @@ public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPag
     if (!Check.isEmpty(trs)) {
       for (int i = 0; i < trs.size(); ++i) {
         WebElement we = trs.get(i);
-        if (we.getText().equals(userName)) return i;
+        if (we.getText().equals(userName)) {
+          return i;
+        }
       }
     }
     return -1; // not found

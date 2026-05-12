@@ -102,7 +102,7 @@ public class ClientLauncher extends JFrame
   private int configButtonsHeight;
   private TableLayout layout;
 
-  public static void main(String args[]) throws Exception {
+  public static void main(String[] args) throws Exception {
     new ClientLauncher();
   }
 

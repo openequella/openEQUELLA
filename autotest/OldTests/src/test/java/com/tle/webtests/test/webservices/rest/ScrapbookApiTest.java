@@ -57,7 +57,7 @@ public class ScrapbookApiTest extends AbstractItemApiTest {
       String[] stagingParams = createStaging();
       stagingUuid = stagingParams[0];
       String stagingDirUrl = stagingParams[1];
-      uploadFile(stagingDirUrl, filename, Attachments.get(filename));
+      uploadFileToStaging(stagingDirUrl, filename, Attachments.get(filename));
     }
     ObjectNode node = buildScrapbookItem(type, filename, stagingUuid);
     HttpResponse response =

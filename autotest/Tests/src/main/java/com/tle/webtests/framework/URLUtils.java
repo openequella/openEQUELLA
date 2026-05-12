@@ -5,7 +5,12 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class URLUtils {
+public final class URLUtils {
+
+  private URLUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   private static final String CHARSET_ENCODING = "UTF-8";
 
   /**

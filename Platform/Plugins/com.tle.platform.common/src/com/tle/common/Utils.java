@@ -26,7 +26,12 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("nls")
-public class Utils {
+public final class Utils {
+
+  private Utils() {
+    throw new UnsupportedOperationException();
+  }
+
   public static final String CHARSET_ENCODING = "UTF-8";
 
   public static final String ACCESS_PATH = "/access/";
