@@ -9,12 +9,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import com.tle.common.PathUtils;
+import com.tle.common.URLUtils;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -30,26 +33,34 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected static final String COLLECTION_SAVESCRIPT = "c7194cd0-f586-49b6-9fcc-4b1c5237efd9";
 
   protected String[] createStaging() throws IOException {
+    final String pathStagingApi = "api/staging/";
+    final String headerStagingId = "x-eps-stagingid";
+    final String headerLocation = "Location";
+
     HttpResponse stagingResponse =
-        execute(new HttpPost(context.getBaseUrl() + "api/file/"), false, getToken());
-    assertResponse(stagingResponse, 201, "201 not returned from staging creation");
-    ObjectNode stagingJson = readJson(mapper, stagingResponse);
-    String stagingUuid = stagingJson.get("uuid").asText();
-    String stagingDirUrl = stagingJson.get("links").get("content").asText();
+        execute(new HttpPost(context.getBaseUrl() + pathStagingApi), false, getToken());
+    assertResponse(
+        stagingResponse, HttpStatus.SC_CREATED, "201 not returned from staging creation");
+
+    String stagingUuid = getRequiredHeader(stagingResponse, headerStagingId);
+    String stagingDirUrl = getRequiredHeader(stagingResponse, headerLocation);
     return new String[] {stagingUuid, stagingDirUrl};
   }
 
-  protected void uploadFile(String stagingDirUrl, String filename, URL resource)
+  protected void uploadFileToStaging(String stagingDirUrl, String filename, URL resource)
       throws IOException {
-    String avatarUrl = stagingDirUrl + '/' + com.tle.common.URLUtils.urlEncode(filename);
-    HttpPut putfile = new HttpPut(avatarUrl);
+    String fileUrl = PathUtils.filePath(stagingDirUrl, URLUtils.urlEncode(filename));
+    HttpPut putfile = new HttpPut(fileUrl);
+
     URLConnection file = resource.openConnection();
     InputStreamEntity inputStreamEntity =
         new InputStreamEntity(file.getInputStream(), file.getContentLength());
     inputStreamEntity.setContentType("application/octet-stream");
     putfile.setEntity(inputStreamEntity);
     HttpResponse putfileResponse = execute(putfile, true, getToken());
-    assertResponse(putfileResponse, 201, "201 not returned from staging creation");
+
+    // Staging API returns 200 for file uploads (not 201 like deprecated File API)
+    assertResponse(putfileResponse, HttpStatus.SC_OK, "200 not returned from staging creation");
   }
 
   protected JsonNode getItemJson(String itemUri, String info, String token) throws IOException {
@@ -104,14 +115,14 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected ObjectNode createItem(String json, String token, Object... paramNameValues)
       throws IOException {
     HttpResponse response = postItem(json, token, paramNameValues);
-    assertResponse(response, 201, "Should have created the item");
+    assertResponse(response, HttpStatus.SC_CREATED, "Should have created the item");
     String itemUri = response.getFirstHeader("Location").getValue();
     return getItem(itemUri, null, token);
   }
 
   protected ObjectNode createComment(String token, Object... paramNameValues) throws IOException {
     HttpResponse response = postItem("", token, paramNameValues);
-    assertResponse(response, 201, "Should have created the item");
+    assertResponse(response, HttpStatus.SC_CREATED, "Should have created the item");
     return null;
   }
 
@@ -145,7 +156,9 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     HttpResponse putItem = putItem(itemUri, item.toString(), token, false, paramNameValues);
     try {
       assertResponse(
-          putItem, 200, "Should have been able to edit. " + superSerialResponse(putItem));
+          putItem,
+          HttpStatus.SC_OK,
+          "Should have been able to edit. " + superSerialResponse(putItem));
     } finally {
       EntityUtils.consume(putItem.getEntity());
     }
@@ -253,5 +266,9 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     ObjectNode item = mapper.createObjectNode();
     item.with("collection").put("uuid", collection);
     return item;
+  }
+
+  private static String getRequiredHeader(HttpResponse response, String headerName) {
+    return response.getFirstHeader(headerName).getValue();
   }
 }

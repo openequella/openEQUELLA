@@ -19,28 +19,34 @@
 package com.tle.web.api.item;
 
 import com.tle.beans.item.ItemKey;
-import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
-import com.tle.web.api.item.interfaces.beans.FileBean;
-import com.tle.web.api.item.interfaces.beans.FolderBean;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
-import com.tle.web.api.item.interfaces.beans.RootFolderBean;
 import java.net.URI;
 
 public interface ItemLinkService {
+
+  /**
+   * Adds standard links to an item bean.
+   *
+   * @param itemBean The item bean to update.
+   * @return The item bean with links added.
+   */
   ItemBean addLinks(ItemBean itemBean);
 
+  /**
+   * Adds standard links to an Equella item bean.
+   *
+   * @param itemBean The item bean to update.
+   * @return The item bean with links added.
+   */
   EquellaItemBean addLinks(EquellaItemBean itemBean);
 
-  URI getFileDirURI(StagingFile staging, String path);
-
-  URI getFileContentURI(StagingFile staging, String path);
-
+  /**
+   * Gets the URI for an item.
+   *
+   * @param itemKey The item key.
+   * @return The item URI.
+   * @throws RuntimeException if the generated URI syntax is invalid (should never happen)
+   */
   URI getItemURI(ItemKey itemKey);
-
-  RootFolderBean addLinks(RootFolderBean stagingBean);
-
-  FileBean addLinks(StagingFile staging, FileBean fileBean, String fullPath);
-
-  FolderBean addLinks(StagingFile staging, FolderBean fileBean, String fullPath);
 }

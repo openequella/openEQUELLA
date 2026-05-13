@@ -1,7 +1,7 @@
 package com.tle.core.item.standard.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.devlib.PropBagEx;
@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ItemHelperTests {
-  @Before
+  @BeforeEach
   public void setupItem() {
     CurrentTimeZone.initialise(
         new AbstractCurrentTimeZone() {

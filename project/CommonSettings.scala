@@ -1,6 +1,7 @@
 import com.typesafe.config.Config
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
+import com.github.sbt.junit.jupiter.sbt.Import.JupiterKeys
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -40,7 +41,7 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.10"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.11"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.1.jre11"
 
     lazy val log4jVersion   = "2.25.4"
@@ -56,7 +57,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion = "2.21.2"
+    lazy val jacksonVersion = "2.21.3"
     // Jackson Annotations has chosen to split for sync versions.
     // See https://github.com/FasterXML/jackson-annotations/issues/294
     lazy val jacksonAnnotationsVersion = "2.20"
@@ -100,8 +101,8 @@ object CommonSettings extends AutoPlugin {
       "JBoss Public Repository" at "https://repository.jboss.org/nexus/content/repositories/public/"
     ),
     libraryDependencies ++= Seq(
-      "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest" %% "scalatest"       % "3.2.20" % Test
+      "com.github.sbt.junit" % "jupiter-interface" % JupiterKeys.jupiterVersion.value % Test,
+      "org.scalatest"       %% "scalatest"         % "3.2.20"                         % Test
     )
   )
 }
