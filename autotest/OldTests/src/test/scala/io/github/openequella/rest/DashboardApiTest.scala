@@ -3,7 +3,7 @@ package io.github.openequella.rest
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.{DeleteMethod, GetMethod, PutMethod}
-import org.junit.Assert.assertEquals
+import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
 class DashboardApiTest extends AbstractRestApiTest {

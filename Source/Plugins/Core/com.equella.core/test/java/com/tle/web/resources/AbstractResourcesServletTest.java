@@ -1,8 +1,8 @@
 package com.tle.web.resources;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,15 +21,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 public class AbstractResourcesServletTest {
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @TempDir Path tempDir;
 
   private TestResourcesServlet servlet;
   private PluginService pluginService;
@@ -77,7 +76,7 @@ public class AbstractResourcesServletTest {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     // Create mock dependencies
     pluginService = mock(PluginService.class);
@@ -90,7 +89,7 @@ public class AbstractResourcesServletTest {
     servlet = new TestResourcesServlet("test.plugin", "web/", pluginService, contentStreamWriter);
 
     // Create test directory structure
-    rootDir = tempFolder.newFolder("plugin-root", "web");
+    rootDir = Files.createDirectories(tempDir.resolve("plugin-root").resolve("web")).toFile();
     testFile = new File(rootDir, "test.txt");
     Files.write(testFile.toPath(), "test content".getBytes());
 
@@ -182,7 +181,7 @@ public class AbstractResourcesServletTest {
   @Test
   public void testCanonicalPathVerification() throws Exception {
     // Create a file outside root directory
-    File outsideDir = tempFolder.newFolder("outside");
+    File outsideDir = Files.createDirectory(tempDir.resolve("outside")).toFile();
     File outsideFile = new File(outsideDir, "evil.txt");
     Files.write(outsideFile.toPath(), "evil content".getBytes());
 

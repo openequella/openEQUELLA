@@ -11,6 +11,8 @@ libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "7.6.0.20260302
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
+addSbtPlugin("com.github.sbt.junit" % "sbt-jupiter-interface" % "0.19.0")
+
 // Provides access to the OWASP Dependency Check to search for
 // vulnerabilities in our dependencies. Most useful:
 // - ./sbt dependencyCheckAnyProject

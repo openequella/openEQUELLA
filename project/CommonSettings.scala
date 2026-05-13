@@ -1,6 +1,7 @@
 import com.typesafe.config.Config
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
+import com.github.sbt.junit.jupiter.sbt.Import.JupiterKeys
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -100,8 +101,8 @@ object CommonSettings extends AutoPlugin {
       "JBoss Public Repository" at "https://repository.jboss.org/nexus/content/repositories/public/"
     ),
     libraryDependencies ++= Seq(
-      "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest" %% "scalatest"       % "3.2.20" % Test
+      "com.github.sbt.junit" % "jupiter-interface" % JupiterKeys.jupiterVersion.value % Test,
+      "org.scalatest"       %% "scalatest"         % "3.2.20"                         % Test
     )
   )
 }
