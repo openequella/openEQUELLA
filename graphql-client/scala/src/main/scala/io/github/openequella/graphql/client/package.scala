@@ -24,12 +24,26 @@ package object client {
   type BaseEntityReference
   type Citation
   type CollectionDefinition
+  type CollectionDisplayNode
+  type CollectionDynamicMetadataRule
+  type CollectionHtmlMapping
+  type CollectionImsMapping
+  type CollectionItemMetadataRule
+  type CollectionLiteral
+  type CollectionLiteralMapping
+  type CollectionMetadataMapping
   type CollectionMutations
   type CollectionQueries
+  type CollectionSearchDetails
+  type CollectionSummaryDisplayTemplate
+  type CollectionSummarySectionConfig
+  type CollectionWizard
   type EditableEntityCollectionDefinition
   type EditableEntityMetadataSchema
   type EditableEntitySkeleton
   type EntityDetails
+  type Group
+  type GroupWithId
   type InternalGroup
   type InternalGroupConnection
   type InternalGroupEdge
@@ -51,12 +65,16 @@ package object client {
   type NameValue
   type PageInfo
   type PluginDetails
+  type Role
+  type RoleWithId
   type StringConnection
   type StringEdge
   type TargetListEntry
   type User
   type UserConnection
+  type UserDirectoryQueries
   type UserEdge
+  type UserWithId
   type Queries   = _root_.caliban.client.Operations.RootQuery
   type Mutations = _root_.caliban.client.Operations.RootMutation
 }

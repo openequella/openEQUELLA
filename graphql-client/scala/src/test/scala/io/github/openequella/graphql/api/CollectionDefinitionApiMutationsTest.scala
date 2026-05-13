@@ -21,9 +21,13 @@ package io.github.openequella.graphql.api
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.CollectionDefinitionApiMutationsTestHelper.{
   getFirstCollectionId,
-  withClonedCollection
+  withClonedCollection,
+  withEditSession
 }
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  CollectionDefinitionEditView
+}
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -48,6 +52,43 @@ class CollectionDefinitionApiMutationsTest
     with EitherValues
     with OptionValues {
   private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+
+  describe("startEdit") {
+    it("initiates an edit session for a valid collection") {
+      Given("an existing collection ID")
+      val collectionId = getFirstCollectionId()
+
+      When("calling startEdit with the valid collection ID")
+      withEditSession(collectionId) { editView =>
+        Then("returns a CollectionDefinitionEditView for the collection")
+        editView shouldBe a[CollectionDefinitionEditView]
+        editView.collection.details.id shouldBe collectionId
+        editView.stagingId should not be empty
+        editView.targetList shouldBe a[List[_]]
+      }
+    }
+
+    it("returns a NotFoundError for an invalid collection ID") {
+      Given("an invalid collection ID")
+      val invalidCollectionId = -1L
+
+      When("calling startEdit with the invalid collection ID")
+      val result = CollectionDefinitionApi.startEdit(invalidCollectionId)
+
+      Then("returns a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls startEdit")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        CollectionDefinitionApi.startEdit(1)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
 
   describe("importCollection") {
     it(
@@ -84,10 +125,8 @@ class CollectionDefinitionApiMutationsTest
   describe("clone") {
     it("creates a copy of an existing collection") {
       // TODO: This needs to be reworked to be the same as the clone tests for MetadataSchemaApi,
-      //       however this is not possible until we have a withTestCollection helper which in turn
-      //       requires support for `startEdit` and `add`. (Keep in mind, that there will be
-      //       significant similarities in these tests, and so they should probably be encapsulated
-      //       in some kind of helper method to avoid duplication.)
+      //       however this is not possible until we have an `add` method to create new collections.
+      //       Once that's available, we can create a withTestCollection helper.
       Given("an existing collection")
       withClonedCollection { cloneRef =>
         Then("returns a BaseEntityReferenceView for the new clone")
@@ -166,10 +205,9 @@ class CollectionDefinitionApiMutationsTest
   }
 
   describe("cancelEdit") {
-    // TODO: This test cannot be implemented until we have support for `startEdit` and `add`
-    //  operations, which are needed to set up the test conditions. Once those are available,
-    //  this test should verify that `cancelEdit` properly cancels an edit session and unlocks
-    //  the collection.
+    // TODO: Once `add` method is implemented, add a test to verify that `cancelEdit` properly
+    //  cancels an edit session and unlocks the collection. This will require the ability to
+    //  start editing and then cancel without saving.
 
     it("denies access when not authenticated") {
       When("an unauthenticated user calls cancelEdit")

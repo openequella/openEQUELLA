@@ -78,4 +78,12 @@ object Queries {
       innerSelection: SelectionBuilder[InternalUserQueries, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
     _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
+
+  /** Queries for the user directory - users, groups, and roles from all configured user management
+    * plugins
+    */
+  def userDirectory[A](
+      innerSelection: SelectionBuilder[UserDirectoryQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("userDirectory", Obj(innerSelection))
 }

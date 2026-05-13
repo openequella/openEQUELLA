@@ -23,6 +23,15 @@ import caliban.client._
 
 object CollectionMutations {
 
+  /** Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit
+    * operation.
+    */
+  def startEdit[A](id: Long)(
+      innerSelection: SelectionBuilder[EditableEntityCollectionDefinition, A]
+  )(implicit encoder0: ArgEncoder[Long]): SelectionBuilder[CollectionMutations, A] =
+    _root_.caliban.client.SelectionBuilder
+      .Field("startEdit", Obj(innerSelection), arguments = List(Argument("id", id, "Long!")))
+
   /** Clone a collection - creating a copy of the collection with a new ID.
     */
   def clone$[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(implicit

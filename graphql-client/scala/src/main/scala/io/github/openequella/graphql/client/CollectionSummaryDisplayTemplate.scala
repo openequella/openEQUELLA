@@ -1,0 +1,42 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.github.openequella.graphql.client
+
+import caliban.client.FieldBuilder._
+import caliban.client._
+
+object CollectionSummaryDisplayTemplate {
+
+  /** The ordered list of section configurations for this template
+    */
+  def configList[A](
+      innerSelection: SelectionBuilder[CollectionSummarySectionConfig, A]
+  ): SelectionBuilder[CollectionSummaryDisplayTemplate, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("configList", ListOf(Obj(innerSelection)))
+
+  /** Whether the item owner is hidden from the summary page
+    */
+  def hideOwner: SelectionBuilder[CollectionSummaryDisplayTemplate, Boolean] =
+    _root_.caliban.client.SelectionBuilder.Field("hideOwner", Scalar())
+
+  /** Whether collaborators are hidden from the summary page
+    */
+  def hideCollaborators: SelectionBuilder[CollectionSummaryDisplayTemplate, Boolean] =
+    _root_.caliban.client.SelectionBuilder.Field("hideCollaborators", Scalar())
+}

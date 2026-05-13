@@ -154,9 +154,121 @@ type Citation {
 type CollectionDefinition {
   "Common details of the collection definition, including UUID and owner."
   details: EntityDetails!
+  "ID of the metadata schema associated with this collection."
+  schemaId: Long
+  "Category identifier for the wizard used by this collection."
+  wizardCategory: String
+  "ID of the workflow associated with this collection."
+  workflowId: Long
+  "The review period in days. None if no review period is configured for this collection."
+  reviewPeriod: Int
+  "Name of the XSLT used for SCORM packaging."
+  scormPackagingTransformation: String
+  "Whether direct contribution by users is denied for this collection."
+  denyDirectContribution: Boolean!
+  "Contribution wizard configuration for this collection."
+  wizard: CollectionWizard
+  "Search results display configuration for this collection."
+  searchDetails: CollectionSearchDetails
+  "Metadata import mapping configuration for this collection."
+  metadataMapping: CollectionMetadataMapping
+  "Rules controlling access to items in this collection based on their metadata."
+  itemMetadataRules: [CollectionItemMetadataRule!]!
+  "Rules that apply dynamic ACL entries to items based on their metadata."
+  dynamicMetadataRules: [CollectionDynamicMetadataRule!]!
+  "Summary page display template for items in this collection."
+  itemSummaryDisplayTemplate: CollectionSummaryDisplayTemplate
+}
+
+"A node in the metadata to display for items in search results."
+type CollectionDisplayNode {
+  "XPath to the metadata node"
+  node: String
+  "The type of display for this node"
+  nodeType: String
+  "The display mode for this node"
+  mode: String
+  "Splitter character between repeated node values"
+  splitter: String
+  "Display title for this node"
+  title: LanguageBundle
+  "Maximum display length before truncation"
+  truncateLength: Int
+}
+
+"A rule that applies dynamic ACL entries to an item based on its metadata values."
+type CollectionDynamicMetadataRule {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "XPath to the metadata node whose values drive the ACL"
+  path: String
+  "Type of dynamic rule"
+  ruleType: String
+  "ACL entries applied by this rule"
+  targetList: [TargetListEntry!]!
+}
+
+"An HTML metadata field mapping."
+type CollectionHtmlMapping {
+  "HTML source field name"
+  html: String!
+  "Collection metadata target path"
+  itemdef: String!
+}
+
+"An IMS/LOM metadata field mapping."
+type CollectionImsMapping {
+  "IMS/LOM source field path"
+  ims: String!
+  "Collection metadata target path"
+  itemdef: String!
+  "Mapping type"
+  mappingType: String!
+  "Whether to replace existing values at the target path"
+  replace: Boolean!
+}
+
+"A rule that controls access to an item based on its metadata."
+type CollectionItemMetadataRule {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "Script that evaluates the metadata condition"
+  script: String
+}
+
+"A literal value used to trigger a metadata mapping."
+type CollectionLiteral {
+  "The literal value to match"
+  value: String
+  "A script to compute the mapping value"
+  script: String
+}
+
+"A literal value metadata mapping."
+type CollectionLiteralMapping {
+  "Collection metadata target path"
+  value: String
+  "Literal values that trigger this mapping"
+  literals: [CollectionLiteral!]!
+}
+
+"Configuration for mapping external metadata formats to collection metadata."
+type CollectionMetadataMapping {
+  "IMS/LOM metadata mappings"
+  imsMapping: [CollectionImsMapping!]!
+  "HTML metadata mappings"
+  htmlMapping: [CollectionHtmlMapping!]!
+  "Literal value metadata mappings"
+  literalMapping: [CollectionLiteralMapping!]!
 }
 
 type CollectionMutations {
+  "Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit operation."
+  startEdit("ID of the collection to edit" id: Long!): EditableEntityCollectionDefinition!
   "Clone a collection - creating a copy of the collection with a new ID."
   clone("ID of the collection to clone" id: Long!): BaseEntityReference
   "Delete a collection - with consideration to references controllable by args."
@@ -174,6 +286,62 @@ type CollectionQueries {
   export("ID of the collection to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the collection ID for a given UUID"
   idForUuid(value: String!): Long
+}
+
+"Configuration for how a collection's items are displayed in search results."
+type CollectionSearchDetails {
+  "Controls how attachments are displayed in search results"
+  attDisplay: String
+  "Whether to disable the thumbnail display in search results"
+  disableThumbnail: Boolean!
+  "Whether search results open in the standard view by default"
+  standardOpen: Boolean!
+  "Whether search results open in integration contexts by default"
+  integrationOpen: Boolean!
+  "The list of metadata nodes to display for each item in search results"
+  displayNodes: [CollectionDisplayNode!]!
+}
+
+"Template controlling how item summary pages are displayed."
+type CollectionSummaryDisplayTemplate {
+  "The ordered list of section configurations for this template"
+  configList: [CollectionSummarySectionConfig!]!
+  "Whether the item owner is hidden from the summary page"
+  hideOwner: Boolean!
+  "Whether collaborators are hidden from the summary page"
+  hideCollaborators: Boolean!
+}
+
+"Configuration for a single section in the item summary display template."
+type CollectionSummarySectionConfig {
+  "Unique identifier for this section configuration"
+  uuid: String
+  "The section type identifier (plugin extension ID)"
+  value: String!
+  "Plugin-specific XML configuration for this section"
+  configuration: String
+  "Display title override for this section"
+  bundleTitle: LanguageBundle
+}
+
+"Configuration for the contribution wizard for a collection."
+type CollectionWizard {
+  "Display name of the wizard"
+  name: String
+  "Script to run when an item is redrafted"
+  redraftScript: String
+  "Script to run when an item is saved"
+  saveScript: String
+  "Whether contributors can navigate wizard pages non-sequentially"
+  allowNonSequentialNavigation: Boolean!
+  "Whether to show page titles in the next/previous navigation"
+  showPageTitlesNextPrev: Boolean!
+  "Additional CSS class applied to the wizard container"
+  additionalCssClass: String
+  "Internal use only. Opaque serialised XML of the wizard pages. Do not parse this field directly ? use dedicated APIs for wizard page manipulation."
+  pages: String
+  "Internal use only. Opaque serialised XML of the fixed metadata applied by the wizard."
+  fixedMetadata: String
 }
 
 "The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
@@ -230,6 +398,22 @@ type EntityDetails {
   attributes: [KVStringString!]!
   "Indicates whether this entity is disabled, affecting its visibility and usability."
   disabled: Boolean!
+}
+
+"A group from the user directory system, representing a group from any configured user management plugin."
+type Group {
+  "The unique identifier for the group"
+  uniqueId: String!
+  "The name of the group"
+  name: String!
+}
+
+"An entry in the result of fetching multiple groups by IDs."
+type GroupWithId {
+  "The requested group ID"
+  id: String!
+  "The resolved group"
+  group: Group!
 }
 
 type InternalGroup {
@@ -476,6 +660,24 @@ type Queries {
   internalGroups: InternalGroupQueries!
   "Queries for internal users"
   internalUsers: InternalUserQueries!
+  "Queries for the user directory - users, groups, and roles from all configured user management plugins"
+  userDirectory: UserDirectoryQueries!
+}
+
+"A role from the user directory system, representing a role from any configured user management plugin."
+type Role {
+  "The unique identifier for the role"
+  uniqueId: String!
+  "The name of the role"
+  name: String!
+}
+
+"An entry in the result of fetching multiple roles by IDs."
+type RoleWithId {
+  "The requested role ID"
+  id: String!
+  "The resolved role"
+  role: Role!
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"
@@ -522,8 +724,52 @@ type UserConnection {
   edges: [UserEdge!]!
 }
 
+"Queries for the user directory, which aggregates users, groups, and roles from all configured user management plugins."
+type UserDirectoryQueries {
+  "Retrieve a user by their unique ID"
+  userById("The unique ID of the user to retrieve" userId: String!): User
+  "Retrieve multiple users by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  usersByIds("The unique IDs of the users to retrieve" userIds: [String!]!): [UserWithId!]!
+  "Search for users matching the query. Wildcards at the start and end of the query are implied."
+  searchUsers("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!): [User!]!
+  "Search for users within the specified group, optionally searching subgroups recursively."
+  searchUsersInGroup("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "The unique ID of the parent group to restrict the search to, or none for all groups" parentGroupId: String, "Whether to search subgroups recursively" recursive: Boolean!): [User!]!
+  "Retrieve all roles assigned to the specified user"
+  rolesForUser("The unique ID of the user" userId: String!): [Role!]!
+  "Retrieve the IDs of all groups that contain the specified user"
+  groupIdsForUser("The unique ID of the user" userId: String!): [String!]!
+  "Retrieve all groups (including subgroups) that contain the specified user"
+  groupsForUser("The unique ID of the user" userId: String!): [Group!]!
+  "List all users in the specified group"
+  usersInGroup("The unique ID of the group" groupId: String!, "Whether to include users from subgroups recursively" recursive: Boolean!): [User!]!
+  "Retrieve a group by its unique ID"
+  groupById("The unique ID of the group to retrieve" groupId: String!): Group
+  "Retrieve multiple groups by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  groupsByIds("The unique IDs of the groups to retrieve" groupIds: [String!]!): [GroupWithId!]!
+  "Search for groups matching the query across the entire group hierarchy. Wildcards at the start and end of the query are implied."
+  searchGroups("The query to search for groups by (server will surround with wildcard)" query: String!): [Group!]!
+  "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied."
+  searchGroupsInParent("The query to search for groups by (server will surround with wildcard)" query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!): [Group!]!
+  "Retrieve the parent group of the specified group, if one exists"
+  parentGroup("The unique ID of the group to retrieve the parent for" groupId: String!): Group
+  "Retrieve a role by its unique ID"
+  roleById("The unique ID of the role to retrieve" roleId: String!): Role
+  "Retrieve multiple roles by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  rolesByIds("The unique IDs of the roles to retrieve" roleIds: [String!]!): [RoleWithId!]!
+  "Search for roles matching the query. Wildcards at the start and end of the query are implied."
+  searchRoles("The query to search for roles by (server will surround with wildcard)" query: String!): [Role!]!
+}
+
 "An Edge object for Users as per the GraphQL Cursor Connections Specification"
 type UserEdge {
   cursor: String!
   node: User!
+}
+
+"An entry in the result of fetching multiple users by IDs."
+type UserWithId {
+  "The requested user ID"
+  id: String!
+  "The resolved user"
+  user: User!
 }
