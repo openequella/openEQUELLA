@@ -1,9 +1,9 @@
 package io.github.openequella.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -135,7 +135,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     Boolean updatedEnabledStatus =
         getPlatform(BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED).get("enabled").asBoolean();
     assertNotEquals(
-        "Platform status should have changed", initialEnabledStatus, updatedEnabledStatus);
+        initialEnabledStatus, updatedEnabledStatus, "Platform status should have changed");
     assertEquals(targetEnabledStatus, updatedEnabledStatus);
   }
 
