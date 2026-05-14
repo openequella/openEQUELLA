@@ -328,16 +328,15 @@ public class StagingResourceImpl implements StagingResource {
       InputStream data,
       String unzipTo,
       String copySource,
-      String contentType)
+      String contentType,
+      String ifNoneMatch)
       throws IOException {
     stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
-    if (fileSystemService.fileExists(stagingFile, filepath)) {
-      throw new BadRequestException("File " + filepath + " already exists in staging area.");
-    }
+    validateIfNoneMatch(stagingFile, filepath, ifNoneMatch);
 
     return switch (resolveAction(copySource, unzipTo)) {
       case CopyAction c -> handleCopy(stagingFile, c.source(), filepath, uuid);
@@ -537,5 +536,25 @@ public class StagingResourceImpl implements StagingResource {
     return Response.created(stagingUri(stagingUuid))
         .header(HEADER_EPS_STAGING_ID, stagingUuid)
         .build();
+  }
+
+  private void validateIfNoneMatch(StagingFile stagingFile, String filepath, String ifNoneMatch)
+      throws IOException {
+    if (Strings.isNullOrEmpty(ifNoneMatch)
+        || !fileSystemService.fileExists(stagingFile, filepath)) {
+      return;
+    }
+
+    if ("*".equals(ifNoneMatch)) {
+      throw new WebApplicationException(
+          "File " + filepath + " already exists in staging area.", Status.PRECONDITION_FAILED);
+    }
+
+    String currentEtag = toQuotedEtag(fileSystemService.getMD5Checksum(stagingFile, filepath));
+    if (currentEtag.equals(ifNoneMatch)) {
+      throw new WebApplicationException(
+          "File " + filepath + " already exists and matches the provided ETag.",
+          Status.PRECONDITION_FAILED);
+    }
   }
 }

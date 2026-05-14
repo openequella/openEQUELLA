@@ -120,7 +120,8 @@ public interface StagingResource {
       @ApiParam("Path of an existing staging file to copy from. Cannot be combined with 'unzipto'.")
           @QueryParam("copyfrom")
           String copySource,
-      @HeaderParam("content-type") String contentType)
+      @HeaderParam("content-type") String contentType,
+      @HeaderParam(HttpHeaders.IF_NONE_MATCH) String ifNoneMatch)
       throws IOException;
 
   @POST
