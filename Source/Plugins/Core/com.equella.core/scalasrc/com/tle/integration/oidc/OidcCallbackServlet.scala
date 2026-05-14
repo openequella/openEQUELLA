@@ -26,6 +26,7 @@ import com.tle.core.services.user.UserService
 import com.tle.integration.oauth2.error.HasCode
 import com.tle.integration.oidc.service.OidcAuthService
 import com.tle.integration.util.NO_FURTHER_INFO
+import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 
 import javax.inject.{Inject, Named, Singleton}
@@ -93,7 +94,13 @@ class OidcCallbackServlet @Inject() (
 
         val output = s"Single Sign-on failed: $fullMsg"
         LOGGER.error(output)
-        resp.sendRedirect(s"${CurrentInstitution.get().getUrl}logon.do?error=$output")
+
+        val logonUrl = new URIBuilder(s"${CurrentInstitution.get().getUrl}logon.do")
+        logonUrl.addParameter("error", output)
+        // Include the NO_AUTO_LOGIN parameter so that errors that occur during the SSO process are displayed
+        // in the Login page.
+        logonUrl.addParameter(WebConstants.NO_AUTO_LOGIN, "true")
+        resp.sendRedirect(logonUrl.build().toString)
     }
   }
 }
