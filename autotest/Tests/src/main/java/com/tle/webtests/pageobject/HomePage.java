@@ -5,6 +5,8 @@ import com.tle.webtests.pageobject.portal.AbstractPortalEditPage;
 import com.tle.webtests.pageobject.portal.MenuSection;
 import com.tle.webtests.pageobject.portal.PortalScreenOptions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class HomePage extends AbstractPage<HomePage> {
   public HomePage(PageContext context) {
@@ -54,5 +56,20 @@ public class HomePage extends AbstractPage<HomePage> {
   public boolean isTopicTagVisible(String dynamicTopicName) {
     MenuSection ms = new MenuSection(context).get();
     return ms.hasMenuOption(dynamicTopicName);
+  }
+
+  public LoginPage logout() {
+    WebElement myAccountIcon =
+        waiter.until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[@aria-label='My Account']")));
+    myAccountIcon.click();
+
+    WebElement logoutBtn =
+        waiter.until(
+            ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'Logout')]")));
+    logoutBtn.click();
+
+    return new LoginPage(context).get();
   }
 }

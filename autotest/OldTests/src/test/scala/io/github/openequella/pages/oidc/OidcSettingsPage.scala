@@ -37,6 +37,11 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
     "//span[contains(.,'Enable *')]/ancestor::li//input/parent::span"
   );
   val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']");
+  )
+  val seamlessSsoBy: By = By.xpath(
+    "//span[@aria-label='Enable Seamless SSO']"
+  )
+
 
   override def findLoadedElement: WebElement = {
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(spinnerBy))
@@ -67,6 +72,21 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
         oidcEnabledBy
       )
       enableButton.click()
+    }
+  }
+
+  def enableSeamlessSso(enable: Boolean): Unit = {
+    val seamlessSsoSwitch = waiter.until(
+      ExpectedConditions.elementToBeClickable(
+        driver.findElement(
+          seamlessSsoBy
+        )
+      )
+    )
+
+    val checked = seamlessSsoSwitch.getAttribute("class").contains("Mui-checked")
+    if (enable != checked) {
+      seamlessSsoSwitch.click()
     }
   }
 
