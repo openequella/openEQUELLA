@@ -11,6 +11,8 @@ libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "7.6.0.20260302
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
+addSbtPlugin("com.github.sbt.junit" % "sbt-jupiter-interface" % "0.19.0")
+
 // Provides access to the OWASP Dependency Check to search for
 // vulnerabilities in our dependencies. Most useful:
 // - ./sbt dependencyCheckAnyProject
@@ -49,7 +51,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe"           % "config"                % "1.4.6",
+  "com.typesafe"           % "config"                % "1.4.8",
   "org.jacoco"             % "org.jacoco.report"     % "0.8.14",
   "org.jdom"               % "jdom2"                 % "2.0.6.1",
   "commons-logging"        % "commons-logging"       % "1.3.6",

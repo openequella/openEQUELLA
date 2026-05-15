@@ -1,6 +1,6 @@
 package io.github.openequella.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,9 +20,9 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
   public void testRetrieveMimeTypes() throws Exception {
     final List<MimeTypeDetail> initialFilters = getMimeTypes();
     assertEquals(
-        "The number of returned filters should match the institution total.",
+        initialFilters.size(),
         153,
-        initialFilters.size());
+        "The number of returned filters should match the institution total.");
   }
 
   @Test

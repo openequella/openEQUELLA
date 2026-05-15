@@ -1,8 +1,8 @@
 package io.github.openequella.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,9 +33,9 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
   public void testRetrieveAdvancedSearches() throws Exception {
     final List<BaseEntitySummary> searches = getAdvancedSearches();
     assertEquals(
-        "The number of returned advanced searches should match the institution total.",
+        searches.size(),
         4,
-        searches.size());
+        "The number of returned advanced searches should match the institution total.");
   }
 
   @Test(

@@ -1,6 +1,6 @@
 package io.github.openequella.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.tle.webtests.framework.TestConfig;
@@ -30,9 +30,9 @@ public class RemoteSearchApiTest extends AbstractRestApiTest {
   public void testRetrieveRemoteSearches() throws Exception {
     final List<BaseEntitySummary> searches = getRemoteSearches();
     assertEquals(
-        "The number of returned remote searches should match the institution total.",
+        searches.size(),
         2,
-        searches.size());
+        "The number of returned remote searches should match the institution total.");
   }
 
   private List<BaseEntitySummary> getRemoteSearches() throws IOException {
