@@ -48,7 +48,7 @@
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "8.58.0",
     "@typescript-eslint/parser": "8.58.0",
-    "axios-cookiejar-support": "6.0.5",
+    "axios-cookiejar-support": "7.0.0",
     "core-js": "3.49.0",
     "eslint": "9.39.4",
     "eslint-plugin-unused-imports": "4.4.1",
