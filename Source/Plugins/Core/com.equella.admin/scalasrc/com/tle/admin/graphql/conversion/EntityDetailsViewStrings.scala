@@ -19,7 +19,7 @@
 package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
-import com.tle.beans.entity.LanguageBundle
+import com.tle.beans.entity.{BaseEntity, LanguageBundle}
 import io.github.openequella.graphql.api.views.EntityDetailsView
 
 /** A simple case class to hold the name and description LanguageBundles from an EntityDetailsView.
@@ -33,7 +33,19 @@ import io.github.openequella.graphql.api.views.EntityDetailsView
 final case class EntityDetailsViewStrings(
     name: Option[LanguageBundle],
     description: Option[LanguageBundle]
-)
+) {
+
+  /** Applies the language strings to the given [[BaseEntity]], setting its name and description.
+    *
+    * @param entity
+    *   the BaseEntity to update
+    */
+  def applyTo(entity: BaseEntity): Unit = {
+    entity.setName(name.orNull)
+    entity.setDescription(description.orNull)
+  }
+}
+
 object EntityDetailsViewStrings {
 
   /** EntityDetailsView contain two fundamental language bundles - name and description. This method

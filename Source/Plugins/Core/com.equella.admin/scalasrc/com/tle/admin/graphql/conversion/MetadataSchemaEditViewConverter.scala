@@ -26,23 +26,12 @@ import com.tle.common.EntityPack
 import io.github.openequella.graphql.api.views.MetadataSchemaEditView
 
 object MetadataSchemaEditViewConverter {
-  def toEntityPack(view: MetadataSchemaEditView): EntityPack[Schema] = {
-    // Create the EntityPack with the schema and staging ID
-    val schema     = view.schema convert toSchema
-    val entityPack = new EntityPack[Schema](schema, view.stagingId)
-
-    // Set the target list on the entity pack
-    val targetList = view.targetList convert toTargetList
-    entityPack.setTargetList(targetList)
-
-    // Note: MetadataSchema entities do not use otherTargetLists (only Collections
-    // and Workflows do), so we intentionally leave it as null here.
-
-    // Set version if available
-    view.version.foreach(entityPack.setVersion)
-
-    entityPack
-  }
+  def toEntityPack(view: MetadataSchemaEditView): EntityPack[Schema] =
+    new EntityPackBuilder[Schema]()
+      .forStagedEntity(view.schema convert toSchema, view.stagingId)
+      .withVersion(view.version)
+      .withTargetList(view.targetList)
+      .build()
 
   def fromEntityPack(pack: EntityPack[Schema]): MetadataSchemaEditView = {
     val schema           = pack.getEntity convert fromSchema

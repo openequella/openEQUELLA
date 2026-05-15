@@ -65,4 +65,9 @@ package object conversion {
     */
   def toLocalDateTime(date: Date): Option[LocalDateTime] =
     Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
+
+  /** Converts a Scala `LocalDateTime` to a Java `Date`. This is the inverse of [[toLocalDateTime]].
+    */
+  def toDate(ldt: LocalDateTime): Date =
+    Date.from(ldt.atZone(java.time.ZoneId.systemDefault()).toInstant)
 }
