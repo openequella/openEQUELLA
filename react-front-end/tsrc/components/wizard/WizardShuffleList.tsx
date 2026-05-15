@@ -101,9 +101,9 @@ export const WizardShuffleList = ({
                   label={shuffleListStrings.newEntry}
                   value={newEntry}
                   onChange={(event) => setNewEntry(event.target.value)}
-                  onKeyDown={(event) =>
-                    event.key === "Enter" ? handleOnChange() : undefined
-                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") handleOnChange();
+                  }}
                 />
               </ListItemText>
               <ListItemSecondaryAction>
