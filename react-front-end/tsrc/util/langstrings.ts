@@ -998,7 +998,7 @@ export const languageStrings = {
           enable: "Enable",
           seamlessSso: "Enable Seamless SSO",
           seamlessSsoDesc:
-            "Once enabled, users will automatically log in to openEquella if they have established a session with the configured Identity Provider.",
+            "Automatically authenticate users with an active Identity Provider session, bypassing the login screen entirely.",
         },
         apiDetails: {
           title: "Identity Provider API",
