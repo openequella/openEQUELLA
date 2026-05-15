@@ -147,10 +147,15 @@ export default function SchemaNodeSelector({
         expandedItems={expanded}
         onExpandedItemsChange={(_, paths) => setExpanded(paths)}
         onItemSelectionToggle={(_, nodePath) => {
-          if (typeof nodePath === "string") {
-            setSelected(nodePath);
-            setSelectedNode(nodePath);
+          if (typeof nodePath !== "string") {
+            console.warn(
+              "SchemaNodeSelector received non-string nodePath:",
+              nodePath,
+            );
+            return;
           }
+          setSelected(nodePath);
+          setSelectedNode(nodePath);
         }}
       >
         {renderedTree}
