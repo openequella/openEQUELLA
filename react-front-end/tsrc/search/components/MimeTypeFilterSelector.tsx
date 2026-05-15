@@ -65,7 +65,7 @@ export const MimeTypeFilterSelector = ({
           key={filter.id}
           title={filter.name}
           maxWidth={200}
-          itemProps={getItemProps({ index })}
+          chipProps={getItemProps({ index })}
         />
       ))
     }

@@ -124,7 +124,7 @@ export const CollectionSelector = ({
             id={`collectionChip-${collection.uuid}`}
             title={collection.name}
             maxWidth={200}
-            itemProps={getItemProps({ index })}
+            chipProps={getItemProps({ index })}
           />
         ))
       }
