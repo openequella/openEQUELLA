@@ -116,9 +116,6 @@ class PostLoginNoticeConfigurator extends React.Component<
               maxRows="35"
               multiline
               fullWidth
-              slotProps={{
-                htmlInput: { length: 12 },
-              }}
               placeholder={strings.postLogin.description}
               onChange={(e) => this.handlePostTextFieldChange(e.target)}
               value={postNotice}
