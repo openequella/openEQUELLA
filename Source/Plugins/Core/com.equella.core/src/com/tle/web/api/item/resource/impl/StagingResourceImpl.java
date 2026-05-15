@@ -336,7 +336,7 @@ public class StagingResourceImpl implements StagingResource {
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
-    validateIfNoneMatch(stagingFile, filepath, ifNoneMatch);
+    validateConditionalWriteRequest(stagingFile, filepath, ifNoneMatch);
 
     return switch (resolveAction(copySource, unzipTo)) {
       case CopyAction c -> handleCopy(stagingFile, c.source(), filepath, uuid);
@@ -538,23 +538,32 @@ public class StagingResourceImpl implements StagingResource {
         .build();
   }
 
-  private void validateIfNoneMatch(StagingFile stagingFile, String filepath, String ifNoneMatch)
-      throws IOException {
-    if (Strings.isNullOrEmpty(ifNoneMatch)
-        || !fileSystemService.fileExists(stagingFile, filepath)) {
+  private void validateConditionalWriteRequest(
+      StagingFile stagingFile, String filepath, String ifNoneMatch) throws IOException {
+    final String ETAG_WILDCARD = "*";
+
+    // No conditional protection requested
+    if (Strings.isNullOrEmpty(ifNoneMatch)) {
       return;
     }
 
-    if ("*".equals(ifNoneMatch)) {
-      throw new WebApplicationException(
-          "File " + filepath + " already exists in staging area.", Status.PRECONDITION_FAILED);
+    // File doesn't exist yet; no conflict possible
+    if (!fileSystemService.fileExists(stagingFile, filepath)) {
+      return;
+    }
+
+    if (ETAG_WILDCARD.equals(ifNoneMatch)) {
+      throwPreconditionFailed(filepath, "already exists in staging area.");
     }
 
     String currentEtag = toQuotedEtag(fileSystemService.getMD5Checksum(stagingFile, filepath));
     if (currentEtag.equals(ifNoneMatch)) {
-      throw new WebApplicationException(
-          "File " + filepath + " already exists and matches the provided ETag.",
-          Status.PRECONDITION_FAILED);
+      throwPreconditionFailed(filepath, "already exists and matches the provided ETag.");
     }
+  }
+
+  private void throwPreconditionFailed(String filepath, String reason) {
+    throw new WebApplicationException(
+        String.format("File '%s' %s", filepath, reason), Status.PRECONDITION_FAILED);
   }
 }
