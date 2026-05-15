@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import {
-  findByText,
   getByText,
   RenderResult,
   waitFor,
@@ -41,6 +40,7 @@ const {
   cancel: cancelLabel,
   ok: okLabel,
   removeAll: removeAllLabel,
+  delete: deleteLabel,
 } = languageStrings.common.action;
 
 /**
@@ -118,18 +118,9 @@ export const clickDeleteIconForEntity = async (
   dialog: HTMLElement,
   name: string,
 ): Promise<void> => {
-  const nameElement = await findByText(dialog, name);
-
-  const listItem = nameElement.closest("li");
-  if (!listItem) {
-    throw Error(`Can't find ListItem for role with name: ${name}`);
-  }
-
-  // Find the delete button within that specific list item
-  const deleteIcon = within(listItem).getByRole("button", { name: "Delete" });
-  if (!deleteIcon) {
-    throw Error(`Can't find delete icon for role with name: ${name}`);
-  }
+  const deleteIcon = within(dialog).getByRole("button", {
+    name: `${deleteLabel} ${name}`,
+  });
   await userEvent.click(deleteIcon);
 };
 
