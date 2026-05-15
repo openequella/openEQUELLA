@@ -45,10 +45,15 @@ interface CloudProviderAddDialogProps {
   onCancel: () => void;
   onRegister: (url: string) => void;
 }
+
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
   disclaimerDialogOpen: boolean;
 }
+
+type DialogCloseReason = "backdropClick" | "escapeKeyDown";
+
+const ESCAPE_KEY_REASON: DialogCloseReason = "escapeKeyDown";
 
 class CloudProviderAddDialog extends React.Component<
   CloudProviderAddDialogProps,
@@ -89,8 +94,8 @@ class CloudProviderAddDialog extends React.Component<
     });
   };
 
-  handleClose = (_: React.SyntheticEvent, reason: string) => {
-    if (reason !== "escapeKeyDown") {
+  handleClose = (_: React.SyntheticEvent, reason: DialogCloseReason) => {
+    if (reason !== ESCAPE_KEY_REASON) {
       this.props.onCancel();
     }
   };
