@@ -18,6 +18,7 @@
 import "@testing-library/jest-dom";
 import { render, RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as React from "react";
 import { searchRoles } from "../../../../../../__mocks__/RoleModule.mock";
 
 import LtiCustomRolesMapping, {
@@ -25,7 +26,6 @@ import LtiCustomRolesMapping, {
 } from "../../../../../../tsrc/settings/Integrations/lti13/components/LtiCustomRolesMapping";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
 import { clickSelect } from "../../../../MuiTestHelpers";
-import * as React from "react";
 
 const { customRoleSelectLtiRoleLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
@@ -50,7 +50,7 @@ export const renderLtiCustomRolesMapping = (
 export const selectLtiRole = async (dialog: HTMLElement, ltiRole: string) => {
   await clickSelect(
     dialog,
-    `div[aria-label='${customRoleSelectLtiRoleLabel}'] div`,
+    `div[aria-label='${customRoleSelectLtiRoleLabel}']`,
   );
   const option = await screen.findByText(ltiRole);
   // click the option in the list

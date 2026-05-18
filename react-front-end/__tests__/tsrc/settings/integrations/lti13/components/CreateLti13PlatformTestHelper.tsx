@@ -29,6 +29,7 @@ import CreateLti13Platform, {
 } from "../../../../../../tsrc/settings/Integrations/lti13/components/CreateLti13Platform";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
 import { selectAllAndConfirm } from "../../../../components/aclexpressionbuilder/ACLExpressionBuilderTestHelper";
+import { doSearchAndSelectRole } from "../../../../components/CustomRolesMappingControlTestHelper";
 import {
   clickOkButton,
   waitForEntityDialogToRender,
@@ -37,7 +38,6 @@ import { searchAndSelectGroup } from "../../../../components/securityentitydialo
 import { searchAndSelectRole } from "../../../../components/securityentitydialog/SelectRoleDialogTestHelper";
 import { searchUser } from "../../../../components/securityentitysearch/UserSearchTestHelpler";
 import { selectOption } from "../../../../MuiTestHelpers";
-import { doSearchAndSelectRole } from "../../../../components/CustomRolesMappingControlTestHelper";
 import { selectLtiRole } from "./LtiCustomRolesMappingTestHelper";
 
 const {
@@ -175,7 +175,7 @@ export const configureUnknownUserHandling = async (
   //choose the value provided in `option` for unknown user handling
   await selectOption(
     renderResult.container,
-    `div[aria-label='${selectLabel} ${unknownUserHandlingLabel}'] div`,
+    `div[aria-label='${selectLabel} ${unknownUserHandlingLabel}']`,
     option,
   );
   const selectGroupsButton = await renderResult.findByText(selectGroupsLabel);
