@@ -146,6 +146,19 @@ class StagingApiTest extends AbstractRestApiTest {
       HttpStatus.SC_PRECONDITION_FAILED
     )
 
+    // Verify that providing the correct ETag but WITHOUT quotes still blocks the upload
+    val unquotedEtag = currentEtag.replace("\"", "")
+    assertEquals(
+      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some(unquotedEtag)).status,
+      HttpStatus.SC_PRECONDITION_FAILED
+    )
+
+    // Verify an empty string header is treated as no-precondition (allows overwrite)
+    assertEquals(
+      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some("")).status,
+      HttpStatus.SC_OK
+    )
+
     // Verify the upload is permitted (200 OK) if the client's provided ETag differs from the server's current file
     assertEquals(
       StagingApi

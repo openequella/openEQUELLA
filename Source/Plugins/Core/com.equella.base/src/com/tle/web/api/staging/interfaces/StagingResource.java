@@ -39,6 +39,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -65,6 +66,7 @@ public interface StagingResource {
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Read a file")
   Response getFile(
+      @Context Request request,
       @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath);
@@ -111,6 +113,7 @@ public interface StagingResource {
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Put a file")
   Response putFile(
+      @Context Request request,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,

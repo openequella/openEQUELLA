@@ -22,8 +22,6 @@ import com.dytech.edge.common.FileInfo;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
@@ -54,7 +52,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -63,13 +60,14 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
-import org.jboss.resteasy.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +150,7 @@ public class StagingResourceImpl implements StagingResource {
       final String filePath = PathUtils.filePath(currentPath, filename);
       try {
         String md5CheckSum = fileSystemService.getMD5Checksum(fileHandle, filePath);
-        blobBean.setEtag(toQuotedEtag(md5CheckSum));
+        blobBean.setEtag(new EntityTag(md5CheckSum).toString());
       } catch (IOException e) {
         // Whatever
       }
@@ -187,41 +185,20 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   @Override
-  public Response getFile(HttpHeaders headers, String uuid, String filepath) {
+  public Response getFile(Request request, HttpHeaders headers, String uuid, String filepath) {
     stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.ensureFileExists(uuid, filepath);
 
     try {
-      final String etag = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
-      if (etag != null) {
-        String md5Checksum = fileSystemService.getMD5Checksum(stagingFile, filepath);
-        if (Objects.equals(etag, toQuotedEtag(md5Checksum))) {
-          return Response.notModified().tag(md5Checksum).build();
-        }
-      }
-      final String modifiedSince = headers.getHeaderString(HttpHeaders.IF_MODIFIED_SINCE);
-      if (modifiedSince != null) {
-        final Date lastModified = new Date(fileSystemService.lastModified(stagingFile, filepath));
-        if (Objects.equals(modifiedSince, DateUtil.formatDate(lastModified))) {
-          return Response.notModified().build();
-        }
+      Optional<ResponseBuilder> preconditionResponse =
+          checkPreconditionsForGetFile(request, headers, stagingFile, filepath);
+      if (preconditionResponse.isPresent()) {
+        return preconditionResponse.get().build();
       }
 
-      final InputStream input = fileSystemService.read(stagingFile, filepath);
-      final ResponseBuilder responseBuilder = makeResponseHeaders(uuid, filepath);
-      return responseBuilder
-          .entity(
-              new StreamingOutput() {
-                @Override
-                public void write(OutputStream output) throws IOException, WebApplicationException {
-                  try {
-                    ByteStreams.copy(input, output);
-                  } finally {
-                    Closeables.close(input, false);
-                  }
-                }
-              })
+      return makeResponseHeaders(uuid, filepath)
+          .entity((StreamingOutput) output -> streamFileContent(stagingFile, filepath, output))
           .build();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -323,6 +300,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response putFile(
+      Request request,
       String uuid,
       String filepath,
       InputStream data,
@@ -336,7 +314,7 @@ public class StagingResourceImpl implements StagingResource {
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
-    validateConditionalWriteRequest(stagingFile, filepath, ifNoneMatch);
+    validateConditionalWriteRequest(request, stagingFile, filepath, ifNoneMatch);
 
     return switch (resolveAction(copySource, unzipTo)) {
       case CopyAction c -> handleCopy(stagingFile, c.source(), filepath, uuid);
@@ -482,12 +460,12 @@ public class StagingResourceImpl implements StagingResource {
     }
 
     String actualMd5 = fileSystemService.getMD5Checksum(stagingFile, chunk.chunkPath());
-    String unquotedEtag = expectedEtag.replace("\"", "");
-    if (!unquotedEtag.equals(actualMd5)) {
+    String parsedEtag = EntityTag.valueOf(expectedEtag).getValue();
+    if (!parsedEtag.equals(actualMd5)) {
       throw new BadRequestException(
           String.format(
               "ETag mismatch for part %s. Expected: %s, Actual: %s",
-              chunk.partNumber(), unquotedEtag, actualMd5));
+              chunk.partNumber(), parsedEtag, actualMd5));
     }
   }
 
@@ -499,10 +477,6 @@ public class StagingResourceImpl implements StagingResource {
       throw new WebApplicationException(
           "Failed to append multipart chunk: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  private String toQuotedEtag(String md5) {
-    return "\"" + md5 + "\"";
   }
 
   private void validateCopyRequest(String itemUuid, int itemVersion) {
@@ -539,31 +513,65 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private void validateConditionalWriteRequest(
-      StagingFile stagingFile, String filepath, String ifNoneMatch) throws IOException {
-    final String ETAG_WILDCARD = "*";
-
+      Request request, StagingFile stagingFile, String filepath, String ifNoneMatch)
+      throws IOException {
     // No conditional protection requested
     if (Strings.isNullOrEmpty(ifNoneMatch)) {
       return;
     }
 
-    // File doesn't exist yet; no conflict possible
     if (!fileSystemService.fileExists(stagingFile, filepath)) {
       return;
     }
 
-    if (ETAG_WILDCARD.equals(ifNoneMatch)) {
-      throwPreconditionFailed(filepath, "already exists in staging area.");
-    }
+    String currentMd5 = fileSystemService.getMD5Checksum(stagingFile, filepath);
+    EntityTag currentEtag = new EntityTag(currentMd5);
 
-    String currentEtag = toQuotedEtag(fileSystemService.getMD5Checksum(stagingFile, filepath));
-    if (currentEtag.equals(ifNoneMatch)) {
-      throwPreconditionFailed(filepath, "already exists and matches the provided ETag.");
+    if (request.evaluatePreconditions(currentEtag) != null) {
+      throw new WebApplicationException(
+          String.format(
+              "File '%s' already exists and violates the If-None-Match precondition.", filepath),
+          Status.PRECONDITION_FAILED);
     }
   }
 
-  private void throwPreconditionFailed(String filepath, String reason) {
-    throw new WebApplicationException(
-        String.format("File '%s' %s", filepath, reason), Status.PRECONDITION_FAILED);
+  private Optional<ResponseBuilder> checkPreconditionsForGetFile(
+      Request request, HttpHeaders headers, StagingFile stagingFile, String filepath)
+      throws IOException {
+
+    String ifNoneMatch = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
+    String ifModifiedSince = headers.getHeaderString(HttpHeaders.IF_MODIFIED_SINCE);
+
+    boolean hasIfNoneMatch = !Strings.isNullOrEmpty(ifNoneMatch);
+    boolean hasIfModifiedSince = !Strings.isNullOrEmpty(ifModifiedSince);
+
+    if (!hasIfNoneMatch && !hasIfModifiedSince) {
+      return Optional.empty();
+    }
+
+    EntityTag eTag =
+        hasIfNoneMatch
+            ? new EntityTag(fileSystemService.getMD5Checksum(stagingFile, filepath))
+            : null;
+    Date lastModified =
+        hasIfModifiedSince ? new Date(fileSystemService.lastModified(stagingFile, filepath)) : null;
+
+    ResponseBuilder builder;
+    if (hasIfNoneMatch && hasIfModifiedSince) {
+      builder = request.evaluatePreconditions(lastModified, eTag);
+    } else if (hasIfNoneMatch) {
+      builder = request.evaluatePreconditions(eTag);
+    } else {
+      builder = request.evaluatePreconditions(lastModified);
+    }
+
+    return Optional.ofNullable(builder);
+  }
+
+  private void streamFileContent(StagingFile stagingFile, String filepath, OutputStream output)
+      throws IOException {
+    try (InputStream in = fileSystemService.read(stagingFile, filepath)) {
+      in.transferTo(output);
+    }
   }
 }
