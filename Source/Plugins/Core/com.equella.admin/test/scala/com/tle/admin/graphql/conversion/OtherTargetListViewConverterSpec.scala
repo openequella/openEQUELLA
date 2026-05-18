@@ -112,5 +112,36 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
 
       result.get(lookupKey) should not be null
     }
+
+    it("preserves data through round-trip conversion for all target types") {
+      val views = List(
+        OtherTargetListView(
+          targetType = OtherTargetListType.ITEM_STATUS,
+          itemStatus = Some("DRAFT"),
+          metadataRuleId = None,
+          taskId = None,
+          entries = List(sampleEntry)
+        ),
+        OtherTargetListView(
+          targetType = OtherTargetListType.ITEM_METADATA,
+          itemStatus = None,
+          metadataRuleId = Some("rule-abc"),
+          taskId = None,
+          entries = List(sampleEntry)
+        ),
+        OtherTargetListView(
+          targetType = OtherTargetListType.WORKFLOW_TASK,
+          itemStatus = None,
+          metadataRuleId = None,
+          taskId = Some("task-xyz"),
+          entries = List(sampleEntry)
+        )
+      )
+
+      val map       = OtherTargetListViewConverter.toTargetListMap(views, itemDef)
+      val roundTrip = OtherTargetListViewConverter.fromTargetListMap(map)
+
+      roundTrip should contain theSameElementsAs views
+    }
   }
 }

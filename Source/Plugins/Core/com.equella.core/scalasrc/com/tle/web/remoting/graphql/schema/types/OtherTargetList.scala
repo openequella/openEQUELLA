@@ -103,7 +103,7 @@ object OtherTargetList {
     case ist: ItemStatusTarget =>
       OtherTargetList(
         targetType = OtherTargetListType.ITEM_STATUS,
-        itemStatus = Some(ist.getItemStatus.exactString),
+        itemStatus = Some(getMandatoryItemStatus(ist)),
         entries = List.empty
       )
     case imt: ItemMetadataTarget =>
@@ -122,5 +122,22 @@ object OtherTargetList {
       throw new IllegalArgumentException(
         s"Unsupported otherTargetLists key type: ${other.getClass.getName}"
       )
+  }
+
+  /** Extracts the mandatory item status string from an `ItemStatusTarget`, throwing an exception if
+    * it is missing. This is used for validating input keys when converting back to the legacy map
+    * format, where the item status string is required for lookups.
+    */
+  private def getMandatoryItemStatus(ist: ItemStatusTarget): String = {
+    val itemStatus = for {
+      statusObj <- Option(ist.getItemStatus)
+      statusStr <- Option(statusObj.exactString)
+    } yield statusStr
+
+    itemStatus.getOrElse {
+      throw new IllegalArgumentException(
+        "ItemStatusTarget key is missing mandatory item status."
+      )
+    }
   }
 }
