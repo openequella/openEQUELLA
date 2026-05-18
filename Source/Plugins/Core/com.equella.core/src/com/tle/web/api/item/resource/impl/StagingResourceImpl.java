@@ -301,14 +301,16 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public Response putFile(
       Request request,
+      HttpHeaders headers,
       String uuid,
       String filepath,
       InputStream data,
       String unzipTo,
-      String copySource,
-      String contentType,
-      String ifNoneMatch)
+      String copySource)
       throws IOException {
+    String contentType = headers.getHeaderString(HttpHeaders.CONTENT_TYPE);
+    String ifNoneMatch = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
+
     stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 

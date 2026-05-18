@@ -114,6 +114,7 @@ public interface StagingResource {
   @ApiOperation(value = "Put a file")
   Response putFile(
       @Context Request request,
+      @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,
@@ -122,9 +123,7 @@ public interface StagingResource {
           String unzipTo,
       @ApiParam("Path of an existing staging file to copy from. Cannot be combined with 'unzipto'.")
           @QueryParam("copyfrom")
-          String copySource,
-      @HeaderParam("content-type") String contentType,
-      @HeaderParam(HttpHeaders.IF_NONE_MATCH) String ifNoneMatch)
+          String copySource)
       throws IOException;
 
   @POST
