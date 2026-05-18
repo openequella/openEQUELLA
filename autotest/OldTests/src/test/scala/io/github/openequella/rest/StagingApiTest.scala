@@ -128,50 +128,28 @@ class StagingApiTest extends AbstractRestApiTest {
       HttpStatus.SC_OK,
       "Initial file upload should succeed"
     )
+    val currentEtag = findFileInStaging(StagingApi.getStaging(stagingUuid), filename).get.etag
 
-    val getResponse  = StagingApi.getStaging(stagingUuid)
-    val uploadedFile = findFileInStaging(getResponse, filename)
-    assertTrue(uploadedFile.isDefined, "File should exist to test overwriting")
-    val currentEtag = uploadedFile.get.etag
-
-    // Verify that using the '*' wildcard rejects the upload with a 412 status code when the file already exists
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some("*")).status,
-      HttpStatus.SC_PRECONDITION_FAILED
+    val testingScenarios = List(
+      ("Wildcard (*) rejection", Some("*"), HttpStatus.SC_PRECONDITION_FAILED),
+      ("Exact matching ETag rejection", Some(currentEtag), HttpStatus.SC_PRECONDITION_FAILED),
+      (
+        "Unquoted matching ETag rejection",
+        Some(currentEtag.replace("\"", "")),
+        HttpStatus.SC_PRECONDITION_FAILED
+      ),
+      ("Empty string header allows overwrite", Some(""), HttpStatus.SC_OK),
+      ("Mismatching ETag allows overwrite", Some("fake-different-etag"), HttpStatus.SC_OK),
+      ("Omitted header allows overwrite", None, HttpStatus.SC_OK)
     )
 
-    // Verify that providing the target file's exact ETag blocks the file upload with a 412 status code
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some(currentEtag)).status,
-      HttpStatus.SC_PRECONDITION_FAILED
-    )
-
-    // Verify that providing the correct ETag but WITHOUT quotes still blocks the upload
-    val unquotedEtag = currentEtag.replace("\"", "")
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some(unquotedEtag)).status,
-      HttpStatus.SC_PRECONDITION_FAILED
-    )
-
-    // Verify an empty string header is treated as no-precondition (allows overwrite)
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = Some("")).status,
-      HttpStatus.SC_OK
-    )
-
-    // Verify the upload is permitted (200 OK) if the client's provided ETag differs from the server's current file
-    assertEquals(
-      StagingApi
-        .uploadFile(stagingUuid, filename, file, ifNoneMatch = Some("fake-different-etag"))
-        .status,
-      HttpStatus.SC_OK
-    )
-
-    // Verify omitting the conditional header successfully overwrites the file.
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file).status,
-      HttpStatus.SC_OK
-    )
+    testingScenarios.foreach { case (description, headerValue, expectedStatus) =>
+      assertEquals(
+        StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = headerValue).status,
+        expectedStatus,
+        s"Testing Scenario failed: $description"
+      )
+    }
   }
 
   @Test(description = "Delete a specific file from the staging area")
