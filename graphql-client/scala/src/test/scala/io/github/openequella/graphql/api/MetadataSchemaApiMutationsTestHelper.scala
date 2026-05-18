@@ -136,7 +136,8 @@ object MetadataSchemaApiMutationsTestHelper {
       schema = schemaView,
       stagingId = skeleton.stagingId,
       version = None,
-      targetList = List.empty
+      targetList = List.empty,
+      otherTargetLists = List.empty
     )
   }
 

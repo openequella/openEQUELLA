@@ -25,7 +25,8 @@ final case class EditableEntityMetadataSchemaInput(
     entity: MetadataSchemaInput,
     stagingId: String,
     version: scala.Option[String] = None,
-    targetList: List[TargetListEntryInput] = Nil
+    targetList: List[TargetListEntryInput] = Nil,
+    otherTargetLists: List[OtherTargetListInput] = Nil
 )
 object EditableEntityMetadataSchemaInput {
   implicit val encoder: ArgEncoder[EditableEntityMetadataSchemaInput] =
@@ -41,6 +42,11 @@ object EditableEntityMetadataSchemaInput {
             "targetList" -> __ListValue(
               value.targetList.map(value =>
                 implicitly[ArgEncoder[TargetListEntryInput]].encode(value)
+              )
+            ),
+            "otherTargetLists" -> __ListValue(
+              value.otherTargetLists.map(value =>
+                implicitly[ArgEncoder[OtherTargetListInput]].encode(value)
               )
             )
           )

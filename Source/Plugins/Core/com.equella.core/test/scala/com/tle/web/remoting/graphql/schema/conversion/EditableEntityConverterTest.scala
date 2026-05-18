@@ -307,7 +307,8 @@ object EditableEntityConverterTest {
     entity = testMetadataSchema,
     stagingId = "staging-abc-123",
     version = Some("2026.1.0"),
-    targetList = testTargetListEntries
+    targetList = testTargetListEntries,
+    otherTargetLists = List.empty
   )
 
   // Factory methods for edge case tests
@@ -362,6 +363,7 @@ object EditableEntityConverterTest {
       entity = schema,
       stagingId = "staging-test",
       version = version,
-      targetList = targetList
+      targetList = targetList,
+      otherTargetLists = List.empty
     )
 }

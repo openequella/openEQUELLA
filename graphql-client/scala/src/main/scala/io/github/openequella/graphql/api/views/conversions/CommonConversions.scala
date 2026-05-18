@@ -22,6 +22,7 @@ import io.github.openequella.graphql.api.views.{
   EntityDetailsView,
   LanguageBundleView,
   LanguageStringView,
+  OtherTargetListView,
   TargetListEntryView
 }
 import io.github.openequella.graphql.client.{
@@ -29,6 +30,7 @@ import io.github.openequella.graphql.client.{
   KVStringStringInput,
   LanguageBundleInput,
   LanguageStringInput,
+  OtherTargetListInput,
   TargetListEntryInput
 }
 import io.scalaland.chimney.Transformer
@@ -65,4 +67,8 @@ object CommonConversions {
   /** Transformer for TargetListEntryView to TargetListEntryInput. */
   implicit val targetListEntryViewToInput: Transformer[TargetListEntryView, TargetListEntryInput] =
     Transformer.derive[TargetListEntryView, TargetListEntryInput]
+
+  /** Transformer for OtherTargetListView to OtherTargetListInput. */
+  implicit val otherTargetListViewToInput: Transformer[OtherTargetListView, OtherTargetListInput] =
+    Transformer.derive[OtherTargetListView, OtherTargetListInput]
 }

@@ -63,6 +63,7 @@ package object client {
   type MetadataSchemaQueries
   type MetadataSchemaTransform
   type NameValue
+  type OtherTargetList
   type PageInfo
   type PluginDetails
   type Role

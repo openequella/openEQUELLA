@@ -25,7 +25,8 @@ final case class MetadataSchemaEditView(
     schema: MetadataSchemaView,
     stagingId: String,
     version: Option[String],
-    targetList: List[TargetListEntryView]
+    targetList: List[TargetListEntryView],
+    otherTargetLists: List[OtherTargetListView]
 )
 
 object MetadataSchemaEditView {
@@ -34,6 +35,7 @@ object MetadataSchemaEditView {
       EditableEntityMetadataSchema.entity(MetadataSchemaView.selector) ~
         EditableEntityMetadataSchema.stagingId ~
         EditableEntityMetadataSchema.version ~
-        EditableEntityMetadataSchema.targetList(TargetListEntryView.selector)
+        EditableEntityMetadataSchema.targetList(TargetListEntryView.selector) ~
+        EditableEntityMetadataSchema.otherTargetLists(OtherTargetListView.selector)
     ).mapN(MetadataSchemaEditView.apply _)
 }
