@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.methods._
 import org.apache.commons.httpclient.{HttpMethod, HttpStatus, NameValuePair}
 import org.testng.Assert._
 import org.testng.annotations.{DataProvider, Test}
+import org.testng.asserts.SoftAssert
 
 import java.io.File
 
@@ -143,13 +144,15 @@ class StagingApiTest extends AbstractRestApiTest {
       ("Omitted header allows overwrite", None, HttpStatus.SC_OK)
     )
 
+    val softAssert = new SoftAssert()
+
     testingScenarios.foreach { case (description, headerValue, expectedStatus) =>
-      assertEquals(
-        StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = headerValue).status,
-        expectedStatus,
-        s"Testing Scenario failed: $description"
-      )
+      val actualStatus =
+        StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = headerValue).status
+      softAssert.assertEquals(actualStatus, expectedStatus, s"Scenario failed: $description")
     }
+
+    softAssert.assertAll()
   }
 
   @Test(description = "Delete a specific file from the staging area")
