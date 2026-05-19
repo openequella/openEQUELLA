@@ -68,6 +68,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -316,7 +317,9 @@ public class StagingResourceImpl implements StagingResource {
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
-    validateConditionalWriteRequest(request, stagingFile, filepath, ifNoneMatch);
+    if (StringUtils.isNotEmpty(ifNoneMatch)) {
+      validateConditionalWriteRequest(request, stagingFile, filepath);
+    }
 
     return switch (resolveAction(copySource, unzipTo)) {
       case CopyAction c -> handleCopy(stagingFile, c.source(), filepath, uuid);
@@ -515,21 +518,15 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private void validateConditionalWriteRequest(
-      Request request, StagingFile stagingFile, String filepath, String ifNoneMatch)
-      throws IOException {
-    // No conditional protection requested
-    if (Strings.isNullOrEmpty(ifNoneMatch)) {
-      return;
-    }
-
+      Request request, StagingFile stagingFile, String filepath) throws IOException {
     if (!fileSystemService.fileExists(stagingFile, filepath)) {
       return;
     }
 
-    String currentMd5 = fileSystemService.getMD5Checksum(stagingFile, filepath);
-    EntityTag currentEtag = new EntityTag(currentMd5);
+    String fileMd5 = fileSystemService.getMD5Checksum(stagingFile, filepath);
+    EntityTag existingFileEtag = new EntityTag(fileMd5);
 
-    if (request.evaluatePreconditions(currentEtag) != null) {
+    if (request.evaluatePreconditions(existingFileEtag) != null) {
       throw new WebApplicationException(
           String.format(
               "File '%s' already exists and violates the If-None-Match precondition.", filepath),
