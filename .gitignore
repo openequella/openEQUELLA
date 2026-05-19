@@ -34,3 +34,6 @@ Source/Plugins/Core/com.equella.reporting/lib
 
 # openEQUELLA dev server PID tracking file (created by .agents/skills/oeq-dev-server)
 .oeq-server.pid
+
+# GraphQL session cookies (created by .agents/skills/oeq-graphql)
+.graphql-cookies.txt
