@@ -75,6 +75,7 @@ const classes = {
   panelWrapper: `${PREFIX}-panelWrapper`,
   paper: `${PREFIX}-paper`,
   tabPanel: `${PREFIX}-tabPanel`,
+  footer: `${PREFIX}-footer`,
 };
 
 const StyledStack = styled(Stack)(({ theme }) => ({
@@ -100,6 +101,10 @@ const StyledStack = styled(Stack)(({ theme }) => ({
   },
   [`& .${classes.tabPanel}`]: {
     padding: 0,
+  },
+  [`& .${classes.footer}`]: {
+    display: "flex",
+    justifyContent: "flex-end",
   },
 }));
 
@@ -266,6 +271,7 @@ const ACLExpressionBuilder = ({
     panelWrapper: panelWrapperClass,
     paper: paperClass,
     tabPanel: tabPanelClass,
+    footer: footerClass,
   } = classes;
 
   return (
@@ -310,7 +316,7 @@ const ACLExpressionBuilder = ({
             </Paper>
           </Grid>
         </Grid>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Box className={footerClass}>
           <Button
             variant="contained"
             color="primary"
