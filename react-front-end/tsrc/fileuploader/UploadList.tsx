@@ -81,7 +81,7 @@ export const UploadList = ({
           return isUploadedFile(file) && !file.errorMessage ? (
             primaryText
           ) : (
-            <Stack>
+            <Stack spacing={1}>
               {primaryText}
               {secondaryText}
             </Stack>
@@ -90,7 +90,12 @@ export const UploadList = ({
 
         // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
-          <ListItem key={fileId} divider component="div">
+          <ListItem
+            key={fileId}
+            divider
+            component="div"
+            sx={{ overflowWrap: "break-word" }}
+          >
             <Grid
               container
               spacing={2}
