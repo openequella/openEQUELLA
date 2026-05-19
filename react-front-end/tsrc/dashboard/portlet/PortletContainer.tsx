@@ -147,9 +147,8 @@ export const PortletContainer = ({
     <Grid
       container
       spacing={2}
-      // Make sure the grid have a specific value of height and the child grid(column) can also take the full height even it's empty.
+      // Ensure columns stretch to match full container height, even when empty.
       sx={{ height: "100%", alignItems: "stretch" }}
-      // Make sure each column stretches to the same height.
       id="dashboard-portlet-container"
     >
       {renderLayout()}
