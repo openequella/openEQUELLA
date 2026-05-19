@@ -45,6 +45,7 @@ import com.tle.web.remoting.rest.service.UrlLinkService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
@@ -192,8 +193,12 @@ public class StagingResourceImpl implements StagingResource {
     stagingService.ensureFileExists(uuid, filepath);
 
     try {
+      RequestContext ctx = new RequestContext(request, headers, stagingFile, filepath);
+
+      // Declarative validation chain: ETag check takes priority
       Optional<ResponseBuilder> preconditionResponse =
-          checkPreconditionsForGetFile(request, headers, stagingFile, filepath);
+          checkEtagPrecondition(ctx).or(() -> checkModifiedSincePrecondition(ctx));
+
       if (preconditionResponse.isPresent()) {
         return preconditionResponse.get().build();
       }
@@ -534,37 +539,45 @@ public class StagingResourceImpl implements StagingResource {
     }
   }
 
-  private Optional<ResponseBuilder> checkPreconditionsForGetFile(
-      Request request, HttpHeaders headers, StagingFile stagingFile, String filepath)
-      throws IOException {
+  private record RequestContext(
+      Request request, HttpHeaders headers, StagingFile stagingFile, String filepath) {}
 
-    String ifNoneMatch = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
-    String ifModifiedSince = headers.getHeaderString(HttpHeaders.IF_MODIFIED_SINCE);
+  @FunctionalInterface
+  interface PreconditionEvaluator {
+    ResponseBuilder evaluate() throws IOException;
+  }
 
-    boolean hasIfNoneMatch = !Strings.isNullOrEmpty(ifNoneMatch);
-    boolean hasIfModifiedSince = !Strings.isNullOrEmpty(ifModifiedSince);
-
-    if (!hasIfNoneMatch && !hasIfModifiedSince) {
+  private Optional<ResponseBuilder> checkPrecondition(
+      RequestContext ctx, String headerName, PreconditionEvaluator evaluator) {
+    if (Strings.isNullOrEmpty(ctx.headers().getHeaderString(headerName))) {
       return Optional.empty();
     }
-
-    EntityTag eTag =
-        hasIfNoneMatch
-            ? new EntityTag(fileSystemService.getMD5Checksum(stagingFile, filepath))
-            : null;
-    Date lastModified =
-        hasIfModifiedSince ? new Date(fileSystemService.lastModified(stagingFile, filepath)) : null;
-
-    ResponseBuilder builder;
-    if (hasIfNoneMatch && hasIfModifiedSince) {
-      builder = request.evaluatePreconditions(lastModified, eTag);
-    } else if (hasIfNoneMatch) {
-      builder = request.evaluatePreconditions(eTag);
-    } else {
-      builder = request.evaluatePreconditions(lastModified);
+    try {
+      return Optional.ofNullable(evaluator.evaluate());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
+  }
 
-    return Optional.ofNullable(builder);
+  private Optional<ResponseBuilder> checkEtagPrecondition(RequestContext ctx) {
+    return checkPrecondition(
+        ctx,
+        HttpHeaders.IF_NONE_MATCH,
+        () -> {
+          String md5 = fileSystemService.getMD5Checksum(ctx.stagingFile(), ctx.filepath());
+          return ctx.request().evaluatePreconditions(new EntityTag(md5));
+        });
+  }
+
+  private Optional<ResponseBuilder> checkModifiedSincePrecondition(RequestContext ctx) {
+    return checkPrecondition(
+        ctx,
+        HttpHeaders.IF_MODIFIED_SINCE,
+        () -> {
+          Date lastModified =
+              new Date(fileSystemService.lastModified(ctx.stagingFile(), ctx.filepath()));
+          return ctx.request().evaluatePreconditions(lastModified);
+        });
   }
 
   private void streamFileContent(StagingFile stagingFile, String filepath, OutputStream output)
