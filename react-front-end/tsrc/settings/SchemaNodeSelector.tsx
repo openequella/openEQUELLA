@@ -148,6 +148,7 @@ export default function SchemaNodeSelector({
         expandedItems={expanded}
         onExpandedItemsChange={(_, paths) => setExpanded(paths)}
         onItemSelectionToggle={(_, nodePath) => {
+          // TODO: OEQ-2939 - Remove temporary workaround once the MUI X TreeView selection bug is fixed.
           // Workaround after MUI v9 update bug: clicking the expand/collapse icon sometimes incorrectly
           // triggers this callback with an array of expanded paths instead of the item's string ID.
           if (!S.isString(nodePath)) {
