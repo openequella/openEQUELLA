@@ -19,7 +19,6 @@
 package com.tle.web.api.item.resource.impl;
 
 import com.dytech.edge.common.FileInfo;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.beans.item.Item;
@@ -350,8 +349,8 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private PutAction resolveAction(String copySource, String unzipTo) {
-    boolean isCopy = !Strings.isNullOrEmpty(copySource);
-    boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
+    boolean isCopy = StringUtils.isNotEmpty(copySource);
+    boolean isUnzip = StringUtils.isNotEmpty(unzipTo);
 
     if (isCopy && isUnzip) {
       throw new BadRequestException("copyfrom and unzipto cannot be used together.");
@@ -465,7 +464,7 @@ public class StagingResourceImpl implements StagingResource {
 
   private void validatePartEtag(StagingFile stagingFile, MultipartChunk chunk) throws IOException {
     String expectedEtag = chunk.expectedEtag();
-    if (Strings.isNullOrEmpty(expectedEtag)) {
+    if (StringUtils.isEmpty(expectedEtag)) {
       return;
     }
 
@@ -490,7 +489,7 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private void validateCopyRequest(String itemUuid, int itemVersion) {
-    if (Strings.isNullOrEmpty(itemUuid)) {
+    if (StringUtils.isEmpty(itemUuid)) {
       throw new BadRequestException("Item UUID is required");
     }
     if (itemVersion < 1) {
@@ -549,7 +548,7 @@ public class StagingResourceImpl implements StagingResource {
 
   private Optional<ResponseBuilder> checkPrecondition(
       RequestContext ctx, String headerName, PreconditionEvaluator evaluator) {
-    if (Strings.isNullOrEmpty(ctx.headers().getHeaderString(headerName))) {
+    if (StringUtils.isEmpty(ctx.headers().getHeaderString(headerName))) {
       return Optional.empty();
     }
     try {
