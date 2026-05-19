@@ -268,6 +268,14 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       ),
     );
 
+  const createKeyDownProps = (index: number, currentValue: string) => ({
+    htmlInput: {
+      onKeyDown: (
+        event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+      ) => handleKeyDownEvent(event, index, currentValue),
+    },
+  });
+
   const ipInput = (index: number) => {
     const currentValue = pipe(
       ipAddress as readonly string[],
@@ -280,15 +288,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
         id={`ip-${index}-input`}
         size="small"
         type="tel"
-        slotProps={{
-          htmlInput: {
-            onKeyDown: (
-              event: React.KeyboardEvent<
-                HTMLInputElement | HTMLTextAreaElement
-              >,
-            ) => handleKeyDownEvent(event, index, currentValue),
-          },
-        }}
+        slotProps={createKeyDownProps(index, currentValue)}
         inputRef={ipInputRefs.current[index]}
         className={classes.ipInput}
         placeholder="255"
@@ -319,17 +319,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
           id="netmask-input"
           type="tel"
           inputRef={netmaskInputRef}
-          slotProps={{
-            htmlInput: {
-              onKeyDown: (
-                event: React.KeyboardEvent<
-                  HTMLInputElement | HTMLTextAreaElement
-                >,
-              ) => {
-                handleKeyDownEvent(event, ipElements, netmask);
-              },
-            },
-          }}
+          slotProps={createKeyDownProps(ipElements, netmask)}
           className={classes.ipInput}
           placeholder={defaultNetmask.toString()}
           variant="outlined"
