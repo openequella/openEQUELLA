@@ -90,12 +90,7 @@ export const UploadList = ({
 
         // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
-          <ListItem
-            key={fileId}
-            divider
-            component="div"
-            sx={{ overflowWrap: "break-word" }}
-          >
+          <ListItem key={fileId} divider component="div">
             <Grid
               container
               spacing={2}
@@ -108,6 +103,7 @@ export const UploadList = ({
                   sm: 8,
                   lg: 9,
                 }}
+                sx={{ overflowWrap: "break-word" }}
               >
                 <ListItemContent />
               </Grid>
