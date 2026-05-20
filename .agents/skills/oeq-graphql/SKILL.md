@@ -32,7 +32,7 @@ Before using this skill, ensure the openEQUELLA dev server is running. Use the
 ### Required Tools
 
 - `curl` — for HTTP requests
-- `jq` — for JSON formatting and constructing request bodies (required)
+- `jq` — for JSON formatting and constructing request bodies
 
 ---
 

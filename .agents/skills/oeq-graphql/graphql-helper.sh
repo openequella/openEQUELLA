@@ -26,6 +26,16 @@ DEFAULT_PASSWORD="autotestpassword"
 DEFAULT_INSTITUTION="rest"
 
 # ---------------------------------------------------------------------------
+# Ensure a URL has a trailing slash.
+# Usage: ensure_trailing_slash <url>
+# ---------------------------------------------------------------------------
+ensure_trailing_slash() {
+  local url="$1"
+  [[ "${url}" != */ ]] && url="${url}/"
+  echo "${url}"
+}
+
+# ---------------------------------------------------------------------------
 # Read a value from a .properties file, stripping whitespace.
 # Usage: read_prop_from <file> <key>
 # ---------------------------------------------------------------------------
@@ -54,9 +64,7 @@ get_server_root() {
     port="${port:-8080}"
     url="http://localhost:${port}/"
   fi
-  # Ensure trailing slash
-  [[ "${url}" != */ ]] && url="${url}/"
-  echo "${url}"
+  ensure_trailing_slash "${url}"
 }
 
 # ---------------------------------------------------------------------------
@@ -70,9 +78,7 @@ get_server_root() {
 get_institution_url() {
   # 1. Environment variable override
   if [[ -n "${OEQ_INSTITUTION_URL:-}" ]]; then
-    local url="${OEQ_INSTITUTION_URL}"
-    [[ "${url}" != */ ]] && url="${url}/"
-    echo "${url}"
+    ensure_trailing_slash "${OEQ_INSTITUTION_URL}"
     return
   fi
 
@@ -81,8 +87,7 @@ get_institution_url() {
     local from_file
     from_file="$(read_prop_from "${GQL_CLIENT_LOCAL}" "oeq.institution.url")"
     if [[ -n "${from_file}" ]]; then
-      [[ "${from_file}" != */ ]] && from_file="${from_file}/"
-      echo "${from_file}"
+      ensure_trailing_slash "${from_file}"
       return
     fi
   fi
@@ -178,8 +183,8 @@ cmd_login() {
     echo "ERROR: Login failed (HTTP ${http_code})."
     echo "  - Check that the server is running."
     echo "  - Check the institution URL is correct (run 'config' to verify)."
-    echo "  - Credentials are passed as query parameters, not JSON body."
-    echo "  - Default credentials: ${DEFAULT_USERNAME} / ${DEFAULT_PASSWORD}"
+    echo "  - Check username/password."
+    echo "  - Credentials used: ${username} / ${password} (defaults: ${DEFAULT_USERNAME} / ${DEFAULT_PASSWORD})"
     return 1
   fi
 }
@@ -208,6 +213,11 @@ cmd_schema() {
 #   query 'mutation StartEdit($id: Long!) { collection { startEdit(id: $id) { entity { details { id name } } } } }' '{"id": 1234}'
 # ---------------------------------------------------------------------------
 cmd_query() {
+  if ! command -v jq &>/dev/null; then
+    echo "ERROR: 'jq' is required for the query command but was not found in PATH."
+    return 1
+  fi
+
   if [[ $# -lt 1 ]]; then
     echo "Usage: graphql-helper.sh query <graphql-string> [variables-json]"
     echo ""
@@ -242,12 +252,8 @@ cmd_query() {
     -b "${COOKIE_FILE}" \
     -d "${body}")"
 
-  # Pretty-print with jq if available, otherwise raw
-  if command -v jq &>/dev/null; then
-    echo "${response}" | jq .
-  else
-    echo "${response}"
-  fi
+  # Pretty-print with jq
+  echo "${response}" | jq .
 }
 
 # ---------------------------------------------------------------------------
