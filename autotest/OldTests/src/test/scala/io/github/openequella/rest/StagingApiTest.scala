@@ -7,6 +7,7 @@ import com.tle.webtests.pageobject.AbstractPage
 import com.tle.webtests.test.files.Attachments
 import org.apache.commons.httpclient.methods._
 import org.apache.commons.httpclient.{HttpMethod, HttpStatus, NameValuePair}
+import org.apache.hc.core5.http.HttpHeaders
 import org.testng.Assert._
 import org.testng.annotations.{DataProvider, Test}
 import org.testng.asserts.SoftAssert
@@ -340,7 +341,9 @@ class StagingApiTest extends AbstractRestApiTest {
       method.setRequestEntity(new FileRequestEntity(file, "application/octet-stream"))
 
       unzipTo.foreach(u => method.setQueryString(Array(new NameValuePair("unzipto", u))))
-      ifNoneMatch.foreach(headerVal => method.setRequestHeader("If-None-Match", headerVal))
+      ifNoneMatch.foreach(headerVal =>
+        method.setRequestHeader(HttpHeaders.IF_NONE_MATCH, headerVal)
+      )
 
       execute(method)(_ => ())
     }
