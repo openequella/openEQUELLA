@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, List, ListItem } from "@mui/material";
+import { Grid, List, ListItem, Stack } from "@mui/material";
 import * as React from "react";
 import {
   isUploadedFile,
@@ -81,23 +81,29 @@ export const UploadList = ({
           return isUploadedFile(file) && !file.errorMessage ? (
             primaryText
           ) : (
-            <Grid container direction="column" spacing={1} wrap="nowrap">
-              <Grid>{primaryText}</Grid>
-              <Grid>{secondaryText}</Grid>
-            </Grid>
+            <Stack spacing={1}>
+              {primaryText}
+              {secondaryText}
+            </Stack>
           );
         };
 
         // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
           <ListItem key={fileId} divider component="div">
-            <Grid container spacing={2} alignItems="center" size="grow">
+            <Grid
+              container
+              spacing={2}
+              size="grow"
+              sx={{ alignItems: "center" }}
+            >
               <Grid
                 size={{
                   xs: 6,
                   sm: 8,
                   lg: 9,
                 }}
+                sx={{ overflowWrap: "break-word" }}
               >
                 <ListItemContent />
               </Grid>

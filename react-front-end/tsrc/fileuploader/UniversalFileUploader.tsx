@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, Stack } from "@mui/material";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -200,15 +200,15 @@ export const UniversalFileUploader = ({
   };
 
   return (
-    <Grid container id="uploads" direction="column" spacing={1}>
-      <Grid className="uploadsprogress">
+    <Stack id="uploads" spacing={1}>
+      <Box className="uploadsprogress">
         <UploadList
           files={[...uploadedFiles, ...uploadingFiles]}
           buildActions={buildActions}
           noFileSelectedText={noFileSelected}
         />
-      </Grid>
-      <Grid {...getRootProps()}>
+      </Box>
+      <Box {...getRootProps()}>
         <input
           id={`${ctrlId}_fileUpload`}
           {...getInputProps({
@@ -224,10 +224,10 @@ export const UniversalFileUploader = ({
           })}
         />
         <div className="filedrop">{strings.drop}</div>
-      </Grid>
-      <Grid>
+      </Box>
+      <Box>
         <AddScrapBookButton />
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   );
 };

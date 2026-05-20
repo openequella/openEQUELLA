@@ -66,7 +66,7 @@ export interface UsableByControlProps
 }
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
-  "&": { marginRight: theme.spacing(5) },
+  "&": { marginRight: theme.spacing(9) },
 }));
 
 const editIconTitle = `${editLabel} ${usableBy}`;
@@ -110,7 +110,9 @@ const UsableByControl = ({
 
       <ListItem>
         <StyledListItemText
-          secondaryTypographyProps={{ component: "div" }}
+          slotProps={{
+            secondary: { component: "div" },
+          }}
           secondary={<CodeBlock value={readableACLExpressionText} />}
         />
         <ListItemSecondaryAction>

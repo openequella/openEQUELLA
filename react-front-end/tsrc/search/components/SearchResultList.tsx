@@ -200,7 +200,7 @@ export const SearchResultList = ({
       <CardHeader
         title={(title ?? searchPageStrings.subtitle) + ` (${count})`}
         action={
-          <Grid container spacing={1} alignItems="center">
+          <Grid container spacing={1} sx={{ alignItems: "center" }}>
             <Grid>
               <SearchOrderSelect {...orderSelectProps} />
             </Grid>
@@ -268,7 +268,7 @@ export const SearchResultList = ({
         {searchResultList}
       </CardContent>
       <CardActions>
-        <Grid container justifyContent="center" size="grow">
+        <Grid container sx={{ justifyContent: "center" }} size="grow">
           <Grid>
             <SearchPagination
               count={count}

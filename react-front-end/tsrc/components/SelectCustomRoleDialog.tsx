@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -25,6 +26,7 @@ import {
   ListItemIcon,
   ListItemText,
   Skeleton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -38,13 +40,15 @@ import TableRow from "@mui/material/TableRow";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constVoid, flow, pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as RS from "fp-ts/ReadonlySet";
 import * as SET from "fp-ts/Set";
-import { useEffect, useState } from "react";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { getRoleNameByUrn } from "../modules/Lti13PlatformsModule";
+import { eqRoleById, ordRole } from "../modules/RoleModule";
+import { languageStrings } from "../util/langstrings";
 import { isNonEmptyString } from "../util/validation";
 import ConfirmDialog from "./ConfirmDialog";
 import {
@@ -53,11 +57,9 @@ import {
   customRoleOrd,
   CustomRolesDetailsMappings,
 } from "./CustomRoleHelper";
+import SecurityEntityEntry from "./securityentitydialog/SecurityEntityEntry";
 import SecurityEntityEntrySkeleton from "./securityentitydialog/SecurityEntityEntrySkeleton";
 import RoleSearch from "./securityentitysearch/RoleSearch";
-import SecurityEntityEntry from "./securityentitydialog/SecurityEntityEntry";
-import { eqRoleById, ordRole } from "../modules/RoleModule";
-import { languageStrings } from "../util/langstrings";
 
 const {
   title,
@@ -371,7 +373,7 @@ const SelectCustomRoleDialog = ({
     M.isEmpty(rolesMappings) ? (
       <ListItem>
         <ListItemIcon>
-          <ErrorOutline />
+          <ErrorOutlineOutlinedIcon />
         </ListItemIcon>
         <ListItemText secondary={addRoles} />
       </ListItem>
@@ -390,35 +392,37 @@ const SelectCustomRoleDialog = ({
       maxWidth="lg"
     >
       <Grid container>
-        <Grid container direction="column" rowSpacing={2} size="grow">
-          <Grid>
+        <Grid size="grow">
+          <Stack spacing={2}>
             {customRoleSelector?.(setSelectedCustomRole, selectedCustomRole) ??
               defaultCustomRoleSelector}
-          </Grid>
-          <Grid>{selectOeqRole}</Grid>
+            <Box>{selectOeqRole}</Box>
+          </Stack>
         </Grid>
 
         <StyledDivider orientation="vertical" flexItem sx={{ opacity: 0.6 }} />
 
-        <Grid container rowSpacing={2} direction="column" size="grow">
-          <Grid>
-            <Typography variant="h6" gutterBottom>
-              {currentMappings}
-            </Typography>
-            {hasInitialized ? renderMappingsTable() : <TableSkeleton />}
-          </Grid>
+        <Grid size="grow">
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {currentMappings}
+              </Typography>
+              {hasInitialized ? renderMappingsTable() : <TableSkeleton />}
+            </Box>
 
-          {!M.isEmpty(rolesMappings) && (
-            <Grid>
-              <Button
-                color="secondary"
-                onClick={() => setRolesMappings(new Map())}
-                sx={{ float: "right" }}
-              >
-                {removeAllLabel}
-              </Button>
-            </Grid>
-          )}
+            {!M.isEmpty(rolesMappings) && (
+              <Box>
+                <Button
+                  color="secondary"
+                  onClick={() => setRolesMappings(new Map())}
+                  sx={{ float: "right" }}
+                >
+                  {removeAllLabel}
+                </Button>
+              </Box>
+            )}
+          </Stack>
         </Grid>
       </Grid>
     </ConfirmDialog>

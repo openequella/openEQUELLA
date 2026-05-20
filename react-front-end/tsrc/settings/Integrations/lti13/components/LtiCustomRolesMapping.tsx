@@ -16,19 +16,19 @@
  * limitations under the License.
  */
 import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import {
   CustomRole,
   CustomRolesMappings,
 } from "../../../../components/CustomRoleHelper";
+import CustomRolesMappingControl from "../../../../components/CustomRolesMappingControl";
 import {
   defaultSelectedRoleUrn,
   getRoleNameByUrn,
   ltiRoles,
 } from "../../../../modules/Lti13PlatformsModule";
 import { languageStrings } from "../../../../util/langstrings";
-import CustomRolesMappingControl from "../../../../components/CustomRolesMappingControl";
-import * as OEQ from "@openequella/rest-api-client";
 
 const {
   customRoleDialogTitle,
@@ -53,9 +53,11 @@ const selectLtiRole = (
         });
       }}
       MenuProps={{
-        PaperProps: {
-          style: {
-            maxHeight: 280,
+        slotProps: {
+          paper: {
+            style: {
+              maxHeight: 280,
+            },
           },
         },
       }}

@@ -34,7 +34,7 @@ interface UploadInfoProps {
 export const UploadInfo = ({ file }: UploadInfoProps) => {
   const { uploadPercentage, status, errorMessage } = file;
   return status === "uploading" ? (
-    <Grid container alignItems="center" spacing={1}>
+    <Grid container spacing={1} sx={{ alignItems: "center" }}>
       <Grid size={10}>
         <LinearProgress variant="determinate" value={uploadPercentage} />
       </Grid>
