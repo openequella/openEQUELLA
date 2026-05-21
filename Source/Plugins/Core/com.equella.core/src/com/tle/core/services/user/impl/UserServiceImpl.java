@@ -82,6 +82,7 @@ import com.tle.plugins.ump.UserManagementLogonFilter;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -90,7 +91,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Singleton;
@@ -103,7 +103,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import scala.jdk.javaapi.OptionConverters;
 
-@SuppressWarnings("nls")
 @Bind(UserService.class)
 @Singleton
 public class UserServiceImpl
@@ -361,8 +360,28 @@ public class UserServiceImpl
   }
 
   @Override
+  public int countUsersInGroup(String groupId, boolean recursive) {
+    return getCurrentPlugin().countUsersInGroup(groupId, recursive);
+  }
+
+  @Override
   public List<UserBean> getUsersInGroup(String groupId, boolean recursive) {
     return getCurrentPlugin().getUsersInGroup(groupId, recursive);
+  }
+
+  @Override
+  public List<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset) {
+    return getCurrentPlugin().getUsersInGroup(groupId, recursive, limit, offset);
+  }
+
+  @Override
+  public int countUsers(String query) {
+    return getCurrentPlugin().countUsers(fixQuery(query));
+  }
+
+  @Override
+  public int countUsers(String query, String parentGroupId, boolean recursive) {
+    return getCurrentPlugin().countUsers(fixQuery(query), parentGroupId, recursive);
   }
 
   @Override
@@ -371,13 +390,19 @@ public class UserServiceImpl
   }
 
   @Override
-  public List<GroupBean> searchGroups(String query, String parentId) {
-    return getCurrentPlugin().searchGroups(fixQuery(query), parentId);
+  public List<UserBean> searchUsers(String query, int limit, int offset) {
+    return getCurrentPlugin().searchUsers(fixQuery(query), limit, offset);
   }
 
   @Override
   public List<UserBean> searchUsers(String query, String parentGroupID, boolean recurse) {
     return getCurrentPlugin().searchUsers(fixQuery(query), parentGroupID, recurse);
+  }
+
+  @Override
+  public List<UserBean> searchUsers(
+      String query, String parentGroupId, boolean recursive, int limit, int offset) {
+    return getCurrentPlugin().searchUsers(fixQuery(query), parentGroupId, recursive, limit, offset);
   }
 
   @Override
@@ -391,8 +416,33 @@ public class UserServiceImpl
   }
 
   @Override
+  public int countGroups(String query, String parentGroupId) {
+    return getCurrentPlugin().countGroups(fixQuery(query), parentGroupId);
+  }
+
+  @Override
+  public int countGroups(String query) {
+    return getCurrentPlugin().countGroups(fixQuery(query));
+  }
+
+  @Override
   public List<GroupBean> searchGroups(String query) {
     return getCurrentPlugin().searchGroups(fixQuery(query));
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, String parentId) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), parentId);
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, int limit, int offset) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), limit, offset);
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), parentGroupId, limit, offset);
   }
 
   @Override
@@ -411,8 +461,18 @@ public class UserServiceImpl
   }
 
   @Override
+  public int countRoles(String query) {
+    return getCurrentPlugin().countRoles(fixQuery(query));
+  }
+
+  @Override
   public List<RoleBean> searchRoles(String query) {
     return getCurrentPlugin().searchRoles(fixQuery(query));
+  }
+
+  @Override
+  public List<RoleBean> searchRoles(String query, int limit, int offset) {
+    return getCurrentPlugin().searchRoles(query, limit, offset);
   }
 
   private String fixQuery(String query) {
@@ -811,7 +871,7 @@ public class UserServiceImpl
     Collection<UserManagementLogonFilter> filters;
     Map<?, ?> attributes;
     Cache<String, Triple<Collection<Long>, Collection<Long>, Collection<Long>>> expressionCache =
-        CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
+        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
   }
 
   @Override

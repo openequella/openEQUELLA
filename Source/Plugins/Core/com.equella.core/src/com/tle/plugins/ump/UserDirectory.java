@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
  * their requirement.
  */
 public interface UserDirectory {
+  // TODO: move to file ChainedResult.java
   enum ChainResult {
     CONTINUE,
     STOP
@@ -67,24 +68,18 @@ public interface UserDirectory {
   /**
    * Authenticates a user from a username.
    *
-   * @param token the token for the user requesting this information as returned by <code>
-   *     authenticateUser()</code>
-   * @return information about the currently logged in user
+   * @return null if token is invalid, else a valid user state for the given token.
    */
   ModifiableUserState authenticateUserFromUsername(String username, String privateData);
 
   /**
    * Authenticates a user from a token.
    *
-   * @return null if token is invalid, else a valid user state for the given token.
+   * @return null if token is invalid, else a valid user state.
    */
   ModifiableUserState authenticateToken(String token);
 
-  /**
-   * Authenticates a user from a request.
-   *
-   * @return null .
-   */
+  /** Authenticates a user from a request. */
   ModifiableUserState authenticateRequest(HttpServletRequest request);
 
   /**
@@ -111,7 +106,7 @@ public interface UserDirectory {
    * Ensure that the token passed is still valid for the current session. This method should be
    * light-weight.
    *
-   * @return VALId or INVALId if token is handled by you, else PASS.
+   * @return VALID or INVALID if token is handled by you, else PASS.
    */
   VerifyTokenResult verifyUserStateForToken(UserState userState, String token);
 
@@ -140,9 +135,7 @@ public interface UserDirectory {
   /**
    * Retrieve basic information regarding a group Id.
    *
-   * @param state the token for the user requesting this information as returned by <code>
-   *     authenticateUser()</code>
-   * @param groupId a group Id to query.
+   * @param groupId a group ID to query.
    * @return a GroupBean object corresponding to the groupId parameter
    */
   GroupBean getInformationForGroup(String groupId);
@@ -150,8 +143,6 @@ public interface UserDirectory {
   /**
    * Retrieve basic information regarding a list of group Ids.
    *
-   * @param state the token for the user requesting this information as returned by <code>
-   *     authenticateUser()</code>
    * @param groupIds zero or more groups to query
    * @return a collection of GroupBean objects corresponding to the groupIds parameter
    */
@@ -163,9 +154,7 @@ public interface UserDirectory {
   /**
    * Retrieve basic information regarding a list of role Ids.
    *
-   * @param state the token for the user requesting this information as returned by <code>
-   *     authenticateUser()</code>
-   * @param roleIds zero or more groups to query
+   * @param roleIds zero or more roles to query
    * @return a collection of RoleBean objects corresponding to the roleIds parameter
    */
   Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds);
@@ -174,7 +163,6 @@ public interface UserDirectory {
    * Retrieve the roles for the specified user.
    *
    * @param userId the user to query
-   * @return a role
    */
   Pair<ChainResult, Collection<RoleBean>> getRolesForUser(String userId);
 
@@ -192,6 +180,15 @@ public interface UserDirectory {
    * Return a list of all members of a given group. If <code>recursive</code> is false, then only
    * direct children (in a hierarchical sense) of the given group are to be returned.
    *
+   * @param groupId The unique ID of the group to count users for
+   * @param recursive Whether to count users in subgroups recursively
+   * @return Total number of users in the group
+   */
+  int countUsersInGroup(String groupId, boolean recursive);
+
+  /**
+   * Return a list of all members of a given group. // TODO: RENAME TO getUsersInGroup
+   *
    * @param groupId the group for which all user results must be a member.
    * @param recursive when false, only members directly in the given group should be returned.
    *     <i>(optional behaviour)</i> when true, all members of any sub-groups are also to be merged
@@ -203,6 +200,47 @@ public interface UserDirectory {
   Pair<ChainResult, Collection<UserBean>> getUsersForGroup(String groupId, boolean recursive);
 
   /**
+   * Retrieves a slice of users belonging to the specified group.
+   *
+   * @param groupId The unique ID of the group to retrieve users for
+   * @param recursive Whether to include users from subgroups recursively
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the users for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset);
+
+  /**
+   * Returns the total count of users matching the given query.
+   *
+   * @param query The username, first name or last name to search for
+   * @return Total number of matching users
+   */
+  int countUsers(String query);
+
+  /**
+   * Returns the total number of users in the specified group matching the given query.
+   *
+   * @param query The username, first name or last name to search for
+   * @param parentGroupId The highest level group to search
+   * @param recursive Whether to search subgroups recursively
+   * @return Total number of matching users within the group
+   */
+  int countUsers(String query, String parentGroupId, boolean recursive);
+
+  /**
+   * Search for users, returning only the slice defined by {@code limit} and {@code offset}.
+   *
+   * @param query The username, first name or last name to search for
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the matching users for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<UserBean> searchUsers(String query, int limit, int offset);
+
+  /**
    * Perform a free-text search over the user database on any fields deemed relevant by the external
    * system.
    *
@@ -212,16 +250,16 @@ public interface UserDirectory {
   Pair<ChainResult, Collection<UserBean>> searchUsers(String query);
 
   /**
-   * Same as <code>searchUsers(query)</code> with additonal filtering by group. If the parentGroupId
-   * is not an empty string, then the resulting users should be a member of the given group. If
-   * <code>recurse</code> is false, then only direct children (in a hierarchical sense) of the given
-   * group are to be returned. <code>recurse</code> has no effect if the parentGroupId is not
-   * specified.
+   * Same as <code>searchUsers(query)</code> with additional filtering by group. If the
+   * parentGroupId is not an empty string, then the resulting users should be a member of the given
+   * group. If <code>recurse</code> is false, then only direct children (in a hierarchical sense) of
+   * the given group are to be returned. <code>recurse</code> has no effect if the parentGroupId is
+   * not specified.
    *
    * @param query a string representing the free-text query.
    * @param parentGroupId the group for which all user results must be a member. If it is an empty
    *     string, then users in any group may be considered.
-   * @param recurse when false, only members directly in the given group should be returned.
+   * @param recursive when false, only members directly in the given group should be returned.
    *     <i>(optional behaviour)</i> when true, all members of any sub-groups are also to be merged
    *     into the result set.
    * @return a list of UserBean objects matching the query
@@ -230,8 +268,39 @@ public interface UserDirectory {
       String query, String parentGroupId, boolean recursive);
 
   /**
-   * Perform a free-text search over the group database on any fields deemed relevant by the
-   * external system.
+   * Search for users in the specified group, returning only the slice defined by {@code limit} and
+   * {@code offset}.
+   *
+   * @param query The username, first name or last name to search for
+   * @param parentGroupId The highest level group to search
+   * @param recursive Whether to search subgroups recursively
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the matching users for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<UserBean> searchUsers(
+      String query, String parentGroupId, boolean recursive, int limit, int offset);
+
+  /**
+   * Returns the total number of groups matching the given query.
+   *
+   * @param query The group name fragment to search for
+   * @return Total number of matching groups
+   */
+  int countGroups(String query);
+
+  /**
+   * Returns the total number of groups matching the given query within the specified parent group.
+   *
+   * @param query The group name fragment to search for
+   * @param parentGroupId The unique ID of the parent group to restrict the search to
+   * @return Total number of matching groups within the parent group
+   */
+  int countGroups(String query, String parentGroupId);
+
+  /**
+   * Perform a free-text search over the group database.
    *
    * @param query a string representing the free-text query.
    * @return a collection of GroupBean objects matching the query
@@ -239,29 +308,73 @@ public interface UserDirectory {
   Collection<GroupBean> searchGroups(String query);
 
   /**
-   * Same as <code>searchGroups(query)</code> with additional filtering by parent group. If the
+   * Search for groups, returning only the slice defined by {@code limit} and {@code offset}.
+   *
+   * @param query The group name fragment to search for
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the matching groups for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<GroupBean> searchGroups(String query, int limit, int offset);
+
+  /**
+   * Same as {@link #searchGroups(String)} with additional filtering by parent group.
    *
    * @param query a string representing the free-text query.
+   * @param parentGroupId the parent group to restrict the search to
    * @return a collection of GroupBean objects matching the query
    */
   Collection<GroupBean> searchGroups(String query, String parentGroupId);
+
+  /**
+   * Search for groups within the specified parent group, returning only the slice defined by {@code
+   * limit} and {@code offset}.
+   *
+   * @param query The group name fragment to search for
+   * @param parentGroupId The unique ID of the parent group to restrict the search to
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the matching groups for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset);
 
   /** Returns the parent group of the given group, or null if no parent exists. */
   GroupBean getParentGroupForGroup(String groupId);
 
   /**
-   * Perform a free-text search for roles deemed relevant by the external system.
+   * Returns the total number of roles matching the given query.
+   *
+   * @param query The role name fragment to search for
+   * @return Total number of matching roles
+   */
+  int countRoles(String query);
+
+  /**
+   * Perform a free-text search for roles.
    *
    * @param query a string representing the free-text query.
-   * @return a collection of String objects matching the query
+   * @return a collection of RoleBean objects matching the query
    */
   Collection<RoleBean> searchRoles(String query);
+
+  /**
+   * Search for roles, returning only the slice defined by {@code limit} and {@code offset}.
+   *
+   * @param query The role name fragment to search for
+   * @param limit Maximum number of results to return (must be >= 0)
+   * @param offset Zero-based start index of the first result to return (must be >= 0)
+   * @return A ChainedResult with the matching roles for the requested page
+   * @throws IllegalArgumentException if limit or offset is negative
+   */
+  ChainedResult<RoleBean> searchRoles(String query, int limit, int offset);
 
   /** Performs any final operations such as closing DB connections. */
   void close() throws Exception;
 
   /**
-   * Used for remote applets
+   * Used for remote applets.
    *
    * @param username The username to mangle
    * @return A token with a limited life span
