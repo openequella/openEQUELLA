@@ -8,11 +8,10 @@ import com.tle.common.security.{
   TargetList,
   WorkflowTaskTarget
 }
-import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-class OtherTargetListTest extends AnyFunSpec with Matchers with GivenWhenThen {
+class OtherTargetListTest extends AnyFunSpec with Matchers {
 
   /** Shared ItemDefinition for tests that require one (ItemStatusTarget, ItemMetadataTarget). */
   private val itemDef = new ItemDefinition()
@@ -119,6 +118,7 @@ class OtherTargetListTest extends AnyFunSpec with Matchers with GivenWhenThen {
     it("handles a map with multiple target types") {
       val statusTarget   = new ItemStatusTarget(ItemStatus.LIVE, itemDef)
       val metadataTarget = new ItemMetadataTarget("rule-1", itemDef)
+      val workflowTarget = new WorkflowTaskTarget(99L, "task-uuid-789")
 
       val emptyTargetList = new TargetList()
       emptyTargetList.setEntries(java.util.Collections.emptyList())
@@ -126,12 +126,14 @@ class OtherTargetListTest extends AnyFunSpec with Matchers with GivenWhenThen {
       val map = new java.util.HashMap[Object, TargetList]()
       map.put(statusTarget, emptyTargetList)
       map.put(metadataTarget, emptyTargetList)
+      map.put(workflowTarget, emptyTargetList)
 
       val result = OtherTargetList.fromMap(map)
 
-      result should have size 2
+      result should have size 3
       result.count(_.targetType == OtherTargetListType.ITEM_STATUS) shouldBe 1
       result.count(_.targetType == OtherTargetListType.ITEM_METADATA) shouldBe 1
+      result.count(_.targetType == OtherTargetListType.WORKFLOW_TASK) shouldBe 1
     }
 
     it("handles entries with null TargetList values") {
