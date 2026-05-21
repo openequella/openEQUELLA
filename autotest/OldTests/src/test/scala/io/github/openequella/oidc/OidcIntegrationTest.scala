@@ -173,11 +173,12 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     oidcSettingsPage.enableSeamlessSso(enable = true)
     oidcSettingsPage.save()
 
-    // Log out and attempt to access a protected OEQ resource, e.g. Favourites page, and the user
-    // should be automatically logged in and able to access the page.
+    // Log out.
     val homePage = new HomePage(context).load()
     homePage.logout()
 
+    // Attempt to access a protected OEQ resource, e.g. Favourites page, and user should be automatically
+    // logged in.
     val favPage = new FavouritesPage(context).load()
     assertTrue(favPage.isVisible)
     checkProfile()

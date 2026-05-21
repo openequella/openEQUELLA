@@ -58,6 +58,10 @@ public class HomePage extends AbstractPage<HomePage> {
     return ms.hasMenuOption(dynamicTopicName);
   }
 
+  /**
+   * Logs out the user by clicking on the "My Account" icon and then selecting "Logout" from the
+   * dropdown menu. Users should be navigated to the Login page.
+   */
   public LoginPage logout() {
     WebElement myAccountIcon =
         waiter.until(
