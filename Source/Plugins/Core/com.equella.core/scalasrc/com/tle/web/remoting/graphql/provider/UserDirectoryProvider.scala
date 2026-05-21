@@ -18,21 +18,28 @@
 
 package com.tle.web.remoting.graphql.provider
 
+import caliban.relay.{Base64Cursor, Pagination}
 import com.tle.common.security.SecurityConstants
+import com.tle.common.usermanagement.user.valuebean.{GroupBean, UserBean, RoleBean}
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.services.user.UserService
+import com.tle.web.remoting.graphql.schema.{Page, paginationOffsetLimit}
 import com.tle.web.remoting.graphql.schema.types.{
+  Group,
+  GroupConnection,
   GroupWithId,
   Role,
+  RoleConnection,
   RoleWithId,
   User,
-  Group,
+  UserConnection,
   UserWithId
 }
 
 import javax.inject.{Inject, Singleton}
 import org.slf4j.LoggerFactory
+
 import scala.jdk.CollectionConverters._
 
 /** A provider for user directory operations backed by [[UserService]]. The user directory
@@ -42,6 +49,47 @@ import scala.jdk.CollectionConverters._
 @Singleton
 class UserDirectoryProvider @Inject() (userService: UserService) {
   private val LOGGER = LoggerFactory.getLogger(classOf[UserDirectoryProvider])
+
+  /** Compute a [[Page]] by counting the total result set, deriving offset/limit from
+    * [[Pagination]], and then fetching only the required slice via `fetch`.
+    *
+    * @param pagination
+    *   the Relay-style pagination parameters
+    * @param count
+    *   by-name expression that returns the total number of matching users, groups, or roles
+    * @param fetch
+    *   function from (limit, offset) to the users, groups, or roles for this page
+    * @tparam T
+    *   the entity type — [[User]], [[Group]], or [[Role]]
+    * @return
+    *   a [[Page]] ready to be wrapped in a Connection type
+    */
+  private def paginatePage[T](
+      pagination: Pagination[Base64Cursor],
+      count: => Int,
+      fetch: (Int, Int) => List[T]
+  ): Page[T] = {
+    val total           = count
+    val (offset, limit) = paginationOffsetLimit(pagination, total)
+    val items           = if (total > 0) fetch(limit, offset) else List.empty
+    Page(items, total, offset, limit)
+  }
+
+  // Formats the pagination parameters as a short string for debug logging.
+  private def paginationInfo(pagination: Pagination[Base64Cursor]): String =
+    s"[count=${pagination.count}, cursor=${pagination.cursor}]"
+
+  // Helper method to convert a Java List of UserBeans to a Scala List of Users
+  private def javaUsersToScala(beans: java.util.List[UserBean]): List[User] =
+    beans.asScala.map(User(_)).toList
+
+  // Helper method to convert a Java List of GroupBeans to a Scala List of Groups
+  private def javaGroupsToScala(beans: java.util.List[GroupBean]): List[Group] =
+    beans.asScala.map(Group(_)).toList
+
+  // Helper method to convert a Java List of RoleBeans to a Scala List of Roles
+  private def javaRolesToScala(beans: java.util.List[RoleBean]): List[Role] =
+    beans.asScala.map(Role(_)).toList
 
   // ---------------------------------------------------------------------------
   // User operations
@@ -78,48 +126,70 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
       .toList
   }
 
-  /** Search for users matching the given query. Wildcards at the start and end of the query are
-    * implied by the underlying service (e.g. `mit` will match `smith`).
+  /** Search for users matching the given query with pagination. Wildcards at the start and end of
+    * the query are implied.
     *
     * @param query
     *   the search query to match against username, first name, or last name
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of matching [[User]] objects
+    *   a [[UserConnection]] containing the page of matching users
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchUsers(query: String): List[User] = {
-    LOGGER.debug("Searching users with query: {}", query)
-    userService.searchUsers(query).asScala.map(User(_)).toList
+  def searchUsers(query: String, pagination: Pagination[Base64Cursor]): UserConnection = {
+    LOGGER.debug(
+      "Searching users with query: {}, pagination: {}",
+      query,
+      paginationInfo(pagination)
+    )
+    UserConnection(
+      paginatePage(
+        pagination,
+        userService.countUsers(query),
+        (limit, offset) => javaUsersToScala(userService.searchUsers(query, limit, offset))
+      )
+    )
   }
 
-  /** Search for users within the specified group (and optionally its subgroups).
+  /** Search for users within the specified group (and optionally its subgroups) with pagination.
     *
     * @param query
     *   the search query to match against username, first name, or last name
     * @param parentGroupId
-    *   the group to restrict the search to, or `None` for all groups
+    *   the group to restrict the search to
     * @param recursive
     *   whether to search subgroups recursively
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of matching [[User]] objects
+    *   a [[UserConnection]] containing the page of matching users
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def searchUsersInGroup(
       query: String,
-      parentGroupId: Option[String],
-      recursive: Boolean
-  ): List[User] = {
+      parentGroupId: String,
+      recursive: Boolean,
+      pagination: Pagination[Base64Cursor]
+  ): UserConnection = {
     LOGGER.debug(
-      "Searching users with query: {}, parentGroupId: {}, recursive: {}",
+      "Searching users with query: {}, parentGroupId: {}, recursive: {}, pagination: {}",
       query,
       parentGroupId,
-      recursive
+      recursive,
+      paginationInfo(pagination)
     )
-    userService
-      .searchUsers(query, parentGroupId.orNull, recursive)
-      .asScala
-      .map(User(_))
-      .toList
+    UserConnection(
+      paginatePage(
+        pagination,
+        userService.countUsers(query, parentGroupId, recursive),
+        (limit, offset) =>
+          javaUsersToScala(
+            userService
+              .searchUsers(query, parentGroupId, recursive, limit, offset)
+          )
+      )
+    )
   }
 
   /** Retrieve all roles assigned to the given user.
@@ -158,22 +228,40 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def groupsForUser(userId: String): List[Group] = {
     LOGGER.debug("Retrieving groups for user: {}", userId)
-    userService.getGroupsContainingUser(userId).asScala.map(Group(_)).toList
+    javaGroupsToScala(userService.getGroupsContainingUser(userId))
   }
 
-  /** List all users in the specified group.
+  /** List all users in the specified group with pagination.
     *
     * @param groupId
     *   the unique ID of the group
     * @param recursive
     *   whether to include users from subgroups
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of [[User]] objects
+    *   a [[UserConnection]] containing the page of users
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def usersInGroup(groupId: String, recursive: Boolean): List[User] = {
-    LOGGER.debug("Retrieving users in group: {}, recursive: {}", groupId, recursive)
-    userService.getUsersInGroup(groupId, recursive).asScala.map(User(_)).toList
+  def usersInGroup(
+      groupId: String,
+      recursive: Boolean,
+      pagination: Pagination[Base64Cursor]
+  ): UserConnection = {
+    LOGGER.debug(
+      "Retrieving users in group: {}, recursive: {}, pagination: {}",
+      groupId,
+      recursive,
+      paginationInfo(pagination)
+    )
+    UserConnection(
+      paginatePage(
+        pagination,
+        userService.countUsersInGroup(groupId, recursive),
+        (limit, offset) =>
+          javaUsersToScala(userService.getUsersInGroup(groupId, recursive, limit, offset))
+      )
+    )
   }
 
   // ---------------------------------------------------------------------------
@@ -211,32 +299,62 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
       .toList
   }
 
-  /** Search for groups matching the given query across the entire group hierarchy.
+  /** Search for groups matching the given query across the entire group hierarchy with pagination.
     *
     * @param query
     *   the search query - wildcards at start and end are implied
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of matching [[Group]] objects
+    *   a [[GroupConnection]] containing the page of matching groups
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchGroups(query: String): List[Group] = {
-    LOGGER.debug("Searching groups with query: {}", query)
-    userService.searchGroups(query).asScala.map(Group(_)).toList
+  def searchGroups(query: String, pagination: Pagination[Base64Cursor]): GroupConnection = {
+    LOGGER.debug(
+      "Searching groups with query: {}, pagination: {}",
+      query,
+      paginationInfo(pagination)
+    )
+    GroupConnection(
+      paginatePage(
+        pagination,
+        userService.countGroups(query),
+        (limit, offset) => javaGroupsToScala(userService.searchGroups(query, limit, offset))
+      )
+    )
   }
 
-  /** Search for groups matching the given query within the specified parent group.
+  /** Search for groups matching the given query within the specified parent group with pagination.
     *
     * @param query
     *   the search query - wildcards at start and end are implied
     * @param parentGroupId
     *   the unique ID of the parent group to restrict the search to
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of matching [[Group]] objects
+    *   a [[GroupConnection]] containing the page of matching groups
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchGroupsInParent(query: String, parentGroupId: String): List[Group] = {
-    LOGGER.debug("Searching groups with query: {}, parentGroupId: {}", query, parentGroupId)
-    userService.searchGroups(query, parentGroupId).asScala.map(Group(_)).toList
+  def searchGroupsInParent(
+      query: String,
+      parentGroupId: String,
+      pagination: Pagination[Base64Cursor]
+  ): GroupConnection = {
+    LOGGER.debug(
+      "Searching groups with query: {}, parentGroupId: {}, pagination: {}",
+      query,
+      parentGroupId,
+      paginationInfo(pagination)
+    )
+    GroupConnection(
+      paginatePage(
+        pagination,
+        userService.countGroups(query, parentGroupId),
+        (limit, offset) =>
+          javaGroupsToScala(userService.searchGroups(query, parentGroupId, limit, offset))
+      )
+    )
   }
 
   /** Retrieve the parent group of the specified group, if one exists.
@@ -287,16 +405,29 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
       .toList
   }
 
-  /** Search for roles matching the given query.
+  /** Search for roles matching the given query with pagination. Wildcards at start and end are
+    * implied.
     *
     * @param query
-    *   the search query - wildcards at start and end are implied
+    *   the search query
+    * @param pagination
+    *   the pagination parameters
     * @return
-    *   a list of matching [[Role]] objects
+    *   a [[RoleConnection]] containing the page of matching roles
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchRoles(query: String): List[Role] = {
-    LOGGER.debug("Searching roles with query: {}", query)
-    userService.searchRoles(query).asScala.map(Role(_)).toList
+  def searchRoles(query: String, pagination: Pagination[Base64Cursor]): RoleConnection = {
+    LOGGER.debug(
+      "Searching roles with query: {}, pagination: {}",
+      query,
+      paginationInfo(pagination)
+    )
+    RoleConnection(
+      paginatePage(
+        pagination,
+        userService.countRoles(query),
+        (limit, offset) => javaRolesToScala(userService.searchRoles(query, limit, offset))
+      )
+    )
   }
 }

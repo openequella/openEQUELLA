@@ -24,6 +24,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
+import com.tle.plugins.ump.UserDirectoryPagination;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
@@ -39,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Nicholas Read
  */
-public interface UserService extends RemoteUserService {
+public interface UserService extends RemoteUserService, UserDirectoryPagination {
   UserState login(
       String username, String password, WebAuthenticationDetails details, boolean forceSession);
 

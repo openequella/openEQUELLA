@@ -18,8 +18,10 @@
 
 package com.tle.web.remoting.graphql.schema.types
 
+import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo}
 import caliban.schema.Annotations.GQLDescription
 import com.tle.common.usermanagement.user.valuebean.GroupBean
+import com.tle.web.remoting.graphql.schema.Page
 
 /** Represents a group sourced from the user directory system, providing a unified view of roles
   * across all configured user management plugins.
@@ -34,4 +36,25 @@ case class Group(
 
 object Group {
   def apply(g: GroupBean): Group = Group(g.getUniqueID, g.getName)
+}
+
+@GQLDescription("An Edge object for Groups as per the GraphQL Cursor Connections Specification")
+case class GroupEdge(cursor: Base64Cursor, node: Group) extends Edge[Base64Cursor, Group]
+
+object GroupEdge {
+  def apply(x: Group, i: Int): GroupEdge = GroupEdge(Base64Cursor(i), x)
+}
+
+@GQLDescription(
+  "A Connection object paging through Groups as per the GraphQL Cursor Connections Specification"
+)
+case class GroupConnection(pageInfo: PageInfo, edges: List[GroupEdge]) extends Connection[GroupEdge]
+
+object GroupConnection {
+  def apply(page: Page[Group]): GroupConnection =
+    Page.toConnection[Group, GroupEdge, GroupConnection](
+      page,
+      GroupEdge.apply,
+      GroupConnection.apply
+    )
 }

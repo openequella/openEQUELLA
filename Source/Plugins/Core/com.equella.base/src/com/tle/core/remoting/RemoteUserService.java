@@ -41,13 +41,12 @@ public interface RemoteUserService {
    * is in sync with the list of userUniqueIDs. If a given user ID cannot be resolved a null is
    * placed in the returned list.
    *
-   * @param userUniqueIDs An collection of user unique IDs
+   * @param userUniqueIDs A collection of user unique IDs
    * @return A list of UserBean objects
    */
   Map<String, UserBean> getInformationForUsers(Collection<String> userUniqueIDs);
 
   /**
-   * @param userid
    * @return null if no user is found
    */
   UserBean getInformationForUser(String userid);
@@ -59,9 +58,6 @@ public interface RemoteUserService {
   /**
    * Get a list of groups that the user identified by userid belongs to. Will do a recursive search
    * of groups.
-   *
-   * @param userid
-   * @return
    */
   List<GroupBean> getGroupsContainingUser(String userid);
 
@@ -73,7 +69,6 @@ public interface RemoteUserService {
    * the query are implied. E.g. 'mit' will match 'smith'
    *
    * @param query The username, first name or last name to search for
-   * @return
    */
   List<UserBean> searchUsers(String query);
 
@@ -82,9 +77,11 @@ public interface RemoteUserService {
    * the specified group, or subgroups if recursive.
    *
    * @param query The username, first name or last name to search for
-   * @param parentGroupID The highest level group to search, or null if all groups to be searched
+   * @param parentGroupID The highest-level group to search, or null if all groups to be searched.
+   *     Avoid passing {@code null}; although the current implementation falls back to {@code
+   *     searchUsers(String query)} when this value is {@code null}, callers should prefer using
+   *     that method directly.
    * @param recurse Search subgroups
-   * @return
    */
   List<UserBean> searchUsers(String query, String parentGroupID, boolean recurse);
 
