@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author nick
  */
-public interface UserDirectoryChain {
+public interface UserDirectoryChain extends UserDirectoryPagination {
   void purgeFromCaches(String id);
 
   void purgeGroupFromCaches(String groupId);

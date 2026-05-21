@@ -19,19 +19,24 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban._
+import caliban.relay.{Base64Cursor, Pagination, PaginationArgs}
 import caliban.schema.Annotations.{GQLDescription, GQLName}
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.UserDirectoryProvider
 import com.tle.web.remoting.graphql.schema.types.{
+  GroupConnection,
   GroupWithId,
   Role,
+  RoleConnection,
   RoleWithId,
   User,
   Group,
+  UserConnection,
   UserWithId
 }
+import zio.IO
 
 import javax.inject.{Inject, Singleton}
 
@@ -51,8 +56,22 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name."
       )
-      query: String
-  )
+      query: String,
+      @GQLDescription(
+        "Pagination - how many users to return from the start of the possible list of users"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many users to return from the end of the possible list of users"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a user before which all users should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a user after which all users should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   private case class SearchUsersInGroupArgs(
       @GQLDescription(
@@ -60,12 +79,26 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       )
       query: String,
       @GQLDescription(
-        "The unique ID of the parent group to restrict the search to, or none for all groups"
+        "The unique ID of the parent group to restrict the search to"
       )
-      parentGroupId: Option[String],
+      parentGroupId: String,
       @GQLDescription("Whether to search subgroups recursively")
-      recursive: Boolean
-  )
+      recursive: Boolean,
+      @GQLDescription(
+        "Pagination - how many users to return from the start of the possible list of users"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many users to return from the end of the possible list of users"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a user before which all users should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a user after which all users should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   private case class UserByIdArgs(
       @GQLDescription("The unique ID of the user to retrieve") userId: String
@@ -89,8 +122,22 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
 
   private case class UsersInGroupArgs(
       @GQLDescription("The unique ID of the group") groupId: String,
-      @GQLDescription("Whether to include users from subgroups recursively") recursive: Boolean
-  )
+      @GQLDescription("Whether to include users from subgroups recursively") recursive: Boolean,
+      @GQLDescription(
+        "Pagination - how many users to return from the start of the possible list of users"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many users to return from the end of the possible list of users"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a user before which all users should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a user after which all users should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   private case class GroupByIdArgs(
       @GQLDescription("The unique ID of the group to retrieve") groupId: String
@@ -104,8 +151,24 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "The query to search for groups by (server will surround with wildcard)"
       )
-      query: String
-  )
+      query: String,
+      @GQLDescription(
+        "Pagination - how many groups to return from the start of the possible list of groups"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many groups to return from the end of the possible list of groups"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a group before which all groups should be returned"
+      )
+      before: Option[String],
+      @GQLDescription(
+        "Pagination - the cursor for a group after which all groups should be returned"
+      )
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   private case class SearchGroupsInParentArgs(
       @GQLDescription(
@@ -113,8 +176,24 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       )
       query: String,
       @GQLDescription("The unique ID of the parent group to restrict the search to")
-      parentGroupId: String
-  )
+      parentGroupId: String,
+      @GQLDescription(
+        "Pagination - how many groups to return from the start of the possible list of groups"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many groups to return from the end of the possible list of groups"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a group before which all groups should be returned"
+      )
+      before: Option[String],
+      @GQLDescription(
+        "Pagination - the cursor for a group after which all groups should be returned"
+      )
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   private case class ParentGroupArgs(
       @GQLDescription("The unique ID of the group to retrieve the parent for") groupId: String
@@ -132,8 +211,22 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "The query to search for roles by (server will surround with wildcard)"
       )
-      query: String
-  )
+      query: String,
+      @GQLDescription(
+        "Pagination - how many roles to return from the start of the possible list of roles"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many roles to return from the end of the possible list of roles"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a role before which all roles should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a role after which all roles should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   // ---------------------------------------------------------------------------
   // Query operations
@@ -153,11 +246,11 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "Search for users matching the query. Wildcards at the start and end of the query are implied."
       )
-      searchUsers: SearchUsersArgs => List[User],
+      searchUsers: SearchUsersArgs => IO[CalibanError, UserConnection],
       @GQLDescription(
         "Search for users within the specified group, optionally searching subgroups recursively."
       )
-      searchUsersInGroup: SearchUsersInGroupArgs => List[User],
+      searchUsersInGroup: SearchUsersInGroupArgs => IO[CalibanError, UserConnection],
       @GQLDescription("Retrieve all roles assigned to the specified user")
       rolesForUser: RolesForUserArgs => List[Role],
       @GQLDescription("Retrieve the IDs of all groups that contain the specified user")
@@ -167,7 +260,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       )
       groupsForUser: GroupsForUserArgs => List[Group],
       @GQLDescription("List all users in the specified group")
-      usersInGroup: UsersInGroupArgs => List[User],
+      usersInGroup: UsersInGroupArgs => IO[CalibanError, UserConnection],
       @GQLDescription("Retrieve a group by its unique ID")
       groupById: GroupByIdArgs => Option[Group],
       @GQLDescription(
@@ -177,11 +270,11 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "Search for groups matching the query across the entire group hierarchy. Wildcards at the start and end of the query are implied."
       )
-      searchGroups: SearchGroupsArgs => List[Group],
+      searchGroups: SearchGroupsArgs => IO[CalibanError, GroupConnection],
       @GQLDescription(
         "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied."
       )
-      searchGroupsInParent: SearchGroupsInParentArgs => List[Group],
+      searchGroupsInParent: SearchGroupsInParentArgs => IO[CalibanError, GroupConnection],
       @GQLDescription("Retrieve the parent group of the specified group, if one exists")
       parentGroup: ParentGroupArgs => Option[Group],
       @GQLDescription("Retrieve a role by its unique ID")
@@ -193,7 +286,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       @GQLDescription(
         "Search for roles matching the query. Wildcards at the start and end of the query are implied."
       )
-      searchRoles: SearchRolesArgs => List[Role]
+      searchRoles: SearchRolesArgs => IO[CalibanError, RoleConnection]
   )
 
   private case class Queries(
@@ -211,22 +304,57 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
     userDirectory = UserDirectoryQueryOps(
       userById = args => userDirectoryProvider.userById(args.userId),
       usersByIds = args => userDirectoryProvider.usersByIds(args.userIds),
-      searchUsers = args => userDirectoryProvider.searchUsers(args.query),
+      searchUsers = args =>
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.searchUsers(args.query, pagination)
+        } yield result,
       searchUsersInGroup = args =>
-        userDirectoryProvider.searchUsersInGroup(args.query, args.parentGroupId, args.recursive),
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.searchUsersInGroup(
+            args.query,
+            args.parentGroupId,
+            args.recursive,
+            pagination
+          )
+        } yield result,
       rolesForUser = args => userDirectoryProvider.rolesForUser(args.userId),
       groupIdsForUser = args => userDirectoryProvider.groupIdsForUser(args.userId),
       groupsForUser = args => userDirectoryProvider.groupsForUser(args.userId),
-      usersInGroup = args => userDirectoryProvider.usersInGroup(args.groupId, args.recursive),
+      usersInGroup = args =>
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.usersInGroup(
+            args.groupId,
+            args.recursive,
+            pagination
+          )
+        } yield result,
       groupById = args => userDirectoryProvider.groupById(args.groupId),
       groupsByIds = args => userDirectoryProvider.groupsByIds(args.groupIds),
-      searchGroups = args => userDirectoryProvider.searchGroups(args.query),
-      searchGroupsInParent =
-        args => userDirectoryProvider.searchGroupsInParent(args.query, args.parentGroupId),
+      searchGroups = args =>
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.searchGroups(args.query, pagination)
+        } yield result,
+      searchGroupsInParent = args =>
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.searchGroupsInParent(
+            args.query,
+            args.parentGroupId,
+            pagination
+          )
+        } yield result,
       parentGroup = args => userDirectoryProvider.parentGroup(args.groupId),
       roleById = args => userDirectoryProvider.roleById(args.roleId),
       rolesByIds = args => userDirectoryProvider.rolesByIds(args.roleIds),
-      searchRoles = args => userDirectoryProvider.searchRoles(args.query)
+      searchRoles = args =>
+        for {
+          pagination <- Pagination(args)
+          result = userDirectoryProvider.searchRoles(args.query, pagination)
+        } yield result
     )
   )
 

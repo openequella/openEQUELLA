@@ -29,8 +29,10 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainedResult;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
@@ -98,6 +100,16 @@ public class TLEUserWrapper extends AbstractUserDirectory {
   }
 
   @Override
+  public int countUsers(String query) {
+    return tleUserService.countUsers(query, null, false);
+  }
+
+  @Override
+  public int countUsers(String query, String parentGroupId, boolean recursive) {
+    return tleUserService.countUsers(query, parentGroupId, recursive);
+  }
+
+  @Override
   public Pair<ChainResult, Collection<UserBean>> searchUsers(String query) {
     Collection<UserBean> users = new ArrayList<UserBean>();
     for (TLEUser user : tleUserService.searchUsers(query, null, false)) {
@@ -109,6 +121,35 @@ public class TLEUserWrapper extends AbstractUserDirectory {
               user.getLastName(),
               user.getEmailAddress()));
     }
-    return new Pair<ChainResult, Collection<UserBean>>(ChainResult.CONTINUE, users);
+    return new Pair<>(ChainResult.CONTINUE, users);
+  }
+
+  @Override
+  public Pair<ChainResult, Collection<UserBean>> searchUsers(
+      String query, String parentGroupId, boolean recursive) {
+    Collection<UserBean> users =
+        tleUserService.searchUsers(query, parentGroupId, recursive).stream()
+            .map(this::convert)
+            .toList();
+    return new Pair<>(ChainResult.CONTINUE, users);
+  }
+
+  @Override
+  public ChainedResult<UserBean> searchUsers(String query, int limit, int offset) {
+    List<UserBean> users =
+        tleUserService.searchUsers(query, null, false, limit, offset).stream()
+            .map(this::convert)
+            .toList();
+    return ChainedResult.continueWith(users);
+  }
+
+  @Override
+  public ChainedResult<UserBean> searchUsers(
+      String query, String parentGroupId, boolean recursive, int limit, int offset) {
+    List<UserBean> users =
+        tleUserService.searchUsers(query, parentGroupId, recursive, limit, offset).stream()
+            .map(this::convert)
+            .toList();
+    return ChainedResult.continueWith(users);
   }
 }

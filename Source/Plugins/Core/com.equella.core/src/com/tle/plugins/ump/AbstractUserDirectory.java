@@ -26,25 +26,36 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements all of the methods and returns null (*not* an empty list) or other meaningful return
- * value indicating there are not results. Look at {@link UserDirectoryUtils} for helper functions
- * to fill in any gaps in your implementations.
+ * value indicating there are no results. Subclasses should override the paginated/count methods
+ * with native implementations where possible; the in-memory fallbacks provided here log a debug
+ * message to make it easy to identify which plugins still rely on them.
  *
- * @author nick
+ * <p>The newer paginated and count methods return {@link ChainedResult} instead of the legacy
+ * {@code Pair<ChainResult, Collection<T>>}. Unlike the legacy pair-based methods — which may return
+ * {@code null} to signal "no result" — {@link ChainedResult} should always carries a non-null
+ * collection: an empty collection is returned when there are no results.
+ *
+ * <p>TODO： OEQ-2943 replace Pair<ChainResult, Collection<T>> with ChainedResult
  */
 public abstract class AbstractUserDirectory implements UserDirectory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUserDirectory.class);
+
   private UserDirectoryChain head;
 
   @Override
   public final boolean initialise(UserDirectoryChain head, UserManagementSettings settings) {
     this.head = head;
-
     return initialise(settings);
   }
 
@@ -148,11 +159,32 @@ public abstract class AbstractUserDirectory implements UserDirectory {
   }
 
   @Override
+  public int countUsersInGroup(String groupId, boolean recursive) {
+    return fallbackCount("countUsersInGroup", getUsersForGroup(groupId, recursive));
+  }
+
+  @Override
+  public ChainedResult<UserBean> getUsersInGroup(
+      String groupId, boolean recursive, int limit, int offset) {
+    return fallbackPage("getUsersInGroup", getUsersForGroup(groupId, recursive), limit, offset);
+  }
+
+  @Override
   public Pair<ChainResult, Collection<UserBean>> getUsersForGroup(
       String groupId, boolean recursive) {
     // Default behaviour for existing wrappers.
     Check.checkNotEmpty(groupId);
     return searchUsers(null, groupId, recursive);
+  }
+
+  @Override
+  public int countUsers(String query) {
+    return fallbackCount("countUsers", searchUsers(query));
+  }
+
+  @Override
+  public int countUsers(String query, String parentGroupId, boolean recursive) {
+    return fallbackCount("countUsers", searchUsers(query, parentGroupId, recursive));
   }
 
   @Override
@@ -168,6 +200,27 @@ public abstract class AbstractUserDirectory implements UserDirectory {
   }
 
   @Override
+  public ChainedResult<UserBean> searchUsers(String query, int limit, int offset) {
+    return fallbackPage("searchUsers", searchUsers(query), limit, offset);
+  }
+
+  @Override
+  public ChainedResult<UserBean> searchUsers(
+      String query, String parentGroupId, boolean recursive, int limit, int offset) {
+    return fallbackPage("searchUsers", searchUsers(query, parentGroupId, recursive), limit, offset);
+  }
+
+  @Override
+  public int countGroups(String query) {
+    return fallbackCount("countGroups", searchGroups(query));
+  }
+
+  @Override
+  public int countGroups(String query, String parentGroupId) {
+    return fallbackCount("countGroups", searchGroups(query, parentGroupId));
+  }
+
+  @Override
   public Collection<GroupBean> searchGroups(String query) {
     return null;
   }
@@ -178,8 +231,29 @@ public abstract class AbstractUserDirectory implements UserDirectory {
   }
 
   @Override
+  public ChainedResult<GroupBean> searchGroups(String query, int limit, int offset) {
+    return fallbackPage("searchGroups", searchGroups(query), limit, offset);
+  }
+
+  @Override
+  public ChainedResult<GroupBean> searchGroups(
+      String query, String parentGroupId, int limit, int offset) {
+    return fallbackPage("searchGroups", searchGroups(query, parentGroupId), limit, offset);
+  }
+
+  @Override
   public GroupBean getParentGroupForGroup(String groupID) {
     return null;
+  }
+
+  @Override
+  public int countRoles(String query) {
+    return fallbackCount("countRoles", searchRoles(query));
+  }
+
+  @Override
+  public ChainedResult<RoleBean> searchRoles(String query, int limit, int offset) {
+    return fallbackPage("searchRoles", searchRoles(query), limit, offset);
   }
 
   @Override
@@ -203,7 +277,97 @@ public abstract class AbstractUserDirectory implements UserDirectory {
   }
 
   @Override
-  public void purgeFromCaches(String id) {
-    // do nothing
+  public void purgeFromCaches(String id) {}
+
+  /**
+   * Returns a sub-list of {@code list} with at most {@code limit} elements starting at {@code
+   * offset}.
+   */
+  public static <T> List<T> getSubList(List<T> list, int limit, int offset) {
+    return list.stream().skip(offset).limit(limit).toList();
+  }
+
+  private <T> List<T> getResultList(Pair<ChainResult, Collection<T>> pair) {
+    return Optional.ofNullable(pair.getSecond()).<List<T>>map(ArrayList::new).orElseGet(List::of);
+  }
+
+  /**
+   * Counts results from a legacy {@link Pair} result collection.
+   *
+   * <p>Returns 0 when the legacy method returns {@code null}, either because it is not implemented
+   * by the plugin or because existing legacy code intentionally uses {@code null} to indicate no
+   * contributed results.
+   */
+  private <T> int fallbackCount(String method, Pair<ChainResult, Collection<T>> result) {
+    if (result == null) {
+      return 0;
+    }
+    logFallbackCount(method);
+    return getResultList(result).size();
+  }
+
+  /**
+   * Counts results from a {@link Collection} result.
+   *
+   * <p>Returns 0 when the legacy method returns {@code null}, either because it is not implemented
+   * by the plugin or because existing legacy code intentionally uses {@code null} to indicate no
+   * contributed results.
+   */
+  private <T> int fallbackCount(String method, Collection<T> result) {
+    if (result == null) {
+      return 0;
+    }
+    logFallbackCount(method);
+    return result.size();
+  }
+
+  /**
+   * Applies fallback in-memory pagination to a legacy {@link Pair} result collection.
+   *
+   * <p>Returns an empty continuing {@link ChainedResult} when the legacy method returns {@code
+   * null}, either because it is not implemented by the plugin or because existing legacy code
+   * intentionally uses {@code null} to indicate no contributed results.
+   */
+  private <T> ChainedResult<T> fallbackPage(
+      String method, Pair<ChainResult, Collection<T>> result, int limit, int offset) {
+    if (result == null) {
+      return ChainedResult.continueWithEmpty();
+    }
+    logFallbackPaging(method, limit, offset);
+    return paginateBySlicing(getResultList(result), limit, offset);
+  }
+
+  /**
+   * Applies fallback in-memory pagination to a full result collection.
+   *
+   * <p>Returns an empty continuing {@link ChainedResult} when the legacy method returns {@code
+   * null}, either because it is not implemented by the plugin or because existing legacy code
+   * intentionally uses {@code null} to indicate no contributed results.
+   */
+  private <T> ChainedResult<T> fallbackPage(
+      String method, Collection<T> result, int limit, int offset) {
+    if (result == null) {
+      return ChainedResult.continueWithEmpty();
+    }
+    logFallbackPaging(method, limit, offset);
+    return paginateBySlicing(new ArrayList<>(result), limit, offset);
+  }
+
+  private <T> ChainedResult<T> paginateBySlicing(List<T> source, int limit, int offset) {
+    return ChainedResult.continueWith(getSubList(source, limit, offset));
+  }
+
+  private void logFallbackCount(String method) {
+    LOGGER.debug(
+        "[{}] {}: falling back to in-memory count", this.getClass().getSimpleName(), method);
+  }
+
+  private void logFallbackPaging(String method, int limit, int offset) {
+    LOGGER.debug(
+        "[{}] {}: falling back to in-memory paging (limit={}, offset={})",
+        this.getClass().getSimpleName(),
+        method,
+        limit,
+        offset);
   }
 }
