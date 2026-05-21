@@ -19,6 +19,7 @@
 package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.TargetListConverter.{fromTargetList, toTargetList}
+import com.tle.annotation.Nullable
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.security.{
   ItemMetadataTarget,
@@ -61,12 +62,12 @@ object OtherTargetListViewConverter {
     * @return
     *   A Java map suitable for `EntityPack.setOtherTargetLists()`, or null if the list is empty.
     */
+  @Nullable
   def toTargetListMap(
       views: List[OtherTargetListView],
       itemDefinition: ItemDefinition
   ): java.util.Map[Object, TargetList] =
-    if (views.isEmpty) null
-    else views.map(viewToEntry(_, itemDefinition)).toMap.asJava
+    Option.unless(views.isEmpty)(views.map(viewToEntry(_, itemDefinition)).toMap.asJava).orNull
 
   private def convertEntry(key: Object, targetList: TargetList): OtherTargetListView = {
     val entries = targetList convert fromTargetList
