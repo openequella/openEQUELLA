@@ -31,12 +31,15 @@ import io.github.openequella.graphql.client.EditableEntityCollectionDefinition
   *   The version of openEQUELLA this entity is being edited against.
   * @param targetList
   *   Access control entries for the collection.
+  * @param otherTargetLists
+  *   Sub-entity access control lists (e.g. per item status, per metadata rule).
   */
 final case class CollectionDefinitionEditView(
     collection: CollectionDefinitionView,
     stagingId: String,
     version: Option[String],
-    targetList: List[TargetListEntryView]
+    targetList: List[TargetListEntryView],
+    otherTargetLists: List[OtherTargetListView]
 )
 
 object CollectionDefinitionEditView {
@@ -45,6 +48,7 @@ object CollectionDefinitionEditView {
       EditableEntityCollectionDefinition.entity(CollectionDefinitionView.selector) ~
         EditableEntityCollectionDefinition.stagingId ~
         EditableEntityCollectionDefinition.version ~
-        EditableEntityCollectionDefinition.targetList(TargetListEntryView.selector)
+        EditableEntityCollectionDefinition.targetList(TargetListEntryView.selector) ~
+        EditableEntityCollectionDefinition.otherTargetLists(OtherTargetListView.selector)
     ).mapN(CollectionDefinitionEditView.apply _)
 }

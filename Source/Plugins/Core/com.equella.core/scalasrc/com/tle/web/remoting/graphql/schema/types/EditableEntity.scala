@@ -21,13 +21,7 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.common.EntityPack
 
-/** Based on EntityPack with a focus on what's needed for GraphQL interactions.
-  *
-  * TODO: ImportExportPack (super class of EntityPack) also includes a `otherTargetLists`, but for
-  * now we are not using it. It adds some complexity seeing it is a map with `Object` keys. Will
-  * need to address this in the future if we need to support it. (Possibly for ACL lists for items
-  * etc. but so far the entities we are dealing with in GraphQL do not have this.)
-  */
+/** Based on EntityPack with a focus on what's needed for GraphQL interactions. */
 @GQLDescription(
   "The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
 )
@@ -46,7 +40,12 @@ final case class EditableEntity[T](
       "A list of access control entries, each specifying a privilege granted to a user or group, " +
         "along with whether it is overridden or granted."
     )
-    targetList: List[TargetListEntry]
+    targetList: List[TargetListEntry],
+    @GQLDescription(
+      "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, " +
+        "per workflow task). Empty for entity types that do not have sub-entity ACLs."
+    )
+    otherTargetLists: List[OtherTargetList]
 )
 object EditableEntity {
 
@@ -73,7 +72,8 @@ object EditableEntity {
       entity = convertEntity(pack.getEntity),
       stagingId = pack.getStagingID,
       version = Option(pack.getVersion),
-      targetList = TargetListEntry.fromTargetList(pack.getTargetList)
+      targetList = TargetListEntry.fromTargetList(pack.getTargetList),
+      otherTargetLists = OtherTargetList.fromMap(pack.getOtherTargetLists)
     )
   }
 }

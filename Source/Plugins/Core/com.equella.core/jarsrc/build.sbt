@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "com.fifesoft"  % "rsyntaxtextarea" % "3.6.2",
   "com.miglayout" % "miglayout-swing" % "11.4.3",
   xstreamDep,
-  "io.github.openequella" %% "graphql-client" % "0.11.0-SNAPSHOT",
+  "io.github.openequella" %% "graphql-client" % "0.11.1-SNAPSHOT",
   "com.google.inject"      % "guice"          % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     // Maybe it can be removed when all HTTP Invoker code is gone

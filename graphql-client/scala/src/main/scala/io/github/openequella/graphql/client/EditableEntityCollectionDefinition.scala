@@ -49,4 +49,12 @@ object EditableEntityCollectionDefinition {
       innerSelection: SelectionBuilder[TargetListEntry, A]
   ): SelectionBuilder[EditableEntityCollectionDefinition, List[A]] =
     _root_.caliban.client.SelectionBuilder.Field("targetList", ListOf(Obj(innerSelection)))
+
+  /** Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata
+    * rule, per workflow task). Empty for entity types that do not have sub-entity ACLs.
+    */
+  def otherTargetLists[A](
+      innerSelection: SelectionBuilder[OtherTargetList, A]
+  ): SelectionBuilder[EditableEntityCollectionDefinition, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("otherTargetLists", ListOf(Obj(innerSelection)))
 }

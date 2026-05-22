@@ -10,6 +10,16 @@ scalar Long
 
 scalar Unit
 
+"The type of sub-entity target for an access control list."
+enum OtherTargetListType {
+  "Per-metadata-rule ACLs."
+  ITEM_METADATA
+  "Per-item-status ACLs (e.g. DRAFT, LIVE, MODERATING)."
+  ITEM_STATUS
+  "Per-workflow-task ACLs."
+  WORKFLOW_TASK
+}
+
 "A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
 input CitationInput {
   "Name for the citation"
@@ -28,6 +38,8 @@ input EditableEntityMetadataSchemaInput {
   version: String
   "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
   targetList: [TargetListEntryInput!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetListInput!]!
 }
 
 "Common details for entities, including identifiers, ownership, timestamps, and additional attributes."
@@ -104,6 +116,20 @@ input MetadataSchemaTransformInput {
   filename: String!
   "Type of the schema transform, e.g., OAI_Identity, HARVESTER, OAI_DC"
   schemaType: String!
+}
+
+"A sub-entity access control list, keyed by the type of target (e.g. item status, metadata rule, workflow task)."
+input OtherTargetListInput {
+  "Discriminator indicating what kind of target this list is for."
+  targetType: OtherTargetListType!
+  "For ITEM_STATUS targets: the item status this list applies to (e.g. DRAFT, LIVE, MODERATING). Null for other target types."
+  itemStatus: String
+  "For ITEM_METADATA targets: the ID of the metadata rule this list applies to. Null for other target types."
+  metadataRuleId: String
+  "For WORKFLOW_TASK targets: the ID of the workflow task this list applies to. Null for other target types."
+  taskId: String
+  "The access control entries for this target."
+  entries: [TargetListEntryInput!]!
 }
 
 input TargetListEntryInput {
@@ -354,6 +380,8 @@ type EditableEntityCollectionDefinition {
   version: String
   "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
   targetList: [TargetListEntry!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetList!]!
 }
 
 "The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
@@ -366,6 +394,8 @@ type EditableEntityMetadataSchema {
   version: String
   "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
   targetList: [TargetListEntry!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetList!]!
 }
 
 "A skeleton for creating a new editable entity, containing essential metadata such as UUID, owner, and staging ID."
@@ -626,6 +656,20 @@ type NameValue {
   name: String!
   "Value associated with the name."
   value: String!
+}
+
+"A sub-entity access control list, keyed by the type of target (e.g. item status, metadata rule, workflow task)."
+type OtherTargetList {
+  "Discriminator indicating what kind of target this list is for."
+  targetType: OtherTargetListType!
+  "For ITEM_STATUS targets: the item status this list applies to (e.g. DRAFT, LIVE, MODERATING). Null for other target types."
+  itemStatus: String
+  "For ITEM_METADATA targets: the ID of the metadata rule this list applies to. Null for other target types."
+  metadataRuleId: String
+  "For WORKFLOW_TASK targets: the ID of the workflow task this list applies to. Null for other target types."
+  taskId: String
+  "The access control entries for this target."
+  entries: [TargetListEntry!]!
 }
 
 type PageInfo {

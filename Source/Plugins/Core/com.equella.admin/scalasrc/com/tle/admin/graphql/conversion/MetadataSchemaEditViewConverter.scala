@@ -19,6 +19,7 @@
 package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.{fromSchema, toSchema}
+import com.tle.admin.graphql.conversion.OtherTargetListViewConverter.fromTargetListMap
 import com.tle.admin.graphql.conversion.TargetListConverter.{fromTargetList, toTargetList}
 import com.tle.beans.entity.Schema
 import com.tle.common.EntityPack
@@ -34,6 +35,9 @@ object MetadataSchemaEditViewConverter {
     val targetList = view.targetList convert toTargetList
     entityPack.setTargetList(targetList)
 
+    // Note: MetadataSchema entities do not use otherTargetLists (only Collections
+    // and Workflows do), so we intentionally leave it as null here.
+
     // Set version if available
     view.version.foreach(entityPack.setVersion)
 
@@ -41,14 +45,16 @@ object MetadataSchemaEditViewConverter {
   }
 
   def fromEntityPack(pack: EntityPack[Schema]): MetadataSchemaEditView = {
-    val schema     = pack.getEntity convert fromSchema
-    val targetList = pack.getTargetList convert fromTargetList
+    val schema           = pack.getEntity convert fromSchema
+    val targetList       = pack.getTargetList convert fromTargetList
+    val otherTargetLists = pack.getOtherTargetLists convert fromTargetListMap
 
     MetadataSchemaEditView(
       schema = schema,
       stagingId = pack.getStagingID,
       version = Option(pack.getVersion),
-      targetList = targetList
+      targetList = targetList,
+      otherTargetLists = otherTargetLists
     )
   }
 }
