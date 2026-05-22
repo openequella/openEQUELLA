@@ -61,6 +61,9 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.disableDateModifiedFilter")
   private boolean searchingDisableDateModifiedFilter;
 
+  @Property(key = "search.escapeSpecialChars")
+  private boolean escapeSpecialChars;
+
   @Property(key = "gallery.filecount.disabled")
   private boolean fileCountDisabled;
 
@@ -246,5 +249,13 @@ public class SearchSettings implements ConfigurationProperties {
 
   public void setSearchingDisableDateModifiedFilter(boolean searchingDisableDateModifiedFilter) {
     this.searchingDisableDateModifiedFilter = searchingDisableDateModifiedFilter;
+  }
+
+  public boolean isEscapeSpecialChars() {
+    return escapeSpecialChars;
+  }
+
+  public void setEscapeSpecialChars(boolean escapeSpecialChars) {
+    this.escapeSpecialChars = escapeSpecialChars;
   }
 }
