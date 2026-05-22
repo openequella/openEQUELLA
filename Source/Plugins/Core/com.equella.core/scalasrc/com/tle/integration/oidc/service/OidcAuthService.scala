@@ -21,6 +21,7 @@ package com.tle.integration.oidc.service
 import cats.implicits._
 import cats.effect.unsafe.implicits.global
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.dytech.edge.web.WebConstants
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
 import com.tle.common.usermanagement.user.{DefaultUserState, WebAuthenticationDetails}
@@ -69,6 +70,7 @@ import sttp.client3.{
 }
 
 import javax.inject.{Inject, Singleton}
+import javax.servlet.http.HttpServletRequest
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -336,6 +338,19 @@ class OidcAuthService @Inject() (
         }
         .leftMap(error => ServerError(s"Failed to setup user state: ${error.getMessage}"))
     } yield userService.login(userState, true)
+  }
+
+  /** Check if the 'NO_AUTO_LOGIN' is present and set to 'true' in the request parameters, which
+    * indicates that the Seamless SSO auto login should be bypassed.
+    *
+    * @param parameters
+    *   The request parameters to check. Being `java.util.Map` because this method is mostly called
+    *   from where the parameters are provided in that format.
+    */
+  def shouldBypassAutoLogin(parameters: java.util.Map[String, Array[String]]): Boolean = {
+    Option(parameters.get(WebConstants.NO_AUTO_LOGIN))
+      .flatMap(_.headOption)
+      .contains("true")
   }
 
   /** Confirm User ID in two steps:

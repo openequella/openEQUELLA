@@ -104,23 +104,20 @@ class OidcLogonFilter extends UserManagementLogonFilter {
       params: util.Map[String, Array[String]]
   ): Unit = {}
 
-  private def isAutoLogin(request: HttpServletRequest): Boolean = {
-    !Option(request.getParameterMap.get(WebConstants.NO_AUTO_LOGIN))
-      .flatMap(_.headOption)
-      .contains("true")
-  }
-
   private def isSeamlessSsoEnabled(details: CommonDetails): Boolean = {
     details.enabled && details.seamlessSso
   }
 
   private def login(request: HttpServletRequest, response: HttpServletResponse) = {
+    lazy val bypassAuthLogin = authService.shouldBypassAutoLogin(request.getParameterMap)
+
     oidcConfigurationService.get.toOption
       .map(_.commonDetails)
       .filter(isSeamlessSsoEnabled)
-      .filter(_ => isAutoLogin(request)) match {
+      .filterNot(_ => bypassAuthLogin) match {
       case Some(details) =>
-        val target = Option(request.getParameterMap.get(".page")).flatMap(_.headOption).orNull
+        val target =
+          Option(request.getParameterMap.get(WebConstants.PAGE_PARAM)).flatMap(_.headOption).orNull
 
         val authUrl = authService.buildAuthUrl(
           details.authUrl.toString,
@@ -128,6 +125,7 @@ class OidcLogonFilter extends UserManagementLogonFilter {
           target
         )
         response.sendRedirect(authUrl)
+        // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
         new FilterResult(true)
       case None => FilterResult.FILTER_CONTINUE
     }

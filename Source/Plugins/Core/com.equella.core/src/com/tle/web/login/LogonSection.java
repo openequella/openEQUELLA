@@ -18,7 +18,6 @@
 
 package com.tle.web.login;
 
-import static com.dytech.edge.web.WebConstants.NO_AUTO_LOGIN;
 
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
@@ -78,7 +77,6 @@ import hurl.build.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -229,7 +227,6 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
    */
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-
     SectionResult page =
         oidcConfigurationService
             .get()
@@ -237,7 +234,7 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
             .map(IdentityProviderDetails::commonDetails)
             .filter(CommonDetails::enabled)
             .filter(CommonDetails::seamlessSso)
-            .filter((details) -> isAutoLogin(context))
+            .filterNot((details) -> bypassAutoLogin(context))
             .fold(
                 () -> renderLegacyLoginPage(context),
                 details -> {
@@ -377,12 +374,8 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     return viewFactory.createResult("logon/logon.ftl", context);
   }
 
-  private boolean isAutoLogin(RenderEventContext context) {
-    return Optional.ofNullable(context.getParameterMap().get(NO_AUTO_LOGIN))
-        .map(Arrays::asList)
-        .map(List::getFirst)
-        .filter(Boolean::parseBoolean)
-        .isEmpty();
+  private boolean bypassAutoLogin(RenderEventContext context) {
+    return oidcAuthService.shouldBypassAutoLogin(context.getParameterMap());
   }
 
   @NonNullByDefault(false)
