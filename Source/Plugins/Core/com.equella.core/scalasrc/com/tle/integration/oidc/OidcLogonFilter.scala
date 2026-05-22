@@ -84,9 +84,7 @@ class OidcLogonFilter extends UserManagementLogonFilter {
     *   The standard OEQ logout URI.
     */
   override def logoutURI(state: UserState, loggedOutURI: URI): URI = {
-    oidcConfigurationService.get.toOption
-      .map(_.commonDetails)
-      .filter(isSeamlessSsoEnabled) match {
+    oidcConfigurationService.getForSeamlessSso match {
       case Some(_) =>
         val logout = uri"${loggedOutURI.toString}"
         logout
@@ -109,25 +107,27 @@ class OidcLogonFilter extends UserManagementLogonFilter {
   }
 
   private def login(request: HttpServletRequest, response: HttpServletResponse) = {
-    lazy val bypassAuthLogin = authService.shouldBypassAutoLogin(request.getParameterMap)
+    if (authService.shouldBypassAutoLogin(request.getParameterMap)) {
+      // If the request indicates that auto-login should be bypassed, skip the
+      // Seamless SSO process and allow the normal login process to continue.
+      FilterResult.FILTER_CONTINUE
+    } else {
+      oidcConfigurationService.getForSeamlessSso match {
+        case Some(details) =>
+          val target =
+            Option(request.getParameter(WebConstants.PAGE_PARAM)).orNull
 
-    oidcConfigurationService.get.toOption
-      .map(_.commonDetails)
-      .filter(isSeamlessSsoEnabled)
-      .filterNot(_ => bypassAuthLogin) match {
-      case Some(details) =>
-        val target =
-          Option(request.getParameterMap.get(WebConstants.PAGE_PARAM)).flatMap(_.headOption).orNull
-
-        val authUrl = authService.buildAuthUrl(
-          details.authUrl.toString,
-          details.authCodeClientId,
-          target
-        )
-        response.sendRedirect(authUrl)
-        // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
-        new FilterResult(true)
-      case None => FilterResult.FILTER_CONTINUE
+          val authUrl = authService.buildAuthUrl(
+            details.authUrl.toString,
+            details.authCodeClientId,
+            target
+          )
+          response.sendRedirect(authUrl)
+          // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
+          new FilterResult(true)
+        case None => FilterResult.FILTER_CONTINUE
+      }
     }
+
   }
 }

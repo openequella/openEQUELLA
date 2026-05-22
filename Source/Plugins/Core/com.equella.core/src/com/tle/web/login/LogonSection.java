@@ -37,8 +37,6 @@ import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.UsernameNotFoundException;
-import com.tle.integration.oidc.idp.CommonDetails;
-import com.tle.integration.oidc.idp.IdentityProviderDetails;
 import com.tle.integration.oidc.service.OidcAuthService;
 import com.tle.integration.oidc.service.OidcConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -226,27 +224,26 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
    */
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    SectionResult page =
-        oidcConfigurationService
-            .get()
-            .toOption()
-            .map(IdentityProviderDetails::commonDetails)
-            .filter(CommonDetails::enabled)
-            .filter(CommonDetails::seamlessSso)
-            .filterNot((details) -> bypassAutoLogin(context))
-            .fold(
-                () -> renderLegacyLoginPage(context),
-                details -> {
-                  String u =
-                      oidcAuthService.buildAuthUrl(
-                          details.authUrl().toString(),
-                          details.authCodeClientId(),
-                          getModel(context).getPage());
-                  context.forwardToUrl(u);
-                  return null;
-                });
+    if (bypassAutoLogin(context)) {
+      return renderLegacyLoginPage(context);
+    } else {
+      SectionResult page =
+          oidcConfigurationService
+              .getForSeamlessSso()
+              .fold(
+                  () -> renderLegacyLoginPage(context),
+                  details -> {
+                    String u =
+                        oidcAuthService.buildAuthUrl(
+                            details.authUrl().toString(),
+                            details.authCodeClientId(),
+                            getModel(context).getPage());
+                    context.forwardToUrl(u);
+                    return null;
+                  });
 
-    return page;
+      return page;
+    }
   }
 
   private WebAuthenticationDetails getDetails(SectionInfo info) {
