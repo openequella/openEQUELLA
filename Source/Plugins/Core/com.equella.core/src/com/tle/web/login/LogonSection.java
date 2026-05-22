@@ -18,7 +18,6 @@
 
 package com.tle.web.login;
 
-
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
