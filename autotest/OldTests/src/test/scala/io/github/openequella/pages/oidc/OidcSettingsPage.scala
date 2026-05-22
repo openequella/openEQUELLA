@@ -36,12 +36,11 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
   val oidcEnabledBy: By = By.xpath(
     "//span[contains(.,'Enable *')]/ancestor::li//input/parent::span"
   );
-  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']");
-  )
+  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']")
+
   val seamlessSsoBy: By = By.xpath(
     "//span[@aria-label='Enable Seamless SSO']"
   )
-
 
   override def findLoadedElement: WebElement = {
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(spinnerBy))
