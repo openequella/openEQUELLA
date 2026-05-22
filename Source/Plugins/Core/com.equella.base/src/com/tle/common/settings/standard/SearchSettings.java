@@ -61,6 +61,11 @@ public class SearchSettings implements ConfigurationProperties {
   @Property(key = "search.disableDateModifiedFilter")
   private boolean searchingDisableDateModifiedFilter;
 
+  /**
+   * Controls whether special characters in search queries should be escaped. When true, special
+   * characters (e.g., Lucene query syntax characters) are escaped to be treated as literal
+   * characters rather than query operators.
+   */
   @Property(key = "search.escapeSpecialChars")
   private boolean escapeSpecialChars;
 
