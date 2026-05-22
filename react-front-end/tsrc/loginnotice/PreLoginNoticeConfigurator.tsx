@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+  Box,
   Card,
   CardContent,
   FormControl,
@@ -245,13 +246,15 @@ class PreLoginNoticeConfigurator extends React.Component<
         <CardContent>
           <SettingsListHeading heading={strings.preLogin.title} />
           <Stack id="preLoginConfig" spacing={2}>
-            <React.Suspense fallback={<div>Loading editor...</div>}>
-              <RichTextEditor
-                htmlInput={this.state.current.notice}
-                onStateChange={this.handleEditorChange}
-                imageUploadCallBack={uploadPreLoginNoticeImage}
-              />
-            </React.Suspense>
+            <Box>
+              <React.Suspense fallback={<div>Loading editor...</div>}>
+                <RichTextEditor
+                  htmlInput={this.state.current.notice}
+                  onStateChange={this.handleEditorChange}
+                  imageUploadCallBack={uploadPreLoginNoticeImage}
+                />
+              </React.Suspense>
+            </Box>
             <ScheduleSettings />
           </Stack>
         </CardContent>
