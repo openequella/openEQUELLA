@@ -36,7 +36,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -145,14 +144,10 @@ public class ItemStatusAccessControlTab extends AbstractItemdefTab implements Ch
     EntityPack<ItemDefinition> entityPack = state.getEntityPack();
     Map<Object, TargetList> otherTargetLists = entityPack.getOtherTargetLists();
     if (otherTargetLists == null) {
-      otherTargetLists = new HashMap<Object, TargetList>();
+      otherTargetLists = new HashMap<>();
       entityPack.setOtherTargetLists(otherTargetLists);
     } else {
-      for (Iterator<Object> iter = otherTargetLists.keySet().iterator(); iter.hasNext(); ) {
-        if (iter.next() instanceof ItemStatusTarget) {
-          iter.remove();
-        }
-      }
+      otherTargetLists.keySet().removeIf(o -> o instanceof ItemStatusTarget);
     }
 
     otherTargetLists.putAll(targetLists);

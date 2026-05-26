@@ -29,5 +29,6 @@ object CollectionDefinitionEditViewConverter {
       .forStagedEntity(view.collection convert toItemDefinition, view.stagingId)
       .withVersion(view.version)
       .withTargetList(view.targetList)
+      .withOtherTargetList(view.otherTargetLists)
       .build()
 }

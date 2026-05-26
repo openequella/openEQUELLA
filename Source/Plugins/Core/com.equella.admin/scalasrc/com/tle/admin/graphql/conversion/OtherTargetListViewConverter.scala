@@ -65,9 +65,9 @@ object OtherTargetListViewConverter {
   @Nullable
   def toTargetListMap(
       views: List[OtherTargetListView],
-      itemDefinition: ItemDefinition
+      itemDefinition: Option[ItemDefinition]
   ): java.util.Map[Object, TargetList] =
-    Option.unless(views.isEmpty)(views.map(viewToEntry(_, itemDefinition)).toMap.asJava).orNull
+    Option.unless(views.isEmpty)(views.map(viewToEntry(_, itemDefinition)).toMap.asHashMap).orNull
 
   private def convertEntry(key: Object, targetList: TargetList): OtherTargetListView = {
     val entries = targetList convert fromTargetList
@@ -108,20 +108,24 @@ object OtherTargetListViewConverter {
 
   private def viewToEntry(
       view: OtherTargetListView,
-      itemDefinition: ItemDefinition
+      itemDefinition: Option[ItemDefinition]
   ): (Object, TargetList) = {
     val key: Object = view.targetType match {
       case OtherTargetListType.ITEM_STATUS =>
+        require(itemDefinition.isDefined)
+
         val statusName = view.itemStatus.getOrElse(
           throw new IllegalArgumentException("ITEM_STATUS target missing itemStatus")
         )
         val itemStatus = com.tle.beans.item.ItemStatus.valueOf(statusName)
-        new ItemStatusTarget(itemStatus, itemDefinition)
+        new ItemStatusTarget(itemStatus, itemDefinition.get)
       case OtherTargetListType.ITEM_METADATA =>
+        require(itemDefinition.isDefined)
+
         val ruleId = view.metadataRuleId.getOrElse(
           throw new IllegalArgumentException("ITEM_METADATA target missing metadataRuleId")
         )
-        new ItemMetadataTarget(ruleId, itemDefinition)
+        new ItemMetadataTarget(ruleId, itemDefinition.get)
       case OtherTargetListType.WORKFLOW_TASK =>
         val taskId = view.taskId.getOrElse(
           throw new IllegalArgumentException("WORKFLOW_TASK target missing taskId")

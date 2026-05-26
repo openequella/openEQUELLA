@@ -20,7 +20,8 @@ package com.tle.admin.graphql.conversion
 
 import com.tle.beans.entity.BaseEntity
 import com.tle.common.EntityPack
-import io.github.openequella.graphql.api.views.TargetListEntryView
+import com.tle.common.security.TargetList
+import io.github.openequella.graphql.api.views.{OtherTargetListView, TargetListEntryView}
 
 /** Builder for EntityPack, to help with the conversion of GraphQL views to EntityPacks. Because the
   * GraphQL views are not a hierarchy of classes, we can't have a single converter that takes a view
@@ -37,6 +38,22 @@ class EntityPackBuilder[T <: BaseEntity] {
 
   def withTargetList(targetList: List[TargetListEntryView]): EntityPackBuilder[T] = {
     entityPack.setTargetList(targetList convert TargetListConverter.toTargetList)
+    this
+  }
+
+  def withOtherTargetList(otherTargetLists: List[OtherTargetListView]): EntityPackBuilder[T] = {
+    val toTargetListMap: List[OtherTargetListView] => java.util.Map[Object, TargetList] =
+      entityPack.getEntity match {
+        case entity: com.tle.beans.entity.itemdef.ItemDefinition =>
+          // The ItemDefinition is required for the conversion of OtherTargetListView to the legacy map, as some of the keys require a reference to the ItemDefinition.
+          (views: List[OtherTargetListView]) =>
+            OtherTargetListViewConverter.toTargetListMap(views, Some(entity))
+        case _ =>
+          (views: List[OtherTargetListView]) =>
+            OtherTargetListViewConverter.toTargetListMap(views, None)
+      }
+
+    entityPack.setOtherTargetLists(otherTargetLists convert toTargetListMap)
     this
   }
 

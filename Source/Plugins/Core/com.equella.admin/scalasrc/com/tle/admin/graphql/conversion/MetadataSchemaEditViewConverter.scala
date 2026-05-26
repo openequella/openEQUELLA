@@ -20,7 +20,7 @@ package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.{fromSchema, toSchema}
 import com.tle.admin.graphql.conversion.OtherTargetListViewConverter.fromTargetListMap
-import com.tle.admin.graphql.conversion.TargetListConverter.{fromTargetList, toTargetList}
+import com.tle.admin.graphql.conversion.TargetListConverter.fromTargetList
 import com.tle.beans.entity.Schema
 import com.tle.common.EntityPack
 import io.github.openequella.graphql.api.views.MetadataSchemaEditView
@@ -31,6 +31,7 @@ object MetadataSchemaEditViewConverter {
       .forStagedEntity(view.schema convert toSchema, view.stagingId)
       .withVersion(view.version)
       .withTargetList(view.targetList)
+      // we skip withOtherTargetList here as Schemas don't have other target lists
       .build()
 
   def fromEntityPack(pack: EntityPack[Schema]): MetadataSchemaEditView = {
