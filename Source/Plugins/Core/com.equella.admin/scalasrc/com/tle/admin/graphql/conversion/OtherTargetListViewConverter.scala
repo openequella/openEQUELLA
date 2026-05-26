@@ -112,7 +112,7 @@ object OtherTargetListViewConverter {
   ): (Object, TargetList) = {
     val key: Object = view.targetType match {
       case OtherTargetListType.ITEM_STATUS =>
-        require(itemDefinition.isDefined)
+        require(itemDefinition.isDefined, "ITEM_STATUS target requires an itemDefinition")
 
         val statusName = view.itemStatus.getOrElse(
           throw new IllegalArgumentException("ITEM_STATUS target missing itemStatus")
@@ -120,7 +120,7 @@ object OtherTargetListViewConverter {
         val itemStatus = com.tle.beans.item.ItemStatus.valueOf(statusName)
         new ItemStatusTarget(itemStatus, itemDefinition.get)
       case OtherTargetListType.ITEM_METADATA =>
-        require(itemDefinition.isDefined)
+        require(itemDefinition.isDefined, "ITEM_METADATA target requires an itemDefinition")
 
         val ruleId = view.metadataRuleId.getOrElse(
           throw new IllegalArgumentException("ITEM_METADATA target missing metadataRuleId")
