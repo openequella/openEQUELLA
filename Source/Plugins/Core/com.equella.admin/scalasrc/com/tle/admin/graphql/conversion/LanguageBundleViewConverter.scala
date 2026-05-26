@@ -21,8 +21,6 @@ package com.tle.admin.graphql.conversion
 import com.tle.beans.entity.{LanguageBundle, LanguageString}
 import io.github.openequella.graphql.api.views.{LanguageBundleView, LanguageStringView}
 
-import scala.jdk.CollectionConverters._
-
 object LanguageBundleViewConverter {
   def toLanguageBundle(view: LanguageBundleView): LanguageBundle = {
     val bundle = new LanguageBundle()
@@ -47,7 +45,7 @@ object LanguageBundleViewConverter {
         stringView.locale -> languageString
       }
       .toMap
-      .asJava
+      .asHashMap
 
   def fromLanguageBundle(bundle: LanguageBundle): LanguageBundleView = {
     val strings = NullSafeMapValues(bundle.getStrings) convert fromLanguageString
