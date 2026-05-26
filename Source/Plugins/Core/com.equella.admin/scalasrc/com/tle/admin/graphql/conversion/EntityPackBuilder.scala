@@ -28,14 +28,12 @@ import io.github.openequella.graphql.api.views.{OtherTargetListView, TargetListE
   * and produces an EntityPack. Instead, we have to have a builder that can be used by the various
   * converters to build the EntityPack.
   */
-class EntityPackBuilder[T <: BaseEntity] {
-  private var entityPack: EntityPack[T] = _
+object EntityPackBuilder {
+  def forStagedEntity[T <: BaseEntity](entity: T, stagingId: String): EntityPackBuilder[T] =
+    new EntityPackBuilder(new EntityPack[T](entity, stagingId))
+}
 
-  def forStagedEntity(entity: T, stagingId: String): EntityPackBuilder[T] = {
-    entityPack = new EntityPack[T](entity, stagingId)
-    this
-  }
-
+class EntityPackBuilder[T <: BaseEntity] private (private val entityPack: EntityPack[T]) {
   def withTargetList(targetList: List[TargetListEntryView]): EntityPackBuilder[T] = {
     entityPack.setTargetList(targetList convert TargetListConverter.toTargetList)
     this

@@ -25,8 +25,8 @@ import io.github.openequella.graphql.api.views.CollectionDefinitionEditView
 
 object CollectionDefinitionEditViewConverter {
   def toEntityPack(view: CollectionDefinitionEditView): EntityPack[ItemDefinition] =
-    new EntityPackBuilder[ItemDefinition]()
-      .forStagedEntity(view.collection convert toItemDefinition, view.stagingId)
+    EntityPackBuilder
+      .forStagedEntity[ItemDefinition](view.collection convert toItemDefinition, view.stagingId)
       .withVersion(view.version)
       .withTargetList(view.targetList)
       .withOtherTargetList(view.otherTargetLists)

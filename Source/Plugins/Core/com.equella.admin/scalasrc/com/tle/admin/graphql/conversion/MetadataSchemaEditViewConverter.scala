@@ -27,8 +27,8 @@ import io.github.openequella.graphql.api.views.MetadataSchemaEditView
 
 object MetadataSchemaEditViewConverter {
   def toEntityPack(view: MetadataSchemaEditView): EntityPack[Schema] =
-    new EntityPackBuilder[Schema]()
-      .forStagedEntity(view.schema convert toSchema, view.stagingId)
+    EntityPackBuilder
+      .forStagedEntity[Schema](view.schema convert toSchema, view.stagingId)
       .withVersion(view.version)
       .withTargetList(view.targetList)
       // we skip withOtherTargetList here as Schemas don't have other target lists
