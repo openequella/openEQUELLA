@@ -77,7 +77,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     searchPage.newSearch();
 
     // Create Version 2
-    createItemNewVersion(itemName)
+    createItemNewVersion(itemName, searchPage)
 
     searchPage.load()
 
@@ -91,7 +91,8 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     assertFavouriteVersion(tagLatestVersion, itemName, 2)
 
     // Create Version 3
-    createItemNewVersion(itemName)
+    searchPage.load()
+    createItemNewVersion(itemName, searchPage)
 
     // Verify 'Latest Version' now points to v3
     assertFavouriteVersion(tagLatestVersion, itemName, 3)
@@ -194,9 +195,10 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     *
     * @param itemName
     *   name of the item for which a new version should be created.
+    * @param searchPage
+    *   the existing NewSearchPage instance to perform the interactions on.
     */
-  private def createItemNewVersion(itemName: String): Unit = {
-    val searchPage = new NewSearchPage(context).load()
+  private def createItemNewVersion(itemName: String, searchPage: NewSearchPage): Unit = {
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
 
