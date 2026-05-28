@@ -98,22 +98,6 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     assertFavouriteVersion(tagLatestVersion, itemName, 3)
   }
 
-  @Test
-  @throws[Exception]
-  def test(): Unit = {
-    val maxRuns = 50
-    for (i <- 0 until maxRuns) {
-      System.out.println("testVersionFavourites iteration " + (i + 1) + "/" + maxRuns)
-      try {
-        testVersionFavourites()
-      } finally {
-        cleanupAfterClass()
-        context.getDriver.quit()
-        setupContext(null)
-      }
-    }
-  }
-
   /** Loads the Favourites page, optionally configuring it to show all versions.
     *
     * @param allVersions
