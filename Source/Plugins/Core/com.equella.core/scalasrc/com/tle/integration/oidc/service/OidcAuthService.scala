@@ -347,11 +347,10 @@ class OidcAuthService @Inject() (
     *   The request parameters to check. Being `java.util.Map` because this method is mostly called
     *   from where the parameters are provided in that format.
     */
-  def shouldBypassAutoLogin(parameters: java.util.Map[String, Array[String]]): Boolean = {
+  def shouldBypassAutoLogin(parameters: java.util.Map[String, Array[String]]): Boolean =
     Option(parameters.get(WebConstants.NO_AUTO_LOGIN))
       .flatMap(_.headOption)
       .contains("true")
-  }
 
   /** Confirm User ID in two steps:
     *
