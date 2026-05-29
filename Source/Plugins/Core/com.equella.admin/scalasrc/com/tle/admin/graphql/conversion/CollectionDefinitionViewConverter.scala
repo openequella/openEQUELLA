@@ -33,7 +33,6 @@ import io.github.openequella.graphql.api.views.CollectionDefinitionView
 import scala.util.chaining.scalaUtilChainingOps
 
 object CollectionDefinitionViewConverter {
-  private val NO_REVIEW_PERIOD = Integer.MIN_VALUE
 
   def toItemDefinition(view: CollectionDefinitionView): ItemDefinition =
     new ItemDefinition(view.details.id).tap { itemDef =>
@@ -50,9 +49,9 @@ object CollectionDefinitionViewConverter {
 
       // Set the simple values
       itemDef.setWizardcategory(view.wizardCategory.orNull)
-      itemDef.setReviewperiod(view.reviewPeriod.getOrElse(NO_REVIEW_PERIOD))
       itemDef.setScormPackagingTransformation(view.scormPackagingTransformation.orNull)
       itemDef.setDenyDirectContribution(view.denyDirectContribution)
+      view.reviewPeriod.foreach(itemDef.setReviewperiod)
 
       // Set values which need conversion
       view.wizard.map(toWizard).foreach(itemDef.setWizard)
