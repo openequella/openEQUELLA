@@ -96,7 +96,17 @@ class OidcLogonFilter extends UserManagementLogonFilter {
   override def addStateParameters(
       request: HttpServletRequest,
       params: util.Map[String, Array[String]]
-  ): Unit = {}
+  ): Unit = {
+    // Note: Adding the 'NO_AUTO_LOGIN' parameter to the supplied Map is required to
+    // support bypassing the auto-login in Old UI. The result of doing this is there
+    // will be a hidden `input`  under form 'eqpageForm' for 'NO_AUTO_LOGIN'. Then,
+    // on login submission, the value of this parameter will be included in the request
+    // payload, which allows the filter to access this parameter.
+    Option(request.getParameter(WebConstants.NO_AUTO_LOGIN)) match {
+      case Some(noAutoLogin) => params.put(WebConstants.NO_AUTO_LOGIN, Array(noAutoLogin))
+      case None              => // Do nothing if the parameter is not present in the request
+    }
+  }
 
   private def isSeamlessSsoEnabled(details: CommonDetails): Boolean = {
     details.enabled && details.seamlessSso
