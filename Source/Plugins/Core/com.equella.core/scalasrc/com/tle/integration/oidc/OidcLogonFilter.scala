@@ -67,10 +67,14 @@ class OidcLogonFilter extends UserManagementLogonFilter {
         .flatMap(_.toBooleanOption)
         .getOrElse(false)
 
-    if (isLogout) {
+    // Continue the normal login process when:
+    //  - The request is for logout (indicated by the presence of the 'logout' parameter); or
+    //  - The request includes the parameter indicating auto-login should be bypassed.
+    // In all other cases, attempt to perform an auto-login using Seamless SSO.
+    if (isLogout || authService.shouldBypassAutoLogin(request.getParameterMap)) {
       FilterResult.FILTER_CONTINUE
     } else {
-      login(request, response)
+      autoLogin(request, response)
     }
   }
 
@@ -108,32 +112,31 @@ class OidcLogonFilter extends UserManagementLogonFilter {
     }
   }
 
-  private def isSeamlessSsoEnabled(details: CommonDetails): Boolean = {
-    details.enabled && details.seamlessSso
+  private def performSeamlessSsoRedirect(
+      request: HttpServletRequest,
+      response: HttpServletResponse,
+      details: CommonDetails
+  ): FilterResult = {
+    val target  = Option(request.getParameter(WebConstants.PAGE_PARAM)).orNull
+    val authUrl = authService.buildAuthUrl(
+      details.authUrl.toString,
+      details.authCodeClientId,
+      target
+    )
+    response.sendRedirect(authUrl)
+    // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
+    new FilterResult(true)
   }
 
-  private def login(request: HttpServletRequest, response: HttpServletResponse) = {
-    if (authService.shouldBypassAutoLogin(request.getParameterMap)) {
-      // If the request indicates that auto-login should be bypassed, skip the
-      // Seamless SSO process and allow the normal login process to continue.
-      FilterResult.FILTER_CONTINUE
-    } else {
-      oidcConfigurationService.getForSeamlessSso match {
-        case Some(details) =>
-          val target =
-            Option(request.getParameter(WebConstants.PAGE_PARAM)).orNull
-
-          val authUrl = authService.buildAuthUrl(
-            details.authUrl.toString,
-            details.authCodeClientId,
-            target
-          )
-          response.sendRedirect(authUrl)
-          // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
-          new FilterResult(true)
-        case None => FilterResult.FILTER_CONTINUE
-      }
+  // If there is an OIDC configuration for Seamless SSO, redirect the request to IdP for auto-login.
+  // Otherwise, continue the normal login process.
+  private def autoLogin(
+      request: HttpServletRequest,
+      response: HttpServletResponse
+  ): FilterResult = {
+    oidcConfigurationService.getForSeamlessSso match {
+      case Some(details) => performSeamlessSsoRedirect(request, response, details)
+      case None          => FilterResult.FILTER_CONTINUE
     }
-
   }
 }

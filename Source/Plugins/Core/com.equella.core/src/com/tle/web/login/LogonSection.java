@@ -37,6 +37,7 @@ import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.UsernameNotFoundException;
+import com.tle.integration.oidc.idp.CommonDetails;
 import com.tle.integration.oidc.service.OidcAuthService;
 import com.tle.integration.oidc.service.OidcConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -224,26 +225,9 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
    */
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    if (bypassAutoLogin(context)) {
-      return renderLegacyLoginPage(context);
-    } else {
-      SectionResult page =
-          oidcConfigurationService
-              .getForSeamlessSso()
-              .fold(
-                  () -> renderLegacyLoginPage(context),
-                  details -> {
-                    String u =
-                        oidcAuthService.buildAuthUrl(
-                            details.authUrl().toString(),
-                            details.authCodeClientId(),
-                            getModel(context).getPage());
-                    context.forwardToUrl(u);
-                    return null;
-                  });
-
-      return page;
-    }
+    return oidcAuthService.shouldBypassAutoLogin(context.getParameterMap())
+        ? renderLegacyLoginPage(context)
+        : autoLogin(context);
   }
 
   private WebAuthenticationDetails getDetails(SectionInfo info) {
@@ -370,8 +354,26 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     return viewFactory.createResult("logon/logon.ftl", context);
   }
 
-  private boolean bypassAutoLogin(RenderEventContext context) {
-    return oidcAuthService.shouldBypassAutoLogin(context.getParameterMap());
+  private SectionResult performSeamlessSsoRedirect(
+      RenderEventContext context, CommonDetails details) {
+    String authUrl =
+        oidcAuthService.buildAuthUrl(
+            details.authUrl().toString(), details.authCodeClientId(), getModel(context).getPage());
+    context.forwardToUrl(authUrl);
+    return null;
+  }
+
+  // If there is an OIDC configuration for Seamless SSO, redirect to IdP for auto-login.
+  // Otherwise, render the legacy login page for normal login.
+  private SectionResult autoLogin(RenderEventContext context) {
+    SectionResult page =
+        oidcConfigurationService
+            .getForSeamlessSso()
+            .fold(
+                () -> renderLegacyLoginPage(context),
+                details -> performSeamlessSsoRedirect(context, details));
+
+    return page;
   }
 
   @NonNullByDefault(false)
