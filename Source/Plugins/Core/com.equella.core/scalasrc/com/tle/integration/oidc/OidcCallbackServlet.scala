@@ -20,7 +20,7 @@ package com.tle.integration.oidc
 
 import com.dytech.edge.web.WebConstants
 import com.tle.common.institution.CurrentInstitution
-import com.tle.common.util.UrlUtils.isAbsoluteHttpUrl
+import com.tle.common.util.HttpUtils.isAbsoluteHttpUrl
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.oauth2.error.{HasCode, OAuth2Error}

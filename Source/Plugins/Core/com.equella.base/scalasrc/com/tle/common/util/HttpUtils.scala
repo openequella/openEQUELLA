@@ -18,10 +18,13 @@
 
 package com.tle.common.util
 
-import io.lemonlabs.uri.Url
-import com.dytech.edge.web.WebConstants.{HTTP, HTTPS}
+import sttp.model.Uri
 
-object UrlUtils {
+object HttpUtils {
+
+  val HTTP = "http"
+
+  val HTTPS = "https"
 
   /** Safely checks if a given string is a valid, absolute HTTP or HTTPS URL.
     *
@@ -36,11 +39,11 @@ object UrlUtils {
     *   True if the string meets all absolute HTTP/HTTPS criteria, false otherwise.
     */
   def isAbsoluteHttpUrl(url: String): Boolean =
-    Url
-      .parseTry(url)
+    Uri
+      .parse(url)
       .toOption
       .exists(u =>
-        u.schemeOption.exists(Set(HTTP, HTTPS)) &&
-          u.hostOption.isDefined
+        u.scheme.exists(Set(HTTP, HTTPS)) &&
+          u.host.isDefined
       )
 }
