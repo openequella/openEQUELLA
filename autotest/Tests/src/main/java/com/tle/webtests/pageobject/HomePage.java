@@ -1,12 +1,16 @@
 package com.tle.webtests.pageobject;
 
+import static com.codeborne.selenide.Condition.clickable;
+import static com.codeborne.selenide.Selectors.by;
+import static com.codeborne.selenide.Selectors.byLinkText;
+import static com.codeborne.selenide.Selenide.$;
+
+import com.codeborne.selenide.SelenideElement;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.portal.AbstractPortalEditPage;
 import com.tle.webtests.pageobject.portal.MenuSection;
 import com.tle.webtests.pageobject.portal.PortalScreenOptions;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class HomePage extends AbstractPage<HomePage> {
   public HomePage(PageContext context) {
@@ -63,15 +67,10 @@ public class HomePage extends AbstractPage<HomePage> {
    * dropdown menu. Users should be navigated to the Login page.
    */
   public LoginPage logout() {
-    WebElement myAccountIcon =
-        waiter.until(
-            ExpectedConditions.elementToBeClickable(
-                By.xpath("//button[@aria-label='My Account']")));
+    SelenideElement myAccountIcon = $(by("aria-label", "My Account")).shouldBe(clickable);
     myAccountIcon.click();
 
-    WebElement logoutBtn =
-        waiter.until(
-            ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'Logout')]")));
+    SelenideElement logoutBtn = $(byLinkText("Logout")).shouldBe(clickable);
     logoutBtn.click();
 
     return new LoginPage(context).get();

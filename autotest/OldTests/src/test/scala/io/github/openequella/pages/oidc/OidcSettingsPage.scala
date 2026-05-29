@@ -18,6 +18,11 @@
 
 package io.github.openequella.pages.oidc
 
+import com.codeborne.selenide.Condition.clickable
+import com.codeborne.selenide.Condition.cssClass
+import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selectors.by
+
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.AbstractPage
 import io.github.openequella.pages.components.{SelectCustomRolesDialog, SelectRolesDialog}
@@ -36,11 +41,7 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
   val oidcEnabledBy: By = By.xpath(
     "//span[contains(.,'Enable *')]/ancestor::li//input/parent::span"
   );
-  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']")
-
-  val seamlessSsoBy: By = By.xpath(
-    "//span[@aria-label='Enable Seamless SSO']"
-  )
+  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']");
 
   override def findLoadedElement: WebElement = {
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(spinnerBy))
@@ -75,17 +76,12 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
   }
 
   def enableSeamlessSso(enable: Boolean): Unit = {
-    val seamlessSsoSwitch = waiter.until(
-      ExpectedConditions.elementToBeClickable(
-        driver.findElement(
-          seamlessSsoBy
-        )
-      )
-    )
+    val toggle = $(by("aria-label", "Enable Seamless SSO"))
+      .shouldBe(clickable)
 
-    val checked = seamlessSsoSwitch.getAttribute("class").contains("Mui-checked")
+    val checked = toggle.has(cssClass("Mui-checked"))
     if (enable != checked) {
-      seamlessSsoSwitch.click()
+      toggle.click()
     }
   }
 
