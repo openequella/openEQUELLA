@@ -25,7 +25,7 @@ import com.tle.integration.oidc.idp.CommonDetails
 import com.tle.integration.oidc.service.{OidcAuthService, OidcConfigurationService}
 import com.tle.plugins.ump.UserManagementLogonFilter
 import com.tle.web.dispatcher.FilterResult
-import sttp.client3.UriContext
+import sttp.model.Uri
 
 import java.net.URI
 import java.util
@@ -86,13 +86,9 @@ class OidcLogonFilter extends UserManagementLogonFilter {
   override def logoutURI(state: UserState, loggedOutURI: URI): URI = {
     oidcConfigurationService.getForSeamlessSso match {
       case Some(_) =>
-        val logout = uri"${loggedOutURI.toString}"
-        logout
-          .addParam(WebConstants.NO_AUTO_LOGIN, "true")
-          .toJavaUri
+        Uri(loggedOutURI).addParam(WebConstants.NO_AUTO_LOGIN, "true").toJavaUri
       case None => loggedOutURI
     }
-
   }
 
   override def logoutRedirect(loggedOutURI: URI): URI = loggedOutURI
