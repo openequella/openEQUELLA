@@ -142,6 +142,10 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
    * reflect on the {@code callPlace} field to get the UnifiedCall element, then use the public
    * {@code getChildCount()} method to check for nested content.
    *
+   * <p>Reflection is required because the public {@code getCurrentDirectiveCallPlace()} API returns
+   * the call site of <em>this</em> directive ({@code _render}), not the enclosing macro ({@code
+   * render}). See {@code Dev/docs/freemarker-reflection.md} for full analysis.
+   *
    * @return true if the macro was called with nested content, false otherwise
    */
   static boolean hasNestedContent(Environment env) {
