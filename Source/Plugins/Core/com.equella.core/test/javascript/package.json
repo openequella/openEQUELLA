@@ -15,9 +15,9 @@
   "devDependencies": {
     "@types/jest": "30.0.0",
     "@types/rewire": "2.5.30",
-    "babel-jest": "30.3.0",
-    "jest": "30.3.0",
-    "jest-config": "30.3.0",
+    "babel-jest": "30.4.1",
+    "jest": "30.4.2",
+    "jest-config": "30.4.2",
     "rewire": "9.0.1",
     "ts-jest": "29.4.9",
     "typescript": "5.9.3"
