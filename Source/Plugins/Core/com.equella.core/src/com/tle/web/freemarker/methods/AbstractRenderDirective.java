@@ -38,27 +38,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public abstract class AbstractRenderDirective extends SectionsTemplateModel
     implements TemplateDirectiveModel {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRenderDirective.class);
 
-  private static Method currentContextMethod;
-  @Nullable private static Field callPlaceField;
-  private static boolean reflectionFailed = false;
-
-  static {
-    try {
-      currentContextMethod =
-          Environment.class.getDeclaredMethod("getCurrentMacroContext"); // $NON-NLS-1$
-      currentContextMethod.setAccessible(true);
-    } catch (Exception e) {
-      throw new SectionsRuntimeException(e);
-    }
-  }
+  private static final MacroContextIntrospector macroIntrospector = new MacroContextIntrospector();
 
   @NonNullByDefault(false)
   @SuppressWarnings({"unchecked", "nls", "rawtypes"})
@@ -138,10 +126,6 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   /**
    * Checks whether the current macro call has nested content by reflecting on FreeMarker internals.
    *
-   * <p>In FreeMarker 2.3.34, Macro.Context no longer has a {@code nestedContent} field. Instead, we
-   * reflect on the {@code callPlace} field to get the UnifiedCall element, then use the public
-   * {@code getChildCount()} method to check for nested content.
-   *
    * <p>Reflection is required because the public {@code getCurrentDirectiveCallPlace()} API returns
    * the call site of <em>this</em> directive ({@code _render}), not the enclosing macro ({@code
    * render}). See {@code Dev/docs/freemarker-reflection.md} for full analysis.
@@ -149,30 +133,76 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
    * @return true if the macro was called with nested content, false otherwise
    */
   static boolean hasNestedContent(Environment env) {
-    if (reflectionFailed) {
-      return false;
+    return macroIntrospector
+        .getMacroCallPlace(env)
+        .filter(callPlace -> callPlace.getChildCount() > 0)
+        .isPresent();
+  }
+
+  /**
+   * Encapsulates reflective access to FreeMarker's package-private macro context internals.
+   *
+   * <p>In FreeMarker 2.3.34, {@code Macro.Context} no longer has a {@code nestedContent} field.
+   * Instead, the {@code callPlace} field references the {@code UnifiedCall} element, and nested
+   * content is determined via the public {@code TemplateElement.getChildCount()} method.
+   *
+   * <p>This class handles lazy initialization of reflective handles, error recovery via a
+   * circuit-breaker pattern, and provides a clean {@code Optional}-based API.
+   */
+  private static class MacroContextIntrospector {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MacroContextIntrospector.class);
+
+    private final Method currentContextMethod;
+    @Nullable private Field callPlaceField;
+    private boolean reflectionFailed = false;
+
+    MacroContextIntrospector() {
+      try {
+        currentContextMethod = Environment.class.getDeclaredMethod("getCurrentMacroContext");
+        currentContextMethod.setAccessible(true);
+      } catch (Exception e) {
+        throw new SectionsRuntimeException(e);
+      }
     }
-    try {
-      Object context = currentContextMethod.invoke(env);
-      if (context == null) {
-        return false;
+
+    /**
+     * Returns the {@link TemplateElement} representing the macro call site, if available.
+     *
+     * <p>This traverses: {@code Environment} → {@code Macro.Context} (via reflection) → {@code
+     * callPlace} field (via reflection) → {@code TemplateElement} (public type).
+     */
+    Optional<TemplateElement> getMacroCallPlace(Environment env) {
+      if (reflectionFailed) {
+        return Optional.empty();
       }
-      if (callPlaceField == null) {
-        callPlaceField = context.getClass().getDeclaredField("callPlace");
-        callPlaceField.setAccessible(true);
+      try {
+        return getMacroContext(env).flatMap(this::getCallPlace);
+      } catch (Exception e) {
+        LOGGER.warn(
+            "Failed to check nested content via reflection on FreeMarker internals. "
+                + "Body directives will not be wrapped for nested rendering.",
+            e);
+        reflectionFailed = true;
+        return Optional.empty();
       }
-      Object callPlace = callPlaceField.get(context);
-      if (callPlace instanceof TemplateElement) {
-        return ((TemplateElement) callPlace).getChildCount() > 0;
+    }
+
+    private Optional<Object> getMacroContext(Environment env) throws Exception {
+      return Optional.ofNullable(currentContextMethod.invoke(env));
+    }
+
+    private Optional<TemplateElement> getCallPlace(Object context) {
+      try {
+        if (callPlaceField == null) {
+          callPlaceField = context.getClass().getDeclaredField("callPlace");
+          callPlaceField.setAccessible(true);
+        }
+        return Optional.of(callPlaceField.get(context))
+            .filter(TemplateElement.class::isInstance)
+            .map(TemplateElement.class::cast);
+      } catch (Exception e) {
+        throw new SectionsRuntimeException(e);
       }
-      return false;
-    } catch (Exception e) {
-      LOGGER.warn(
-          "Failed to check nested content via reflection on FreeMarker internals. "
-              + "Body directives will not be wrapped for nested rendering.",
-          e);
-      reflectionFailed = true;
-      return false;
     }
   }
 }
