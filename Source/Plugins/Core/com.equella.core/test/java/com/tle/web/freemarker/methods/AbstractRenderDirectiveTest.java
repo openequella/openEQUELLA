@@ -44,6 +44,9 @@ import org.junit.jupiter.api.Test;
  */
 class AbstractRenderDirectiveTest {
 
+  private static final String TEMPLATE_NAME = "test.ftl";
+  private static final String PROBE_DIRECTIVE_NAME = "probe";
+
   private Configuration cfg;
 
   @BeforeEach
@@ -65,10 +68,10 @@ class AbstractRenderDirectiveTest {
 
     StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
     loader.putTemplate(
-        "test.ftl", "<#macro mymacro><@probe><#nested/></@probe></#macro>" + "<@mymacro/>");
+        TEMPLATE_NAME, "<#macro mymacro><@probe><#nested/></@probe></#macro><@mymacro/>");
 
-    cfg.setSharedVariable("probe", probe);
-    Template template = cfg.getTemplate("test.ftl");
+    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
+    Template template = cfg.getTemplate(TEMPLATE_NAME);
     template.process(null, new StringWriter());
 
     assertFalse(result.get(), "Self-closing macro call should have no nested content");
@@ -86,12 +89,12 @@ class AbstractRenderDirectiveTest {
 
     StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
     loader.putTemplate(
-        "test.ftl",
+        TEMPLATE_NAME,
         "<#macro mymacro><@probe><#nested/></@probe></#macro>"
             + "<@mymacro>some content</@mymacro>");
 
-    cfg.setSharedVariable("probe", probe);
-    Template template = cfg.getTemplate("test.ftl");
+    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
+    Template template = cfg.getTemplate(TEMPLATE_NAME);
     template.process(null, new StringWriter());
 
     assertTrue(result.get(), "Macro call with nested content should be detected");
@@ -108,10 +111,10 @@ class AbstractRenderDirectiveTest {
     TemplateDirectiveModel probe = createProbeDirective(result);
 
     StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
-    loader.putTemplate("test.ftl", "<@probe/>");
+    loader.putTemplate(TEMPLATE_NAME, "<@probe/>");
 
-    cfg.setSharedVariable("probe", probe);
-    Template template = cfg.getTemplate("test.ftl");
+    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
+    Template template = cfg.getTemplate(TEMPLATE_NAME);
     template.process(null, new StringWriter());
 
     assertFalse(result.get(), "Direct call without body should return false");
@@ -119,13 +122,14 @@ class AbstractRenderDirectiveTest {
 
   /** Verifies that BodyDirectiveRenderable correctly delegates to the template body writer. */
   @Test
-  void bodyDirectiveRenderableRendersBody() throws Exception {
+  void bodyDirectiveRenderableRendersBody() {
     StringWriter output = new StringWriter();
     AtomicBoolean rendered = new AtomicBoolean(false);
 
+    final String bodyContent = "hello from body";
     TemplateDirectiveBody body =
         writer -> {
-          writer.write("hello from body");
+          writer.write(bodyContent);
           rendered.set(true);
         };
 
@@ -137,7 +141,7 @@ class AbstractRenderDirectiveTest {
 
     assertDoesNotThrow(() -> renderable.realRender(sectionWriter));
     assertTrue(rendered.get());
-    assertEquals("hello from body", output.toString());
+    assertEquals(bodyContent, output.toString());
   }
 
   /** Creates a directive that captures the result of {@code hasNestedContent()} when invoked. */
