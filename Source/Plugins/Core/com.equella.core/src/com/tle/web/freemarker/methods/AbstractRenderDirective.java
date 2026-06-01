@@ -153,15 +153,16 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
     private static final Logger LOGGER = LoggerFactory.getLogger(MacroContextIntrospector.class);
 
     private final Method currentContextMethod;
-    @Nullable private Field callPlaceField;
-    private boolean reflectionFailed = false;
+    @Nullable private volatile Field callPlaceField;
+    private volatile boolean reflectionFailed = false;
 
     MacroContextIntrospector() {
       try {
         currentContextMethod = Environment.class.getDeclaredMethod("getCurrentMacroContext");
         currentContextMethod.setAccessible(true);
       } catch (Exception e) {
-        throw new SectionsRuntimeException(e);
+        throw new SectionsRuntimeException(
+            "Failed to setup getCurrentMacroContext for reflection.", e);
       }
     }
 
