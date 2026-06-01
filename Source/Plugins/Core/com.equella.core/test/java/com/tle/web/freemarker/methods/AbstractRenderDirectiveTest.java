@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.tle.annotation.NonNull;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -33,6 +34,7 @@ import freemarker.template.TemplateDirectiveModel;
 import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +46,6 @@ import org.junit.jupiter.api.Test;
  */
 class AbstractRenderDirectiveTest {
 
-  private static final String TEMPLATE_NAME = "test.ftl";
   private static final String PROBE_DIRECTIVE_NAME = "probe";
 
   private Configuration cfg;
@@ -62,19 +63,10 @@ class AbstractRenderDirectiveTest {
    */
   @Test
   void selfClosingMacroCallHasNoNestedContent() throws Exception {
-    AtomicReference<Boolean> result = new AtomicReference<>();
-
-    TemplateDirectiveModel probe = createProbeDirective(result);
-
-    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
-    loader.putTemplate(
-        TEMPLATE_NAME, "<#macro mymacro><@probe><#nested/></@probe></#macro><@mymacro/>");
-
-    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
-    Template template = cfg.getTemplate(TEMPLATE_NAME);
-    template.process(null, new StringWriter());
-
-    assertFalse(result.get(), "Self-closing macro call should have no nested content");
+    boolean hasNested =
+        renderTemplateAndCaptureNestedContentFlag(
+            "<#macro mymacro>" + probe("<#nested/>") + "</#macro><@mymacro/>");
+    assertFalse(hasNested, "Self-closing macro call should have no nested content");
   }
 
   /**
@@ -83,21 +75,13 @@ class AbstractRenderDirectiveTest {
    */
   @Test
   void macroCallWithNestedContentDetected() throws Exception {
-    AtomicReference<Boolean> result = new AtomicReference<>();
-
-    TemplateDirectiveModel probe = createProbeDirective(result);
-
-    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
-    loader.putTemplate(
-        TEMPLATE_NAME,
-        "<#macro mymacro><@probe><#nested/></@probe></#macro>"
-            + "<@mymacro>some content</@mymacro>");
-
-    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
-    Template template = cfg.getTemplate(TEMPLATE_NAME);
-    template.process(null, new StringWriter());
-
-    assertTrue(result.get(), "Macro call with nested content should be detected");
+    boolean hasNested =
+        renderTemplateAndCaptureNestedContentFlag(
+            "<#macro mymacro>"
+                + probe("<#nested/>")
+                + "</#macro>"
+                + "<@mymacro>some content</@mymacro>");
+    assertTrue(hasNested, "Macro call with nested content should be detected");
   }
 
   /**
@@ -106,18 +90,8 @@ class AbstractRenderDirectiveTest {
    */
   @Test
   void directCallWithoutBodyReturnsFalse() throws Exception {
-    AtomicReference<Boolean> result = new AtomicReference<>();
-
-    TemplateDirectiveModel probe = createProbeDirective(result);
-
-    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
-    loader.putTemplate(TEMPLATE_NAME, "<@probe/>");
-
-    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
-    Template template = cfg.getTemplate(TEMPLATE_NAME);
-    template.process(null, new StringWriter());
-
-    assertFalse(result.get(), "Direct call without body should return false");
+    boolean hasNested = renderTemplateAndCaptureNestedContentFlag(probe());
+    assertFalse(hasNested, "Direct call without body should return false");
   }
 
   /** Verifies that BodyDirectiveRenderable correctly delegates to the template body writer. */
@@ -144,6 +118,15 @@ class AbstractRenderDirectiveTest {
     assertEquals(bodyContent, output.toString());
   }
 
+  private String probe(@NonNull String content) {
+    // Matches PROBE_DIRECTIVE_NAME in createProbeDirective()
+    return StringUtils.isEmpty(content) ? "<@probe/>" : "<@probe>" + content + "</@probe>";
+  }
+
+  private String probe() {
+    return probe("");
+  }
+
   /** Creates a directive that captures the result of {@code hasNestedContent()} when invoked. */
   private TemplateDirectiveModel createProbeDirective(AtomicReference<Boolean> result) {
     return (env, params, loopVars, body) -> {
@@ -152,5 +135,21 @@ class AbstractRenderDirectiveTest {
         body.render(env.getOut());
       }
     };
+  }
+
+  private boolean renderTemplateAndCaptureNestedContentFlag(String template) throws Exception {
+    final String TEMPLATE_NAME = "test.ftl";
+
+    AtomicReference<Boolean> result = new AtomicReference<>();
+    TemplateDirectiveModel probe = createProbeDirective(result);
+
+    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
+    loader.putTemplate(TEMPLATE_NAME, template);
+    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
+
+    Template t = cfg.getTemplate(TEMPLATE_NAME);
+    t.process(null, new StringWriter());
+
+    return result.get();
   }
 }

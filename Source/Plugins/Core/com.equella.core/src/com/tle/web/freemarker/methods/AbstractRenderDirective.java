@@ -146,7 +146,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
    * Instead, the {@code callPlace} field references the {@code UnifiedCall} element, and nested
    * content is determined via the public {@code TemplateElement.getChildCount()} method.
    *
-   * <p>This class handles lazy initialization of reflective handles, error recovery via a
+   * <p>This class handles lazy initialisation of reflective handles, error recovery via a
    * circuit-breaker pattern, and provides a clean {@code Optional}-based API.
    */
   private static class MacroContextIntrospector {
