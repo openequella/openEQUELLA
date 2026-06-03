@@ -31,6 +31,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
+import freemarker.template.TemplateException;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -138,18 +140,25 @@ class AbstractRenderDirectiveTest {
   }
 
   private boolean renderTemplateAndCaptureNestedContentFlag(String template) throws Exception {
-    final String TEMPLATE_NAME = "test.ftl";
-
     AtomicReference<Boolean> result = new AtomicReference<>();
-    TemplateDirectiveModel probe = createProbeDirective(result);
 
-    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
-    loader.putTemplate(TEMPLATE_NAME, template);
-    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
-
-    Template t = cfg.getTemplate(TEMPLATE_NAME);
-    t.process(null, new StringWriter());
+    registerProbeDirective(result);
+    renderTestTemplate(template);
 
     return result.get();
+  }
+
+  private void registerProbeDirective(AtomicReference<Boolean> result) {
+    TemplateDirectiveModel probe = createProbeDirective(result);
+    cfg.setSharedVariable(PROBE_DIRECTIVE_NAME, probe);
+  }
+
+  private void renderTestTemplate(String template) throws IOException, TemplateException {
+    final String templateName = "test.ftl";
+    StringTemplateLoader loader = (StringTemplateLoader) cfg.getTemplateLoader();
+    loader.putTemplate(templateName, template);
+
+    Template t = cfg.getTemplate(templateName);
+    t.process(null, new StringWriter());
   }
 }
