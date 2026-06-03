@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
-import { forwardRef, useCallback, useEffect, useReducer } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
@@ -54,12 +54,14 @@ const StyledPaper = styled(Paper)({
 });
 
 export interface SearchBarProps {
-  /** Current value for the search field. */
+  /** Query supplied by the parent (typically `searchPageOptions.query`) */
   query: string;
 
   /**
-   * Callback fired when the user stops typing (debounced for 500 milliseconds).
-   * @param query The string to search.
+   * Callback invoked with the current input value on every change.
+   *
+   * This component forwards changes immediately; it does NOT perform debounce.  The parent
+   * (`SearchPageBody`) wraps its handler with a 500ms debounce so the actual search is throttled.
    */
   onQueryChange: (query: string) => void;
 
@@ -96,29 +98,6 @@ export interface SearchBarProps {
 
 const searchStrings = languageStrings.searchpage;
 
-interface State {
-  status: "init" | "queryUpdated" | "waiting";
-  query: string;
-}
-
-type Action =
-  | { type: "clearQuery" }
-  | { type: "updateQuery"; query: string }
-  | { type: "waitForNewQuery"; query: string };
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "clearQuery":
-      return { status: "init", query: "" };
-    case "updateQuery":
-      return { status: "queryUpdated", query: action.query };
-    case "waitForNewQuery":
-      return { status: "waiting", query: action.query };
-    default:
-      throw new TypeError("Unexpected action passed to reducer!");
-  }
-};
-
 /**
  * Provide a input field to update the query of search criteria.
  * This component does not handle the API query itself,
@@ -136,53 +115,44 @@ const SearchBar = forwardRef(
     }: SearchBarProps,
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
-    const [state, dispatch] = useReducer(reducer, { status: "init", query });
+    const [localQuery, setLocalQuery] = useState(query);
 
     const search = useCallback(
-      (query: string) =>
-        dispatch({
-          type: "updateQuery",
-          query,
-        }),
-      [dispatch],
+      (query: string) => {
+        setLocalQuery(query);
+        onQueryChange(query);
+      },
+      [onQueryChange],
     );
 
-    // The state query should be consistent with prop query. But there are two situations where they
-    // are different.
-    // One is when a new search has been performed to clear SearchPageOptions. In this case, we dispatch
-    // the action of "clearQuery".
-    // The other is when the page is rendered with previously selected search options where a query is
-    // included. We dispatch the action of "waitForNewQuery" to update the state without triggering
-    // an extra search.
-    useEffect(() => {
-      if (!query && state.query) {
-        dispatch({
-          type: "clearQuery",
-        });
-      } else if (query && !state.query) {
-        dispatch({
-          type: "waitForNewQuery",
-          query,
-        });
-      }
-    }, [query, state.query]);
+    const updateLocalQueryFromPropQuery = useCallback(
+      (localQuery: string | undefined, propQuery: string) => {
+        // If the prop query is empty, clear local query.
+        if (!propQuery) {
+          return "";
+        }
+
+        // If there's no local typing or local already equals prop query, consume the prop query.
+        if (!localQuery || localQuery === propQuery) {
+          return propQuery;
+        }
+
+        // Otherwise preserve active local typing so that stale debounced search results
+        // do not overwrite user's in-progress typing.
+        return localQuery;
+      },
+      [],
+    );
 
     useEffect(() => {
-      if (state.status === "waiting") {
-        // Most likely called because of a change in onQueryChange so no action required
-        return;
-      } else if (state.status === "queryUpdated") {
-        onQueryChange(state.query);
-        dispatch({
-          type: "waitForNewQuery",
-          query: state.query,
-        });
-      }
-    }, [state, dispatch, onQueryChange]);
+      setLocalQuery((currentQuery) =>
+        updateLocalQueryFromPropQuery(currentQuery, query),
+      );
+    }, [query, updateLocalQueryFromPropQuery]);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Escape" && state.query) {
-        // iff there is a current query, clear it out and trigger a search
+      if (event.key === "Escape" && localQuery) {
+        // if there is a current query, clear it out and trigger a search
         search("");
       }
     };
@@ -205,7 +175,7 @@ const SearchBar = forwardRef(
           className={classes.input}
           onKeyDown={handleKeyDown}
           onChange={handleOnChange}
-          value={state.query}
+          value={localQuery}
           placeholder={searchStrings.searchBarPlaceholder}
           inputProps={{
             "aria-label": searchStrings.title,
