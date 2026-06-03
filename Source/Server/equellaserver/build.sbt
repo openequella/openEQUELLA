@@ -69,21 +69,21 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "cglib"                          % "cglib"                         % "3.3.0",
   "co.fs2"                        %% "fs2-io"                        % fs2Version,
   "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
   "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
-  "cglib"                          % "cglib"                         % "3.3.0",
-  "io.bit3"                        % "jsass"                         % jsassVersion,
   "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.9.0",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260430-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.14.0",
-  "com.google.guava"      % "guava"                       % "33.6.0-jre",
-  "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
+  "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
+  "com.google.api-client"         % "google-api-client"           % "2.9.0",
+  "com.google.apis"               % "google-api-services-books"   % "v1-rev20240214-2.0.0",
+  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260430-2.0.0",
+  "com.google.code.gson"          % "gson"                        % "2.14.0",
+  "com.google.guava"              % "guava"                       % "33.6.0-jre",
+  "com.google.inject"             % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
@@ -123,6 +123,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
+  "io.bit3"                   % "jsass"                 % jsassVersion,
   "javax.inject"              % "javax.inject"          % "1",
   "javax.mail"                % "mail"                  % "1.4.7",
   "javax.servlet"             % "jstl"                  % "1.2",
