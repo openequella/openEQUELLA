@@ -126,7 +126,7 @@ const SearchBar = forwardRef(
     );
 
     const updateLocalQueryFromPropQuery = useCallback(
-      (localQuery: string | undefined, propQuery: string) => {
+      (localQuery: string, propQuery: string) => {
         // If the prop query is empty, clear local query.
         if (!propQuery) {
           return "";
