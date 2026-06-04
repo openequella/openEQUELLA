@@ -121,7 +121,7 @@ class OidcLogonFilter @Inject() (
     )
     response.sendRedirect(authUrl)
     // Return a FilterResult with `stop` being `true` to indicate that the filter chain should stop.
-    new FilterResult(true)
+    FilterResult.stop()
   }
 
   // If there is an OIDC configuration for Seamless SSO, redirect the request to IdP for auto-login.
