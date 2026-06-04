@@ -30,12 +30,12 @@ import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainDirective;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("nls")
 public abstract class AbstractSystemUserWrapper extends AbstractUserDirectory {
   private String systemUsername;
   private UserBean systemUserBean;
@@ -112,17 +112,13 @@ public abstract class AbstractSystemUserWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(String userID) {
-    return isSystemUser(userID)
-        ? new Pair<ChainResult, Collection<GroupBean>>(ChainResult.STOP, null)
-        : null;
+  public Pair<ChainDirective, Collection<GroupBean>> getGroupsContainingUser(String userID) {
+    return isSystemUser(userID) ? new Pair<>(ChainDirective.STOP, null) : null;
   }
 
   @Override
-  public Pair<ChainResult, Collection<RoleBean>> getRolesForUser(String userID) {
-    return isSystemUser(userID)
-        ? new Pair<ChainResult, Collection<RoleBean>>(ChainResult.STOP, null)
-        : null;
+  public Pair<ChainDirective, Collection<RoleBean>> getRolesForUser(String userID) {
+    return isSystemUser(userID) ? new Pair<>(ChainDirective.STOP, null) : null;
   }
 
   private boolean isSystemUser(String userId) {

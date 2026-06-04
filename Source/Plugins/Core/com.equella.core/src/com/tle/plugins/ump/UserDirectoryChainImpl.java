@@ -31,8 +31,8 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.plugins.ump.UserDirectory.ChainResult;
 import com.tle.plugins.ump.UserDirectory.VerifyTokenResult;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.ToIntFunction;
 import javax.servlet.http.HttpServletRequest;
 
 public class UserDirectoryChainImpl implements UserDirectoryChain {
@@ -168,10 +169,10 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     }
 
     for (UserDirectory ud : uds) {
-      Pair<ChainResult, Collection<GroupBean>> gcu = ud.getGroupsContainingUser(userId);
+      Pair<ChainDirective, Collection<GroupBean>> gcu = ud.getGroupsContainingUser(userId);
       if (gcu != null) {
         rv = accumulate(rv, gcu.getSecond());
-        if (gcu.getFirst() == ChainResult.STOP) {
+        if (gcu.getFirst() == ChainDirective.STOP) {
           break;
         }
       }
@@ -184,9 +185,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public int countUsersInGroup(String groupId, boolean recursive) {
-    // TODO: Sum countUsersInGroup(groupId, recursive) across all plugins in `uds` and return the
-    // total.
-    throw new UnsupportedOperationException("countUsersInGroup not yet implemented in chain");
+    return countAll(ud -> ud.countUsersInGroup(groupId, recursive));
   }
 
   @Override
@@ -195,10 +194,10 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
     List<UserBean> rv = null;
     for (UserDirectory ud : uds) {
-      Pair<ChainResult, Collection<UserBean>> ufg = ud.getUsersForGroup(groupId, recursive);
+      Pair<ChainDirective, Collection<UserBean>> ufg = ud.getUsersInGroup(groupId, recursive);
       if (ufg != null) {
         rv = accumulate(rv, ufg.getSecond());
-        if (ufg.getFirst() == ChainResult.STOP) {
+        if (ufg.getFirst() == ChainDirective.STOP) {
           break;
         }
       }
@@ -208,13 +207,11 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public List<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   getUsersInGroup(groupId, recursive, remainingLimit, remainingOffset), where
-    //   remainingOffset decreases by the count returned from each plugin until exhausted, and
-    //   remainingLimit decreases as results are collected. This avoids over-fetching from later
-    //   plugins once the page is full.
-    throw new UnsupportedOperationException(
-        "getUsersInGroup(limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countUsersInGroup(groupId, recursive),
+            (ud, lim, off) -> ud.getUsersInGroup(groupId, recursive, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
@@ -434,10 +431,10 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   public List<RoleBean> getRolesForUser(String userId) {
     List<RoleBean> rv = null;
     for (UserDirectory ud : uds) {
-      Pair<ChainResult, Collection<RoleBean>> rfu = ud.getRolesForUser(userId);
+      Pair<ChainDirective, Collection<RoleBean>> rfu = ud.getRolesForUser(userId);
       if (rfu != null) {
         rv = accumulate(rv, rfu.getSecond());
-        if (rfu.getFirst() == ChainResult.STOP) {
+        if (rfu.getFirst() == ChainDirective.STOP) {
           break;
         }
       }
@@ -498,15 +495,12 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public int countGroups(String query) {
-    // TODO: Sum countGroups(query) across all plugins in `uds` and return the total.
-    throw new UnsupportedOperationException("countGroups(query) not yet implemented in chain");
+    return countAll(ud -> ud.countGroups(query));
   }
 
   @Override
   public int countGroups(String query, String parentGroupId) {
-    // TODO: Sum countGroups(query, parentGroupId) across all plugins in `uds` and return the total.
-    throw new UnsupportedOperationException(
-        "countGroups(query, parentGroupId) not yet implemented in chain");
+    return countAll(ud -> ud.countGroups(query, parentGroupId));
   }
 
   @Override
@@ -529,30 +523,24 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public List<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   searchGroups(query, parentGroupId, remainingLimit, remainingOffset), where
-    //   remainingOffset decreases by the count returned from each plugin until exhausted, and
-    //   remainingLimit decreases as results are collected. This avoids over-fetching from later
-    //   plugins once the page is full.
-    throw new UnsupportedOperationException(
-        "searchGroups(query, parentGroupId, limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countGroups(query, parentGroupId),
+            (ud, lim, off) -> ud.searchGroups(query, parentGroupId, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
   public List<GroupBean> searchGroups(String query, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   searchGroups(query, remainingLimit, remainingOffset), where remainingOffset decreases
-    //   by the count returned from each plugin until exhausted, and remainingLimit decreases
-    //   as results are collected. This avoids over-fetching from later plugins once the page
-    //   is full.
-    throw new UnsupportedOperationException(
-        "searchGroups(query, limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countGroups(query), (ud, lim, off) -> ud.searchGroups(query, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
   public int countRoles(String query) {
-    // TODO: Sum countRoles(query) across all plugins in `uds` and return the total.
-    throw new UnsupportedOperationException("countRoles(query) not yet implemented in chain");
+    return countAll(ud -> ud.countRoles(query));
   }
 
   @Override
@@ -566,27 +554,20 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public List<RoleBean> searchRoles(String query, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   searchRoles(query, remainingLimit, remainingOffset), where remainingOffset decreases
-    //   by the count returned from each plugin until exhausted, and remainingLimit decreases
-    //   as results are collected. This avoids over-fetching from later plugins once the page
-    //   is full.
-    throw new UnsupportedOperationException(
-        "searchRoles(query, limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countRoles(query), (ud, lim, off) -> ud.searchRoles(query, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
   public int countUsers(String query) {
-    // TODO: Sum countUsers(query) across all plugins in `uds` and return the total.
-    throw new UnsupportedOperationException("countUsers(query) not yet implemented in chain");
+    return countAll(ud -> ud.countUsers(query));
   }
 
   @Override
   public int countUsers(String query, String parentGroupId, boolean recursive) {
-    // TODO: Sum countUsers(query, parentGroupId, recursive) across all plugins in `uds`
-    //   and return the total.
-    throw new UnsupportedOperationException(
-        "countUsers(query, parentGroupId, recursive) not yet implemented in chain");
+    return countAll(ud -> ud.countUsers(query, parentGroupId, recursive));
   }
 
   @Override
@@ -608,11 +589,11 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     }
 
     for (UserDirectory ud : uds) {
-      Pair<ChainResult, Collection<UserBean>> results =
+      Pair<ChainDirective, Collection<UserBean>> results =
           noGroupId ? ud.searchUsers(query) : ud.searchUsers(query, parentGroupId, recursive);
       if (results != null) {
         rv = accumulate(rv, results.getSecond());
-        if (results.getFirst() == ChainResult.STOP) {
+        if (results.getFirst() == ChainDirective.STOP) {
           break;
         }
       }
@@ -625,25 +606,20 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public List<UserBean> searchUsers(String query, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   searchUsers(query, remainingLimit, remainingOffset), where remainingOffset decreases
-    //   by the count returned from each plugin until exhausted, and remainingLimit decreases
-    //   as results are collected. This avoids over-fetching from later plugins once the page
-    //   is full.
-    throw new UnsupportedOperationException(
-        "searchUsers(query, limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countUsers(query), (ud, lim, off) -> ud.searchUsers(query, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
   public List<UserBean> searchUsers(
       String query, String parentGroupId, boolean recursive, int limit, int offset) {
-    // TODO: Iterate over plugins in `uds` in order. For each plugin, call
-    //   searchUsers(query, parentGroupId, recursive, remainingLimit, remainingOffset), where
-    //   remainingOffset decreases by the count returned from each plugin until exhausted, and
-    //   remainingLimit decreases as results are collected. This avoids over-fetching from later
-    //   plugins once the page is full.
-    throw new UnsupportedOperationException(
-        "searchUsers(query, parentGroupId, recursive, limit, offset) not yet implemented in chain");
+    return fetchPage(
+        new PagingFunctions<>(
+            ud -> ud.countUsers(query, parentGroupId, recursive),
+            (ud, lim, off) -> ud.searchUsers(query, parentGroupId, recursive, lim, off)),
+        new PageRange(limit, offset));
   }
 
   @Override
@@ -683,7 +659,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   private static final class EmptyUserBean implements UserBean {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Override
     public String getUniqueID() {
@@ -712,7 +688,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   private static final class EmptyGroupBean implements GroupBean {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Override
     public String getUniqueID() {
@@ -726,7 +702,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   private static final class EmptyRoleBean implements RoleBean {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Override
     public String getUniqueID() {
@@ -742,5 +718,13 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   @Override
   public void clearUserSearchCache() {
     searchUsersCache.invalidateAll();
+  }
+
+  private int countAll(ToIntFunction<UserDirectory> countFunction) {
+    return new ChainCounter(uds).count(countFunction);
+  }
+
+  private <T> List<T> fetchPage(PagingFunctions<T> pagingFunctions, PageRange pageRange) {
+    return new ChainPager<>(uds, pagingFunctions).getPage(pageRange);
   }
 }

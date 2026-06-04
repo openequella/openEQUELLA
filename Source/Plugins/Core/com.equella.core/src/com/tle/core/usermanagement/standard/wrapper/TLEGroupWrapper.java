@@ -36,7 +36,8 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.usermanagement.standard.service.TLEGroupService;
 import com.tle.plugins.ump.AbstractUserDirectory;
-import com.tle.plugins.ump.ChainedResult;
+import com.tle.plugins.ump.ChainDirective;
+import com.tle.plugins.ump.ChainResult;
 import com.tle.plugins.ump.UserDirectoryUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,9 +78,9 @@ public class TLEGroupWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
-    return new Pair<ChainResult, Collection<GroupBean>>(
-        ChainResult.CONTINUE, convert(groupService.getGroupsContainingUser(userID, true)));
+  public Pair<ChainDirective, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
+    return new Pair<>(
+        ChainDirective.CONTINUE, convert(groupService.getGroupsContainingUser(userID, true)));
   }
 
   @Override
@@ -122,35 +123,36 @@ public class TLEGroupWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public ChainedResult<GroupBean> searchGroups(String query, int limit, int offset) {
-    return ChainedResult.stopWith(convert(groupService.search(query, limit, offset)));
+  public ChainResult<GroupBean> searchGroups(String query, int limit, int offset) {
+    return ChainResult.stopWith(convert(groupService.search(query, limit, offset)));
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> getUsersForGroup(
+  public Pair<ChainDirective, Collection<UserBean>> getUsersInGroup(
       String groupId, boolean recursive) {
     try {
       List<String> userIds = groupService.getUsersInGroup(groupId, recursive);
-      return new Pair<>(ChainResult.CONTINUE, getChain().getInformationForUsers(userIds).values());
+      return new Pair<>(
+          ChainDirective.CONTINUE, getChain().getInformationForUsers(userIds).values());
     } catch (NotFoundException e) {
-      return new Pair<>(ChainResult.CONTINUE, Collections.emptyList());
+      return new Pair<>(ChainDirective.CONTINUE, Collections.emptyList());
     }
   }
 
   @Override
-  public ChainedResult<UserBean> getUsersInGroup(
+  public ChainResult<UserBean> getUsersInGroup(
       String groupId, boolean recursive, int limit, int offset) {
     try {
       List<String> userIds = groupService.getUsersInGroup(groupId, recursive, limit, offset);
       List<UserBean> result = new ArrayList<>(getChain().getInformationForUsers(userIds).values());
-      return ChainedResult.continueWith(result);
+      return ChainResult.continueWith(result);
     } catch (NotFoundException e) {
-      return ChainedResult.continueWithEmpty();
+      return ChainResult.continueWithEmpty();
     }
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(
       String query, String parentGroupID, boolean recursive) {
     // We only care if the search is filtering by a group.
     if (Check.isEmpty(parentGroupID)) {
@@ -172,8 +174,8 @@ public class TLEGroupWrapper extends AbstractUserDirectory {
 
     // If there's no user query to filter on, return what we have.
     if (!UserDirectoryUtils.searchQueryContainsNonWildcards(query)) {
-      return new Pair<ChainResult, Collection<UserBean>>(
-          ChainResult.CONTINUE, getChain().getInformationForUsers(usersInGroup).values());
+      return new Pair<>(
+          ChainDirective.CONTINUE, getChain().getInformationForUsers(usersInGroup).values());
     }
 
     // Get all the results for a non grouped search from everyone on the
@@ -195,7 +197,7 @@ public class TLEGroupWrapper extends AbstractUserDirectory {
                 }
               });
     }
-    return new Pair<>(ChainResult.STOP, users);
+    return new Pair<>(ChainDirective.STOP, users);
   }
 
   private static GroupBean convert(TLEGroup group) {

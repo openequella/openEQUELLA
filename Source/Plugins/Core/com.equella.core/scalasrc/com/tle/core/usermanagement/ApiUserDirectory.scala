@@ -22,7 +22,7 @@ import cats.implicits._
 import com.tle.common.Pair
 import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
-import com.tle.plugins.ump.UserDirectory
+import com.tle.plugins.ump.ChainDirective
 import io.circe.{ACursor, Decoder, Json}
 import org.slf4j.LoggerFactory
 import sttp.client3.basicRequest
@@ -176,7 +176,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     */
   override def searchUsers(
       query: String
-  ): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
+  ): Pair[ChainDirective, util.Collection[UserBean]] = {
     val users = execute { (idp, tokenState) =>
       val endpoint = userListEndpoint(idp, query)
       searchUsers(endpoint, tokenState, idp)
@@ -185,7 +185,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       .getOrElse(List.empty)
       .asJavaCollection
 
-    new Pair(UserDirectory.ChainResult.CONTINUE, users)
+    new Pair(ChainDirective.CONTINUE, users)
   }
 
   override def getInformationForUser(userId: String): UserBean = {

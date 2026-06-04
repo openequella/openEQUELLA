@@ -18,41 +18,39 @@
 
 package com.tle.plugins.ump
 
-import com.tle.plugins.ump.UserDirectory.ChainResult
-
 import java.util
 
 /** A typed replacement for the legacy `Pair[ChainResult, Collection[T]]` that was previously used
   * as the return type of [[UserDirectory]] search and lookup methods.
   *
-  * Carries both the [[ChainResult]] directive (whether the plugin chain should continue or stop)
+  * Carries both the [[ChainDirective]] directive (whether the plugin chain should continue or stop)
   * and the collection of results returned by a [[UserDirectory]] operation.
   *
   * Use the factory methods in the companion object to construct instances. The `results` field
-  * should not be `null`; use [[ChainedResult.continueWithEmpty]] when there are no results.
+  * should not be `null`; use [[ChainResult.continueWithEmpty]] when there are no results.
   *
-  * @param chainResult
+  * @param chainDirective
   *   whether the plugin chain should continue or stop after this result
   * @param results
   *   the entities returned by this plugin
   * @tparam T
   *   the type of elements in the result collection
   */
-final class ChainedResult[T](val chainResult: ChainResult, val results: util.List[T])
+final class ChainResult[T](val chainDirective: ChainDirective, val results: util.List[T])
 
-object ChainedResult {
+object ChainResult {
 
-  /** Returns a [[ChainedResult]] that stops the chain and carries the given results. */
-  def stopWith[T](results: util.List[T]): ChainedResult[T] =
-    new ChainedResult[T](ChainResult.STOP, results)
+  /** Returns a [[ChainResult]] that stops the chain and carries the given results. */
+  def stopWith[T](results: util.List[T]): ChainResult[T] =
+    new ChainResult[T](ChainDirective.STOP, results)
 
-  /** Returns a [[ChainedResult]] that continues the chain and carries the given results. */
-  def continueWith[T](results: util.List[T]): ChainedResult[T] =
-    new ChainedResult[T](ChainResult.CONTINUE, results)
+  /** Returns a [[ChainResult]] that continues the chain and carries the given results. */
+  def continueWith[T](results: util.List[T]): ChainResult[T] =
+    new ChainResult[T](ChainDirective.CONTINUE, results)
 
-  /** Returns a [[ChainedResult]] that continues the chain with an empty result collection. Prefer
+  /** Returns a [[ChainResult]] that continues the chain with an empty result collection. Prefer
     * this over passing `null` when a plugin has no results to contribute.
     */
-  def continueWithEmpty[T](): ChainedResult[T] =
+  def continueWithEmpty[T](): ChainResult[T] =
     continueWith[T](util.List.of[T]())
 }
