@@ -133,7 +133,7 @@
     "jest-environment-jsdom": "30.4.1",
     "jest-snapshot": "30.4.1",
     "mkdirp": "3.0.1",
-    "npm-run-all2": "8.0.4",
+    "npm-run-all2": "9.0.1",
     "parcel": "2.16.4",
     "patch-package": "8.0.1",
     "punycode": "2.3.1",
