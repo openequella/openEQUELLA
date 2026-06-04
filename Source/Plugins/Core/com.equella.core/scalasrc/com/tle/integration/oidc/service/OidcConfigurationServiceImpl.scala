@@ -95,4 +95,6 @@ class OidcConfigurationServiceImpl @Inject() (
     get.toOption
       .map(_.commonDetails)
       .filter(details => details.enabled && details.seamlessSso)
+
+  def isSeamlessSsoEnabled: Boolean = getForSeamlessSso.isDefined
 }

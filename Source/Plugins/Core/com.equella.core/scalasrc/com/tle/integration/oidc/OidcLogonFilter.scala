@@ -46,13 +46,10 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
   */
 @Singleton
 @Bind
-class OidcLogonFilter extends UserManagementLogonFilter {
-
-  @Inject
-  private var authService: OidcAuthService = _
-
-  @Inject
-  private var oidcConfigurationService: OidcConfigurationService = _
+class OidcLogonFilter @Inject() (
+    authService: OidcAuthService,
+    oidcConfigurationService: OidcConfigurationService
+) extends UserManagementLogonFilter {
 
   override def init(attributes: util.Map[AnyRef, AnyRef]): Boolean = true
 
@@ -87,13 +84,12 @@ class OidcLogonFilter extends UserManagementLogonFilter {
     * @param loggedOutURI
     *   The standard OEQ logout URI.
     */
-  override def logoutURI(state: UserState, loggedOutURI: URI): URI = {
-    oidcConfigurationService.getForSeamlessSso match {
-      case Some(_) =>
-        Uri(loggedOutURI).addParam(WebConstants.NO_AUTO_LOGIN, "true").toJavaUri
-      case None => loggedOutURI
+  override def logoutURI(state: UserState, loggedOutURI: URI): URI =
+    if (oidcConfigurationService.isSeamlessSsoEnabled) {
+      Uri(loggedOutURI).addParam(WebConstants.NO_AUTO_LOGIN, "true").toJavaUri
+    } else {
+      loggedOutURI
     }
-  }
 
   override def logoutRedirect(loggedOutURI: URI): URI = loggedOutURI
 

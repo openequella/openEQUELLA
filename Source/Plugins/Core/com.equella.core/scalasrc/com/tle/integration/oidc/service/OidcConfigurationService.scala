@@ -42,6 +42,12 @@ trait OidcConfigurationService {
 
   def getForSeamlessSso: Option[CommonDetails]
 
+  /** Check if Seamless SSO is enabled in the current Identity Provider configuration.
+    * @return
+    *   `true` if Seamless SSO is enabled, `false` otherwise.
+    */
+  def isSeamlessSsoEnabled: Boolean
+
   /** Validate and save an Identity Provider configuration. If the validation fails, returns a
     * message listing all the invalid values. If the validation passes, save the string
     * representation of the configuration in the OEQ standard configuration.
