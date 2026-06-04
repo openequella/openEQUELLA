@@ -472,7 +472,7 @@ public class UserServiceImpl
 
   @Override
   public List<RoleBean> searchRoles(String query, int limit, int offset) {
-    return getCurrentPlugin().searchRoles(query, limit, offset);
+    return getCurrentPlugin().searchRoles(fixQuery(query), limit, offset);
   }
 
   private String fixQuery(String query) {

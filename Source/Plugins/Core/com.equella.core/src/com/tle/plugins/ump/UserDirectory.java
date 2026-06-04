@@ -47,11 +47,6 @@ import javax.servlet.http.HttpServletRequest;
  * their requirement.
  */
 public interface UserDirectory {
-  // TODO: move to file ChainedResult.java
-  enum ChainResult {
-    CONTINUE,
-    STOP
-  }
 
   /**
    * @return true if the settings should be re-saved to the DB after initialisation.
@@ -164,7 +159,7 @@ public interface UserDirectory {
    *
    * @param userId the user to query
    */
-  Pair<ChainResult, Collection<RoleBean>> getRolesForUser(String userId);
+  Pair<ChainDirective, Collection<RoleBean>> getRolesForUser(String userId);
 
   /**
    * Return a list of all group Ids for which the given user is considered a member. For example, if
@@ -174,7 +169,7 @@ public interface UserDirectory {
    * @param userId the user to query
    * @return a collection of GroupBean objects for which the user is considered a member of
    */
-  Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(String userId);
+  Pair<ChainDirective, Collection<GroupBean>> getGroupsContainingUser(String userId);
 
   /**
    * Return a list of all members of a given group. If <code>recursive</code> is false, then only
@@ -187,7 +182,7 @@ public interface UserDirectory {
   int countUsersInGroup(String groupId, boolean recursive);
 
   /**
-   * Return a list of all members of a given group. // TODO: RENAME TO getUsersInGroup
+   * Return a list of all members of a given group.
    *
    * @param groupId the group for which all user results must be a member.
    * @param recursive when false, only members directly in the given group should be returned.
@@ -197,7 +192,7 @@ public interface UserDirectory {
    *     cannot be found, or no matching users can be resolved, the UserBean collection will be
    *     empty.
    */
-  Pair<ChainResult, Collection<UserBean>> getUsersForGroup(String groupId, boolean recursive);
+  Pair<ChainDirective, Collection<UserBean>> getUsersInGroup(String groupId, boolean recursive);
 
   /**
    * Retrieves a slice of users belonging to the specified group.
@@ -209,7 +204,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the users for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset);
+  ChainResult<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset);
 
   /**
    * Returns the total count of users matching the given query.
@@ -238,7 +233,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the matching users for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<UserBean> searchUsers(String query, int limit, int offset);
+  ChainResult<UserBean> searchUsers(String query, int limit, int offset);
 
   /**
    * Perform a free-text search over the user database on any fields deemed relevant by the external
@@ -247,7 +242,7 @@ public interface UserDirectory {
    * @param query a string representing the free-text query.
    * @return a list of UserBean objects matching the query
    */
-  Pair<ChainResult, Collection<UserBean>> searchUsers(String query);
+  Pair<ChainDirective, Collection<UserBean>> searchUsers(String query);
 
   /**
    * Same as <code>searchUsers(query)</code> with additional filtering by group. If the
@@ -264,7 +259,7 @@ public interface UserDirectory {
    *     into the result set.
    * @return a list of UserBean objects matching the query
    */
-  Pair<ChainResult, Collection<UserBean>> searchUsers(
+  Pair<ChainDirective, Collection<UserBean>> searchUsers(
       String query, String parentGroupId, boolean recursive);
 
   /**
@@ -279,7 +274,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the matching users for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<UserBean> searchUsers(
+  ChainResult<UserBean> searchUsers(
       String query, String parentGroupId, boolean recursive, int limit, int offset);
 
   /**
@@ -316,7 +311,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the matching groups for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<GroupBean> searchGroups(String query, int limit, int offset);
+  ChainResult<GroupBean> searchGroups(String query, int limit, int offset);
 
   /**
    * Same as {@link #searchGroups(String)} with additional filtering by parent group.
@@ -338,7 +333,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the matching groups for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset);
+  ChainResult<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset);
 
   /** Returns the parent group of the given group, or null if no parent exists. */
   GroupBean getParentGroupForGroup(String groupId);
@@ -368,7 +363,7 @@ public interface UserDirectory {
    * @return A ChainedResult with the matching roles for the requested page
    * @throws IllegalArgumentException if limit or offset is negative
    */
-  ChainedResult<RoleBean> searchRoles(String query, int limit, int offset);
+  ChainResult<RoleBean> searchRoles(String query, int limit, int offset);
 
   /** Performs any final operations such as closing DB connections. */
   void close() throws Exception;

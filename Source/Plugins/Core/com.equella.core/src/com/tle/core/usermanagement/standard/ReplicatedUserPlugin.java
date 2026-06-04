@@ -36,6 +36,7 @@ import com.tle.core.guice.Bind;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.DisabledException;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainDirective;
 import com.tle.plugins.ump.UserDirectoryUtils;
 import com.zaxxer.hikari.HikariDataSource;
 import java.security.MessageDigest;
@@ -59,7 +60,7 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
   // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
   // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
-  private static Logger LOGGER = LoggerFactory.getLogger(ReplicatedUserPlugin.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReplicatedUserPlugin.class);
 
   // need to chunk the IN statement into manageable chunks (there is a 1000
   // maximum limit to the size of IN statements on Oracle)
@@ -98,7 +99,7 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
     String innerPass = password;
     String digest = config.getDigest();
     boolean isNotPlainText =
-        digest.length() > 0 && !digest.equals(ReplicatedConfiguration.DIGEST_PLAINTEXT);
+        !digest.isEmpty() && !digest.equals(ReplicatedConfiguration.DIGEST_PLAINTEXT);
     try {
       if (isNotPlainText) {
         byte[] mac = MessageDigest.getInstance(digest).digest(innerPass.getBytes());
@@ -135,7 +136,7 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
 
     Set<String> roles = auth.getUsersRoles();
 
-    Pair<ChainResult, Collection<RoleBean>> rfu = getRolesForUser(userId);
+    Pair<ChainDirective, Collection<RoleBean>> rfu = getRolesForUser(userId);
     if (rfu != null) {
       for (RoleBean b : rfu.getSecond()) {
         roles.add(b.getUniqueID());
@@ -183,13 +184,12 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
+  public Pair<ChainDirective, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
     List<String> gicu = getGroupIdsContainingUsers(userID);
     if (Check.isEmpty(gicu)) {
       return null;
     }
-    return new Pair<ChainResult, Collection<GroupBean>>(
-        ChainResult.CONTINUE, getGroupInfo(gicu).values());
+    return new Pair<>(ChainDirective.CONTINUE, getGroupInfo(gicu).values());
   }
 
   private List<String> getGroupIdsContainingUsers(final String userId) {
@@ -201,28 +201,28 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> getUsersForGroup(
+  public Pair<ChainDirective, Collection<UserBean>> getUsersInGroup(
       String groupId, boolean recursive) {
     if (recursive) {
       String sql = config.getUsersInGroupRecursive();
       if (!Check.isEmpty(sql)) {
-        return new Pair<ChainResult, Collection<UserBean>>(
-            ChainResult.CONTINUE, getInformationForUsers(getIds(sql, groupId)).values());
+        return new Pair<>(
+            ChainDirective.CONTINUE, getInformationForUsers(getIds(sql, groupId)).values());
       }
       // else fallback to non-recursive query below
     }
 
     String sql = config.getUsersInGroup();
     if (!Check.isEmpty(sql)) {
-      return new Pair<ChainResult, Collection<UserBean>>(
-          ChainResult.CONTINUE, getInformationForUsers(getIds(sql, groupId)).values());
+      return new Pair<>(
+          ChainDirective.CONTINUE, getInformationForUsers(getIds(sql, groupId)).values());
     }
 
     return null;
   }
 
   @Override
-  public Pair<ChainResult, Collection<RoleBean>> getRolesForUser(final String userID) {
+  public Pair<ChainDirective, Collection<RoleBean>> getRolesForUser(final String userID) {
     String sql = config.getUserRoles();
     if (Check.isEmpty(sql)) {
       return null;
@@ -240,23 +240,23 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
             roles.add(new DefaultRoleBean(id, name));
           }
         });
-    return new Pair<ChainResult, Collection<RoleBean>>(ChainResult.CONTINUE, roles);
+    return new Pair<>(ChainDirective.CONTINUE, roles);
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(String query) {
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(String query) {
     String sql = config.getSearchUsers();
     if (Check.isEmpty(sql)) {
       return null;
     }
 
-    return new Pair<ChainResult, Collection<UserBean>>(
-        ChainResult.CONTINUE,
+    return new Pair<>(
+        ChainDirective.CONTINUE,
         getChain().getInformationForUsers(performSearch(sql, query.replace('*', '%'))).values());
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(
       final String query, final String parentGroupID, final boolean recursive) {
     if (Check.isEmpty(parentGroupID)) {
       return searchUsers(query);
@@ -270,8 +270,7 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
       userIds = searchUsersInGroup(fixedQuery, parentGroupID);
     }
 
-    return new Pair<ChainResult, Collection<UserBean>>(
-        ChainResult.CONTINUE, getChain().getInformationForUsers(userIds).values());
+    return new Pair<>(ChainDirective.CONTINUE, getChain().getInformationForUsers(userIds).values());
   }
 
   private List<String> searchUsersInGroupRecursive(String query, String group) {
@@ -573,10 +572,6 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
   /**
    * If params is shorter than the number of params in the SQL, the last param will replicated to
    * fill in the missing spots (e.g. see the search query)
-   *
-   * @param sql
-   * @param params
-   * @return
    */
   private Object[] getParamValues(String sql, Object... values) {
     final int sqlParamCount = getParamCount(sql);
