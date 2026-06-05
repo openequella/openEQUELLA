@@ -170,7 +170,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     // Log in as admin to enable Seamless SSO first.
     logon()
     val oidcSettingsPage = new OidcSettingsPage(context).load()
-    oidcSettingsPage.enableSeamlessSso(enable = true)
+    oidcSettingsPage.enableSeamlessSso()
     oidcSettingsPage.save()
 
     // Log out.
@@ -185,7 +185,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
 
     // Clean up: disable Seamless SSO.
     oidcSettingsPage.load()
-    oidcSettingsPage.enableSeamlessSso(enable = false)
+    oidcSettingsPage.disableSeamlessSso()
     oidcSettingsPage.save()
   }
 

@@ -1,11 +1,9 @@
 package com.tle.webtests.pageobject;
 
-import static com.codeborne.selenide.Condition.clickable;
 import static com.codeborne.selenide.Selectors.by;
 import static com.codeborne.selenide.Selectors.byLinkText;
 import static com.codeborne.selenide.Selenide.$;
 
-import com.codeborne.selenide.SelenideElement;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.portal.AbstractPortalEditPage;
 import com.tle.webtests.pageobject.portal.MenuSection;
@@ -67,11 +65,8 @@ public class HomePage extends AbstractPage<HomePage> {
    * dropdown menu. Users should be navigated to the Login page.
    */
   public LoginPage logout() {
-    SelenideElement myAccountIcon = $(by("aria-label", "My Account")).shouldBe(clickable);
-    myAccountIcon.click();
-
-    SelenideElement logoutBtn = $(byLinkText("Logout")).shouldBe(clickable);
-    logoutBtn.click();
+    $(by("aria-label", "My Account")).click();
+    $(byLinkText("Logout")).click();
 
     return new LoginPage(context).get();
   }

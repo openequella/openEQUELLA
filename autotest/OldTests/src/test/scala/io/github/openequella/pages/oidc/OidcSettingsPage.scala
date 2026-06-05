@@ -18,8 +18,7 @@
 
 package io.github.openequella.pages.oidc
 
-import com.codeborne.selenide.Condition.clickable
-import com.codeborne.selenide.Condition.cssClass
+import com.codeborne.selenide.Condition.checked
 import com.codeborne.selenide.Selenide.$
 import com.codeborne.selenide.Selectors.by
 
@@ -75,15 +74,15 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
     }
   }
 
-  def enableSeamlessSso(enable: Boolean): Unit = {
-    val toggle = $(by("aria-label", "Enable Seamless SSO"))
-      .shouldBe(clickable)
+  private def ssoToggle = $(by("aria-label", "Enable Seamless SSO"))
 
-    val checked = toggle.has(cssClass("Mui-checked"))
-    if (enable != checked) {
-      toggle.click()
-    }
-  }
+  private def ssoInput = ssoToggle.$("input[type='checkbox']")
+
+  def enableSeamlessSso(): Unit =
+    if (!ssoInput.is(checked)) ssoToggle.click()
+
+  def disableSeamlessSso(): Unit =
+    if (ssoInput.is(checked)) ssoToggle.click()
 
   // Get the text field element by the label.
   private def getTextField(label: String): WebElement =
