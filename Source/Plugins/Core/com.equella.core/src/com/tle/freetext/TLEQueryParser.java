@@ -29,6 +29,7 @@ import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
+import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.queryparser.flexible.standard.builders.FuzzyQueryNodeBuilder;
 import org.apache.lucene.queryparser.flexible.standard.builders.PrefixWildcardQueryNodeBuilder;
@@ -40,6 +41,7 @@ import org.apache.lucene.queryparser.flexible.standard.nodes.PrefixWildcardQuery
 import org.apache.lucene.queryparser.flexible.standard.nodes.WildcardQueryNode;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardQuery;
 
 /**
@@ -84,45 +86,19 @@ public class TLEQueryParser extends StandardQueryParser {
     setQueryBuilder(queryTreeBuilder);
   }
 
-  public org.apache.lucene.search.Query parse(String rawQuery) throws QueryNodeException {
-    /**
-     * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
-     * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
-     * it is manually entered plus "+", hyphen "-" and exclamation "!" should only be considered
-     * prohibitors if directly followed by the term. Hopefully this can be removed in future due to
-     * the following fix in Lucene 3.6.1 and higher -
-     * https://issues.apache.org/jira/browse/LUCENE-2566 Which changes the way - + ! are handled.
-     * Does not appear to work correctly for ! though.
-     *
-     * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
-     * still there, even though we replaced the classic QueryParser with the new
-     * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
-     * then).
-     *
-     * <p>Plus, in v4 forward slash will cause a QueryNodeParseException if it is not escaped. The
-     * Regex pattern defined above is too hard to understand and modifiy without any explanation.
-     * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
-     * do a simple char replacement to escape forward slash.
-     *
-     * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
-     */
-    String query = rawQuery.replace("/", "\\/");
-    Matcher matcher = pattern.matcher(query);
-    StringBuilder s = new StringBuilder();
-    while (matcher.find()) {
-      matcher.appendReplacement(s, "\\\\" + matcher.group());
-    }
-    matcher.appendTail(s);
+  public Query parse(String rawQuery, boolean escapeSpecialChars) throws QueryNodeException {
+    if (escapeSpecialChars) {
+      // In addition to the standard Lucene reserved chars, also need to
+      // escape several extra chars that cause Lucene `ParseException`.
+      String standardEscaped = QueryParserUtil.escape(rawQuery);
+      String extraEscaped = escapeExtraSyntaxChars(standardEscaped);
 
-    String buffered = s.toString();
-    if (!Check.isEmpty(buffered)) {
-      query = buffered;
+      // Use `null` as the default field because the class was originally extended from
+      // `MultiFieldQueryParser`
+      // where `field` is always `null` when we were using Lucene v3.
+      return parse(extraEscaped, null);
     }
-
-    // Use `null` as the default field because the class was originally extended from
-    // `MultiFieldQueryParser`
-    // where `field` is always `null` when we were using Lucene v3.
-    return parse(query, null);
+    return legacyParse(rawQuery);
   }
 
   private static String getNonStemmedField(String stemmedField) {
@@ -163,5 +139,47 @@ public class TLEQueryParser extends StandardQueryParser {
       FuzzyQueryNode fuzzyQueryNode = (FuzzyQueryNode) queryNode;
       return super.build(nonStemmedQueryNode(fuzzyQueryNode));
     }
+  }
+
+  private String escapeExtraSyntaxChars(String query) {
+    return query.replace("@", "\\@").replace("=", "\\=").replace("<", "\\<").replace(">", "\\>");
+  }
+
+  private Query legacyParse(String rawQuery) throws QueryNodeException {
+    /**
+     * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
+     * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
+     * it is manually entered plus "+", hyphen "-" and exclamation "!" should only be considered
+     * prohibitors if directly followed by the term. Hopefully this can be removed in future due to
+     * the following fix in Lucene 3.6.1 and higher -
+     * https://issues.apache.org/jira/browse/LUCENE-2566 Which changes the way - + ! are handled.
+     * Does not appear to work correctly for ! though.
+     *
+     * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
+     * still there, even though we replaced the classic QueryParser with the new
+     * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
+     * then).
+     *
+     * <p>Plus, in v4 forward slash will cause a QueryNodeParseException if it is not escaped. The
+     * Regex pattern defined above is too hard to understand and modifiy without any explanation.
+     * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
+     * do a simple char replacement to escape forward slash.
+     *
+     * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
+     */
+    String query = rawQuery.replace("/", "\\/");
+    Matcher matcher = pattern.matcher(query);
+    StringBuilder s = new StringBuilder();
+    while (matcher.find()) {
+      matcher.appendReplacement(s, "\\\\" + matcher.group());
+    }
+    matcher.appendTail(s);
+
+    String buffered = s.toString();
+    if (!Check.isEmpty(buffered)) {
+      query = buffered;
+    }
+
+    return parse(query, null);
   }
 }

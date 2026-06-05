@@ -113,6 +113,8 @@ class ItemIndexTest
   // from 000 and "G" stands for "Grant".
   val aclValue = "001G"
 
+  val mockedConfigurationService = mock(classOf[ConfigurationService])
+
   def initialiseItemIndex(testCaseName: String): ItemIndex[FreetextResult] = {
     val freetextIndexConfiguration = new FreetextIndexConfiguration {
       override def getIndexPath: File =
@@ -133,7 +135,6 @@ class ItemIndexTest
       override def getAnalyzerLanguage: String = "en"
     }
 
-    val mockedConfigurationService = mock(classOf[ConfigurationService])
     when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
       .thenReturn(new SearchSettings)
 
@@ -688,6 +689,55 @@ class ItemIndexTest
           java11,
           java8
         )
+      }
+    }
+
+    describe("escape special characters") {
+      it("supports search query containing special characters") { f =>
+        val (itemIndex, searchConfig) = f
+        Given("a set of unique Items which have special chars in titles")
+        val titles = Set(
+          "yah~~~~~~",
+          "`script`",
+          "good...",
+          "oh_my_god",
+          "hello, world",
+          "'bad idea'",
+          "\"batman\"",
+          "are you ok ? yes",
+          "test@edalex.com",
+          "years {2000-2026}",
+          "months (11-12)",
+          "days [1-31]",
+          "books: about parrot",
+          "-60 degrees",
+          "1/3 of the cake",
+          "backslash \\ do you like it",
+          "step 1; step 2; step 3",
+          "7+8>9",
+          "2+3<6",
+          "1+4=5"
+        )
+        titles.foreach(title => {
+          val items = generateIndexedItems(itemName = title)
+          createIndexes(itemIndex, items)
+        })
+
+        When("escaping of special characters is enabled")
+        val searchSettings = new SearchSettings
+        searchSettings.setEscapeSpecialChars(true)
+        when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
+          .thenReturn(searchSettings)
+
+        Then("each search should execute without Lucene syntax errors and return the Item")
+        val itemNames = titles.map(title => {
+          searchConfig.setQuery(title)
+          val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+
+          result.length shouldBe 1
+          result.head.get(FreeTextQuery.FIELD_NAME)
+        })
+        itemNames shouldBe titles
       }
     }
   }
