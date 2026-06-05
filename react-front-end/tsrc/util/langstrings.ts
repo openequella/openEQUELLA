@@ -1061,7 +1061,10 @@ export const languageStrings = {
         allowStatusControlLabel:
           "Allow users to toggle between live and all statuses via the status selector",
         authFeed: "Authenticated feeds",
-        authFeedLabel: "Generate authenticated RSS and Atom feed links ",
+        authFeedLabel: "Generate authenticated RSS and Atom feed links",
+        escapeSpecialChars: "Escape special characters",
+        escapeSpecialCharsLabel:
+          "Escape special characters in the search query so they are treated as literal text instead of Lucene syntax",
         gallery: "Gallery",
         galleryViews: "Gallery views",
         disableImages: "Disable Images",

@@ -28,6 +28,10 @@ export interface Settings {
   searchingDisableVideos: boolean;
   searchingDisableOwnerFilter: boolean;
   searchingDisableDateModifiedFilter: boolean;
+  /**
+   * `true` to escape special characters in a search query.
+   */
+  escapeSpecialChars: boolean;
   fileCountDisabled: boolean;
   defaultSearchSort?: SortOrder;
   authenticateFeedsByDefault: boolean;

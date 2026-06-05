@@ -30,6 +30,7 @@ describe('SearchSettings', () => {
       searchingDisableVideos: false,
       searchingDisableOwnerFilter: false,
       searchingDisableDateModifiedFilter: false,
+      escapeSpecialChars: false,
       fileCountDisabled: false,
       authenticateFeedsByDefault: false,
       urlLevel: 0,
