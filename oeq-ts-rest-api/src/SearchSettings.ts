@@ -28,6 +28,7 @@ export interface Settings {
   searchingDisableVideos: boolean;
   searchingDisableOwnerFilter: boolean;
   searchingDisableDateModifiedFilter: boolean;
+  escapeSpecialChars: boolean;
   fileCountDisabled: boolean;
   defaultSearchSort?: SortOrder;
   authenticateFeedsByDefault: boolean;
