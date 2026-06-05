@@ -150,6 +150,25 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                 />
               }
             />
+            {/*Escape special characters*/}
+            <SettingsListControl
+              divider
+              primaryText={searchPageSettingsStrings.escapeSpecialChars}
+              secondaryText={searchPageSettingsStrings.escapeSpecialCharsLabel}
+              control={
+                <SettingsToggleSwitch
+                  value={searchSettings.escapeSpecialChars}
+                  setValue={(value) =>
+                    setSearchSettings({
+                      ...searchSettings,
+                      escapeSpecialChars: value,
+                    })
+                  }
+                  disabled={disableSettings}
+                  id="_escapeSpecialChars"
+                />
+              }
+            />
           </SettingsList>
         </CardContent>
       </Card>
