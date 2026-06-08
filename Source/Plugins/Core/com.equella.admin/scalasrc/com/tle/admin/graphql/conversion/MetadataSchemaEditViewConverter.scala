@@ -20,29 +20,19 @@ package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.{fromSchema, toSchema}
 import com.tle.admin.graphql.conversion.OtherTargetListViewConverter.fromTargetListMap
-import com.tle.admin.graphql.conversion.TargetListConverter.{fromTargetList, toTargetList}
+import com.tle.admin.graphql.conversion.TargetListConverter.fromTargetList
 import com.tle.beans.entity.Schema
 import com.tle.common.EntityPack
 import io.github.openequella.graphql.api.views.MetadataSchemaEditView
 
 object MetadataSchemaEditViewConverter {
-  def toEntityPack(view: MetadataSchemaEditView): EntityPack[Schema] = {
-    // Create the EntityPack with the schema and staging ID
-    val schema     = view.schema convert toSchema
-    val entityPack = new EntityPack[Schema](schema, view.stagingId)
-
-    // Set the target list on the entity pack
-    val targetList = view.targetList convert toTargetList
-    entityPack.setTargetList(targetList)
-
-    // Note: MetadataSchema entities do not use otherTargetLists (only Collections
-    // and Workflows do), so we intentionally leave it as null here.
-
-    // Set version if available
-    view.version.foreach(entityPack.setVersion)
-
-    entityPack
-  }
+  def toEntityPack(view: MetadataSchemaEditView): EntityPack[Schema] =
+    EntityPackBuilder
+      .forStagedEntity[Schema](view.schema convert toSchema, view.stagingId)
+      .withVersion(view.version)
+      .withTargetList(view.targetList)
+      // we skip withOtherTargetList here as Schemas don't have other target lists
+      .build()
 
   def fromEntityPack(pack: EntityPack[Schema]): MetadataSchemaEditView = {
     val schema           = pack.getEntity convert fromSchema

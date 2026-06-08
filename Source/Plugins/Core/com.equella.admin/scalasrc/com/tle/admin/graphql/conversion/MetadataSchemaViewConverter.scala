@@ -19,23 +19,25 @@
 package com.tle.admin.graphql.conversion
 
 import com.tle.admin.graphql.conversion.CitationViewConverter.{fromCitation, toCitation}
-import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.fromBaseEntity
+import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.{
+  applyToBaseEntity,
+  fromBaseEntity
+}
 import com.tle.beans.entity.{Schema, SchemaTransform}
 import io.github.openequella.graphql.api.views.{MetadataSchemaTransformView, MetadataSchemaView}
+
 import scala.util.chaining.scalaUtilChainingOps
 
 object MetadataSchemaViewConverter {
   def toSchema(view: MetadataSchemaView): Schema = new Schema(view.details.id).tap { s =>
-    s.setUuid(view.details.uuid)
-    s.setOwner(view.details.owner)
+    applyToBaseEntity(s, view.details)
+
     s.setItemNamePath(view.itemNamePath)
     s.setItemDescriptionPath(view.itemDescriptionPath)
     s.setSerialisedDefinition(view.definition)
     s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asArrayList)
     s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asArrayList)
     s.setCitations(view.citations.map(toCitation).asArrayList)
-
-    setLanguageStrings(view, s)
   }
 
   private def toSchemaTransform(view: MetadataSchemaTransformView): SchemaTransform =
@@ -43,13 +45,6 @@ object MetadataSchemaViewConverter {
       st.setFilename(view.filename)
       st.setType(view.schemaType)
     }
-
-  private def setLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
-    val EntityDetailsViewStrings(name, description) = EntityDetailsViewStrings(view.details)
-
-    s.setName(name.orNull)
-    s.setDescription(description.orNull)
-  }
 
   def fromSchema(schema: Schema): MetadataSchemaView = {
     val exportTransforms = NullSafeList(schema.getExportTransforms) convert fromSchemaTransform

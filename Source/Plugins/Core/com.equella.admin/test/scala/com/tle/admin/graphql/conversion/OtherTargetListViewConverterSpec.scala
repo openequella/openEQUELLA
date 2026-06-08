@@ -50,7 +50,7 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
         entries = List(sampleEntry)
       )
 
-      val result = OtherTargetListViewConverter.toTargetListMap(List(view), itemDef)
+      val result = OtherTargetListViewConverter.toTargetListMap(List(view), Some(itemDef))
 
       val key = result.keySet().iterator().next()
       key shouldBe a[ItemStatusTarget]
@@ -68,7 +68,7 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
         entries = List(sampleEntry)
       )
 
-      val result = OtherTargetListViewConverter.toTargetListMap(List(view), itemDef)
+      val result = OtherTargetListViewConverter.toTargetListMap(List(view), Some(itemDef))
 
       val key = result.keySet().iterator().next()
       key shouldBe a[ItemMetadataTarget]
@@ -86,7 +86,7 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
         entries = List(sampleEntry)
       )
 
-      val result = OtherTargetListViewConverter.toTargetListMap(List(view), itemDef)
+      val result = OtherTargetListViewConverter.toTargetListMap(List(view), Some(itemDef))
 
       val key = result.keySet().iterator().next()
       key shouldBe a[WorkflowTaskTarget]
@@ -94,7 +94,7 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
     }
 
     it("returns null for an empty list") {
-      val result = OtherTargetListViewConverter.toTargetListMap(List.empty, itemDef)
+      val result = OtherTargetListViewConverter.toTargetListMap(List.empty, Some(itemDef))
       result shouldBe null
     }
 
@@ -107,7 +107,7 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
         entries = List(sampleEntry)
       )
 
-      val result    = OtherTargetListViewConverter.toTargetListMap(List(view), itemDef)
+      val result    = OtherTargetListViewConverter.toTargetListMap(List(view), Some(itemDef))
       val lookupKey = new ItemStatusTarget(ItemStatus.LIVE, itemDef)
 
       result.get(lookupKey) should not be null
@@ -138,10 +138,27 @@ class OtherTargetListViewConverterSpec extends AnyFunSpec with Matchers {
         )
       )
 
-      val map       = OtherTargetListViewConverter.toTargetListMap(views, itemDef)
+      val map       = OtherTargetListViewConverter.toTargetListMap(views, Some(itemDef))
       val roundTrip = OtherTargetListViewConverter.fromTargetListMap(map)
 
       roundTrip should contain theSameElementsAs views
+    }
+
+    it("converts workflow task targets without an ItemDefinition") {
+      val taskId = "task-789"
+      val view   = OtherTargetListView(
+        targetType = OtherTargetListType.WORKFLOW_TASK,
+        itemStatus = None,
+        metadataRuleId = None,
+        taskId = Some(taskId),
+        entries = List(sampleEntry)
+      )
+
+      val result = OtherTargetListViewConverter.toTargetListMap(List(view), None)
+
+      val key = result.keySet().iterator().next()
+      key shouldBe a[WorkflowTaskTarget]
+      key.asInstanceOf[WorkflowTaskTarget].getTaskId shouldBe taskId
     }
   }
 }

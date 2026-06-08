@@ -18,8 +18,11 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.toEntityPack
+import com.tle.admin.graphql.conversion.Converter
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
+import com.tle.common.EntityPack
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteItemDefinitionService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.CollectionDefinitionApi
@@ -89,6 +92,16 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
 
   override def clone(id: Long): BaseEntityLabel =
     cloneWith(CollectionDefinitionApi.clone)(id)
+
+  override def startEdit(id: Long): EntityPack[ItemDefinition] =
+    CollectionDefinitionApi.startEdit(id) match {
+      case Right(editView) => editView convert toEntityPack
+      case Left(errors)    =>
+        throw new ClientRequestException(
+          s"Error starting edit of collection with ID: $id",
+          errors
+        )
+    }
 
   override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
     logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")

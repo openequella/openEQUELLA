@@ -60,9 +60,38 @@ package object conversion {
     }
   }
 
+  /** Extension method to convert Scala maps to mutable Java HashMaps.
+    *
+    * This is useful when working with legacy Java APIs that expect mutable maps rather than the
+    * immutable views returned by `.asJava`. As typically oEQ beans use HashMaps for their map
+    * fields, this provides a convenient way to convert Scala maps to the expected Java collection
+    * type.
+    *
+    * @param map
+    *   The Scala map to convert
+    */
+  implicit class HashMapConverter[K, V](private val map: Map[K, V]) extends AnyVal {
+
+    /** Converts this Scala Map to a mutable Java HashMap.
+      *
+      * @return
+      *   A new mutable HashMap containing all key-value pairs
+      */
+    def asHashMap: util.HashMap[K, V] = {
+      val hashMap = new util.HashMap[K, V](map.size)
+      map.foreach { case (k, v) => hashMap.put(k, v) }
+      hashMap
+    }
+  }
+
   /** Converts a Java `Date` to a Scala `LocalDateTime`. This is useful for converting Dates from
     * the Java world (e.g. from the database) to the Scala world; keeping in mind they may be null.
     */
   def toLocalDateTime(date: Date): Option[LocalDateTime] =
     Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
+
+  /** Converts a Scala `LocalDateTime` to a Java `Date`. This is the inverse of [[toLocalDateTime]].
+    */
+  def toDate(ldt: LocalDateTime): Date =
+    Date.from(ldt.atZone(java.time.ZoneId.systemDefault()).toInstant)
 }

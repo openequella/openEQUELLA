@@ -24,12 +24,38 @@ import io.github.openequella.graphql.api.views.EntityDetailsView
 
 import scala.jdk.CollectionConverters._
 
-/** Converter for extracting [[EntityDetailsView]] from [[BaseEntity]].
+/** Converter for [[EntityDetailsView]] to/from [[BaseEntity]].
   *
   * This converter handles the common entity fields that are shared across all entity types,
   * including identifiers, ownership, language bundles, attributes, and disabled state.
   */
 object EntityDetailsViewConverter {
+
+  /** Applies all common fields from an [[EntityDetailsView]] to a [[BaseEntity]] in-place.
+    *
+    * This is the reverse of [[fromBaseEntity]] and is intended to be used when constructing a
+    * `BaseEntity` subclass from a GraphQL view. It sets all fields that are common to all entity
+    * types, allowing entity-specific converters to focus only on their unique fields.
+    *
+    * @param entity
+    *   the BaseEntity to populate
+    * @param view
+    *   the EntityDetailsView containing the source data
+    */
+  def applyToBaseEntity(entity: BaseEntity, view: EntityDetailsView): Unit = {
+    entity.setId(view.id)
+    entity.setUuid(view.uuid)
+    entity.setOwner(view.owner)
+
+    view.dateCreated.foreach(d => entity.setDateCreated(toDate(d)))
+    view.dateModified.foreach(d => entity.setDateModified(toDate(d)))
+
+    EntityDetailsViewStrings(view).applyTo(entity)
+
+    entity.setAttributes(view.attributes.asJava)
+
+    entity.setDisabled(view.disabled)
+  }
 
   /** Converts a [[BaseEntity]] to [[EntityDetailsView]], extracting relevant fields and converting
     * types as necessary.
