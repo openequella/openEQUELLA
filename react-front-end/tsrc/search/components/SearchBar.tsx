@@ -30,6 +30,7 @@ import * as React from "react";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
+import { deriveNextQuery } from "../SearchPageHelper";
 
 const PREFIX = "SearchBar";
 
@@ -125,30 +126,9 @@ const SearchBar = forwardRef(
       [onQueryChange],
     );
 
-    const updateLocalQueryFromPropQuery = useCallback(
-      (localQuery: string, propQuery: string) => {
-        // If the prop query is empty, clear local query.
-        if (!propQuery) {
-          return "";
-        }
-
-        // If there's no local typing or local already equals prop query, consume the prop query.
-        if (!localQuery || localQuery === propQuery) {
-          return propQuery;
-        }
-
-        // Otherwise preserve active local typing so that stale debounced search results
-        // do not overwrite user's in-progress typing.
-        return localQuery;
-      },
-      [],
-    );
-
     useEffect(() => {
-      setLocalQuery((currentQuery) =>
-        updateLocalQueryFromPropQuery(currentQuery, query),
-      );
-    }, [query, updateLocalQueryFromPropQuery]);
+      setLocalQuery((currentQuery) => deriveNextQuery(currentQuery, query));
+    }, [query]);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Escape" && localQuery) {
