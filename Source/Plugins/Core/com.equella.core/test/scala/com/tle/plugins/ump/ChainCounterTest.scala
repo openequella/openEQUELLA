@@ -18,10 +18,14 @@
 
 package com.tle.plugins.ump
 
+import com.tle.beans.Institution
+import com.tle.common.usermanagement.user.{CurrentUser, UserState}
+import com.tle.core.institution.RunAsInstitution
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.GivenWhenThen
 
+import java.util.concurrent.Callable
 import java.util.function.ToIntFunction
 import scala.jdk.CollectionConverters._
 import org.mockito.Mockito.{mock, verifyNoInteractions}
@@ -29,7 +33,17 @@ import java.util
 
 class ChainCounterTest extends AnyFunSpec with Matchers with GivenWhenThen with ChainFixtures {
 
-  def mockCountFunction(expectedCount: Int): ToIntFunction[UserDirectory] =
+  private def mockRunAs: RunAsInstitution = new RunAsInstitution {
+    override def execute[V](userState: UserState, callable: Callable[V]): V = callable.call()
+
+    override def executeAsSystem(institution: Institution, runnable: Runnable): Unit =
+      runnable.run()
+
+    override def executeAsSystem[V](institution: Institution, callable: Callable[V]): V =
+      callable.call()
+  }
+
+  private def mockCountFunction(expectedCount: Int): ToIntFunction[UserDirectory] =
     (_: UserDirectory) => expectedCount
 
   describe("ChainCounter") {
@@ -38,7 +52,7 @@ class ChainCounterTest extends AnyFunSpec with Matchers with GivenWhenThen with 
       val countFn = mock(classOf[ToIntFunction[UserDirectory]])
 
       When("counting items")
-      val count = new ChainCounter(emptyChain).count(countFn)
+      val count = new ChainCounter(emptyChain, mockRunAs).count(countFn)
 
       Then("returns 0 and the count function is never called")
       count shouldBe 0
@@ -47,7 +61,8 @@ class ChainCounterTest extends AnyFunSpec with Matchers with GivenWhenThen with 
 
     it("returns the count for a single-plugin chain") {
       val expectedCount = 7
-      val count = new ChainCounter(singlePluginChain).count(mockCountFunction(expectedCount))
+      val count         =
+        new ChainCounter(singlePluginChain, mockRunAs).count(mockCountFunction(expectedCount))
       count shouldBe expectedCount
     }
 
@@ -60,7 +75,7 @@ class ChainCounterTest extends AnyFunSpec with Matchers with GivenWhenThen with 
         chainPlugin => multiChainCounts(multiChain.indexOf(chainPlugin))
 
       When("counting items")
-      val count = new ChainCounter(multiChain).count(countFunction)
+      val count = new ChainCounter(multiChain, mockRunAs).count(countFunction)
 
       Then("returns the sum of all counts")
       count shouldBe multiChainCounts.sum

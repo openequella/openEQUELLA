@@ -31,6 +31,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.institution.RunAsInstitution;
 import com.tle.plugins.ump.UserDirectory.VerifyTokenResult;
 import java.io.Serial;
 import java.util.Collection;
@@ -45,6 +46,9 @@ import java.util.function.ToIntFunction;
 import javax.servlet.http.HttpServletRequest;
 
 public class UserDirectoryChainImpl implements UserDirectoryChain {
+  // Supplies institution/user context restoration for concurrently executed user-directory counts.
+  private final RunAsInstitution runAs;
+
   private static final UserBean USER_NOT_FOUND = new EmptyUserBean();
   private static final RoleBean ROLE_NOT_FOUND = new EmptyRoleBean();
   private static final GroupBean GROUP_NOT_FOUND = new EmptyGroupBean();
@@ -56,6 +60,10 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   private final Cache<String, List<UserBean>> searchUsersCache = makeCache();
 
   private List<UserDirectory> uds;
+
+  public UserDirectoryChainImpl(RunAsInstitution runAs) {
+    this.runAs = runAs;
+  }
 
   public void setChain(List<UserDirectory> uds) {
     this.uds = uds;
@@ -721,7 +729,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   private int countAll(ToIntFunction<UserDirectory> countFunction) {
-    return new ChainCounter(uds).count(countFunction);
+    return new ChainCounter(uds, runAs).count(countFunction);
   }
 
   private <T> List<T> fetchPage(PagingFunctions<T> pagingFunctions, PageRange pageRange) {
