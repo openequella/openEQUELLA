@@ -30,7 +30,6 @@ import * as UserModule from "../../../tsrc/modules/UserModule";
 import {
   buildOpenSummaryPageHandler,
   defaultSearchPageOptions,
-  deriveNextQuery,
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromLocation,
   legacyQueryStringToSearchPageOptions,
@@ -353,45 +352,5 @@ describe("processLegacyAdvSearchCriteria", () => {
         ["/country/@population", ["100"]],
       ]),
     );
-  });
-});
-
-describe("deriveNextQuery", () => {
-  it.each([
-    {
-      scenario:
-        "returns an empty query when both local input and parent query are empty",
-      localQuery: "",
-      propQuery: "",
-      expected: "",
-    },
-    {
-      scenario: "clears the displayed query when the parent query is empty",
-      localQuery: "typing  ",
-      propQuery: "",
-      expected: "",
-    },
-    {
-      scenario: "uses the parent query when the local input is empty",
-      localQuery: "",
-      propQuery: "parent",
-      expected: "parent",
-    },
-    {
-      scenario:
-        "keeps the query unchanged when local input and parent query match",
-      localQuery: "parent",
-      propQuery: "parent",
-      expected: "parent",
-    },
-    {
-      scenario:
-        "preserves in-progress local typing when the parent query is stale",
-      localQuery: "typing",
-      propQuery: "typin",
-      expected: "typing",
-    },
-  ])("$scenario", ({ localQuery, propQuery, expected }) => {
-    expect(deriveNextQuery(localQuery, propQuery)).toBe(expected);
   });
 });

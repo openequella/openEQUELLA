@@ -26,11 +26,14 @@ import {
   Switch,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
+import * as S from "fp-ts/string";
 import * as React from "react";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
-import { deriveNextQuery } from "../SearchPageHelper";
 
 const PREFIX = "SearchBar";
 
@@ -98,6 +101,24 @@ export interface SearchBarProps {
 }
 
 const searchStrings = languageStrings.searchpage;
+
+/**
+ * Derives the active search query state.
+ * Preserves in-progress local typing to prevent stale debounced results from overwriting it.
+ *
+ * @param localQuery The current local query value.
+ * @param propQuery The query supplied via props.
+ * @return The derived query string.
+ */
+const deriveNextQuery = (localQuery: string, propQuery: string): string => {
+  if (S.isEmpty(propQuery)) return S.empty;
+
+  return pipe(
+    localQuery,
+    O.fromPredicate(not(S.isEmpty)),
+    O.getOrElse(() => propQuery),
+  );
+};
 
 /**
  * Provide a input field to update the query of search criteria.

@@ -21,7 +21,6 @@ import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
@@ -917,27 +916,3 @@ export const isFavouriteSearches = (
   from: string,
   searches: unknown,
 ): searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";
-
-/**
- * Derives the active search query state.
- * Preserves in-progress local typing to prevent stale debounced results from overwriting it.
- *
- * Used by {@link SearchBar} to reconcile local input state with the parent `query` prop
- * when search options change.
- *
- * @param localQuery The current value held in the SearchBar input field.
- * @param propQuery The query supplied by the parent (typically `searchPageOptions.query`).
- * @return The query string that should be displayed in the SearchBar input.
- */
-export const deriveNextQuery = (
-  localQuery: string,
-  propQuery: string,
-): string => {
-  if (S.isEmpty(propQuery)) return S.empty;
-
-  return pipe(
-    localQuery,
-    O.fromPredicate(not(S.isEmpty)),
-    O.getOrElse(() => propQuery),
-  );
-};
