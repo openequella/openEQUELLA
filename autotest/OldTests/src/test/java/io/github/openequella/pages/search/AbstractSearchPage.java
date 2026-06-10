@@ -153,6 +153,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   /** Perform a new search. */
   public void newSearch() {
     newSearchButton.click();
+    waitForSearchCompleted();
   }
 
   /**

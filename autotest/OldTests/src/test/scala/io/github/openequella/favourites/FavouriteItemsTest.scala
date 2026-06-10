@@ -59,42 +59,36 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
   }
 
   @Test(description = "Verify version specific favourites (This Version vs Latest Version)")
-  def testVersionFavourites(): Unit = {
-    val itemName         = context.getFullName("version")
+  def testVersionSpecificFavourites(): Unit = {
+    val itemName         = context.getFullName("specific")
     val tagThisVersion   = "thisversion"
     val tagLatestVersion = "latestversion"
 
     // Create Item (Version 1)
     createTestItem(itemName)
+    favouriteCurrentVersionOfItem(itemName, tagThisVersion)
 
-    // Favourite v1 as "This version"
-    val searchPage = new NewSearchPage(context).load()
-
-    searchPage.changeQuery(itemName)
-    searchPage.waitForSearchCompleted(1)
-    searchPage.addItemToFavourites(itemName, Array(tagThisVersion), false)
-
-    searchPage.newSearch();
-
-    // Create Version 2
+    // Create version 2
     createItemNewVersion(itemName)
-
-    searchPage.load()
-
-    // Favourite v2 as "Latest version"
-    searchPage.changeQuery(itemName)
-    searchPage.waitForSearchCompleted(1)
-    searchPage.addItemToFavourites(itemName, Array(tagLatestVersion), true)
+    favouriteLatestItemOfVersion(itemName, tagLatestVersion)
 
     // Verify 'This Version' points to v1 and 'Latest Version' points to v2
     assertFavouriteVersion(tagThisVersion, itemName, 1)
     assertFavouriteVersion(tagLatestVersion, itemName, 2)
 
-    // Create Version 3
-    createItemNewVersion(itemName)
+  }
 
-    // Verify 'Latest Version' now points to v3
-    assertFavouriteVersion(tagLatestVersion, itemName, 3)
+  @Test(description = "Verify latest version favourites automatically updates")
+  def testLatestVersionFavourites(): Unit = {
+    val itemName         = context.getFullName("latest")
+    val tagLatestVersion = "customtaglatest"
+
+    createTestItem(itemName) // version 1
+    favouriteLatestItemOfVersion(itemName, tagLatestVersion)
+
+    createItemNewVersion(itemName) // version 2
+
+    assertFavouriteVersion(tagLatestVersion, itemName, 2)
   }
 
   /** Loads the Favourites page, optionally configuring it to show all versions.
@@ -197,6 +191,10 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     */
   private def createItemNewVersion(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
+    // Ensure a clean search state. When reloading /page/search from an existing
+    // Search page, the New Search UI rehydrate the previous query from history.
+    searchPage.newSearch()
+
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
 
@@ -228,5 +226,25 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
 
     val summaryPage = favouritesPage.selectItem(itemName)
     assertEquals(summaryPage.getItemId.getVersion, expectedVersion)
+  }
+
+  private def favouriteCurrentVersionOfItem(itemName: String, tagName: String): Unit = {
+    favouriteItemFromSearchPage(itemName, tagName, useLatestVersion = false)
+  }
+
+  private def favouriteLatestItemOfVersion(itemName: String, tagName: String): Unit = {
+    favouriteItemFromSearchPage(itemName, tagName, useLatestVersion = true)
+  }
+
+  private def favouriteItemFromSearchPage(
+      itemName: String,
+      tagName: String,
+      useLatestVersion: Boolean
+  ): Unit = {
+    val searchPage = new NewSearchPage(context).load()
+
+    searchPage.changeQuery(itemName)
+    searchPage.waitForSearchCompleted(1)
+    searchPage.addItemToFavourites(itemName, Array(tagName), useLatestVersion)
   }
 }
