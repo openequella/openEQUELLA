@@ -60,6 +60,7 @@ import com.tle.core.events.listeners.UserSessionLoginListener;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.institution.events.InstitutionEvent;
 import com.tle.core.institution.events.listeners.InstitutionListener;
 import com.tle.core.plugins.PluginTracker;
@@ -128,6 +129,9 @@ public class UserServiceImpl
   @Inject private EventService eventService;
   @Inject private UserSessionService userSessionService;
   @Inject private OidcConfigurationService oidcConfigurationService;
+  // Supplies institution/user context restoration for concurrently executed function in
+  // UserDirectoryChain.
+  @Inject private RunAsInstitution runAs;
 
   @Inject private PluginTracker<UserDirectory> umpTracker;
   @Inject private PluginTracker<OidcUserDirectory> oidcUserDirTracker;
@@ -674,7 +678,7 @@ public class UserServiceImpl
   private InstitutionState createInstance() {
     final List<UserDirectory> uds = Lists.newArrayList();
 
-    final UserDirectoryChainImpl chain = new UserDirectoryChainImpl();
+    final UserDirectoryChainImpl chain = new UserDirectoryChainImpl(runAs);
     chain.setChain(uds);
 
     final Map<String, Extension> settingsMap = umpTracker.getExtensionMap();
