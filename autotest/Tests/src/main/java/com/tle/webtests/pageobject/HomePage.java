@@ -1,5 +1,9 @@
 package com.tle.webtests.pageobject;
 
+import static com.codeborne.selenide.Selectors.by;
+import static com.codeborne.selenide.Selectors.byLinkText;
+import static com.codeborne.selenide.Selenide.$;
+
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.portal.AbstractPortalEditPage;
 import com.tle.webtests.pageobject.portal.MenuSection;
@@ -54,5 +58,16 @@ public class HomePage extends AbstractPage<HomePage> {
   public boolean isTopicTagVisible(String dynamicTopicName) {
     MenuSection ms = new MenuSection(context).get();
     return ms.hasMenuOption(dynamicTopicName);
+  }
+
+  /**
+   * Logs out the user by clicking on the "My Account" icon and then selecting "Logout" from the
+   * dropdown menu. Users should be navigated to the Login page.
+   */
+  public LoginPage logout() {
+    $(by("aria-label", "My Account")).click();
+    $(byLinkText("Logout")).click();
+
+    return new LoginPage(context).get();
   }
 }

@@ -90,4 +90,11 @@ class OidcConfigurationServiceImpl @Inject() (
           okta.copy(commonDetails = decryptCommonDetails(okta.commonDetails))
       }
   }
+
+  def getForSeamlessSso: Option[CommonDetails] =
+    get.toOption
+      .map(_.commonDetails)
+      .filter(details => details.enabled && details.seamlessSso)
+
+  def isSeamlessSsoEnabled: Boolean = getForSeamlessSso.isDefined
 }

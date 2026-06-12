@@ -9,6 +9,7 @@ import com.tle.webtests.pageobject.{HomePage, LoginPage, SettingsPage}
 import com.tle.webtests.test.AbstractIntegrationTest
 import integtester.oidc.OidcIntegration
 import integtester.oidc.OidcUser.TEST_USER
+import io.github.openequella.pages.favourites.FavouritesPage
 import io.github.openequella.pages.myresources.NewMyResourcesPage
 import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
@@ -32,11 +33,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     new HomePage(context).get()
 
     // Go to profile page and check names.
-    val profilePage = new UserProfilePage(context).load()
-    assertEquals(profilePage.getGivenName, TEST_USER.given_name)
-    assertEquals(profilePage.getFamilyName, TEST_USER.family_name)
-    assertEquals(profilePage.getEmail, TEST_USER.email)
-    assertEquals(profilePage.getUsername, TEST_USER.username)
+    checkProfile()
 
     // Check role mappings. The user should have the role of `System Admin` which allows the user to access the OIDC Setting page.
     val settingsPage = new SettingsPage(context).load()
@@ -166,6 +163,32 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     myResourcesPage.waitForSearchCompleted(4)
   }
 
+  @Test(
+    description = "Automatically log in users who have an active Identity Provider session.."
+  )
+  def seamlessSso(): Unit = {
+    // Log in as admin to enable Seamless SSO first.
+    logon()
+    val oidcSettingsPage = new OidcSettingsPage(context).load()
+    oidcSettingsPage.enableSeamlessSso()
+    oidcSettingsPage.save()
+
+    // Log out.
+    val homePage = new HomePage(context).load()
+    homePage.logout()
+
+    // Attempt to access a protected OEQ resource, e.g. Favourites page, and user should be automatically
+    // logged in.
+    val favPage = new FavouritesPage(context).load()
+    assertTrue(favPage.isVisible)
+    checkProfile()
+
+    // Clean up: disable Seamless SSO.
+    oidcSettingsPage.load()
+    oidcSettingsPage.disableSeamlessSso()
+    oidcSettingsPage.save()
+  }
+
   private def logonOidc(): Unit = {
     val loginPage = new LoginPage(context).load()
     loginPage.loginWithOidc()
@@ -179,5 +202,13 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
   ): Unit = {
     val waiter = new WebDriverWait(context.getDriver, context.getTestConfig.getStandardTimeout)
     assertEquals(LoginPage.getLoginErrorDetails(waiter), expectedErrorMsg)
+  }
+
+  private def checkProfile(): Unit = {
+    val profilePage = new UserProfilePage(context).load()
+    assertEquals(profilePage.getGivenName, TEST_USER.given_name)
+    assertEquals(profilePage.getFamilyName, TEST_USER.family_name)
+    assertEquals(profilePage.getEmail, TEST_USER.email)
+    assertEquals(profilePage.getUsername, TEST_USER.username)
   }
 }

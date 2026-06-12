@@ -18,6 +18,10 @@
 
 package io.github.openequella.pages.oidc
 
+import com.codeborne.selenide.Condition.checked
+import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selectors.by
+
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.AbstractPage
 import io.github.openequella.pages.components.{SelectCustomRolesDialog, SelectRolesDialog}
@@ -69,6 +73,16 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
       enableButton.click()
     }
   }
+
+  private def ssoToggle = $(by("aria-label", "Enable Seamless SSO"))
+
+  private def ssoInput = ssoToggle.$("input[type='checkbox']")
+
+  def enableSeamlessSso(): Unit =
+    if (!ssoInput.is(checked)) ssoToggle.click()
+
+  def disableSeamlessSso(): Unit =
+    if (ssoInput.is(checked)) ssoToggle.click()
 
   // Get the text field element by the label.
   private def getTextField(label: String): WebElement =

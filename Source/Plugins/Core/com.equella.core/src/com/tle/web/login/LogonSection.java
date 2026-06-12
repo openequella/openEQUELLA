@@ -37,6 +37,9 @@ import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.UsernameNotFoundException;
+import com.tle.integration.oidc.idp.CommonDetails;
+import com.tle.integration.oidc.service.OidcAuthService;
+import com.tle.integration.oidc.service.OidcConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.resources.PluginResourceHelper;
@@ -104,6 +107,9 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
   @Inject private AuditLogService auditLogService;
   @Inject private PluginTracker<LoginLink> loginLinkTracker;
   @Inject LoginNoticeService loginNoticeService;
+
+  @Inject private OidcAuthService oidcAuthService;
+  @Inject private OidcConfigurationService oidcConfigurationService;
 
   @ViewFactory private FreemarkerFactory viewFactory;
   @EventFactory private EventGenerator events;
@@ -211,46 +217,17 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     }
   }
 
+  /**
+   * In New UI, this Legacy Section method is responsible for returning the login page content for
+   * logon requests sent via the Legacy Content API (/content/submit/logon.do). Since we do not have
+   * a New UI login page yet by 2026.1, this method is updated to provide the Seamless SSO support
+   * implemented in {@link com.tle.integration.oidc.OidcLogonFilter}.
+   */
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    LogonModel model = getModel(context);
-    password.setValue(context, "");
-    context.getBody().addReadyStatements(LOGON_READY);
-    Decorations decorations = Decorations.getDecorations(context);
-    decorations.setTitle(TITLE_LABEL);
-    decorations.setMenuMode(MenuMode.HIDDEN);
-    PreLoginNotice preLoginNotice = new PreLoginNotice();
-    try {
-      preLoginNotice = loginNoticeService.getPreLoginNotice();
-    } catch (IOException e) {
-      model.setFailed(e.getMessage());
-    }
-    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
-      model.setLoginNotice(preLoginNotice.getNotice());
-    }
-    model.setChildSections(
-        renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
-    final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
-    for (LoginLink link : loginLinkTracker.getBeanList()) {
-      link.setup(context, model);
-      final SectionRenderable linkRenderer = renderSection(context, link);
-      if (linkRenderer != null) {
-        loginLinksRenderables.add(linkRenderer);
-      }
-    }
-    model.setLoginLinks(loginLinksRenderables);
-
-    // In New UI, if a login token error is captured and saved in Session, update the model
-    // to show the error and then clear the error from Session.
-    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
-        .filter(err -> RenderNewTemplate.isNewUIEnabled())
-        .ifPresent(
-            err -> {
-              model.setError(err);
-              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
-            });
-
-    return viewFactory.createResult("logon/logon.ftl", context);
+    return oidcAuthService.shouldBypassAutoLogin(context.getParameterMap())
+        ? renderLegacyLoginPage(context)
+        : autoLogin(context);
   }
 
   private WebAuthenticationDetails getDetails(SectionInfo info) {
@@ -333,6 +310,70 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
         model.setError(exception.getLocalizedMessage());
       }
     }
+  }
+
+  private SectionResult renderLegacyLoginPage(RenderEventContext context) {
+    LogonModel model = getModel(context);
+
+    password.setValue(context, "");
+    context.getBody().addReadyStatements(LOGON_READY);
+    Decorations decorations = Decorations.getDecorations(context);
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setMenuMode(MenuMode.HIDDEN);
+    PreLoginNotice preLoginNotice = new PreLoginNotice();
+    try {
+      preLoginNotice = loginNoticeService.getPreLoginNotice();
+    } catch (IOException e) {
+      model.setFailed(e.getMessage());
+    }
+    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
+      model.setLoginNotice(preLoginNotice.getNotice());
+    }
+    model.setChildSections(
+        renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
+    final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
+    for (LoginLink link : loginLinkTracker.getBeanList()) {
+      link.setup(context, model);
+      final SectionRenderable linkRenderer = renderSection(context, link);
+      if (linkRenderer != null) {
+        loginLinksRenderables.add(linkRenderer);
+      }
+    }
+    model.setLoginLinks(loginLinksRenderables);
+
+    // In New UI, if a login token error is captured and saved in Session, update the model
+    // to show the error and then clear the error from Session.
+    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
+        .filter(err -> RenderNewTemplate.isNewUIEnabled())
+        .ifPresent(
+            err -> {
+              model.setError(err);
+              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
+            });
+
+    return viewFactory.createResult("logon/logon.ftl", context);
+  }
+
+  private SectionResult performSeamlessSsoRedirect(
+      RenderEventContext context, CommonDetails details) {
+    String authUrl =
+        oidcAuthService.buildAuthUrl(
+            details.authUrl().toString(), details.authCodeClientId(), getModel(context).getPage());
+    context.forwardToUrl(authUrl);
+    return null;
+  }
+
+  // If there is an OIDC configuration for Seamless SSO, redirect to IdP for auto-login.
+  // Otherwise, render the legacy login page for normal login.
+  private SectionResult autoLogin(RenderEventContext context) {
+    SectionResult page =
+        oidcConfigurationService
+            .getForSeamlessSso()
+            .fold(
+                () -> renderLegacyLoginPage(context),
+                details -> performSeamlessSsoRedirect(context, details));
+
+    return page;
   }
 
   @NonNullByDefault(false)

@@ -59,6 +59,11 @@ public class FilterResult {
     this.stop = stop;
   }
 
+  /** Return a FilterResult to stop the filter chain. */
+  public static FilterResult stop() {
+    return new FilterResult(true);
+  }
+
   public WebFilterCallback getCallback() {
     return callback;
   }
