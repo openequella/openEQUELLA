@@ -56,6 +56,8 @@ import org.mockito.ArgumentMatchers.{any, anyInt}
 import org.mockito.Mockito._
 import org.scalatest.funspec.FixtureAnyFunSpec
 import org.scalatest.matchers.should._
+import org.scalatest.prop.TableDrivenPropertyChecks.forAll
+import org.scalatest.prop.Tables.Table
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, GivenWhenThen, Outcome}
 
 import java.io.File
@@ -695,49 +697,103 @@ class ItemIndexTest
     describe("escape special characters") {
       it("supports search query containing special characters") { f =>
         val (itemIndex, searchConfig) = f
-        Given("a set of unique Items which have special chars in titles")
-        val titles = Set(
-          "yah~~~~~~",
-          "`script`",
-          "good...",
-          "oh_my_god",
-          "hello, world",
-          "'bad idea'",
-          "\"batman\"",
-          "are you ok ? yes",
-          "test@edalex.com",
-          "years {2000-2026}",
-          "months (11-12)",
-          "days [1-31]",
-          "books: about parrot",
-          "-60 degrees",
-          "1/3 of the cake",
-          "backslash \\ do you like it",
-          "step 1; step 2; step 3",
-          "7+8>9",
-          "2+3<6",
-          "1+4=5"
+        val itemTitles                = Table(
+          ("special character", "item title"),
+          ("tilde", "yah~~~~~~"),
+          ("backtick", "`script`"),
+          ("dot", "good..."),
+          ("underscore", "oh_my_god"),
+          ("comma", "hello, world"),
+          ("single quote", "'bad idea'"),
+          ("double quote", "\"batman\""),
+          ("question mark", "are you ok ? yes"),
+          ("at symbol", "test@edalex.com"),
+          ("curly brackets", "years {2000-2026}"),
+          ("round brackets", "months (11-12)"),
+          ("square brackets", "days [1-31]"),
+          ("colon", "books: about parrot"),
+          ("dash", "-60 degrees"),
+          ("slash", "1/3 of the cake"),
+          ("backslash", "backslash \\ do you like it"),
+          ("semicolon", "step 1; step 2; step 3"),
+          ("greater than", "7+8>9"),
+          ("less than", "2+3<6"),
+          ("equal sign", "1+4=5")
         )
-        titles.foreach(title => {
-          val items = generateIndexedItems(itemName = title)
-          createIndexes(itemIndex, items)
-        })
 
-        When("escaping of special characters is enabled")
+        forAll(itemTitles) { (specialChar, itemTitle) =>
+          Given(s"An item that has $specialChar in title")
+          val item = generateIndexedItems(itemName = itemTitle)
+          createIndexes(itemIndex, item)
+
+          When("escaping of special characters is enabled")
+          val searchSettings = new SearchSettings
+          searchSettings.setEscapeSpecialChars(true)
+          when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
+            .thenReturn(searchSettings)
+
+          Then("each search should execute without Lucene syntax errors and return the Item")
+          searchConfig.setQuery(itemTitle)
+          val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+
+          withClue(
+            s"Search failed for special character '$specialChar' using title '$itemTitle': "
+          ) {
+            result.length shouldBe 1
+            result.head.get(FreeTextQuery.FIELD_NAME) shouldBe itemTitle
+          }
+
+        }
+      }
+    }
+
+    describe("support lucene syntax") {
+      val CHOCOLATE_CAKE = "chocolate cake"
+      val VANILLA_CAKE   = "vanilla cake"
+
+      it("preserves valid Lucene syntax '-' to exclude items") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two items, where one needs to be excluded by the search query")
+        val itemToExclude = generateIndexedItems(itemName = CHOCOLATE_CAKE)
+        val itemToKeep    = generateIndexedItems(itemName = VANILLA_CAKE)
+        createIndexes(itemIndex, itemToExclude ++ itemToKeep)
+
+        When("escaping of special characters is explicitly DISABLED")
         val searchSettings = new SearchSettings
-        searchSettings.setEscapeSpecialChars(true)
+        searchSettings.setEscapeSpecialChars(false)
         when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
           .thenReturn(searchSettings)
 
-        Then("each search should execute without Lucene syntax errors and return the Item")
-        val itemNames = titles.map(title => {
-          searchConfig.setQuery(title)
-          val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        Then("search result should respect the syntax of `-` to exclude the specified item")
+        searchConfig.setQuery("cake -chocolate")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
 
-          result.length shouldBe 1
-          result.head.get(FreeTextQuery.FIELD_NAME)
-        })
-        itemNames shouldBe titles
+        result.length shouldBe 1
+        result.head.get(FreeTextQuery.FIELD_NAME) shouldBe VANILLA_CAKE
+
+      }
+
+      it("preserves valid Lucene syntax '+' to mandate inclusion of items") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two items, where only one contains the mandatory term")
+        val itemWithMandatoryTerm    = generateIndexedItems(itemName = VANILLA_CAKE)
+        val itemWithoutMandatoryTerm = generateIndexedItems(itemName = CHOCOLATE_CAKE)
+        createIndexes(itemIndex, itemWithMandatoryTerm ++ itemWithoutMandatoryTerm)
+
+        When("escaping of special characters is explicitly DISABLED")
+        val searchSettings = new SearchSettings
+        searchSettings.setEscapeSpecialChars(false)
+        when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
+          .thenReturn(searchSettings)
+
+        Then("the search result should only return the item with the mandatory term")
+        searchConfig.setQuery("cake +vanilla")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+
+        result.length shouldBe 1
+        result.head.get(FreeTextQuery.FIELD_NAME) shouldBe "vanilla cake"
       }
     }
   }
