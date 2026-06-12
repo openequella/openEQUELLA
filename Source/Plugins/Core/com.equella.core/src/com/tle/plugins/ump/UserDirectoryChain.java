@@ -43,8 +43,19 @@ import javax.servlet.http.HttpServletRequest;
  * @author nick
  */
 public interface UserDirectoryChain extends UserDirectoryPagination {
-  void purgeFromCaches(String id);
+  /**
+   * Purges all cached entries associated with the given user.
+   *
+   * @param id the unique ID of the user.
+   */
+  void purgeUserFromCaches(String id);
 
+  /**
+   * Purges all cached entries associated with the given {@code groupId}. This includes the group
+   * info cache, group-membership cache, and all group/role search result caches.
+   *
+   * @param groupId the unique ID of the group.
+   */
   void purgeGroupFromCaches(String groupId);
 
   ModifiableUserState authenticateToken(String token);
@@ -102,6 +113,4 @@ public interface UserDirectoryChain extends UserDirectoryPagination {
   List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive);
 
   boolean verifyUserStateForToken(UserState userState, String token);
-
-  void clearUserSearchCache();
 }

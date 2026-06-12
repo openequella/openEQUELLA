@@ -26,6 +26,7 @@ import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.dao.helpers.Pagination;
+import com.tle.core.events.GroupAddedEvent;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
@@ -121,7 +122,9 @@ public class TLEGroupServiceImpl
 
       dao.save(group);
 
-      return group.getUuid();
+      String groupUuid = group.getUuid();
+      eventService.publishApplicationEvent(new GroupAddedEvent(groupUuid));
+      return groupUuid;
     }
     return null;
   }

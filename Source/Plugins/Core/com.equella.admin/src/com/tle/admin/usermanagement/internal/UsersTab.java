@@ -33,7 +33,6 @@ import com.tle.beans.user.TLEUser;
 import com.tle.common.Format;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -49,7 +48,6 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
 
   protected final AdminTLEUserService userService;
   protected final AdminTLEGroupService groupService;
-  protected final RemoteUserService userCacheService;
 
   protected UserDetailsPanel details;
   protected FilterList<TLEUser> filterList;
@@ -58,13 +56,9 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
   private final AddUserAction addAction;
   private final RemoveUserAction removeAction;
 
-  public UsersTab(
-      AdminTLEUserService userService,
-      AdminTLEGroupService groupService,
-      RemoteUserService userCacheService) {
+  public UsersTab(AdminTLEUserService userService, AdminTLEGroupService groupService) {
     this.userService = userService;
     this.groupService = groupService;
-    this.userCacheService = userCacheService;
     bulkAction = new BulkUserImportAction();
     addAction = new AddUserAction();
     removeAction = new RemoveUserAction();
@@ -131,7 +125,7 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
         });
     filterList.addListSelectionListener(this);
 
-    details = new UserDetailsPanel(userService, userCacheService);
+    details = new UserDetailsPanel(userService);
 
     final int width1 = remove.getPreferredSize().width;
     final int height1 = remove.getPreferredSize().height;

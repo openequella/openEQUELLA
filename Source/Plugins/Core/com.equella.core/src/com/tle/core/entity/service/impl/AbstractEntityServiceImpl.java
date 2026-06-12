@@ -123,7 +123,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractEntityServiceImpl<
         B extends EntityEditingBean, T extends BaseEntity, S extends AbstractEntityService<B, T>>
     implements AbstractEntityService<B, T>, DeleteHandler, UserChangeListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityServiceImpl.class);
   private static final String ENTITY_XML = "_entity.xml";
 
   private final AbstractEntityDao<T> entityDao;

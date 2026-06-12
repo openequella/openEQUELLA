@@ -18,11 +18,16 @@
 
 package com.tle.core.events.listeners;
 
+import com.tle.core.events.GroupAddedEvent;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
 
 public interface GroupChangedListener extends ApplicationListener {
+  default void groupAddedEvent(GroupAddedEvent event) {
+    // Default: no-op
+  }
+
   void groupDeletedEvent(GroupDeletedEvent event);
 
   void groupEditedEvent(GroupEditEvent event);

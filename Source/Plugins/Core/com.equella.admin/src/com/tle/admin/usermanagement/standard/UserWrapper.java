@@ -24,7 +24,6 @@ import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.usermanagement.internal.UsersTab;
 import com.tle.beans.ump.UserManagementSettings;
-import com.tle.core.remoting.RemoteUserService;
 
 public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
   private UsersTab userPanel;
@@ -40,8 +39,7 @@ public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
     userPanel =
         new UsersTab(
             clientService.getService(AdminTLEUserService.class),
-            clientService.getService(AdminTLEGroupService.class),
-            clientService.getService(RemoteUserService.class));
+            clientService.getService(AdminTLEGroupService.class));
     addFillComponent(userPanel);
   }
 

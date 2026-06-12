@@ -19,6 +19,7 @@
 package com.tle.plugins.ump;
 
 import static com.tle.plugins.ump.UserDirectoryUtils.makeCache;
+import static com.tle.plugins.ump.UserDirectoryUtils.makeShortLivedCache;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.cache.Cache;
@@ -31,6 +32,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.common.util.CacheUtils;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.plugins.ump.UserDirectory.VerifyTokenResult;
 import java.io.Serial;
@@ -42,10 +44,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserDirectoryChainImpl implements UserDirectoryChain {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserDirectoryChainImpl.class);
+
   // Supplies institution/user context restoration for concurrently executed user-directory counts.
   private final RunAsInstitution runAs;
 
@@ -54,10 +63,17 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   private static final GroupBean GROUP_NOT_FOUND = new EmptyGroupBean();
 
   private final Cache<String, UserBean> userCache = makeCache();
+  // Role config changes recreate the whole UserDirectoryChain, so this cache does not need local
+  // invalidation logic for role-setting updates.
   private final Cache<String, RoleBean> roleCache = makeCache();
   private final Cache<String, GroupBean> groupCache = makeCache();
   private final Cache<String, List<GroupBean>> groupsContainingUserCache = makeCache();
   private final Cache<String, List<UserBean>> searchUsersCache = makeCache();
+  private final Cache<String, List<GroupBean>> searchGroupsCache = makeShortLivedCache();
+  private final Cache<String, List<UserBean>> getUsersInGroupCache = makeShortLivedCache();
+  // Same rationale as roleCache: role updates rebuild the chain, so cached role search results are
+  // naturally replaced.
+  private final Cache<String, List<RoleBean>> searchRolesCache = makeShortLivedCache();
 
   private List<UserDirectory> uds;
 
@@ -70,23 +86,38 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   @Override
-  public void purgeFromCaches(String id) {
-    userCache.invalidate(id);
-    roleCache.invalidate(id);
-    groupsContainingUserCache.invalidate(id);
+  public void purgeUserFromCaches(String id) {
+    LOGGER.debug("Purging user cache with key {}", id);
+
     for (UserDirectory ud : uds) {
       ud.purgeFromCaches(id);
     }
     userCache.invalidate(id);
-    roleCache.invalidate(id);
-    groupCache.invalidate(id);
+
     groupsContainingUserCache.invalidate(id);
-    searchUsersCache.invalidate(id);
+    // Short-lived cache. Invalidate all entries rather than attempting to
+    // determine every affected group/recursive/page combination.
+    getUsersInGroupCache.invalidateAll();
+    // Search user cache keys include the query and optional group scope, so the affected keys
+    // cannot be reliably identified from a user id alone.
+    searchUsersCache.invalidateAll();
   }
 
   @Override
   public void purgeGroupFromCaches(String groupId) {
+    LOGGER.debug("Purging group cache with key {}", groupId);
+
     groupCache.invalidate(groupId);
+    // Short-lived cache. Invalidate all entries rather than attempting to
+    // determine every affected group/recursive/page combination.
+    getUsersInGroupCache.invalidateAll();
+    // Short-lived cache. The search group cache keys include the query and optional group scope,
+    // so the affected keys cannot be reliably identified from a group id alone.
+    searchGroupsCache.invalidateAll();
+    // Search user cache keys include the query and optional group scope, so the affected keys
+    // cannot be reliably identified from a group id alone.
+    searchUsersCache.invalidateAll();
+
     // user is deleted from a group
     Iterator<Entry<String, List<GroupBean>>> it =
         groupsContainingUserCache.asMap().entrySet().iterator();
@@ -167,15 +198,17 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
 
   @Override
   public List<GroupBean> getGroupsContainingUser(String userId) {
+    LOGGER.debug("Getting groups containing user '{}'", userId);
+
     if (Check.isEmpty(userId)) {
       return Collections.emptyList();
     }
+    return getFromCacheOrLoadList(
+        groupsContainingUserCache, userId, () -> fetchGroupsContainingUser(userId));
+  }
 
-    List<GroupBean> rv = groupsContainingUserCache.getIfPresent(userId);
-    if (rv != null) {
-      return rv;
-    }
-
+  private List<GroupBean> fetchGroupsContainingUser(String userId) {
+    List<GroupBean> rv = null;
     for (UserDirectory ud : uds) {
       Pair<ChainDirective, Collection<GroupBean>> gcu = ud.getGroupsContainingUser(userId);
       if (gcu != null) {
@@ -185,9 +218,6 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
         }
       }
     }
-
-    rv = emptyOrUnmodifiable(rv);
-    groupsContainingUserCache.put(userId, rv);
     return rv;
   }
 
@@ -196,10 +226,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     return countAll(ud -> ud.countUsersInGroup(groupId, recursive));
   }
 
-  @Override
-  public List<UserBean> getUsersInGroup(String groupId, boolean recursive) {
-    Check.checkNotEmpty(groupId);
-
+  private List<UserBean> fetchUsersInGroup(String groupId, boolean recursive) {
     List<UserBean> rv = null;
     for (UserDirectory ud : uds) {
       Pair<ChainDirective, Collection<UserBean>> ufg = ud.getUsersInGroup(groupId, recursive);
@@ -214,12 +241,33 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   @Override
+  public List<UserBean> getUsersInGroup(String groupId, boolean recursive) {
+    LOGGER.debug("Getting users in group '{}', recursive '{}'", groupId, recursive);
+
+    Check.checkNotEmpty(groupId);
+    return getFromCacheOrLoadList(
+        getUsersInGroupCache,
+        CacheUtils.buildCacheKey(groupId, recursive),
+        () -> fetchUsersInGroup(groupId, recursive));
+  }
+
+  @Override
   public List<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countUsersInGroup(groupId, recursive),
-            (ud, lim, off) -> ud.getUsersInGroup(groupId, recursive, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug(
+        "Getting users in group '{}', recursive '{}', limit '{}', offset '{}'",
+        groupId,
+        recursive,
+        limit,
+        offset);
+    final String cacheKey = CacheUtils.buildCacheKey(groupId, recursive, limit, offset);
+    final Supplier<List<UserBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countUsersInGroup(groupId, recursive),
+                    (ud, lim, off) -> ud.getUsersInGroup(groupId, recursive, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(getUsersInGroupCache, cacheKey, loader);
   }
 
   @Override
@@ -511,8 +559,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     return countAll(ud -> ud.countGroups(query, parentGroupId));
   }
 
-  @Override
-  public List<GroupBean> searchGroups(String query) {
+  private List<GroupBean> fetchSearchGroups(String query) {
     List<GroupBean> rv = null;
     for (UserDirectory ud : uds) {
       rv = accumulate(rv, ud.searchGroups(query));
@@ -520,8 +567,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     return nullToEmpty(rv);
   }
 
-  @Override
-  public List<GroupBean> searchGroups(String query, String parentId) {
+  private List<GroupBean> fetchSearchGroups(String query, String parentId) {
     List<GroupBean> rv = null;
     for (UserDirectory ud : uds) {
       rv = accumulate(rv, ud.searchGroups(query, parentId));
@@ -530,20 +576,51 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   @Override
+  public List<GroupBean> searchGroups(String query) {
+    LOGGER.debug("Searching groups with query '{}'", query);
+    return getFromCacheOrLoadList(searchGroupsCache, query, () -> fetchSearchGroups(query));
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, String parentId) {
+    LOGGER.debug("Searching groups with query '{}', parentId '{}'", query, parentId);
+    return getFromCacheOrLoadList(
+        searchGroupsCache,
+        CacheUtils.buildCacheKey(query, parentId),
+        () -> fetchSearchGroups(query, parentId));
+  }
+
+  @Override
   public List<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countGroups(query, parentGroupId),
-            (ud, lim, off) -> ud.searchGroups(query, parentGroupId, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug(
+        "Searching groups with query '{}', parentGroupId '{}', limit '{}', offset '{}'",
+        query,
+        parentGroupId,
+        limit,
+        offset);
+    final String cacheKey = CacheUtils.buildCacheKey(query, parentGroupId, limit, offset);
+    final Supplier<List<GroupBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countGroups(query, parentGroupId),
+                    (ud, lim, off) -> ud.searchGroups(query, parentGroupId, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(searchGroupsCache, cacheKey, loader);
   }
 
   @Override
   public List<GroupBean> searchGroups(String query, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countGroups(query), (ud, lim, off) -> ud.searchGroups(query, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug("Searching groups with query '{}', limit '{}', offset '{}'", query, limit, offset);
+    final String cacheKey = CacheUtils.buildCacheKey(query, limit, offset);
+    final Supplier<List<GroupBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countGroups(query),
+                    (ud, lim, off) -> ud.searchGroups(query, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(searchGroupsCache, cacheKey, loader);
   }
 
   @Override
@@ -551,8 +628,7 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     return countAll(ud -> ud.countRoles(query));
   }
 
-  @Override
-  public List<RoleBean> searchRoles(String query) {
+  private List<RoleBean> fetchSearchRoles(String query) {
     List<RoleBean> rv = null;
     for (UserDirectory ud : uds) {
       rv = accumulate(rv, ud.searchRoles(query));
@@ -561,11 +637,22 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   @Override
+  public List<RoleBean> searchRoles(String query) {
+    LOGGER.debug("Searching roles with query '{}'", query);
+    return getFromCacheOrLoadList(searchRolesCache, query, () -> fetchSearchRoles(query));
+  }
+
+  @Override
   public List<RoleBean> searchRoles(String query, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countRoles(query), (ud, lim, off) -> ud.searchRoles(query, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug("Searching roles with query '{}', limit '{}', offset '{}'", query, limit, offset);
+    final String cacheKey = CacheUtils.buildCacheKey(query, limit, offset);
+    final Supplier<List<RoleBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countRoles(query), (ud, lim, off) -> ud.searchRoles(query, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(searchRolesCache, cacheKey, loader);
   }
 
   @Override
@@ -578,24 +665,9 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     return countAll(ud -> ud.countUsers(query, parentGroupId, recursive));
   }
 
-  @Override
-  public List<UserBean> searchUsers(final String query) {
-    // The more complex version of this method already contains the logic
-    // for ignoring the empty parent group ID and calling this version on
-    // the chain.
-    return searchUsers(query, null, false);
-  }
-
-  @Override
-  public List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive) {
-    boolean noGroupId = Check.isEmpty(parentGroupId);
-    final String cacheKey = noGroupId ? query : query + parentGroupId + recursive;
-
-    List<UserBean> rv = searchUsersCache.getIfPresent(cacheKey);
-    if (rv != null) {
-      return rv;
-    }
-
+  private List<UserBean> fetchSearchUsers(
+      String query, String parentGroupId, boolean noGroupId, boolean recursive) {
+    List<UserBean> rv = null;
     for (UserDirectory ud : uds) {
       Pair<ChainDirective, Collection<UserBean>> results =
           noGroupId ? ud.searchUsers(query) : ud.searchUsers(query, parentGroupId, recursive);
@@ -606,28 +678,67 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
         }
       }
     }
-
-    rv = emptyOrUnmodifiable(rv);
-    searchUsersCache.put(cacheKey, rv);
     return rv;
   }
 
   @Override
+  public List<UserBean> searchUsers(final String query) {
+    // The more complex version of this method already contains the logic
+    // for ignoring the empty parent group ID and calling this version on
+    // the chain.
+    return searchUsers(query, null, false);
+  }
+
+  @Override
+  public List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive) {
+    LOGGER.debug(
+        "Searching users with query '{}', parentGroupId '{}', recursive '{}'",
+        query,
+        parentGroupId,
+        recursive);
+    boolean noGroupId = Check.isEmpty(parentGroupId);
+    final String cacheKey =
+        noGroupId ? query : CacheUtils.buildCacheKey(query, parentGroupId, recursive);
+    return getFromCacheOrLoadList(
+        searchUsersCache,
+        cacheKey,
+        () -> fetchSearchUsers(query, parentGroupId, noGroupId, recursive));
+  }
+
+  @Override
   public List<UserBean> searchUsers(String query, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countUsers(query), (ud, lim, off) -> ud.searchUsers(query, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug("Searching users with query '{}', limit '{}', offset '{}'", query, limit, offset);
+    final String cacheKey = CacheUtils.buildCacheKey(query, limit, offset);
+    final Supplier<List<UserBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countUsers(query), (ud, lim, off) -> ud.searchUsers(query, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(searchUsersCache, cacheKey, loader);
   }
 
   @Override
   public List<UserBean> searchUsers(
       String query, String parentGroupId, boolean recursive, int limit, int offset) {
-    return fetchPage(
-        new PagingFunctions<>(
-            ud -> ud.countUsers(query, parentGroupId, recursive),
-            (ud, lim, off) -> ud.searchUsers(query, parentGroupId, recursive, lim, off)),
-        new PageRange(limit, offset));
+    LOGGER.debug(
+        "Searching users with query '{}', parentGroupId '{}', recursive '{}', "
+            + "limit '{}', offset '{}'",
+        query,
+        parentGroupId,
+        recursive,
+        limit,
+        offset);
+    final String cacheKey =
+        CacheUtils.buildCacheKey(query, parentGroupId, recursive, limit, offset);
+    final Supplier<List<UserBean>> loader =
+        () ->
+            fetchPage(
+                new PagingFunctions<>(
+                    ud -> ud.countUsers(query, parentGroupId, recursive),
+                    (ud, lim, off) -> ud.searchUsers(query, parentGroupId, recursive, lim, off)),
+                new PageRange(limit, offset));
+    return getFromCacheOrLoadList(searchUsersCache, cacheKey, loader);
   }
 
   @Override
@@ -639,6 +750,21 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
       }
     }
     return false;
+  }
+
+  /** Returns the cached list for {@code key} if present; otherwise invokes {@code loader}. */
+  private <T> List<T> getFromCacheOrLoadList(
+      Cache<String, List<T>> cache, String key, Supplier<List<T>> loader) {
+    try {
+      return cache.get(
+          key,
+          () -> {
+            LOGGER.debug("Cache miss for key '{}', loading from chain", key);
+            return emptyOrUnmodifiable(loader.get());
+          });
+    } catch (ExecutionException e) {
+      throw new RuntimeException("Failed to load cache value for key: " + key, e);
+    }
   }
 
   private static <U> List<U> accumulate(List<U> rv, Collection<U> newValues) {
@@ -721,11 +847,6 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
     public String getName() {
       throw new IllegalStateException();
     }
-  }
-
-  @Override
-  public void clearUserSearchCache() {
-    searchUsersCache.invalidateAll();
   }
 
   private int countAll(ToIntFunction<UserDirectory> countFunction) {

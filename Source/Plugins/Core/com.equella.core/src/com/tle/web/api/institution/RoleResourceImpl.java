@@ -55,9 +55,9 @@ public class RoleResourceImpl implements EquellaRoleResource {
    * Equella uses ridiculous config properties for roles, meaning every update to a single role
    * requires purging ALL roles from the DB and re-inserting them. This has disastrous consequences
    * for multiple threads updating roles. This lock is an attempt to reduce the issue, however it
-   * will still be an issue with clustered installs.
+   * will still be an issue with clustered installations.
    */
-  private Object roleLock = new Object();
+  private final Object roleLock = new Object();
 
   @Inject private TLEAclManager aclManager;
   @Inject private ConfigurationService configService;

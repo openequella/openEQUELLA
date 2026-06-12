@@ -43,10 +43,12 @@ import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.auditlog.AuditLogService;
+import com.tle.core.events.GroupAddedEvent;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
 import com.tle.core.events.UMPChangedEvent;
+import com.tle.core.events.UserAddedEvent;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
@@ -770,13 +772,19 @@ public class UserServiceImpl
   @Override
   public void umpChangedEvent(UMPChangedEvent event) {
     String purgeId = event.getPurgeIdFromCaches();
+    // Drop the current chain instance (such as role settings updates) .
     if (purgeId == null) {
       WRAPPER_CHAINS.remove(CurrentInstitution.get());
     } else if (!event.isGroupPurge()) {
-      getCurrentPlugin().purgeFromCaches(purgeId);
+      getCurrentPlugin().purgeUserFromCaches(purgeId);
     } else {
       getCurrentPlugin().purgeGroupFromCaches(purgeId);
     }
+  }
+
+  @Override
+  public void userAddedEvent(UserAddedEvent event) {
+    purgeFromCaches(event.getUserID(), false);
   }
 
   @Override
@@ -794,6 +802,11 @@ public class UserServiceImpl
     purgeFromCaches(event.getFromUserId(), false);
 
     aclManager.userIdChanged(event.getFromUserId(), event.getToUserId());
+  }
+
+  @Override
+  public void groupAddedEvent(GroupAddedEvent event) {
+    purgeFromCaches(event.getGroupID(), true);
   }
 
   @Override
@@ -820,7 +833,7 @@ public class UserServiceImpl
     if (groupPurge) {
       getCurrentPlugin().purgeGroupFromCaches(id);
     } else {
-      getCurrentPlugin().purgeFromCaches(id);
+      getCurrentPlugin().purgeUserFromCaches(id);
     }
     // Tell other nodes to purge it too
     eventService.publishApplicationEvent(new UMPChangedEvent(id, groupPurge));
@@ -876,15 +889,5 @@ public class UserServiceImpl
     Map<?, ?> attributes;
     Cache<String, Triple<Collection<Long>, Collection<Long>, Collection<Long>>> expressionCache =
         CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
-  }
-
-  @Override
-  public void clearUserSearchCache() {
-    getCurrentPlugin().clearUserSearchCache();
-  }
-
-  @Override
-  public void removeFromCache(String userid) {
-    getCurrentPlugin().purgeFromCaches(userid);
   }
 }
