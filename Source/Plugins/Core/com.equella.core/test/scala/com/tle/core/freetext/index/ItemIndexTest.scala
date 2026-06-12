@@ -742,7 +742,6 @@ class ItemIndexTest
             result.length shouldBe 1
             result.head.get(FreeTextQuery.FIELD_NAME) shouldBe itemTitle
           }
-
         }
       }
     }
@@ -751,7 +750,7 @@ class ItemIndexTest
       val CHOCOLATE_CAKE = "chocolate cake"
       val VANILLA_CAKE   = "vanilla cake"
 
-      it("preserves valid Lucene syntax '-' to exclude items") { f =>
+      it("preserves Lucene syntax for Prohibit Modifier '-' to exclude items") { f =>
         val (itemIndex, searchConfig) = f
 
         Given("two items, where one needs to be excluded by the search query")
@@ -765,16 +764,37 @@ class ItemIndexTest
         when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
           .thenReturn(searchSettings)
 
-        Then("search result should respect the syntax of `-` to exclude the specified item")
+        Then("search result should exclude the item with the prohibited term")
         searchConfig.setQuery("cake -chocolate")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
 
         result.length shouldBe 1
         result.head.get(FreeTextQuery.FIELD_NAME) shouldBe VANILLA_CAKE
-
       }
 
-      it("preserves valid Lucene syntax '+' to mandate inclusion of items") { f =>
+      it("preserves Lucene syntax for NOT Operator '!' to exclude items") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two items, where one needs to be excluded by the search query")
+        val itemToExclude = generateIndexedItems(itemName = CHOCOLATE_CAKE)
+        val itemToKeep    = generateIndexedItems(itemName = VANILLA_CAKE)
+        createIndexes(itemIndex, itemToExclude ++ itemToKeep)
+
+        When("escaping of special characters is explicitly DISABLED")
+        val searchSettings = new SearchSettings
+        searchSettings.setEscapeSpecialChars(false)
+        when(mockedConfigurationService.getProperties(any(classOf[ConfigurationProperties])))
+          .thenReturn(searchSettings)
+
+        Then("search result should exclude the item with the NOT Operator")
+        searchConfig.setQuery("cake !chocolate")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+
+        result.length shouldBe 1
+        result.head.get(FreeTextQuery.FIELD_NAME) shouldBe VANILLA_CAKE
+      }
+
+      it("preserves Lucene syntax for Required Modifier '+' to mandate inclusion of items") { f =>
         val (itemIndex, searchConfig) = f
 
         Given("two items, where only one contains the mandatory term")
