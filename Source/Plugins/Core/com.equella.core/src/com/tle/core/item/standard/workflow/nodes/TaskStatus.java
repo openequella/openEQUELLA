@@ -41,6 +41,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -114,6 +115,54 @@ public class TaskStatus extends AbstractNodeStatus {
 
   public String getAssignedTo() {
     return taskbean.getAssignedTo();
+  }
+
+  /**
+   * Refreshes the task assignment when item metadata has changed. If the current assignee appears
+   * to be stale (was a valid moderator before but isn't now), it's cleared and reapplied using
+   * existing auto-assignment rules. Valid or manually-assigned moderators are preserved.
+   *
+   * @param previousModerators moderators from the item XML before the metadata edit
+   * @return true if the persisted assignedTo value changed
+   */
+  public boolean refreshAssignmentFromModerators(Set<String> previousModerators) {
+    WorkflowItem task = (WorkflowItem) node;
+    Set<String> currentModerators = op.getUsersToModerate(task);
+    String originalAssignee = getAssignedTo();
+
+    if (shouldKeepAssignee(originalAssignee, previousModerators, currentModerators)) {
+      return false;
+    }
+
+    setAssignedTo(null);
+    processAutoAssign(task, currentModerators);
+    return !Objects.equals(originalAssignee, getAssignedTo());
+  }
+
+  /**
+   * Determines whether the current assignee should be kept based on previous and current moderator
+   * sets. Preserves assignees that are still current moderators or appear to be manual/admin
+   * assignments.
+   */
+  private boolean shouldKeepAssignee(
+      String assignee, Set<String> previousModerators, Set<String> currentModerators) {
+    return isAssignedToCurrentModerator(assignee, currentModerators)
+        || isManualAssignment(assignee, previousModerators);
+  }
+
+  private boolean isAssignedToCurrentModerator(String assignee, Set<String> currentModerators) {
+    return !Check.isEmpty(assignee) && currentModerators.contains(assignee);
+  }
+
+  /**
+   * Checks if an assignee appears to be a manual or admin assignment rather than metadata-derived.
+   * Assignees not in the previous moderator set (but not empty) are treated as manual overrides.
+   */
+  private boolean isManualAssignment(String assignee, Set<String> previousModerators) {
+    // Assignees outside the previous metadata-defined moderator set are manual/admin overrides.
+    return !Check.isEmpty(assignee)
+        && previousModerators != null
+        && !previousModerators.contains(assignee);
   }
 
   @Override

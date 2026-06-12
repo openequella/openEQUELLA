@@ -68,11 +68,15 @@ import com.tle.core.item.edit.attachment.AttachmentEditorProvider;
 import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.operations.ItemOperationParamsImpl;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
 import com.tle.core.item.service.ItemFileService;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.workflow.CheckStepOperation;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.quota.service.QuotaService;
 import com.tle.core.security.TLEAclManager;
@@ -112,6 +116,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   @Inject private FileSystemService fileSystemService;
   @Inject private ItemFileService itemFileService;
   @Inject private ItemLockingService itemLockingService;
+  @Inject private ItemOperationFactory itemOperationFactory;
 
   private final Item item;
   private final boolean newItem;
@@ -128,6 +133,13 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   private String stagingUuid;
 
   private PropBagEx itemxml;
+
+  /**
+   * Stores the item XML from before metadata edit. Captured once to preserve original state for
+   * workflow refresh.
+   */
+  private String originalMetadataXml;
+
   private Map<String, Attachment> attachmentMap;
   private Map<String, Attachment> linkedAttachmentMap;
   private List<String> attachmentOrder;
@@ -282,6 +294,16 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     }
   }
 
+  /**
+   * Captures the item XML before the first metadata edit. Subsequent edits within the same editing
+   * session preserve the original state for accurate workflow assignment refresh calculations.
+   */
+  private void captureOriginalXmlIfNeeded(ItemXml itemXml) {
+    if (originalMetadataXml == null) {
+      originalMetadataXml = itemXml.getXml();
+    }
+  }
+
   @Override
   public void editMetadata(String xml) {
     ItemXml itemXml = item.getItemXml();
@@ -289,6 +311,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
       metadataEdited = true;
       editDetected();
       addIndexingEdit("metadata");
+      captureOriginalXmlIfNeeded(itemXml);
       itemXml.setXml(xml);
     }
     itemxml = null;
@@ -569,6 +592,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     }
     itemDao.save(item);
     if (metadataEdited) {
+      checkSteps();
       itemService.updateMetadataBasedSecurity(getMetadata(), item);
       for (ItemMetadataListener metadataListener : metadataListenerTracker.getBeanList()) {
         metadataListener.metadataChanged(item, getMetadata());
@@ -634,6 +658,43 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
       itemPack.setStagingID(stagingUuid);
     }
     return itemPack;
+  }
+
+  /**
+   * Runs workflow step checks during direct metadata edits. Only executes for moderating items and
+   * ensures stale metadata-derived task assignments are repaired using the original XML context.
+   */
+  private void checkSteps() {
+    if (!item.isModerating()) {
+      return;
+    }
+
+    ItemOperationParamsImpl params = createCheckStepsParams();
+    WorkflowOperation checkSteps = itemOperationFactory.checkSteps();
+    itemService.executeOperationsNow(params, List.of(checkSteps));
+  }
+
+  /**
+   * Builds the operation context for workflow step checks. Disables security update here since
+   * updateMetadataBasedSecurity is called separately in finishedEditing.
+   */
+  private ItemOperationParamsImpl createCheckStepsParams() {
+    ItemOperationParamsImpl params = new ItemOperationParamsImpl();
+    params.reset(item.getItemId(), item.getId(), createItemPack());
+    params.setUpdate(true);
+    params.setUpdateSecurity(false);
+    attachOriginalXmlForWorkflowCheck(params);
+    return params;
+  }
+
+  /**
+   * Passes the original metadata XML through operation params so workflow assignment refresh can
+   * calculate which moderators were valid before the metadata edit.
+   */
+  private void attachOriginalXmlForWorkflowCheck(ItemOperationParamsImpl params) {
+    if (originalMetadataXml != null) {
+      params.setAttribute(CheckStepOperation.ATTRIBUTE_PREVIOUS_ITEM_XML, originalMetadataXml);
+    }
   }
 
   @Override
