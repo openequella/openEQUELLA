@@ -83,8 +83,6 @@ public interface UserService extends RemoteUserService, UserDirectoryPagination 
 
   <T> T getAttribute(Object key);
 
-  void clearUserSearchCache();
-
   // Only for autologin settings
   void refreshSettings();
 

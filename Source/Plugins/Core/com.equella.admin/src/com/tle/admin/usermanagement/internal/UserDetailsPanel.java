@@ -32,7 +32,6 @@ import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
@@ -52,7 +51,6 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   private static final long serialVersionUID = 1L;
 
   private final AdminTLEUserService userService;
-  private final RemoteUserService userCacheService;
 
   private final Map<String, JLabel> labels = new HashMap<String, JLabel>();
 
@@ -67,9 +65,8 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   private JPasswordField newPassword;
   private JPasswordField passwordConfirm;
 
-  public UserDetailsPanel(AdminTLEUserService userService, RemoteUserService userCacheService) {
+  public UserDetailsPanel(AdminTLEUserService userService) {
     this.userService = userService;
-    this.userCacheService = userCacheService;
     setupGui();
 
     loadUser(null);
@@ -326,7 +323,6 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
               .orElseThrow(() -> new IllegalStateException("Failed to retrieve newly added user."));
     } else {
       id = userService.edit(loadedUser);
-      userCacheService.removeFromCache(id);
     }
     loadedUser.setUuid(id);
 

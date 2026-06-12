@@ -16,21 +16,33 @@
  * limitations under the License.
  */
 
-package com.tle.core.events.listeners;
+package com.tle.core.events;
 
-import com.tle.core.events.UserAddedEvent;
-import com.tle.core.events.UserDeletedEvent;
-import com.tle.core.events.UserEditEvent;
-import com.tle.core.events.UserIdChangedEvent;
+import com.tle.core.events.listeners.GroupChangedListener;
+import java.io.Serial;
 
-public interface UserChangeListener extends ApplicationListener {
-  default void userAddedEvent(UserAddedEvent event) {
-    // Default: no-op
+/** Fired when a new group is created in the system. */
+public class GroupAddedEvent extends ApplicationEvent<GroupChangedListener> {
+  @Serial private static final long serialVersionUID = 1L;
+
+  private final String groupID;
+
+  public GroupAddedEvent(String groupID) {
+    super(PostTo.POST_ONLY_TO_SELF);
+    this.groupID = groupID;
   }
 
-  void userDeletedEvent(UserDeletedEvent event);
+  public String getGroupID() {
+    return groupID;
+  }
 
-  void userEditedEvent(UserEditEvent event);
+  @Override
+  public Class<GroupChangedListener> getListener() {
+    return GroupChangedListener.class;
+  }
 
-  void userIdChangedEvent(UserIdChangedEvent event);
+  @Override
+  public void postEvent(GroupChangedListener listener) {
+    listener.groupAddedEvent(this);
+  }
 }

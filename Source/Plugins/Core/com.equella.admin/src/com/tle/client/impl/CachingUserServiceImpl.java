@@ -171,10 +171,4 @@ public class CachingUserServiceImpl implements RemoteUserService {
   public void setPluginConfig(UserManagementSettings config) {
     remoteUserService.setPluginConfig(config);
   }
-
-  // TODO: OEQ-2931 remove "override"
-  @Override
-  public void removeFromCache(String userid) {
-    USER_CACHE.invalidate(userid);
-  }
 }

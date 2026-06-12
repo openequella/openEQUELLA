@@ -36,6 +36,7 @@ import com.tle.core.email.EmailService;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
+import com.tle.core.events.UserAddedEvent;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
@@ -107,9 +108,10 @@ public class TLEUserServiceImpl
     }
 
     dao.save(newUser);
-    // bug #7721
-    userService.clearUserSearchCache();
-    return newUser.getUuid();
+
+    String userUuid = newUser.getUuid();
+    eventService.publishApplicationEvent(new UserAddedEvent(userUuid));
+    return userUuid;
   }
 
   @Override
@@ -256,7 +258,6 @@ public class TLEUserServiceImpl
 
     String uuid = user.getUuid();
     eventService.publishApplicationEvent(new UserEditEvent(uuid));
-    userService.clearUserSearchCache();
     return uuid;
   }
 
@@ -274,7 +275,6 @@ public class TLEUserServiceImpl
 
       // Tell the world that we have deleted someone.
       eventService.publishApplicationEvent(new UserDeletedEvent(uuid));
-      userService.clearUserSearchCache();
     } else {
       throw new NotFoundException("Cannot find user with ID " + uuid + " to delete.");
     }

@@ -16,21 +16,33 @@
  * limitations under the License.
  */
 
-package com.tle.core.events.listeners;
+package com.tle.core.events;
 
-import com.tle.core.events.UserAddedEvent;
-import com.tle.core.events.UserDeletedEvent;
-import com.tle.core.events.UserEditEvent;
-import com.tle.core.events.UserIdChangedEvent;
+import com.tle.core.events.listeners.UserChangeListener;
+import java.io.Serial;
 
-public interface UserChangeListener extends ApplicationListener {
-  default void userAddedEvent(UserAddedEvent event) {
-    // Default: no-op
+/** Fired when a new user is created in the system. */
+public class UserAddedEvent extends ApplicationEvent<UserChangeListener> {
+  @Serial private static final long serialVersionUID = 1L;
+
+  private final String userID;
+
+  public UserAddedEvent(String userID) {
+    super(PostTo.POST_ONLY_TO_SELF);
+    this.userID = userID;
   }
 
-  void userDeletedEvent(UserDeletedEvent event);
+  public String getUserID() {
+    return userID;
+  }
 
-  void userEditedEvent(UserEditEvent event);
+  @Override
+  public Class<UserChangeListener> getListener() {
+    return UserChangeListener.class;
+  }
 
-  void userIdChangedEvent(UserIdChangedEvent event);
+  @Override
+  public void postEvent(UserChangeListener listener) {
+    listener.userAddedEvent(this);
+  }
 }
