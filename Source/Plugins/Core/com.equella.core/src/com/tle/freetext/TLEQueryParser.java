@@ -65,9 +65,6 @@ public class TLEQueryParser extends StandardQueryParser {
         FreeTextQuery.FIELD_ATTACHMENT_VECTORED, FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM);
   }
 
-  private static final Pattern pattern =
-      Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
-
   public TLEQueryParser(
       String[] fields, Analyzer analyzer, Map<String, Float> boosts, Operator defaultOperator) {
     super(analyzer);
@@ -86,19 +83,55 @@ public class TLEQueryParser extends StandardQueryParser {
     setQueryBuilder(queryTreeBuilder);
   }
 
-  public Query parse(String rawQuery, boolean escapeSpecialChars) throws QueryNodeException {
-    if (escapeSpecialChars) {
-      // In addition to the standard Lucene reserved chars, also need to
-      // escape several extra chars that cause Lucene `ParseException`.
-      String standardEscaped = QueryParserUtil.escape(rawQuery);
-      String extraEscaped = escapeLuceneExtendedSyntaxChars(standardEscaped);
+  public Query parseLiteral(String rawQuery) throws QueryNodeException {
+    String fullyEscapedQuery = escapeForStandardQueryParser(rawQuery);
+    // Use `null` as the default field because the class was originally extended from
+    // `MultiFieldQueryParser`
+    // where `field` is always `null` when we were using Lucene v3.
+    return super.parse(fullyEscapedQuery, null);
+  }
 
-      // Use `null` as the default field because the class was originally extended from
-      // `MultiFieldQueryParser`
-      // where `field` is always `null` when we were using Lucene v3.
-      return super.parse(extraEscaped, null);
+  public Query parseWithSyntax(String rawQuery) throws QueryNodeException {
+    /**
+     * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
+     * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
+     * it is manually entered plus "+", hyphen "-" and exclamation "!" should only be considered
+     * prohibitors if directly followed by the term. Hopefully this can be removed in future due to
+     * the following fix in Lucene 3.6.1 and higher -
+     * https://issues.apache.org/jira/browse/LUCENE-2566 Which changes the way - + ! are handled.
+     * Does not appear to work correctly for ! though.
+     *
+     * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
+     * still there, even though we replaced the classic QueryParser with the new
+     * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
+     * then).
+     *
+     * <p>Plus, in v4 forward slash will cause a QueryNodeParseException if it is not escaped. The
+     * Regex pattern defined above is too hard to understand and modifiy without any explanation.
+     * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
+     * do a simple char replacement to escape forward slash.
+     *
+     * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
+     */
+    String query = rawQuery.replace("/", "\\/");
+
+    // Regex to find any char of "+", "-" and "!" that needs escaping.
+    final Pattern operatorsToEscapePattern =
+        Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]");
+
+    Matcher matcher = operatorsToEscapePattern.matcher(query);
+    StringBuilder s = new StringBuilder();
+    while (matcher.find()) {
+      matcher.appendReplacement(s, "\\\\" + matcher.group());
     }
-    return legacyParse(rawQuery);
+    matcher.appendTail(s);
+
+    String buffered = s.toString();
+    if (!Check.isEmpty(buffered)) {
+      query = buffered;
+    }
+
+    return super.parse(query, null);
   }
 
   private static String getNonStemmedField(String stemmedField) {
@@ -153,41 +186,20 @@ public class TLEQueryParser extends StandardQueryParser {
     return query.replace("@", "\\@").replace("=", "\\=").replace("<", "\\<").replace(">", "\\>");
   }
 
-  private Query legacyParse(String rawQuery) throws QueryNodeException {
-    /**
-     * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
-     * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
-     * it is manually entered plus "+", hyphen "-" and exclamation "!" should only be considered
-     * prohibitors if directly followed by the term. Hopefully this can be removed in future due to
-     * the following fix in Lucene 3.6.1 and higher -
-     * https://issues.apache.org/jira/browse/LUCENE-2566 Which changes the way - + ! are handled.
-     * Does not appear to work correctly for ! though.
-     *
-     * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
-     * still there, even though we replaced the classic QueryParser with the new
-     * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
-     * then).
-     *
-     * <p>Plus, in v4 forward slash will cause a QueryNodeParseException if it is not escaped. The
-     * Regex pattern defined above is too hard to understand and modifiy without any explanation.
-     * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
-     * do a simple char replacement to escape forward slash.
-     *
-     * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
-     */
-    String query = rawQuery.replace("/", "\\/");
-    Matcher matcher = pattern.matcher(query);
-    StringBuilder s = new StringBuilder();
-    while (matcher.find()) {
-      matcher.appendReplacement(s, "\\\\" + matcher.group());
-    }
-    matcher.appendTail(s);
-
-    String buffered = s.toString();
-    if (!Check.isEmpty(buffered)) {
-      query = buffered;
-    }
-
-    return super.parse(query, null);
+  /**
+   * Completely escapes a query string for safe use with {@link StandardQueryParser}. This applies
+   * Lucene's standard escaping followed by additional characters (@, =, <, >) that cause
+   * ParseException in StandardQueryParser.
+   *
+   * @param rawQuery The raw, unescaped user query
+   * @return Fully escaped query safe for parsing
+   */
+  private String escapeForStandardQueryParser(String rawQuery) {
+    String standardEscaped = QueryParserUtil.escape(rawQuery);
+    return standardEscaped
+        .replace("@", "\\@")
+        .replace("=", "\\=")
+        .replace("<", "\\<")
+        .replace(">", "\\>");
   }
 }

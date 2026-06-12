@@ -1138,7 +1138,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         TLEQueryParser tleParser =
             new TLEQueryParser(fields, getAnalyser(), boosts, getDefaultOperator());
         boolean isEscapeSpecialChars = freetextIndex.getSearchSettings().isEscapeSpecialChars();
-        Query tleQuery = tleParser.parse(queryString, isEscapeSpecialChars);
+        Query tleQuery =
+            isEscapeSpecialChars
+                ? tleParser.parseLiteral(queryString)
+                : tleParser.parseWithSyntax(queryString);
 
         normalQueryBuilder.add(tleQuery, Occur.SHOULD);
 
@@ -1151,11 +1154,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                             // Extra queries are system-generated (not user input) and may
                             // intentionally
                             // contain Lucene syntax characters (e.g., FavouritesSearch bookmark tag
-                            // queries).
-                            // Always use legacy parsing (escapeSpecialChars=false) to preserve
-                            // syntax.
+                            // queries). Always parse with syntax to preserve the intended query
+                            // structure.
                             // See: com.tle.search.FavouritesSearch.getExtraQueries
-                            Query parsed = tleParser.parse(queryStr, false);
+                            Query parsed = tleParser.parseWithSyntax(queryStr);
                             normalQueryBuilder.add(parsed, Occur.SHOULD);
                           } catch (Exception e) {
                             throw new RuntimeException(e);
