@@ -128,6 +128,13 @@ public class TaskStatus extends AbstractNodeStatus {
   public boolean refreshAssignmentFromModerators(Set<String> previousModerators) {
     WorkflowItem task = (WorkflowItem) node;
     Set<String> currentModerators = op.getUsersToModerate(task);
+
+    // If eligible moderators are unchanged, leave the current assignment alone.
+    // This avoids overwriting unassigned items or manual assignment choices.
+    if (Objects.equals(previousModerators, currentModerators)) {
+      return false;
+    }
+
     String originalAssignee = getAssignedTo();
 
     if (shouldKeepAssignee(originalAssignee, previousModerators, currentModerators)) {
