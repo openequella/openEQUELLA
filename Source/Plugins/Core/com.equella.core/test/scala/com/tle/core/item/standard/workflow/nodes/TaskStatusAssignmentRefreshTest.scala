@@ -22,11 +22,10 @@ object TaskStatusAssignmentRefreshTest {
       taskId: String = "task-id"
   )
 
-  /** Outcome of calling refreshAssignmentFromModerators. */
+  /** Outcome of calling reassignIfStale. */
   final case class AssignmentRefreshResult(changed: Boolean, assignee: String)
 }
 
-/** Unit tests for [[TaskStatus.refreshAssignmentFromModerators]]. */
 class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
   import TaskStatusAssignmentRefreshTest.{AssignmentRefreshFixture, AssignmentRefreshResult}
 
@@ -34,7 +33,7 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
   private val currentModerator  = "current-moderator"
   private val manualAssignee    = "manual-assignee"
 
-  describe("refreshAssignmentFromModerators") {
+  describe("reassignIfStale") {
     it("reassigns a stale previous moderator to the single current moderator") {
       val result = refreshAssignment(
         fixture = AssignmentRefreshFixture(
@@ -91,20 +90,18 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
     }
   }
 
-  /** Invokes refreshAssignmentFromModerators and returns the outcome. */
   private def refreshAssignment(
       fixture: AssignmentRefreshFixture,
       previousModerators: Option[Set[String]]
   ): AssignmentRefreshResult = {
     val task    = buildTaskStatus(fixture)
     val changed = previousModerators match {
-      case None    => task.refreshAssignmentFromModerators(null)
-      case Some(s) => task.refreshAssignmentFromModerators(s.asJava)
+      case None    => task.reassignIfStale(null)
+      case Some(s) => task.reassignIfStale(s.asJava)
     }
     AssignmentRefreshResult(changed, task.getAssignedTo)
   }
 
-  /** Asserts the refresh outcome matches expectations. */
   private def assertRefreshResult(
       result: AssignmentRefreshResult,
       expectedChanged: Boolean,
@@ -114,7 +111,6 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
     result.assignee shouldBe expectedAssignee
   }
 
-  /** Builds a [[TaskStatus]] from fixture inputs. */
   private def buildTaskStatus(fixture: AssignmentRefreshFixture): TaskStatus = {
     val workflowItem = buildWorkflowItem(fixture.taskId)
     val statusBean   = buildStatusBean(workflowItem, fixture.assignee)
@@ -122,14 +118,12 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
     assembleTaskStatus(workflowItem, statusBean, operation)
   }
 
-  /** Creates the workflow step node under test. */
   private def buildWorkflowItem(taskId: String): WorkflowItem = {
     val workflowItem = new WorkflowItem()
     workflowItem.setUuid(taskId)
     workflowItem
   }
 
-  /** Creates incomplete task state with the given assignedTo. */
   private def buildStatusBean(
       workflowItem: WorkflowItem,
       assignee: String
@@ -140,7 +134,6 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
     statusBean
   }
 
-  /** Creates a stub [[TaskOperation]] returning the given current moderators. */
   private def buildOperation(currentModerators: Set[String]): TestTaskOperation = {
     val operation                   = new TestTaskOperation(currentModerators)
     val params: ItemOperationParams = new ItemOperationParamsImpl()
@@ -149,7 +142,6 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
     operation
   }
 
-  /** Wires workflow item, status bean, and operation into a [[TaskStatus]]. */
   private def assembleTaskStatus(
       workflowItem: WorkflowItem,
       statusBean: WorkflowItemStatus,

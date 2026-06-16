@@ -68,6 +68,7 @@ import com.tle.core.item.edit.attachment.AttachmentEditorProvider;
 import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.operations.ItemOperationParams;
 import com.tle.core.item.operations.ItemOperationParamsImpl;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.security.ItemSecurityConstants;
@@ -76,7 +77,6 @@ import com.tle.core.item.service.ItemFileService;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
-import com.tle.core.item.standard.operations.workflow.CheckStepOperation;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.quota.service.QuotaService;
 import com.tle.core.security.TLEAclManager;
@@ -94,6 +94,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -135,10 +136,10 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   private PropBagEx itemxml;
 
   /**
-   * Stores the item XML from before metadata edit. Captured once to preserve original state for
-   * workflow refresh.
+   * Stores the item XML from before any metadata edit in this editing session. Captured when the
+   * editor is created to preserve original state for workflow refresh.
    */
-  private String originalMetadataXml;
+  private final String originalMetadataXml;
 
   private Map<String, Attachment> attachmentMap;
   private Map<String, Attachment> linkedAttachmentMap;
@@ -171,6 +172,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     // TODO do we want to do this?
     updateDateModified = true;
     importing = false;
+    originalMetadataXml = metadataXmlAtEditStart(item);
   }
 
   @AssistedInject
@@ -185,6 +187,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     canEdit = true;
     privileges = null;
     importing = false;
+    originalMetadataXml = metadataXmlAtEditStart(item);
   }
 
   @AssistedInject
@@ -202,6 +205,11 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     canEdit = true;
     privileges = null;
     preventSaveScript = true;
+    originalMetadataXml = metadataXmlAtEditStart(item);
+  }
+
+  private static String metadataXmlAtEditStart(Item item) {
+    return Optional.ofNullable(item).map(Item::getItemXml).map(ItemXml::getXml).orElse(null);
   }
 
   @Override
@@ -294,16 +302,6 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     }
   }
 
-  /**
-   * Captures the item XML before the first metadata edit. Subsequent edits within the same editing
-   * session preserve the original state for accurate workflow assignment refresh calculations.
-   */
-  private void captureOriginalXmlIfNeeded(ItemXml itemXml) {
-    if (originalMetadataXml == null) {
-      originalMetadataXml = itemXml.getXml();
-    }
-  }
-
   @Override
   public void editMetadata(String xml) {
     ItemXml itemXml = item.getItemXml();
@@ -311,7 +309,6 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
       metadataEdited = true;
       editDetected();
       addIndexingEdit("metadata");
-      captureOriginalXmlIfNeeded(itemXml);
       itemXml.setXml(xml);
     }
     itemxml = null;
@@ -693,7 +690,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
    */
   private void attachOriginalXmlForWorkflowCheck(ItemOperationParamsImpl params) {
     if (originalMetadataXml != null) {
-      params.setAttribute(CheckStepOperation.ATTRIBUTE_PREVIOUS_ITEM_XML, originalMetadataXml);
+      params.setAttribute(ItemOperationParams.ATTRIBUTE_PREVIOUS_ITEM_XML, originalMetadataXml);
     }
   }
 

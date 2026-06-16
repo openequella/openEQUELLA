@@ -118,14 +118,23 @@ public class TaskStatus extends AbstractNodeStatus {
   }
 
   /**
-   * Refreshes the task assignment when item metadata has changed. If the current assignee appears
-   * to be stale (was a valid moderator before but isn't now), it's cleared and reapplied using
-   * existing auto-assignment rules. Valid or manually-assigned moderators are preserved.
+   * Repairs metadata-derived task assignments after item metadata changes.
    *
-   * @param previousModerators moderators from the item XML before the metadata edit
-   * @return true if the persisted assignedTo value changed
+   * <p>Only reassigns when the eligible moderator set has changed and the current assignee appears
+   * stale: they were a valid metadata moderator before the edit but are not one now. Assignees
+   * still in the current moderator set are preserved, as are likely manual overrides.
+   *
+   * <p>This method is intentionally heuristic-based. Manual overrides such as {@code
+   * MANAGE_WORKFLOW} users clicking <em>assign to me</em> update persisted {@code assignedTo}
+   * without changing item XML, so they are inferred when the assignee was never in {@code
+   * previousModerators}. An explicit persisted provenance flag was rejected for this fix because it
+   * would require schema migration and updates across all assignment paths, while legacy rows would
+   * still need the same inference fallback.
+   *
+   * @param previousModerators moderators resolved from item XML before the metadata edit
+   * @return {@code true} if the persisted {@code assignedTo} value changed
    */
-  public boolean refreshAssignmentFromModerators(Set<String> previousModerators) {
+  public boolean reassignIfStale(Set<String> previousModerators) {
     WorkflowItem task = (WorkflowItem) node;
     Set<String> currentModerators = op.getUsersToModerate(task);
 
@@ -162,11 +171,18 @@ public class TaskStatus extends AbstractNodeStatus {
   }
 
   /**
-   * Checks if an assignee appears to be a manual or admin assignment rather than metadata-derived.
-   * Assignees not in the previous moderator set (but not empty) are treated as manual overrides.
+   * Detects manual task assignment overrides that should survive metadata refresh.
+   *
+   * <p>Metadata-driven assignments come from item XML and workflow config, so the assignee is
+   * normally in {@code previousModerators}. Manual overrides do not change item XML; they only
+   * update persisted {@code assignedTo}.
+   *
+   * <p>Typical case: a user with {@code MANAGE_WORKFLOW} (often a system administrator) opens a
+   * task they are not eligible to moderate from metadata and clicks <em>assign to me</em>. That
+   * sets {@code assignedTo} to themselves even though they were never in the metadata moderator
+   * pool. When metadata later changes, that assignment must be preserved.
    */
   private boolean isManualAssignment(String assignee, Set<String> previousModerators) {
-    // Assignees outside the previous metadata-defined moderator set are manual/admin overrides.
     return !Check.isEmpty(assignee)
         && previousModerators != null
         && !previousModerators.contains(assignee);

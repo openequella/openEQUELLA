@@ -25,6 +25,7 @@ import com.tle.beans.item.HistoryEvent;
 import com.tle.beans.item.HistoryEvent.Type;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.ItemXml;
 import com.tle.beans.item.ModerationStatus;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -464,5 +465,13 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation {
   @Override
   public PropBagEx getItemXml() {
     return super.getItemXml();
+  }
+
+  protected PropBagEx getItemXmlAsPropBag() {
+    return Optional.ofNullable(getItem())
+        .map(Item::getItemXml)
+        .map(ItemXml::getXml)
+        .map(PropBagEx::new)
+        .orElse(null);
   }
 }
