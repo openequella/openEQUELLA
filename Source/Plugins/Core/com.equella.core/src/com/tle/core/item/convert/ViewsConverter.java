@@ -81,7 +81,7 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
       }
 
       final BucketFile bucketFolder = new BucketFile(viewsExportFolder, uuid);
-      json.write(bucketFolder, exportFilename(uuid, version), ive);
+      json.write(bucketFolder, buildExportFilename(uuid, version), ive);
     }
   }
 
@@ -130,7 +130,7 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
     public long lastViewed;
   }
 
-  private String exportFilename(String itemUuid, int itemVersion) {
+  private String buildExportFilename(String itemUuid, int itemVersion) {
     return String.format(EXPORT_FILENAME_PATTERN, itemUuid, itemVersion);
   }
 }
