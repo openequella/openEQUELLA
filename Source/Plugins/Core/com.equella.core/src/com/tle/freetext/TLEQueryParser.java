@@ -175,18 +175,6 @@ public class TLEQueryParser extends StandardQueryParser {
   }
 
   /**
-   * Escapes additional characters beyond Lucene's standard set that cause ParseException. These
-   * characters (@, =, <, >) are not handled by QueryParserUtil.escape() but cause query parsing
-   * failures in StandardQueryParser.
-   *
-   * @param query Already escaped by QueryParserUtil.escape()
-   * @return Query with additional characters escaped
-   */
-  private String escapeLuceneExtendedSyntaxChars(String query) {
-    return query.replace("@", "\\@").replace("=", "\\=").replace("<", "\\<").replace(">", "\\>");
-  }
-
-  /**
    * Completely escapes a query string for safe use with {@link StandardQueryParser}. This applies
    * Lucene's standard escaping followed by additional characters (@, =, <, >) that cause
    * ParseException in StandardQueryParser.
