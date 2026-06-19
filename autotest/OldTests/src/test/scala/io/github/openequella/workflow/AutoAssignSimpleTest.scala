@@ -46,17 +46,18 @@ object AutoAssignWizardControls {
   val moderatorSelectUserIndex = 3
 }
 
+/** Test user with optional wizard search text for metadata moderator selection. */
 case class TestActor(
     username: String,
     password: String = AutoAssignTestData.password,
     query: Option[String] = None
 )
 
+/** Collection and metadata moderator used when contributing a new moderated item. */
 case class ContributeItemFlow(collection: String, moderator: TestActor)
 
+/** Inputs for changing a metadata-selected moderator on an existing item. */
 case class ReplaceModeratorFlow(itemName: String, from: TestActor, to: TestActor)
-
-case class TaskLookup(actor: TestActor, itemName: String)
 
 @TestInstitution("workflow")
 class AutoAssignSimpleTest extends AbstractCleanupTest {
@@ -75,7 +76,6 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
     withLoggedInUser(moderatorA) {
       val view = openModerationViewForCurrentUser(itemName)
       assertAssignedToMe(view)
-      view.accept()
     }
   }
 
@@ -90,7 +90,7 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
     replaceModerator(ReplaceModeratorFlow(itemName, moderatorA, moderatorB))
 
     withLoggedInUser(moderatorA) {
-      assertNoTaskResults(searchExact(loadTaskList(), itemName))
+      assertNoTaskResults(searchExactTask(itemName))
     }
 
     withLoggedInUser(moderatorB) {
@@ -100,10 +100,10 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
     }
   }
 
-  private def withLoggedInUser[T](actor: TestActor)(block: => T): T =
+  private def withLoggedInUser[T](actor: TestActor)(function: => T): T =
     try {
       logon(actor.username, actor.password)
-      block
+      function
     } finally {
       logout()
     }
@@ -137,9 +137,9 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
           .viewFromTitle(flow.itemName)
           .adminTab()
           .edit()
-      val selectUser = moderatorControl(wizard)
-      selectUser.removeUser(flow.from.username)
-      selectUser.queryAndSelect(newModeratorQuery, flow.to.username)
+      val moderatorList = moderatorControl(wizard)
+      moderatorList.removeUser(flow.from.username)
+      moderatorList.queryAndSelect(newModeratorQuery, flow.to.username)
       wizard.saveNoConfirm()
     }
   }
@@ -150,14 +150,11 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
   private def moderatorControl(wizard: WizardPageTab): SelectUserControl =
     wizard.selectUser(AutoAssignWizardControls.moderatorSelectUserIndex)
 
-  private def loadTaskList(): TaskListPage =
-    new TaskListPage(context).load()
-
-  private def searchExact(taskList: TaskListPage, itemName: String): ModerateListSearchResults =
-    taskList.exactQuery(itemName)
+  private def searchExactTask(itemName: String): ModerateListSearchResults =
+    new TaskListPage(context).load().exactQuery(itemName)
 
   private def openModerationViewForCurrentUser(itemName: String): ModerationView =
-    searchExact(loadTaskList(), itemName).moderate(itemName)
+    searchExactTask(itemName).moderate(itemName)
 
   private def assertAssignedToMe(view: ModerationView): Unit =
     assertTrue(view.isAssignedToMe)
