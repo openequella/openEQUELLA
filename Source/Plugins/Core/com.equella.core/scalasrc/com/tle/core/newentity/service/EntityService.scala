@@ -40,7 +40,7 @@ trait EntityService {
 
   /** Get a list of Entity by Entity type limited to those in the current institution.
     * @param typeId
-    *   The type representing an Entity (e.g. cloudprovider)
+    *   The type representing an Entity
     */
   def getAllByType(typeId: String): java.util.List[Entity]
 
@@ -49,7 +49,7 @@ trait EntityService {
     * @param uuid
     *   The unique ID of an Entity.
     * @param typeId
-    *   Unique ID indicating what type the Entity is. (e.g. CloudProvider)
+    *   Unique ID indicating what type the Entity is.
     * @param name
     *   Name of the Entity.
     * @param nameStrings

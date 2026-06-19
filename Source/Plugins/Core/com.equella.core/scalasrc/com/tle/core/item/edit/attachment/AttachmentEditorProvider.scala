@@ -19,7 +19,6 @@
 package com.tle.core.item.edit.attachment
 
 import com.tle.beans.item.ItemEditingException
-import com.tle.core.cloudproviders.CloudAttachmentEditor
 import com.tle.legacy.LegacyGuice
 
 object AttachmentEditorProvider {
@@ -29,13 +28,9 @@ object AttachmentEditorProvider {
   def createEditorForType(className: String): AbstractAttachmentEditor = {
     val extMap = tracker.getExtensionMap
     Option(extMap.get(className)).map(tracker.getNewBeanByExtension).getOrElse {
-      className match {
-        case c if c == classOf[CloudAttachmentEditor].getName => new CloudAttachmentEditor()
-        case _                                                =>
-          throw new ItemEditingException(
-            s"No extension for '$className' ${classOf[CloudAttachmentEditor].getName}"
-          )
-      }
+      throw new ItemEditingException(
+        s"No editor for '$className'"
+      )
     }
   }
 }

@@ -19,7 +19,6 @@
 package com.tle.web.viewurl.attachments.impl;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -37,7 +36,6 @@ import com.tle.common.filesystem.FileSystemConstants;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.item.AttachmentUtils;
-import com.tle.core.cloudproviders.CloudAttachmentResourceExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.service.ItemResolver;
@@ -176,7 +174,6 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService 
             perTypeList.add(() -> attachmentResources.getBeanByExtension(extension));
           }
         }
-        extensionMap.put("custom/cloud", ImmutableList.of(CloudAttachmentResourceExtension::new));
       }
     }
     return extensionMap;

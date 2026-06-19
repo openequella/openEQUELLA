@@ -25,11 +25,9 @@ import com.dytech.edge.wizard.beans.WizardPage;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.controls.repository.ControlRepository;
-import com.tle.beans.cloudproviders.CloudControlDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
 import com.tle.common.applet.client.ClientService;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.remoting.CloudProviderAdminService;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -62,12 +60,10 @@ public class ControlRepositoryImpl implements ControlRepository {
   private final Map<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
 
   private final PluginService pluginService;
-  private final CloudProviderAdminService cloudProviders;
 
   /** Constructs a new ControlRepository. */
   public ControlRepositoryImpl(PluginService pluginService, ClientService services) {
     this.pluginService = pluginService;
-    this.cloudProviders = services.getService(CloudProviderAdminService.class);
 
     for (Extension extension :
         pluginService.getConnectedExtensions(
@@ -75,10 +71,6 @@ public class ControlRepositoryImpl implements ControlRepository {
     {
 
       final ControlDefinition definition = new PluginControlExtension(pluginService, extension);
-      registerDefinition(definition);
-    }
-    for (CloudControlDefinition ccontrol : cloudProviders.listControls()) {
-      final ControlDefinition definition = new CloudControlDefinitionImpl(ccontrol);
       registerDefinition(definition);
     }
 

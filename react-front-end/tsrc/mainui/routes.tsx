@@ -28,7 +28,6 @@ import {
   isDashboardACLGranted,
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
-  isManageCloudProviderACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
   RequiredPermissionCheck,
@@ -49,9 +48,6 @@ const CreateLti13PlatformPage = React.lazy(
 );
 const EditLti13PlatformPage = React.lazy(
   () => import("../settings/Integrations/lti13/components/EditLti13Platform"),
-);
-const CloudProviderListPage = React.lazy(
-  () => import("../cloudprovider/CloudProviderListPage"),
 );
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const SearchPageSettings = React.lazy(
@@ -118,7 +114,6 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 
 interface Routes {
   BrowseHierarchy: OEQRouteNewUI;
-  CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   CreateLti13Platform: OEQRouteNewUI;
   Dashboard: OEQRouteNewUI;
@@ -202,11 +197,6 @@ export const routes: Routes = {
     path: "/page/hierarchies",
     component: BrowseHierarchyPage,
     permissionChecks: [isHierarchyPageACLGranted],
-  },
-  CloudProviders: {
-    path: "/page/cloudprovider",
-    component: CloudProviderListPage,
-    permissionChecks: [isManageCloudProviderACLGranted],
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",

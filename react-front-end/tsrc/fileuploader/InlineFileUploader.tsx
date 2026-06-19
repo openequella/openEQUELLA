@@ -111,10 +111,6 @@ export interface InlineFileUploaderProps {
    * A number of language strings defined on server
    */
   strings: ControlStrings;
-  /**
-   * The function used to reload the Wizard state
-   */
-  reloadState: () => void;
 }
 
 /**
@@ -136,7 +132,6 @@ export const InlineFileUploader = ({
   editable,
   commandUrl,
   strings,
-  reloadState,
 }: InlineFileUploaderProps) => {
   const initialiseEntry = (
     entry: AjaxFileEntry,
@@ -192,7 +187,6 @@ export const InlineFileUploader = ({
           );
           setUploadedFiles((prev) => addElement(prev, uploadedFile));
           setShowDuplicateWarning(displayWarningMessage);
-          reloadState();
         };
 
         upload(
@@ -265,7 +259,6 @@ export const InlineFileUploader = ({
       setUploadedFiles(remainingFiles);
       setShowDuplicateWarning(displayWarningMessage);
       setAttachmentCount(remainingFiles.length);
-      reloadState();
     };
 
     const onError = (file: UploadedFile) => {

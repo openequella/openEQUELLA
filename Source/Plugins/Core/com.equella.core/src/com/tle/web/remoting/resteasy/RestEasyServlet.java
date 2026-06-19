@@ -40,7 +40,6 @@ import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.auth.Auth;
 import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
-import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.dashboard.DashboardResource;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
@@ -119,7 +118,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           AclResource.class,
           AdvancedSearchResource.class,
           Auth.class,
-          CloudProviderApi.class,
           DrmResource.class,
           FacetedSearchClassificationResource.class,
           GdprResource.class,

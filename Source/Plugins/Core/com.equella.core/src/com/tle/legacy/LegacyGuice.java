@@ -25,7 +25,6 @@ import com.tle.common.scripting.service.ScriptingService;
 import com.tle.core.accessibility.AccessibilityModeService;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.auditlog.AuditLogService;
-import com.tle.core.cloudproviders.CloudProviderRegistrationService;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.encryption.EncryptionService;
@@ -130,8 +129,6 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static CALService calService;
 
   @Inject public static CALWebServiceImpl calWebService;
-
-  @Inject public static CloudProviderRegistrationService cloudProviderRegistrationService;
 
   @Inject public static ConfigurationService configService;
 
