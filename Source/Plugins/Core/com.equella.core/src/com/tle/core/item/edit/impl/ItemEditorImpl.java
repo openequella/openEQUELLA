@@ -172,7 +172,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     // TODO do we want to do this?
     updateDateModified = true;
     importing = false;
-    originalMetadataXml = metadataXmlAtEditStart(item);
+    originalMetadataXml = getItemXml(item);
   }
 
   @AssistedInject
@@ -187,7 +187,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     canEdit = true;
     privileges = null;
     importing = false;
-    originalMetadataXml = metadataXmlAtEditStart(item);
+    originalMetadataXml = getItemXml(item);
   }
 
   @AssistedInject
@@ -205,10 +205,10 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     canEdit = true;
     privileges = null;
     preventSaveScript = true;
-    originalMetadataXml = metadataXmlAtEditStart(item);
+    originalMetadataXml = getItemXml(item);
   }
 
-  private static String metadataXmlAtEditStart(Item item) {
+  private static String getItemXml(Item item) {
     return Optional.ofNullable(item).map(Item::getItemXml).map(ItemXml::getXml).orElse(null);
   }
 
@@ -589,7 +589,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     }
     itemDao.save(item);
     if (metadataEdited) {
-      checkSteps();
+      refreshTaskAssignmentsAfterMetadataEdit();
       itemService.updateMetadataBasedSecurity(getMetadata(), item);
       for (ItemMetadataListener metadataListener : metadataListenerTracker.getBeanList()) {
         metadataListener.metadataChanged(item, getMetadata());
@@ -658,17 +658,18 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   }
 
   /**
-   * Runs workflow step checks during direct metadata edits. Only executes for moderating items and
-   * ensures stale metadata-derived task assignments are repaired using the original XML context.
+   * Refreshes workflow task assignments during direct metadata edits. Only executes for moderating
+   * items and ensures stale metadata-derived task assignments are repaired using the original XML
+   * context.
    */
-  private void checkSteps() {
+  private void refreshTaskAssignmentsAfterMetadataEdit() {
     if (!item.isModerating()) {
       return;
     }
 
     ItemOperationParamsImpl params = createCheckStepsParams();
-    WorkflowOperation checkSteps = itemOperationFactory.checkSteps();
-    itemService.executeOperationsNow(params, List.of(checkSteps));
+    WorkflowOperation checkStepOperation = itemOperationFactory.checkSteps();
+    itemService.executeOperationsNow(params, List.of(checkStepOperation));
   }
 
   /**
@@ -690,7 +691,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
    */
   private void attachOriginalXmlForWorkflowCheck(ItemOperationParamsImpl params) {
     if (originalMetadataXml != null) {
-      params.setAttribute(ItemOperationParams.ATTRIBUTE_PREVIOUS_ITEM_XML, originalMetadataXml);
+      params.setAttribute(ItemOperationParams.ATTRIBUTE_ORIGINAL_ITEM_XML, originalMetadataXml);
     }
   }
 

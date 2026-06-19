@@ -29,18 +29,18 @@ object TaskStatusAssignmentRefreshTest {
 class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
   import TaskStatusAssignmentRefreshTest.{AssignmentRefreshFixture, AssignmentRefreshResult}
 
-  private val previousModerator = "previous-moderator"
+  private val originalModerator = "original-moderator"
   private val currentModerator  = "current-moderator"
   private val manualAssignee    = "manual-assignee"
 
   describe("reassignIfStale") {
-    it("reassigns a stale previous moderator to the single current moderator") {
+    it("reassigns a stale original moderator to the single current moderator") {
       val result = refreshAssignment(
         fixture = AssignmentRefreshFixture(
-          assignee = previousModerator,
+          assignee = originalModerator,
           currentModerators = Set(currentModerator)
         ),
-        previousModerators = Some(Set(previousModerator))
+        originalModerators = Some(Set(originalModerator))
       )
       assertRefreshResult(result, expectedChanged = true, expectedAssignee = currentModerator)
     }
@@ -51,40 +51,40 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
           assignee = currentModerator,
           currentModerators = Set(currentModerator, "another-current-moderator")
         ),
-        previousModerators = Some(Set(previousModerator, currentModerator))
+        originalModerators = Some(Set(originalModerator, currentModerator))
       )
       assertRefreshResult(result, expectedChanged = false, expectedAssignee = currentModerator)
     }
 
-    it("keeps a manual assignee outside the previous metadata moderators") {
+    it("keeps a manual assignee outside the original metadata moderators") {
       val result = refreshAssignment(
         fixture = AssignmentRefreshFixture(
           assignee = manualAssignee,
           currentModerators = Set(currentModerator)
         ),
-        previousModerators = Some(Set(previousModerator))
+        originalModerators = Some(Set(originalModerator))
       )
       assertRefreshResult(result, expectedChanged = false, expectedAssignee = manualAssignee)
     }
 
-    it("does not treat null previous moderators as manual assignment evidence") {
+    it("does not treat null original moderators as manual assignment evidence") {
       val result = refreshAssignment(
         fixture = AssignmentRefreshFixture(
-          assignee = previousModerator,
+          assignee = originalModerator,
           currentModerators = Set(currentModerator)
         ),
-        previousModerators = None
+        originalModerators = None
       )
       assertRefreshResult(result, expectedChanged = true, expectedAssignee = currentModerator)
     }
 
-    it("preserves non-empty assignees when previous moderators are empty") {
+    it("preserves non-empty assignees when original moderators are empty") {
       val result = refreshAssignment(
         fixture = AssignmentRefreshFixture(
           assignee = manualAssignee,
           currentModerators = Set(currentModerator)
         ),
-        previousModerators = Some(Set.empty)
+        originalModerators = Some(Set.empty)
       )
       assertRefreshResult(result, expectedChanged = false, expectedAssignee = manualAssignee)
     }
@@ -92,14 +92,12 @@ class TaskStatusAssignmentRefreshTest extends AnyFunSpec with Matchers {
 
   private def refreshAssignment(
       fixture: AssignmentRefreshFixture,
-      previousModerators: Option[Set[String]]
+      originalModerators: Option[Set[String]]
   ): AssignmentRefreshResult = {
-    val task    = buildTaskStatus(fixture)
-    val changed = previousModerators match {
-      case None    => task.reassignIfStale(null)
-      case Some(s) => task.reassignIfStale(s.asJava)
-    }
-    AssignmentRefreshResult(changed, task.getAssignedTo)
+    val task                   = buildTaskStatus(fixture)
+    val originalModeratorsJava = originalModerators.map(_.asJava).orNull
+    val isAssigneeChanged      = task.reassignIfStale(originalModeratorsJava)
+    AssignmentRefreshResult(isAssigneeChanged, task.getAssignedTo)
   }
 
   private def assertRefreshResult(

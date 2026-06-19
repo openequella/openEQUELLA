@@ -127,26 +127,20 @@ public class TaskStatus extends AbstractNodeStatus {
    * <p>This method is intentionally heuristic-based. Manual overrides such as {@code
    * MANAGE_WORKFLOW} users clicking <em>assign to me</em> update persisted {@code assignedTo}
    * without changing item XML, so they are inferred when the assignee was never in {@code
-   * previousModerators}. An explicit persisted provenance flag was rejected for this fix because it
+   * originalModerators}. An explicit persisted provenance flag was rejected for this fix because it
    * would require schema migration and updates across all assignment paths, while legacy rows would
    * still need the same inference fallback.
    *
-   * @param previousModerators moderators resolved from item XML before the metadata edit
+   * @param originalModerators moderators resolved from item XML before the metadata edit
    * @return {@code true} if the persisted {@code assignedTo} value changed
    */
-  public boolean reassignIfStale(Set<String> previousModerators) {
+  public boolean reassignIfStale(Set<String> originalModerators) {
     WorkflowItem task = (WorkflowItem) node;
     Set<String> currentModerators = op.getUsersToModerate(task);
 
-    // If eligible moderators are unchanged, leave the current assignment alone.
-    // This avoids overwriting unassigned items or manual assignment choices.
-    if (Objects.equals(previousModerators, currentModerators)) {
-      return false;
-    }
-
     String originalAssignee = getAssignedTo();
 
-    if (shouldKeepAssignee(originalAssignee, previousModerators, currentModerators)) {
+    if (shouldKeepAssignee(originalAssignee, originalModerators, currentModerators)) {
       return false;
     }
 
@@ -156,17 +150,23 @@ public class TaskStatus extends AbstractNodeStatus {
   }
 
   /**
-   * Determines whether the current assignee should be kept based on previous and current moderator
-   * sets. Preserves assignees that are still current moderators or appear to be manual/admin
-   * assignments.
+   * Determines whether the current assignee should be kept based on the original and current
+   * moderator sets. Preserves assignees that are still current moderators or appear to be
+   * manual/admin assignments.
    */
   private boolean shouldKeepAssignee(
-      String assignee, Set<String> previousModerators, Set<String> currentModerators) {
-    return isAssignedToCurrentModerator(assignee, currentModerators)
-        || isManualAssignment(assignee, previousModerators);
+      String assignee, Set<String> originalModerators, Set<String> currentModerators) {
+    boolean areModeratorSetsUnchanged = Objects.equals(originalModerators, currentModerators);
+    if (areModeratorSetsUnchanged) {
+      return true;
+    }
+
+    boolean isAssigneeCurrentModerator = isAssignedToCurrentModerators(assignee, currentModerators);
+    boolean isAssigneeManualOverride = isManualAssignment(assignee, originalModerators);
+    return isAssigneeCurrentModerator || isAssigneeManualOverride;
   }
 
-  private boolean isAssignedToCurrentModerator(String assignee, Set<String> currentModerators) {
+  private boolean isAssignedToCurrentModerators(String assignee, Set<String> currentModerators) {
     return !Check.isEmpty(assignee) && currentModerators.contains(assignee);
   }
 
@@ -174,7 +174,7 @@ public class TaskStatus extends AbstractNodeStatus {
    * Detects manual task assignment overrides that should survive metadata refresh.
    *
    * <p>Metadata-driven assignments come from item XML and workflow config, so the assignee is
-   * normally in {@code previousModerators}. Manual overrides do not change item XML; they only
+   * normally in {@code originalModerators}. Manual overrides do not change item XML; they only
    * update persisted {@code assignedTo}.
    *
    * <p>Typical case: a user with {@code MANAGE_WORKFLOW} (often a system administrator) opens a
@@ -182,10 +182,10 @@ public class TaskStatus extends AbstractNodeStatus {
    * sets {@code assignedTo} to themselves even though they were never in the metadata moderator
    * pool. When metadata later changes, that assignment must be preserved.
    */
-  private boolean isManualAssignment(String assignee, Set<String> previousModerators) {
+  private boolean isManualAssignment(String assignee, Set<String> originalModerators) {
     return !Check.isEmpty(assignee)
-        && previousModerators != null
-        && !previousModerators.contains(assignee);
+        && originalModerators != null
+        && !originalModerators.contains(assignee);
   }
 
   @Override

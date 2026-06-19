@@ -37,10 +37,10 @@ public interface ItemOperationParams {
   public static final int COMMIT_HOOK_PRIORITY_HIGH = 0;
 
   /**
-   * Item XML captured before a metadata edit, used to compare previous moderators during workflow
-   * checks.
+   * Item XML captured before a metadata edit, used to compare the original moderators during
+   * workflow checks.
    */
-  String ATTRIBUTE_PREVIOUS_ITEM_XML = "previousItemXml";
+  String ATTRIBUTE_ORIGINAL_ITEM_XML = "originalItemXml";
 
   void setAttribute(String name, String value);
 

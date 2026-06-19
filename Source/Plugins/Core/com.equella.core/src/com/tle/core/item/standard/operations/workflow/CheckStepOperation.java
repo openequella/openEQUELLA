@@ -47,46 +47,58 @@ public class CheckStepOperation extends TaskOperation {
     if (item == null) {
       return false;
     }
+
     Workflow workflow = getWorkflow();
-    if (workflow != null
-        && item.isModerating()
-        && checkAllTasks(workflow.getRoot(), resolvePreviousItemXml())) {
-      updateModeration();
-      return true;
+    if (!shouldProcessWorkflow(item, workflow)) {
+      return false;
     }
-    return false;
+
+    if (!hasWorkflowChanges(workflow)) {
+      return false;
+    }
+
+    updateModeration();
+    return true;
+  }
+
+  private boolean shouldProcessWorkflow(Item item, Workflow workflow) {
+    return workflow != null && item.isModerating();
+  }
+
+  private boolean hasWorkflowChanges(Workflow workflow) {
+    return checkAllTasks(workflow.getRoot(), resolveOriginalItemXml());
   }
 
   /**
    * Resolves the item XML to use as the pre-edit metadata baseline for moderator comparison.
    *
    * <p>Direct edits using REST API overwrite the in-memory item XML before this operation runs, so
-   * they pass the original XML through {@link ItemOperationParams#ATTRIBUTE_PREVIOUS_ITEM_XML}.
+   * they pass the original XML through {@link ItemOperationParams#ATTRIBUTE_ORIGINAL_ITEM_XML}.
    * Standard workflow save paths can fall back to the entity XML because the check runs before the
    * new XML is written there.
    */
-  private PropBagEx resolvePreviousItemXml() {
+  private PropBagEx resolveOriginalItemXml() {
     return Optional.ofNullable(
-            getParams().getAttributes().get(ItemOperationParams.ATTRIBUTE_PREVIOUS_ITEM_XML))
+            getParams().getAttributes().get(ItemOperationParams.ATTRIBUTE_ORIGINAL_ITEM_XML))
         .filter(StringUtils::isNotEmpty)
         .map(PropBagEx::new)
-        .or(() -> Optional.ofNullable(getItemXmlAsPropBag()))
+        .or(this::getItemXmlAsPropBag)
         .or(() -> Optional.ofNullable(getItemXml()))
         .orElseGet(PropBagEx::new);
   }
 
   /**
-   * Refreshes the task assignment by comparing previous and current moderators to detect stale
+   * Refreshes the task assignment by comparing the original and current moderators to detect stale
    * metadata-derived assignments and repair them if needed.
    */
   private boolean refreshAssignment(
-      TaskStatus taskStatus, WorkflowItem task, PropBagEx previousItemXml) {
-    Set<String> previousModerators = resolvePreviousModerators(previousItemXml, task);
-    return taskStatus.reassignIfStale(previousModerators);
+      TaskStatus taskStatus, WorkflowItem task, PropBagEx originalItemXml) {
+    Set<String> originalModerators = resolveOriginalModerators(originalItemXml, task);
+    return taskStatus.reassignIfStale(originalModerators);
   }
 
-  private Set<String> resolvePreviousModerators(PropBagEx previousItemXml, WorkflowItem task) {
-    return workflowService.getAllModeratorUserIDs(previousItemXml, task);
+  private Set<String> resolveOriginalModerators(PropBagEx originalItemXml, WorkflowItem task) {
+    return workflowService.getAllModeratorUserIDs(originalItemXml, task);
   }
 
   /**
@@ -94,15 +106,15 @@ public class CheckStepOperation extends TaskOperation {
    *
    * <p>For incomplete item-task nodes, refreshes the persisted assignment before running the normal
    * task update. Script nodes keep the existing update behavior. The same pre-edit XML is passed
-   * through the traversal so each task can resolve its previous moderator set consistently.
+   * through the traversal so each task can resolve its original moderator set consistently.
    */
-  private boolean checkAllTasks(WorkflowNode node, PropBagEx previousItemXml) {
+  private boolean checkAllTasks(WorkflowNode node, PropBagEx originalItemXml) {
     if (!shouldProcessNode(node)) {
       return false;
     }
 
-    boolean updated = processCurrentNode(node, previousItemXml);
-    updated |= processChildNodes(node, previousItemXml);
+    boolean updated = processCurrentNode(node, originalItemXml);
+    updated |= processChildNodes(node, originalItemXml);
     return updated;
   }
 
@@ -111,11 +123,11 @@ public class CheckStepOperation extends TaskOperation {
     return nodeStatus != null && nodeStatus.getStatus() == WorkflowNodeStatus.INCOMPLETE;
   }
 
-  private boolean processCurrentNode(WorkflowNode node, PropBagEx previousItemXml) {
+  private boolean processCurrentNode(WorkflowNode node, PropBagEx originalItemXml) {
     NodeStatus nodeStatus = getNodeStatus(node.getUuid());
-    char type = nodeStatus.getBean().getNode().getType();
+    char type = getNodeType(nodeStatus);
     if (type == WorkflowNode.ITEM_TYPE) {
-      return processItemTask(node, nodeStatus, previousItemXml);
+      return processItemTask(node, nodeStatus, originalItemXml);
     } else if (type == WorkflowNode.SCRIPT_TYPE) {
       return processScriptTask(node);
     }
@@ -123,9 +135,9 @@ public class CheckStepOperation extends TaskOperation {
   }
 
   private boolean processItemTask(
-      WorkflowNode node, NodeStatus nodeStatus, PropBagEx previousItemXml) {
+      WorkflowNode node, NodeStatus nodeStatus, PropBagEx originalItemXml) {
     WorkflowItem task = (WorkflowItem) nodeStatus.getBean().getNode();
-    boolean updated = refreshAssignment((TaskStatus) nodeStatus, task, previousItemXml);
+    boolean updated = refreshAssignment((TaskStatus) nodeStatus, task, originalItemXml);
     updated |= update(node);
     return updated;
   }
@@ -134,11 +146,11 @@ public class CheckStepOperation extends TaskOperation {
     return update(node);
   }
 
-  private boolean processChildNodes(WorkflowNode node, PropBagEx previousItemXml) {
+  private boolean processChildNodes(WorkflowNode node, PropBagEx originalItemXml) {
     boolean updated = false;
     if (!node.isLeafNode()) {
       NodeStatus nodeStatus = getNodeStatus(node.getUuid());
-      char type = nodeStatus.getBean().getNode().getType();
+      char type = getNodeType(nodeStatus);
       NodeStatus[] childStatuses = getChildStatuses(node);
       WorkflowTreeNode treenode = (WorkflowTreeNode) node;
       int num = treenode.numberOfChildren();
@@ -147,9 +159,13 @@ public class CheckStepOperation extends TaskOperation {
         if (type == WorkflowNode.PARALLEL_TYPE && childStatuses[i] == null) {
           updated |= update(node);
         }
-        updated |= checkAllTasks(child, previousItemXml);
+        updated |= checkAllTasks(child, originalItemXml);
       }
     }
     return updated;
+  }
+
+  private char getNodeType(NodeStatus nodeStatus) {
+    return nodeStatus.getBean().getNode().getType();
   }
 }

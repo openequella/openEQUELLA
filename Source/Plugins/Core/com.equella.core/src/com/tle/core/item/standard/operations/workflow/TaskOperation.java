@@ -467,11 +467,10 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation {
     return super.getItemXml();
   }
 
-  protected PropBagEx getItemXmlAsPropBag() {
+  protected Optional<PropBagEx> getItemXmlAsPropBag() {
     return Optional.ofNullable(getItem())
         .map(Item::getItemXml)
         .map(ItemXml::getXml)
-        .map(PropBagEx::new)
-        .orElse(null);
+        .map(PropBagEx::new);
   }
 }
