@@ -126,29 +126,9 @@ public class TLEUserWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainDirective, Collection<UserBean>> searchUsers(
-      String query, String parentGroupId, boolean recursive) {
-    Collection<UserBean> users =
-        tleUserService.searchUsers(query, parentGroupId, recursive).stream()
-            .map(this::convert)
-            .toList();
-    return new Pair<>(ChainDirective.CONTINUE, users);
-  }
-
-  @Override
   public ChainResult<UserBean> searchUsers(String query, int limit, int offset) {
     List<UserBean> users =
         tleUserService.searchUsers(query, null, false, limit, offset).stream()
-            .map(this::convert)
-            .toList();
-    return ChainResult.continueWith(users);
-  }
-
-  @Override
-  public ChainResult<UserBean> searchUsers(
-      String query, String parentGroupId, boolean recursive, int limit, int offset) {
-    List<UserBean> users =
-        tleUserService.searchUsers(query, parentGroupId, recursive, limit, offset).stream()
             .map(this::convert)
             .toList();
     return ChainResult.continueWith(users);
