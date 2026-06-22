@@ -246,7 +246,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.12.0",
+  "org.scala-sbt"                %% "io"                       % "1.12.1",
   "org.mozilla"                   % "rhino"                    % "1.9.1",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
