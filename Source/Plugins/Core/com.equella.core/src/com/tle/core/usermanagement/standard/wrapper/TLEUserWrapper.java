@@ -106,11 +106,6 @@ public class TLEUserWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public int countUsers(String query, String parentGroupId, boolean recursive) {
-    return tleUserService.countUsers(query, parentGroupId, recursive);
-  }
-
-  @Override
   public Pair<ChainDirective, Collection<UserBean>> searchUsers(String query) {
     Collection<UserBean> users = new ArrayList<>();
     for (TLEUser user : tleUserService.searchUsers(query, null, false)) {

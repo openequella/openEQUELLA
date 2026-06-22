@@ -1,6 +1,7 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban.relay.{Base64Cursor, Cursor, Pagination, PaginationArgs, PaginationCursor}
+import com.tle.web.remoting.graphql.schema.types.StringConnection
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -67,6 +68,21 @@ class PaginationTest extends AnyFunSpec with Matchers with GivenWhenThen {
         o shouldBe offset
         l shouldBe limit
       }
+    }
+  }
+
+  describe("Page.toConnection") {
+    it(
+      "should not indicate a next page for an empty page even when count suggests otherwise"
+    ) {
+      val connection =
+        StringConnection(Page[String](items = List.empty, count = 10, offset = 4, limit = 2))
+
+      connection.edges shouldBe empty
+      connection.pageInfo.startCursor shouldBe empty
+      connection.pageInfo.endCursor shouldBe empty
+      connection.pageInfo.hasNextPage shouldBe false
+      connection.pageInfo.hasPreviousPage shouldBe true
     }
   }
 }

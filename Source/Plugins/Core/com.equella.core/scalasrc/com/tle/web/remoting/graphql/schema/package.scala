@@ -132,7 +132,9 @@ package object schema {
         val pageInfo = PageInfo(
           startCursor = edges.headOption.map(_.encodeCursor),
           endCursor = edges.lastOption.map(_.encodeCursor),
-          hasNextPage = offset + limit < count,
+          // If the backing count and fetched page disagree, an empty page must not advertise
+          // forward continuation; otherwise Relay clients may continue querying indefinitely.
+          hasNextPage = edges.nonEmpty && offset + limit < count,
           hasPreviousPage = offset > 0
         )
         buildConnection(pageInfo, edges)
