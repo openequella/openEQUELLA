@@ -20,8 +20,6 @@ package com.tle.web.remoting.graphql.schema.conversion
 
 import com.tle.common.security.{TargetList, TargetListEntry}
 
-import scala.jdk.CollectionConverters._
-
 /** Converter for transforming GraphQL access control entries to the security [[TargetList]]
   * structure.
   *
@@ -40,7 +38,7 @@ object TargetListEntryConverter {
   def toTargetList(
       from: List[com.tle.web.remoting.graphql.schema.types.TargetListEntry]
   ): TargetList =
-    new TargetList(from.map(toTargetListEntry).asJava)
+    new TargetList(from.map(toTargetListEntry).asArrayList)
 
   private def toTargetListEntry(
       from: com.tle.web.remoting.graphql.schema.types.TargetListEntry

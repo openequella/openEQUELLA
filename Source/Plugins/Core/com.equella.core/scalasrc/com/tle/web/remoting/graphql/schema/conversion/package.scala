@@ -53,4 +53,58 @@ package object conversion {
       */
     def convert[B](f: A => B): B = f(a)
   }
+
+  /** Extension method to convert Scala iterables to mutable Java [[java.util.ArrayList]]s.
+    *
+    * oEQ Java beans use [[java.util.ArrayList]] for their collection fields, including those stored
+    * via `xstream_immutable` Hibernate types. Using `.asJava` from
+    * [[scala.jdk.CollectionConverters]] returns a Scala-backed view that XStream cannot safely
+    * serialise. This extension produces a proper mutable [[java.util.ArrayList]] instead.
+    *
+    * @param iterable
+    *   the Scala iterable to convert
+    * @tparam A
+    *   the element type
+    */
+  implicit class ArrayListConverter[A](private val iterable: Iterable[A]) extends AnyVal {
+
+    /** Converts this Scala iterable to a new mutable [[java.util.ArrayList]].
+      *
+      * @return
+      *   a new mutable [[java.util.ArrayList]] containing all elements
+      */
+    def asArrayList: java.util.ArrayList[A] = {
+      val list = new java.util.ArrayList[A](iterable.size)
+      iterable.foreach(list.add)
+      list
+    }
+  }
+
+  /** Extension method to convert Scala maps to mutable Java [[java.util.HashMap]]s.
+    *
+    * oEQ Java beans use [[java.util.HashMap]] for their map fields, including those stored via
+    * `xstream_immutable` Hibernate types. Using `.asJava` from [[scala.jdk.CollectionConverters]]
+    * returns a Scala-backed view that XStream cannot safely serialise. This extension produces a
+    * proper mutable [[java.util.HashMap]] instead.
+    *
+    * @param map
+    *   the Scala map to convert
+    * @tparam K
+    *   the key type
+    * @tparam V
+    *   the value type
+    */
+  implicit class HashMapConverter[K, V](private val map: Map[K, V]) extends AnyVal {
+
+    /** Converts this Scala [[Map]] to a new mutable [[java.util.HashMap]].
+      *
+      * @return
+      *   a new mutable [[java.util.HashMap]] containing all key-value pairs
+      */
+    def asHashMap: java.util.HashMap[K, V] = {
+      val hashMap = new java.util.HashMap[K, V](map.size)
+      map.foreach { case (k, v) => hashMap.put(k, v) }
+      hashMap
+    }
+  }
 }

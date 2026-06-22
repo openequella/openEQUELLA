@@ -24,6 +24,7 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.CollectionProvider
+import com.tle.web.remoting.graphql.schema.CollectionGraphQLInstances._
 import com.tle.web.remoting.graphql.schema.types.{
   BaseEntityReference,
   CollectionDefinition,
@@ -58,7 +59,8 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       delete =
         args => collectionProvider.deleteCollection(args.id, args.checkReferences.getOrElse(true)),
       importCollection = args => collectionProvider.importCollection(args.zipBase64),
-      cancelEdit = args => collectionProvider.cancelEdit(args.id, args.force.getOrElse(false))
+      cancelEdit = args => collectionProvider.cancelEdit(args.id, args.force.getOrElse(false)),
+      stopEdit = args => collectionProvider.stopEdit(args.details, args.unlock)
     )
   )
 
@@ -114,7 +116,11 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       @GQLDescription(
         "Cancel editing a collection - discarding any changes made and unlocking the collection."
       )
-      cancelEdit: CollectionCancelEditArgs => ResultWithErrors[Unit]
+      cancelEdit: CollectionCancelEditArgs => ResultWithErrors[Unit],
+      @GQLDescription(
+        "Stop editing a collection - saving changes and optionally unlocking."
+      )
+      stopEdit: CollectionStopEditArgs => ResultWithErrors[CollectionDefinition]
   )
 
   case class CollectionStartEditArgs(
@@ -148,5 +154,14 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
         "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided."
       )
       force: Option[Boolean] = None
+  )
+
+  case class CollectionStopEditArgs(
+      @GQLDescription("Details of the collection to save")
+      details: EditableEntity[CollectionDefinition],
+      @GQLDescription(
+        "Whether to unlock the collection after saving, if false, keeps it locked for continued editing"
+      )
+      unlock: Boolean
   )
 }

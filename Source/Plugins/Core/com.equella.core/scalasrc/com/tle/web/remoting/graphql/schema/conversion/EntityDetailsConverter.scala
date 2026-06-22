@@ -53,7 +53,7 @@ object EntityDetailsConverter {
     )
   }
 
-  private def toLanguageBundle(
+  private[conversion] def toLanguageBundle(
       from: LanguageBundle
   ): com.tle.beans.entity.LanguageBundle = {
     val to = new com.tle.beans.entity.LanguageBundle()
@@ -62,7 +62,7 @@ object EntityDetailsConverter {
     val stringsMap = from.strings.map { s =>
       s.locale -> toLanguageString(s, to)
     }.toMap
-    to.setStrings(stringsMap.asJava)
+    to.setStrings(stringsMap.asHashMap)
 
     to
   }
