@@ -96,7 +96,6 @@ class AutoAssignSimpleTest extends AbstractCleanupTest {
     withLoggedInUser(moderatorB) {
       val view = openModerationViewForCurrentUser(itemName)
       assertAssignedToMe(view)
-      view.accept()
     }
   }
 
