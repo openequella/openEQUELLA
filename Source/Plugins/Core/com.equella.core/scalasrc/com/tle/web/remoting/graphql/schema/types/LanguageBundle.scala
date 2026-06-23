@@ -81,7 +81,13 @@ object LanguageBundle {
       }
 
     if (result.isEmpty) {
-      LOGGER.debug("Dropping invalid or null LanguageString entry from bundle")
+      val context = Option(langString)
+        .map(ls =>
+          s"id=${ls.getId}, locale=${Option(ls.getLocale).getOrElse("null")}, text=${Option(ls.getText)
+              .fold("null")(t => s"'${t.take(20)}...'")}"
+        )
+        .getOrElse("null entry")
+      LOGGER.debug(s"Dropping invalid LanguageString ($context) from bundle")
     }
     result
   }
