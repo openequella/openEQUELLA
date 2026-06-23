@@ -2,6 +2,7 @@ package io.github.openequella.pages.search;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.SelenideElement;
@@ -152,6 +153,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   /** Perform a new search. */
   public void newSearch() {
     newSearchButton.click();
+    waitForSearchCompleted();
   }
 
   /**
@@ -601,7 +603,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    * @param linkTitle The title of the link.
    */
   public void selectLink(String linkTitle) {
-    findLink(linkTitle).click();
+    $(By.linkText(linkTitle)).shouldBe(visible).click();
   }
 
   /**

@@ -17,10 +17,11 @@
  */
 import {
   Alert,
+  Box,
   Button,
   CircularProgress,
   debounce,
-  Grid,
+  Stack,
   TextField,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
@@ -198,25 +199,23 @@ export const PortletQuickSearch = ({
         <Alert severity="error">{strings.failedToInitialise}</Alert>
       ),
       loaded: () => (
-        <Grid container direction="column" spacing={2}>
-          <Grid>
-            <TextField
-              label={strings.queryField}
-              value={query}
-              onChange={handleQueryChange}
-              onKeyDown={handleKeyDown}
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-          </Grid>
-          <Grid>{searchResults()}</Grid>
-          <Grid display="flex" justifyContent="center">
+        <Stack spacing={2}>
+          <TextField
+            label={strings.queryField}
+            value={query}
+            onChange={handleQueryChange}
+            onKeyDown={handleKeyDown}
+            variant="outlined"
+            size="small"
+            fullWidth
+          />
+          {searchResults()}
+          <Box sx={{ justifyContent: "center", display: "flex" }}>
             <Button variant="outlined" onClick={goToSearchPage}>
               {strings.actionShowAll}
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
+        </Stack>
       ),
       // In theory this state shouldn't be seen because we show a loading state in the PortletItem
       _: () => <div>Loading...</div>,

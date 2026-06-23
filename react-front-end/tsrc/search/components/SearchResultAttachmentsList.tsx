@@ -399,7 +399,7 @@ export const SearchResultAttachmentsList = ({
   );
 
   const accordionSummaryContent = inSelectionSession ? (
-    <Grid container alignItems="center">
+    <Grid container sx={{ alignItems: "center" }}>
       <Grid>{accordionText}</Grid>
       <Grid>
         {isItemLive && atLeastOneIntactAttachment && !inSkinny && (
@@ -467,7 +467,7 @@ export const SearchResultAttachmentsList = ({
         onClick={(event) => handleAttachmentPanelClick(event)}
       >
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2} sx={{ alignItems: "center" }}>
             <Grid>{attachFileBadge(keywordFoundInAttachment)}</Grid>
             <Grid>{accordionSummaryContent}</Grid>
           </Grid>

@@ -15,17 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CircularProgress, Stack } from "@mui/material";
-import * as React from "react";
 
-/**
- * A rotating circle placed in the middle of the parent component.
- * Used to indicate that the page is currently loading or busy.
- */
-const LoadingCircle = () => (
-  <Stack sx={{ alignItems: "center" }}>
-    <CircularProgress />
-  </Stack>
-);
+package com.tle.common.util
 
-export default LoadingCircle;
+import sttp.model.Uri
+
+object HttpUtils {
+
+  val HTTP = "http"
+
+  val HTTPS = "https"
+
+  /** Safely checks if a given string is a valid, absolute HTTP or HTTPS URL.
+    *
+    * To return true, the URL string must:
+    *   1. Be successfully parsed without errors.
+    *   2. Have a scheme of either "http" or "https".
+    *   3. Contain a defined host (e.g., "example.com").
+    *
+    * @param url
+    *   The URL string to validate.
+    * @return
+    *   True if the string meets all absolute HTTP/HTTPS criteria, false otherwise.
+    */
+  def isAbsoluteHttpUrl(url: String): Boolean =
+    Uri
+      .parse(url)
+      .toOption
+      .exists(u =>
+        u.scheme.exists(Set(HTTP, HTTPS)) &&
+          u.host.isDefined
+      )
+}

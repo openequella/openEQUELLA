@@ -5960,6 +5960,11 @@
     <parameter id="settingsClass" value="com.tle.core.usermanagement.standard.logon.NormalLogonFilter" />
     <parameter id="order" value="500" />
   </extension>
+  <extension plugin-id="com.tle.core.usermanagement" point-id="logonFilter" id="oidc">
+    <parameter id="bean" value="bean:com.tle.integration.oidc.OidcLogonFilter" />
+    <parameter id="settingsClass" value="com.tle.integration.oidc.OidcLogonFilter" />
+    <parameter id="order" value="600" />
+  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="ldapInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteLDAPService" />
     <parameter id="bean" value="bean:com.tle.core.usermanagement.standard.service.LDAPService" />

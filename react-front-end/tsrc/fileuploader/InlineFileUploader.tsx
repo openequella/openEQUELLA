@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { Box, Stack } from "@mui/material";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -356,24 +356,16 @@ export const InlineFileUploader = ({
   };
 
   return (
-    <Grid
-      container
-      id={`${ctrlId}universalresources`}
-      className="universalresources"
-      direction="column"
-      wrap="nowrap"
-    >
-      <Grid>
-        <UploadList
-          files={[...uploadedFiles, ...uploadingFiles]}
-          buildActions={buildActions}
-          noFileSelectedText={strings.none}
-        />
-      </Grid>
+    <Stack id={`${ctrlId}universalresources`} className="universalresources">
+      <UploadList
+        files={[...uploadedFiles, ...uploadingFiles]}
+        buildActions={buildActions}
+        noFileSelectedText={strings.none}
+      />
 
       {editable &&
         (maxAttachments === null || attachmentCount < maxAttachments) && (
-          <Grid>
+          <Box>
             <AddResourceButton />
             {canUploadFile && (
               <div {...getRootProps({ className: "dropzone" })}>
@@ -381,8 +373,8 @@ export const InlineFileUploader = ({
                 <div className="filedrop">{strings.drop}</div>
               </div>
             )}
-          </Grid>
+          </Box>
         )}
-    </Grid>
+    </Stack>
   );
 };

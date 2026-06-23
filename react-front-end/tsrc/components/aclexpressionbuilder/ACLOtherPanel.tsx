@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as t from "io-ts";
 import {
+  Box,
   Button,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
+  Stack,
   Typography,
 } from "@mui/material";
-import * as E from "../../util/Either.extended";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import * as t from "io-ts";
 import * as React from "react";
 import { ReactNode, useCallback, useState } from "react";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
@@ -44,6 +44,7 @@ import {
 import { findGroupById } from "../../modules/GroupModule";
 import { findRoleById } from "../../modules/RoleModule";
 import { findUserById } from "../../modules/UserModule";
+import * as E from "../../util/Either.extended";
 import { languageStrings } from "../../util/langstrings";
 import { simpleUnionMatch } from "../../util/match";
 import IPv4CIDRInput from "../IPv4CIDRInput";
@@ -206,13 +207,11 @@ const ACLOtherPanel = ({
     title: string;
     children?: ReactNode;
   }) => (
-    <Grid container direction="column" rowSpacing={2}>
-      <Grid>
-        <Typography>{title}</Typography>
-      </Grid>
+    <Stack spacing={2}>
+      <Typography>{title}</Typography>
 
-      {children && <Grid>{children}</Grid>}
-    </Grid>
+      {children && <Box>{children}</Box>}
+    </Stack>
   );
 
   /**
@@ -251,8 +250,8 @@ const ACLOtherPanel = ({
   );
 
   return (
-    <Grid container direction="column" spacing={1}>
-      <Grid>
+    <Stack spacing={1}>
+      <Box>
         <FormControl variant="outlined">
           <InputLabel>{typeLabel}</InputLabel>
           <Select
@@ -266,17 +265,15 @@ const ACLOtherPanel = ({
             )}
           </Select>
         </FormControl>
-      </Grid>
+      </Box>
       {/*The padding aims to align with the following `add` button's text.*/}
-      <Grid container style={{ padding: 25 }}>
-        {buildControls()}
-      </Grid>
-      <Grid>
+      <Box style={{ padding: 25 }}>{buildControls()}</Box>
+      <Box>
         <Button color="primary" onClick={handleAddButtonClicked}>
           {languageStrings.common.action.add}
         </Button>
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   );
 };
 

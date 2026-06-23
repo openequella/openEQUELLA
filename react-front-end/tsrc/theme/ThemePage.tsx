@@ -228,7 +228,12 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
 
   const LogoPicker = () => {
     return (
-      <Grid container spacing={2} direction="row" justifyContent="flex-end">
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        sx={{ justifyContent: "flex-end" }}
+      >
         <Grid>
           <Typography className={classes.fileName} color="textSecondary">
             {logoSettings.fileName ?? ""}

@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "react-dom": "^18",
-    "swagger-ui": "5.32.2"
+    "swagger-ui": "5.32.6"
   },
   "devDependencies": {
-    "webpack": "5.106.2",
-    "webpack-cli": "7.0.2"
+    "webpack": "5.107.2",
+    "webpack-cli": "7.0.3"
   }
 }

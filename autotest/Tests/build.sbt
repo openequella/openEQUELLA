@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.14.12"
 val http4sVersion = "0.23.34"
 val catsVersion   = "2.13.0"
-val cxfVersion    = "3.6.10"
+val cxfVersion    = "3.6.11"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.4" cross CrossVersion.full)
 
@@ -23,8 +23,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
   "org.apache.commons"        % "commons-lang3"            % "3.20.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "4.43.0",
-  "com.codeborne"             % "selenide"                 % "7.16.0",
+  "org.seleniumhq.selenium"   % "selenium-java"            % "4.44.0",
+  "com.codeborne"             % "selenide"                 % "7.16.2",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
   "xalan"                     % "xalan"                    % "2.7.3",
@@ -47,7 +47,7 @@ libraryDependencies ++= Seq(
   "com.unboundid"  % "unboundid-ldapsdk" % "7.0.4",
   jacksonDataBind,
   jacksonDataFormatYaml,
-  "com.auth0" % "jwks-rsa" % "0.23.1"
+  "com.auth0" % "jwks-rsa" % "0.24.1"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

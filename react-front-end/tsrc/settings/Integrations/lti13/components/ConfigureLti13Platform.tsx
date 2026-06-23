@@ -456,7 +456,7 @@ const ConfigureLti13Platform = ({
 
           <Divider variant="middle" />
 
-          <Grid mt={2}>
+          <Grid sx={{ mt: 2 }}>
             <AccessControlSection
               aclExpression={aclExpression}
               setAclExpression={setAclExpression}
@@ -472,7 +472,7 @@ const ConfigureLti13Platform = ({
 
           <Divider variant="middle" />
 
-          <Grid mt={2}>
+          <Grid sx={{ mt: 2 }}>
             <RoleMappingsSection
               instructorRoles={selectedInstructorRoles}
               setInstructorRoles={setSelectedInstructorRoles}
@@ -486,7 +486,7 @@ const ConfigureLti13Platform = ({
             <>
               <Divider variant="middle" />
 
-              <Grid mt={2}>{KeyRotationSection}</Grid>
+              <Grid sx={{ mt: 2 }}>{KeyRotationSection}</Grid>
             </>
           )}
         </CardContent>

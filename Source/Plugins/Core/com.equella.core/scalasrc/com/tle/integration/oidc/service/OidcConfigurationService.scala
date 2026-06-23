@@ -18,7 +18,7 @@
 
 package com.tle.integration.oidc.service
 
-import com.tle.integration.oidc.idp.{IdentityProvider, IdentityProviderDetails}
+import com.tle.integration.oidc.idp.{CommonDetails, IdentityProvider, IdentityProviderDetails}
 
 /** Service to manage the persistence of Identity Provider configurations.
   */
@@ -30,6 +30,23 @@ trait OidcConfigurationService {
     *   Either the configuration or an error describing why failed to get the configuration
     */
   def get: Either[Throwable, IdentityProviderDetails]
+
+  /** Retrieve the common details of the Identity Provider, specifically for Seamless SSO. It will
+    * only return the details if the configuration is both present, enabled, and Seamless SSO is
+    * enabled.
+    *
+    * @return
+    *   An Option containing CommonDetails if a valid configuration is found and enabled for
+    *   Seamless SSO, or None otherwise.
+    */
+
+  def getForSeamlessSso: Option[CommonDetails]
+
+  /** Check if Seamless SSO is enabled in the current Identity Provider configuration.
+    * @return
+    *   `true` if Seamless SSO is enabled, `false` otherwise.
+    */
+  def isSeamlessSsoEnabled: Boolean
 
   /** Validate and save an Identity Provider configuration. If the validation fails, returns a
     * message listing all the invalid values. If the validation passes, save the string

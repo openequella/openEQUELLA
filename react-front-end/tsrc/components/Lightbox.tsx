@@ -260,7 +260,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             <CloseIcon />
           </TooltipIconButton>
         </Toolbar>
-        <Grid container alignItems="center" size="grow">
+        <Grid container size="grow" sx={{ alignItems: "center" }}>
           <Grid size={1}>
             {onPrevious && (
               <TooltipIconButton
@@ -274,10 +274,10 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
               </TooltipIconButton>
             )}
           </Grid>
-          <Grid container justifyContent="center" size={10}>
+          <Grid container size={10} sx={{ justifyContent: "center" }}>
             <Grid>{content}</Grid>
           </Grid>
-          <Grid container justifyContent="flex-end" size={1}>
+          <Grid container size={1} sx={{ justifyContent: "flex-end" }}>
             <Grid>
               {onNext && (
                 <TooltipIconButton

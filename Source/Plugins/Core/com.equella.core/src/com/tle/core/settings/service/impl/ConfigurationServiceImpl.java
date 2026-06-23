@@ -20,8 +20,8 @@ package com.tle.core.settings.service.impl;
 
 import com.dytech.common.net.Proxy;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheLoader;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -50,7 +50,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import org.hibernate.Criteria;
@@ -117,7 +116,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
             new CacheLoader<Institution, Cache<Object, Object>>() {
               @Override
               public Cache<Object, Object> load(Institution key) {
-                return CacheBuilder.newBuilder().concurrencyLevel(12).build();
+                return Caffeine.newBuilder().build();
               }
             });
   }
@@ -374,7 +373,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
    * Retrieves a value from the institution-scoped cache, loading it from the database via {@code
    * loader} on a cache miss.
    *
-   * <p>Guava's {@link Cache#get(Object, java.util.concurrent.Callable)} handles concurrent access
+   * <p>Caffeine's {@link Cache#get(Object, java.util.function.Function)} handles concurrent access
    * atomically for a given key: only one thread will execute the loader for a given key, and
    * concurrent callers will block until the value is available. This replaces a manual
    * double-checked locking (DCL) pattern.
@@ -382,9 +381,9 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
   @SuppressWarnings("unchecked")
   private <T> T getFromCache(Object key, String property, final CacheLoader<String, T> loader) {
     try {
-      Object result = cache.getCache().get(key, () -> loadFromDb(property, loader));
-      return result.equals(CACHED_NULL) ? null : (T) result;
-    } catch (ExecutionException e) {
+      Object result = cache.getCache().get(key, k -> loadFromDb(property, loader));
+      return result == null || result.equals(CACHED_NULL) ? null : (T) result;
+    } catch (RuntimeException e) {
       throw new RuntimeApplicationException(
           String.format(
               "Failed to load configuration from cache [key=%s, property=%s]", key, property),

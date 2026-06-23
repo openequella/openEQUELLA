@@ -7,8 +7,10 @@ import com.tle.webtests.pageobject.AbstractPage
 import com.tle.webtests.test.files.Attachments
 import org.apache.commons.httpclient.methods._
 import org.apache.commons.httpclient.{HttpMethod, HttpStatus, NameValuePair}
+import org.apache.hc.core5.http.HttpHeaders
 import org.testng.Assert._
 import org.testng.annotations.{DataProvider, Test}
+import org.testng.asserts.SoftAssert
 
 import java.io.File
 
@@ -61,7 +63,7 @@ class StagingApiTest extends AbstractRestApiTest {
     assertEquals(StagingApi.createStaging().status, HttpStatus.SC_FORBIDDEN)
     assertEquals(StagingApi.getStaging(stagingUuid).status, HttpStatus.SC_FORBIDDEN)
     assertEquals(
-      StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file, None).status,
+      StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file).status,
       HttpStatus.SC_FORBIDDEN
     )
     assertEquals(StagingApi.headFile(stagingUuid, AVATAR_FILENAME).status, HttpStatus.SC_FORBIDDEN)
@@ -91,7 +93,7 @@ class StagingApiTest extends AbstractRestApiTest {
     val encodedTargetPath = "folder/" + URLUtils.urlEncode(TEST_FILENAME, false)
 
     assertEquals(
-      StagingApi.uploadFile(stagingUuid, encodedTargetPath, file, None).status,
+      StagingApi.uploadFile(stagingUuid, encodedTargetPath, file).status,
       HttpStatus.SC_OK
     )
 
@@ -116,11 +118,49 @@ class StagingApiTest extends AbstractRestApiTest {
     assertTrue(findFileInStaging(response, "unzipped/ConditionsOfUse.html").isDefined)
   }
 
+  @Test(description =
+    "Verify that the If-None-Match header correctly prevents existing files from being overwritten"
+  )
+  def conditionalFileOverwriteTest(): Unit = withStaging { stagingUuid =>
+    val file     = getTestFile(AVATAR_FILENAME)
+    val filename = "conditional-test.png"
+
+    assertEquals(
+      StagingApi.uploadFile(stagingUuid, filename, file).status,
+      HttpStatus.SC_OK,
+      "Initial file upload should succeed"
+    )
+    val currentEtag = findFileInStaging(StagingApi.getStaging(stagingUuid), filename).get.etag
+
+    val testingScenarios = List(
+      ("Wildcard (*) rejection", Some("*"), HttpStatus.SC_PRECONDITION_FAILED),
+      ("Exact matching ETag rejection", Some(currentEtag), HttpStatus.SC_PRECONDITION_FAILED),
+      (
+        "Unquoted matching ETag rejection",
+        Some(currentEtag.replace("\"", "")),
+        HttpStatus.SC_PRECONDITION_FAILED
+      ),
+      ("Empty string header allows overwrite", Some(""), HttpStatus.SC_OK),
+      ("Mismatching ETag allows overwrite", Some("fake-different-etag"), HttpStatus.SC_OK),
+      ("Omitted header allows overwrite", None, HttpStatus.SC_OK)
+    )
+
+    val softAssert = new SoftAssert()
+
+    testingScenarios.foreach { case (description, headerValue, expectedStatus) =>
+      val actualStatus =
+        StagingApi.uploadFile(stagingUuid, filename, file, ifNoneMatch = headerValue).status
+      softAssert.assertEquals(actualStatus, expectedStatus, s"Scenario failed: $description")
+    }
+
+    softAssert.assertAll()
+  }
+
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
     assertEquals(
       StagingApi
-        .uploadFile(stagingUuid, TEST_TXT_FILENAME, getTestFile(AVATAR_FILENAME), None)
+        .uploadFile(stagingUuid, TEST_TXT_FILENAME, getTestFile(AVATAR_FILENAME))
         .status,
       HttpStatus.SC_OK
     )
@@ -138,7 +178,7 @@ class StagingApiTest extends AbstractRestApiTest {
   def headFileTest(): Unit = withStaging { stagingUuid =>
     val file = getTestFile(AVATAR_FILENAME)
     assertEquals(
-      StagingApi.uploadFile(stagingUuid, AVATAR_FILENAME, file, None).status,
+      StagingApi.uploadFile(stagingUuid, AVATAR_FILENAME, file).status,
       HttpStatus.SC_OK
     )
 
@@ -294,11 +334,17 @@ class StagingApiTest extends AbstractRestApiTest {
         stagingUuid: String,
         targetPath: String,
         file: File,
-        unzipTo: Option[String]
+        unzipTo: Option[String] = None,
+        ifNoneMatch: Option[String] = None
     ): ApiResponse[Option[Unit]] = {
       val method = new PutMethod(stagingUrl(stagingUuid, targetPath))
       method.setRequestEntity(new FileRequestEntity(file, "application/octet-stream"))
+
       unzipTo.foreach(u => method.setQueryString(Array(new NameValuePair("unzipto", u))))
+      ifNoneMatch.foreach(headerVal =>
+        method.setRequestHeader(HttpHeaders.IF_NONE_MATCH, headerVal)
+      )
+
       execute(method)(_ => ())
     }
 

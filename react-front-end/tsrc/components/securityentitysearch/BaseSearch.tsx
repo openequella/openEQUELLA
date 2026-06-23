@@ -15,7 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import {
+  Box,
   Button,
   CircularProgress,
   Grid,
@@ -23,12 +26,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Stack,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
-import ErrorOutline from "@mui/icons-material/ErrorOutline";
-import InfoIcon from "@mui/icons-material/Info";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
@@ -38,11 +40,11 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
+import * as S from "fp-ts/string";
 import * as TASK from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import * as RSET from "fp-ts/ReadonlySet";
-import * as S from "fp-ts/string";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 import {
@@ -51,10 +53,10 @@ import {
 } from "../../modules/ACLEntityModule";
 import {
   eqGroupById,
+  findGroupsByIds,
   groupIds,
   groupOrd,
   searchGroups,
-  findGroupsByIds,
 } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import { CheckboxList } from "../CheckboxList";
@@ -505,7 +507,9 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const warningMessage = (
     <ListItem>
       <ListItemIcon>
-        <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
+        <ErrorOutlineOutlinedIcon
+          color={errorMessage ? "secondary" : "inherit"}
+        />
       </ListItemIcon>
       <ListItemText
         secondary={
@@ -604,7 +608,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     ) : undefined;
 
   const spinner = (
-    <Grid container justifyContent="center">
+    <Grid container sx={{ justifyContent: "center" }}>
       <Grid>
         <CircularProgress />
       </Grid>
@@ -612,61 +616,59 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   );
 
   return showGroupFilterSearch ? (
-    <Grid container direction="column">
-      <Grid>
-        <GroupSearch
-          id="GroupFilter"
-          mode={{
-            type: "checkbox",
-            onChange: setGroupFilterSearchGroupDetails,
-            selections: groupFilterSearchGroupDetails,
-            selectButton: {
-              disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
-              onClick: () => {
-                setGroupDetails(groupFilterSearchGroupDetails);
-                setShowGroupFilterSearch(false);
-              },
-            },
-            enableMultiSelection: true,
-          }}
-          strings={languageStrings.groupSearchComponent}
-          onCancel={() => {
-            setGroupFilterSearchGroupDetails(groupDetails);
+    <GroupSearch
+      id="GroupFilter"
+      mode={{
+        type: "checkbox",
+        onChange: setGroupFilterSearchGroupDetails,
+        selections: groupFilterSearchGroupDetails,
+        selectButton: {
+          disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
+          onClick: () => {
+            setGroupDetails(groupFilterSearchGroupDetails);
             setShowGroupFilterSearch(false);
-          }}
-          listHeight={listHeight}
-          groupFilter={RSET.empty}
-          groupFilterEditable={false}
-          search={groupSearch}
-          showHelpText
-        />
-      </Grid>
-    </Grid>
+          },
+        },
+        enableMultiSelection: true,
+      }}
+      strings={languageStrings.groupSearchComponent}
+      onCancel={() => {
+        setGroupFilterSearchGroupDetails(groupDetails);
+        setShowGroupFilterSearch(false);
+      }}
+      listHeight={listHeight}
+      groupFilter={RSET.empty}
+      groupFilterEditable={false}
+      search={groupSearch}
+      showHelpText
+    />
   ) : (
-    <Grid id={genId()} container direction="column" spacing={1}>
+    <Stack id={genId()} spacing={1}>
       {showHelpText && (
-        <Grid>
+        <Box>
           <Typography variant="h6" gutterBottom>
             {helpTitle}
           </Typography>
           <Typography variant="body1">{helpDesc}</Typography>
-        </Grid>
+        </Box>
       )}
 
-      <Grid>{queryBar}</Grid>
+      <Box>{queryBar}</Box>
       {groupFilterContent()}
-      <Grid>{showSpinner ? spinner : itemList()}</Grid>
-      <Grid container direction="row">
-        <Grid container size={6}>
-          {isItemFound && selectAllButton()}
-          {isItemFound && clearAllButton()}
-        </Grid>
-        <Grid container size={6} direction="row" justifyContent="flex-end">
+      <Box>{showSpinner ? spinner : itemList()}</Box>
+      <Grid container>
+        {isItemFound && (
+          <Grid container size={6}>
+            {selectAllButton()}
+            {clearAllButton()}
+          </Grid>
+        )}
+        <Grid container size="grow" sx={{ justifyContent: "flex-end" }}>
           {selectButtonElement()}
           {cancelButton()}
         </Grid>
       </Grid>
-    </Grid>
+    </Stack>
   );
 };
 

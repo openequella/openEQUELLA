@@ -279,7 +279,7 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
           <Divider variant="middle" />
 
           {/* reuse GeneralDetailsSection to display the Platform selector and the API details section. */}
-          <Grid mt={2}>
+          <Grid sx={{ mt: 2 }}>
             <GeneralDetailsSection
               title={apiDetailsTitle}
               desc={apiDetailsDesc}
@@ -293,7 +293,7 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
           <Divider variant="middle" />
 
           {/* Role mappings section. */}
-          <Grid mt={2}>
+          <Grid sx={{ mt: 2 }}>
             <SettingsList subHeading={mappingsTitle}>
               <SelectRoleControl
                 ariaLabel={`${editLabel} ${defaultRoleTitle}`}

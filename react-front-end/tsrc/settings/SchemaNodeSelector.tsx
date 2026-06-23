@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
+import { Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import Add from "@mui/icons-material/Add";
-import Remove from "@mui/icons-material/Remove";
+import * as S from "fp-ts/string";
+import * as React from "react";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
-import { Button, Grid } from "@mui/material";
 import { languageStrings } from "../util/langstrings";
 
 const PREFIX = "SchemaNodeSelector";
@@ -111,7 +112,12 @@ export default function SchemaNodeSelector({
   return (
     <Root>
       {expandControls && (
-        <Grid container direction="row" wrap="nowrap" justifyContent="flex-end">
+        <Grid
+          container
+          direction="row"
+          wrap="nowrap"
+          sx={{ justifyContent: "flex-end" }}
+        >
           <Grid>
             <Button
               className={classes.button}
@@ -142,6 +148,16 @@ export default function SchemaNodeSelector({
         expandedItems={expanded}
         onExpandedItemsChange={(_, paths) => setExpanded(paths)}
         onItemSelectionToggle={(_, nodePath) => {
+          // TODO: OEQ-2939 - Remove temporary workaround once the MUI X TreeView selection bug is fixed.
+          // Workaround after MUI v9 update bug: clicking the expand/collapse icon sometimes incorrectly
+          // triggers this callback with an array of expanded paths instead of the item's string ID.
+          if (!S.isString(nodePath)) {
+            console.warn(
+              "SchemaNodeSelector received non-string nodePath:",
+              nodePath,
+            );
+            return;
+          }
           setSelected(nodePath);
           setSelectedNode(nodePath);
         }}

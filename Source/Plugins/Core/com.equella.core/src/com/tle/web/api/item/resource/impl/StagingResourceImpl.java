@@ -19,11 +19,8 @@
 package com.tle.web.api.item.resource.impl;
 
 import com.dytech.edge.common.FileInfo;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
@@ -47,6 +44,7 @@ import com.tle.web.remoting.rest.service.UrlLinkService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,7 +52,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -63,13 +60,15 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
-import org.jboss.resteasy.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +151,7 @@ public class StagingResourceImpl implements StagingResource {
       final String filePath = PathUtils.filePath(currentPath, filename);
       try {
         String md5CheckSum = fileSystemService.getMD5Checksum(fileHandle, filePath);
-        blobBean.setEtag(toQuotedEtag(md5CheckSum));
+        blobBean.setEtag(new EntityTag(md5CheckSum).toString());
       } catch (IOException e) {
         // Whatever
       }
@@ -187,41 +186,24 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   @Override
-  public Response getFile(HttpHeaders headers, String uuid, String filepath) {
+  public Response getFile(Request request, HttpHeaders headers, String uuid, String filepath) {
     stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.ensureFileExists(uuid, filepath);
 
     try {
-      final String etag = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
-      if (etag != null) {
-        String md5Checksum = fileSystemService.getMD5Checksum(stagingFile, filepath);
-        if (Objects.equals(etag, toQuotedEtag(md5Checksum))) {
-          return Response.notModified().tag(md5Checksum).build();
-        }
-      }
-      final String modifiedSince = headers.getHeaderString(HttpHeaders.IF_MODIFIED_SINCE);
-      if (modifiedSince != null) {
-        final Date lastModified = new Date(fileSystemService.lastModified(stagingFile, filepath));
-        if (Objects.equals(modifiedSince, DateUtil.formatDate(lastModified))) {
-          return Response.notModified().build();
-        }
+      RequestContext ctx = new RequestContext(request, headers, stagingFile, filepath);
+
+      // Declarative validation chain: ETag check takes priority
+      Optional<ResponseBuilder> preconditionResponse =
+          checkEtagPrecondition(ctx).or(() -> checkModifiedSincePrecondition(ctx));
+
+      if (preconditionResponse.isPresent()) {
+        return preconditionResponse.get().build();
       }
 
-      final InputStream input = fileSystemService.read(stagingFile, filepath);
-      final ResponseBuilder responseBuilder = makeResponseHeaders(uuid, filepath);
-      return responseBuilder
-          .entity(
-              new StreamingOutput() {
-                @Override
-                public void write(OutputStream output) throws IOException, WebApplicationException {
-                  try {
-                    ByteStreams.copy(input, output);
-                  } finally {
-                    Closeables.close(input, false);
-                  }
-                }
-              })
+      return makeResponseHeaders(uuid, filepath)
+          .entity((StreamingOutput) output -> streamFileContent(stagingFile, filepath, output))
           .build();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -323,20 +305,24 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response putFile(
+      Request request,
+      HttpHeaders headers,
       String uuid,
       String filepath,
       InputStream data,
       String unzipTo,
-      String copySource,
-      String contentType)
+      String copySource)
       throws IOException {
+    String contentType = headers.getHeaderString(HttpHeaders.CONTENT_TYPE);
+    String ifNoneMatch = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
+
     stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
-    if (fileSystemService.fileExists(stagingFile, filepath)) {
-      throw new BadRequestException("File " + filepath + " already exists in staging area.");
+    if (StringUtils.isNotEmpty(ifNoneMatch)) {
+      validateConditionalWriteRequest(request, stagingFile, filepath);
     }
 
     return switch (resolveAction(copySource, unzipTo)) {
@@ -363,8 +349,8 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private PutAction resolveAction(String copySource, String unzipTo) {
-    boolean isCopy = !Strings.isNullOrEmpty(copySource);
-    boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
+    boolean isCopy = StringUtils.isNotEmpty(copySource);
+    boolean isUnzip = StringUtils.isNotEmpty(unzipTo);
 
     if (isCopy && isUnzip) {
       throw new BadRequestException("copyfrom and unzipto cannot be used together.");
@@ -478,17 +464,17 @@ public class StagingResourceImpl implements StagingResource {
 
   private void validatePartEtag(StagingFile stagingFile, MultipartChunk chunk) throws IOException {
     String expectedEtag = chunk.expectedEtag();
-    if (Strings.isNullOrEmpty(expectedEtag)) {
+    if (StringUtils.isEmpty(expectedEtag)) {
       return;
     }
 
     String actualMd5 = fileSystemService.getMD5Checksum(stagingFile, chunk.chunkPath());
-    String unquotedEtag = expectedEtag.replace("\"", "");
-    if (!unquotedEtag.equals(actualMd5)) {
+    String parsedEtag = EntityTag.valueOf(expectedEtag).getValue();
+    if (!parsedEtag.equals(actualMd5)) {
       throw new BadRequestException(
           String.format(
               "ETag mismatch for part %s. Expected: %s, Actual: %s",
-              chunk.partNumber(), unquotedEtag, actualMd5));
+              chunk.partNumber(), parsedEtag, actualMd5));
     }
   }
 
@@ -502,12 +488,8 @@ public class StagingResourceImpl implements StagingResource {
     }
   }
 
-  private String toQuotedEtag(String md5) {
-    return "\"" + md5 + "\"";
-  }
-
   private void validateCopyRequest(String itemUuid, int itemVersion) {
-    if (Strings.isNullOrEmpty(itemUuid)) {
+    if (StringUtils.isEmpty(itemUuid)) {
       throw new BadRequestException("Item UUID is required");
     }
     if (itemVersion < 1) {
@@ -537,5 +519,70 @@ public class StagingResourceImpl implements StagingResource {
     return Response.created(stagingUri(stagingUuid))
         .header(HEADER_EPS_STAGING_ID, stagingUuid)
         .build();
+  }
+
+  private void validateConditionalWriteRequest(
+      Request request, StagingFile stagingFile, String filepath) throws IOException {
+    if (!fileSystemService.fileExists(stagingFile, filepath)) {
+      return;
+    }
+
+    String fileMd5 = fileSystemService.getMD5Checksum(stagingFile, filepath);
+    EntityTag existingFileEtag = new EntityTag(fileMd5);
+
+    if (request.evaluatePreconditions(existingFileEtag) != null) {
+      throw new WebApplicationException(
+          String.format(
+              "File '%s' already exists and violates the If-None-Match precondition.", filepath),
+          Status.PRECONDITION_FAILED);
+    }
+  }
+
+  private record RequestContext(
+      Request request, HttpHeaders headers, StagingFile stagingFile, String filepath) {}
+
+  @FunctionalInterface
+  interface PreconditionEvaluator {
+    ResponseBuilder evaluate() throws IOException;
+  }
+
+  private Optional<ResponseBuilder> checkPrecondition(
+      RequestContext ctx, String headerName, PreconditionEvaluator evaluator) {
+    if (StringUtils.isEmpty(ctx.headers().getHeaderString(headerName))) {
+      return Optional.empty();
+    }
+    try {
+      return Optional.ofNullable(evaluator.evaluate());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private Optional<ResponseBuilder> checkEtagPrecondition(RequestContext ctx) {
+    return checkPrecondition(
+        ctx,
+        HttpHeaders.IF_NONE_MATCH,
+        () -> {
+          String md5 = fileSystemService.getMD5Checksum(ctx.stagingFile(), ctx.filepath());
+          return ctx.request().evaluatePreconditions(new EntityTag(md5));
+        });
+  }
+
+  private Optional<ResponseBuilder> checkModifiedSincePrecondition(RequestContext ctx) {
+    return checkPrecondition(
+        ctx,
+        HttpHeaders.IF_MODIFIED_SINCE,
+        () -> {
+          Date lastModified =
+              new Date(fileSystemService.lastModified(ctx.stagingFile(), ctx.filepath()));
+          return ctx.request().evaluatePreconditions(lastModified);
+        });
+  }
+
+  private void streamFileContent(StagingFile stagingFile, String filepath, OutputStream output)
+      throws IOException {
+    try (InputStream in = fileSystemService.read(stagingFile, filepath)) {
+      in.transferTo(output);
+    }
   }
 }

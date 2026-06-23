@@ -84,9 +84,8 @@ export const SearchPagination = ({
       <Grid
         container
         direction="row"
-        justifyContent="center"
         wrap="nowrap"
-        style={{ marginLeft: theme.spacing(2) }}
+        sx={{ justifyContent: "center", marginLeft: theme.spacing(2) }}
       >
         <Grid>
           <IconButton

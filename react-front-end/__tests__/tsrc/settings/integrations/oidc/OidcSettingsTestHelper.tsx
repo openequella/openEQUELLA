@@ -15,10 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import userEvent from "@testing-library/user-event";
-import { pipe } from "fp-ts/function";
-import { Router } from "react-router-dom";
-import OidcSettings from "../../../../../tsrc/settings/Integrations/oidc/OidcSettings";
+import * as OEQ from "@openequella/rest-api-client";
 import {
   getByLabelText,
   getByText,
@@ -27,17 +24,20 @@ import {
   RenderResult,
   waitFor,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { createMemoryHistory } from "history";
-import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { Router } from "react-router-dom";
+import * as OidcModule from "../../../../../tsrc/modules/OidcModule";
+import OidcSettings from "../../../../../tsrc/settings/Integrations/oidc/OidcSettings";
 import { platforms } from "../../../../../tsrc/settings/Integrations/oidc/OidcSettingsHelper";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import {
   inputMuiTextFieldByAriaLabel,
   selectOption,
 } from "../../../MuiTestHelpers";
-import * as O from "fp-ts/Option";
-import * as OidcModule from "../../../../../tsrc/modules/OidcModule";
 
 const { save: saveText, select: selectText } = languageStrings.common.action;
 const {
@@ -105,7 +105,7 @@ export const selectPlatform = async (
     }),
   );
 
-  await selectOption(container, `div[aria-label='${label}'] div`, platformText);
+  await selectOption(container, `div[aria-label='${label}']`, platformText);
 };
 
 /**
