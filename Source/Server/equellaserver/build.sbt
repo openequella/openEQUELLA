@@ -103,7 +103,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "org.asynchttpclient" % "async-http-client"    % "2.15.0",
+  "org.asynchttpclient" % "async-http-client"    % "2.16.0",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
   "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
