@@ -47,6 +47,12 @@ import com.tle.web.remoting.graphql.schema.types._
   * Instances are declared bottom-up (leaf types first) so that when a parent type's `gen` macro
   * runs it picks up its children's explicit instances from this same object.
   *
+  * '''IMPORTANT — declaration order matters:''' Each `implicit lazy val` must be declared
+  * ''before'' any other instance that depends on it. If you add a new nested type `Child` used by
+  * `Parent`, declare the `Child` instances above the `Parent` instances. Violating this order
+  * causes the Magnolia macro to fall back to auto-derivation for `Child` (inlining it), which
+  * defeats the purpose of this object and may re-introduce the bytecode size problem.
+  *
   * Importing `CollectionGraphQLInstances._` into [[CollectionSchema]] gives these instances
   * priority over the `auto._` wildcard imports for the covered types. The `auto._` imports remain
   * in place for all other types (simple args, wrapper types, etc.).
