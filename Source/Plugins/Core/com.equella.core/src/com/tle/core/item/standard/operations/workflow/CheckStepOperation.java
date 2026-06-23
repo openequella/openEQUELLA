@@ -53,20 +53,19 @@ public class CheckStepOperation extends TaskOperation {
       return false;
     }
 
-    if (!hasWorkflowChanges(workflow)) {
-      return false;
+    boolean hasWorkflowChanged = processWorkflowTasks(workflow);
+    if (hasWorkflowChanged) {
+      updateModeration();
     }
-
-    updateModeration();
-    return true;
+    return hasWorkflowChanged;
   }
 
   private boolean shouldProcessWorkflow(Item item, Workflow workflow) {
     return workflow != null && item.isModerating();
   }
 
-  private boolean hasWorkflowChanges(Workflow workflow) {
-    return checkAllTasks(workflow.getRoot(), resolveOriginalItemXml());
+  private boolean processWorkflowTasks(Workflow workflow) {
+    return processAllTasks(workflow.getRoot(), resolveOriginalItemXml());
   }
 
   /**
@@ -108,7 +107,7 @@ public class CheckStepOperation extends TaskOperation {
    * task update. Script nodes keep the existing update behavior. The same pre-edit XML is passed
    * through the traversal so each task can resolve its original moderator set consistently.
    */
-  private boolean checkAllTasks(WorkflowNode node, PropBagEx originalItemXml) {
+  private boolean processAllTasks(WorkflowNode node, PropBagEx originalItemXml) {
     if (!shouldProcessNode(node)) {
       return false;
     }
@@ -159,7 +158,7 @@ public class CheckStepOperation extends TaskOperation {
         if (type == WorkflowNode.PARALLEL_TYPE && childStatuses[i] == null) {
           updated |= update(node);
         }
-        updated |= checkAllTasks(child, originalItemXml);
+        updated |= processAllTasks(child, originalItemXml);
       }
     }
     return updated;
