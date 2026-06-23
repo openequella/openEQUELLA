@@ -85,9 +85,11 @@ class TaskStatusTest extends AnyFunSpec with Matchers with TableDrivenPropertyCh
         )
       )
 
-      forAll(scenarios) { (_, input, originalModerators, expected) =>
-        val result = refreshAssignment(input, originalModerators)
-        result shouldBe expected
+      forAll(scenarios) { (description, input, originalModerators, expected) =>
+        withClue(description) {
+          val result = refreshAssignment(input, originalModerators)
+          result shouldBe expected
+        }
       }
     }
   }
