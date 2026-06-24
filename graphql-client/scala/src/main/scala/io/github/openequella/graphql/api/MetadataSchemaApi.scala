@@ -20,9 +20,11 @@ package io.github.openequella.graphql.api
 
 import caliban.client.Operations.RootQuery
 import caliban.client.SelectionBuilder
-import cats.implicits._
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.conversions.MetadataSchemaConversions
+import io.github.openequella.graphql.api.views.conversions.{
+  MetadataSchemaConversions,
+  withConvertedInput
+}
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
@@ -30,7 +32,6 @@ import io.github.openequella.graphql.api.views.{
   MetadataSchemaView
 }
 import io.github.openequella.graphql.client.{
-  EditableEntityMetadataSchemaInput,
   MetadataSchemaMutations,
   MetadataSchemaQueries,
   Mutations,
@@ -301,10 +302,10 @@ object MetadataSchemaApi
   def add(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    withConvertedInput(details) { input =>
-      MetadataSchemaMutations.add(input, lockAfterwards = false) {
+    withConvertedInput(details, MetadataSchemaConversions.toInput) { input =>
+      flatMutate(MetadataSchemaMutations.add(input, lockAfterwards = false) {
         BaseEntityReferenceView.selector
-      }
+      })
     }
 
   /** Add a new metadata schema, keeping it locked for further editing.
@@ -324,10 +325,10 @@ object MetadataSchemaApi
   def addAndLock(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    withConvertedInput(details) { input =>
-      MetadataSchemaMutations.add(input, lockAfterwards = true) {
+    withConvertedInput(details, MetadataSchemaConversions.toInput) { input =>
+      flatMutate(MetadataSchemaMutations.add(input, lockAfterwards = true) {
         BaseEntityReferenceView.selector
-      }
+      })
     }
 
   /** Stop editing a metadata schema, saving changes and keeping it locked.
@@ -347,10 +348,10 @@ object MetadataSchemaApi
   def stopEdit(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaView] =
-    withConvertedInput(details) { input =>
-      MetadataSchemaMutations.stopEdit(input, unlock = false) {
+    withConvertedInput(details, MetadataSchemaConversions.toInput) { input =>
+      flatMutate(MetadataSchemaMutations.stopEdit(input, unlock = false) {
         MetadataSchemaView.selector
-      }
+      })
     }
 
   /** Stop editing a metadata schema, saving changes and releasing the lock.
@@ -370,10 +371,10 @@ object MetadataSchemaApi
   def stopEditAndUnlock(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaView] =
-    withConvertedInput(details) { input =>
-      MetadataSchemaMutations.stopEdit(input, unlock = true) {
+    withConvertedInput(details, MetadataSchemaConversions.toInput) { input =>
+      flatMutate(MetadataSchemaMutations.stopEdit(input, unlock = true) {
         MetadataSchemaView.selector
-      }
+      })
     }
 
   /** Delete a metadata schema.
@@ -431,28 +432,4 @@ object MetadataSchemaApi
       }
     )
 
-  /** Converts a [[MetadataSchemaEditView]] to the GraphQL input type, builds a mutation using that
-    * input, and executes it - unwrapping the Option result.
-    *
-    * @param details
-    *   The view to convert.
-    * @param buildMutation
-    *   A function that, given the converted input, returns the mutation selection builder.
-    * @return
-    *   Either a list of ApiError or the mutation result.
-    */
-  private def withConvertedInput[A](details: MetadataSchemaEditView)(
-      buildMutation: EditableEntityMetadataSchemaInput => SelectionBuilder[
-        MetadataSchemaMutations,
-        Option[A]
-      ]
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], A] =
-    for {
-      input <- Either
-        .catchNonFatal(MetadataSchemaConversions.toInput(details))
-        .leftMap(e =>
-          List(UnknownError(s"Failed to convert details to input type: ${e.getMessage}"))
-        )
-      result <- flatMutate(buildMutation(input))
-    } yield result
 }
