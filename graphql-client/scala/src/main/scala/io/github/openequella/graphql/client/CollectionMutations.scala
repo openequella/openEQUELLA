@@ -74,4 +74,21 @@ object CollectionMutations {
       OptionOf(Scalar()),
       arguments = List(Argument("id", id, "Long!"), Argument("force", force, "Boolean"))
     )
+
+  /** Stop editing a collection - saving changes and optionally unlocking.
+    */
+  def stopEdit[A](details: EditableEntityCollectionDefinitionInput, unlock: Boolean)(
+      innerSelection: SelectionBuilder[CollectionDefinition, A]
+  )(implicit
+      encoder0: ArgEncoder[EditableEntityCollectionDefinitionInput],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[CollectionMutations, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "stopEdit",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("details", details, "EditableEntityCollectionDefinitionInput!"),
+        Argument("unlock", unlock, "Boolean!")
+      )
+    )
 }

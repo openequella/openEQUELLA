@@ -28,6 +28,192 @@ input CitationInput {
   transformation: String!
 }
 
+"A collection definition, defining the structure and configuration for a collection of items in openEQUELLA."
+input CollectionDefinitionInput {
+  "Common details of the collection definition, including UUID and owner."
+  details: EntityDetailsInput!
+  "ID of the metadata schema associated with this collection."
+  schemaId: Long
+  "Category identifier for the wizard used by this collection."
+  wizardCategory: String
+  "ID of the workflow associated with this collection."
+  workflowId: Long
+  "The review period in days. None if no review period is configured for this collection."
+  reviewPeriod: Int
+  "Name of the XSLT used for SCORM packaging."
+  scormPackagingTransformation: String
+  "Whether direct contribution by users is denied for this collection."
+  denyDirectContribution: Boolean!
+  "Contribution wizard configuration for this collection."
+  wizard: CollectionWizardInput
+  "Search results display configuration for this collection."
+  searchDetails: CollectionSearchDetailsInput
+  "Metadata import mapping configuration for this collection."
+  metadataMapping: CollectionMetadataMappingInput
+  "Rules controlling access to items in this collection based on their metadata."
+  itemMetadataRules: [CollectionItemMetadataRuleInput!]!
+  "Rules that apply dynamic ACL entries to items based on their metadata."
+  dynamicMetadataRules: [CollectionDynamicMetadataRuleInput!]!
+  "Summary page display template for items in this collection."
+  itemSummaryDisplayTemplate: CollectionSummaryDisplayTemplateInput
+}
+
+"A node in the metadata to display for items in search results."
+input CollectionDisplayNodeInput {
+  "XPath to the metadata node"
+  node: String
+  "The type of display for this node"
+  nodeType: String
+  "The display mode for this node"
+  mode: String
+  "Splitter character between repeated node values"
+  splitter: String
+  "Display title for this node"
+  title: LanguageBundleInput
+  "Maximum display length before truncation"
+  truncateLength: Int
+}
+
+"A rule that applies dynamic ACL entries to an item based on its metadata values."
+input CollectionDynamicMetadataRuleInput {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "XPath to the metadata node whose values drive the ACL"
+  path: String
+  "Type of dynamic rule"
+  ruleType: String
+  "ACL entries applied by this rule"
+  targetList: [TargetListEntryInput!]!
+}
+
+"An HTML metadata field mapping."
+input CollectionHtmlMappingInput {
+  "HTML source field name"
+  html: String!
+  "Collection metadata target path"
+  itemdef: String!
+}
+
+"An IMS/LOM metadata field mapping."
+input CollectionImsMappingInput {
+  "IMS/LOM source field path"
+  ims: String!
+  "Collection metadata target path"
+  itemdef: String!
+  "Mapping type"
+  mappingType: String!
+  "Whether to replace existing values at the target path"
+  replace: Boolean!
+}
+
+"A rule that controls access to an item based on its metadata."
+input CollectionItemMetadataRuleInput {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "Script that evaluates the metadata condition"
+  script: String
+}
+
+"A literal value used to trigger a metadata mapping."
+input CollectionLiteralInput {
+  "The literal value to match"
+  value: String
+  "A script to compute the mapping value"
+  script: String
+}
+
+"A literal value metadata mapping."
+input CollectionLiteralMappingInput {
+  "Collection metadata target path"
+  value: String
+  "Literal values that trigger this mapping"
+  literals: [CollectionLiteralInput!]!
+}
+
+"Configuration for mapping external metadata formats to collection metadata."
+input CollectionMetadataMappingInput {
+  "IMS/LOM metadata mappings"
+  imsMapping: [CollectionImsMappingInput!]!
+  "HTML metadata mappings"
+  htmlMapping: [CollectionHtmlMappingInput!]!
+  "Literal value metadata mappings"
+  literalMapping: [CollectionLiteralMappingInput!]!
+}
+
+"Configuration for how a collection's items are displayed in search results."
+input CollectionSearchDetailsInput {
+  "Controls how attachments are displayed in search results"
+  attDisplay: String
+  "Whether to disable the thumbnail display in search results"
+  disableThumbnail: Boolean!
+  "Whether search results open in the standard view by default"
+  standardOpen: Boolean!
+  "Whether search results open in integration contexts by default"
+  integrationOpen: Boolean!
+  "The list of metadata nodes to display for each item in search results"
+  displayNodes: [CollectionDisplayNodeInput!]!
+}
+
+"Template controlling how item summary pages are displayed."
+input CollectionSummaryDisplayTemplateInput {
+  "The ordered list of section configurations for this template"
+  configList: [CollectionSummarySectionConfigInput!]!
+  "Whether the item owner is hidden from the summary page"
+  hideOwner: Boolean!
+  "Whether collaborators are hidden from the summary page"
+  hideCollaborators: Boolean!
+}
+
+"Configuration for a single section in the item summary display template."
+input CollectionSummarySectionConfigInput {
+  "Unique identifier for this section configuration"
+  uuid: String
+  "The section type identifier (plugin extension ID)"
+  value: String!
+  "Plugin-specific XML configuration for this section"
+  configuration: String
+  "Display title override for this section"
+  bundleTitle: LanguageBundleInput
+}
+
+"Configuration for the contribution wizard for a collection."
+input CollectionWizardInput {
+  "Display name of the wizard"
+  name: String
+  "Script to run when an item is redrafted"
+  redraftScript: String
+  "Script to run when an item is saved"
+  saveScript: String
+  "Whether contributors can navigate wizard pages non-sequentially"
+  allowNonSequentialNavigation: Boolean!
+  "Whether to show page titles in the next/previous navigation"
+  showPageTitlesNextPrev: Boolean!
+  "Additional CSS class applied to the wizard container"
+  additionalCssClass: String
+  "Internal use only. Opaque serialised XML of the wizard pages. Do not parse this field directly ? use dedicated APIs for wizard page manipulation."
+  pages: String
+  "Internal use only. Opaque serialised XML of the fixed metadata applied by the wizard."
+  fixedMetadata: String
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+input EditableEntityCollectionDefinitionInput {
+  "Base entity being edited"
+  entity: CollectionDefinitionInput!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntryInput!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetListInput!]!
+}
+
 "The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
 input EditableEntityMetadataSchemaInput {
   "Base entity being edited"
@@ -303,6 +489,8 @@ type CollectionMutations {
   import("Base64-encoded zip file of the collection to import" zipBase64: String!): EditableEntityCollectionDefinition
   "Cancel editing a collection - discarding any changes made and unlocking the collection."
   cancelEdit("ID of the collection edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
+  "Stop editing a collection - saving changes and optionally unlocking."
+  stopEdit("Details of the collection to save" details: EditableEntityCollectionDefinitionInput!, "Whether to unlock the collection after saving, if false, keeps it locked for continued editing" unlock: Boolean!): CollectionDefinition
 }
 
 type CollectionQueries {

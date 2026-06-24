@@ -23,7 +23,12 @@ import caliban.client.SelectionBuilder
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
-  CollectionDefinitionEditView
+  CollectionDefinitionEditView,
+  CollectionDefinitionView
+}
+import io.github.openequella.graphql.api.views.conversions.{
+  CollectionConversions,
+  withConvertedInput
 }
 import io.github.openequella.graphql.client.{
   CollectionMutations,
@@ -139,15 +144,15 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
   /** Imports a collection from a ZIP file.
     *
     * This is the inverse of [[exportCollection]]. The entity is prepared from the zip file but is
-    * NOT yet persisted — no stopEdit operation is currently available for collections on the server
-    * side.
+    * NOT yet persisted — the caller must follow up with [[stopEdit]] to complete the import, or
+    * [[cancelEdit]] to discard it.
     *
     * @param zip
     *   The ZIP file bytes to import.
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of errors or a CollectionDefinitionEditView.
+    *   Either a list of errors or a CollectionDefinitionEditView ready for stopEdit.
     */
   def importCollection(zip: Array[Byte])(implicit
       cfg: ClientConfiguration
@@ -189,6 +194,52 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
     flatMutate(CollectionMutations.cancelEdit(id, Some(true)))
+
+  /** Stop editing a collection, saving changes and keeping it locked.
+    *
+    * Use this when you want to persist changes but intend to continue editing. To save and release
+    * the lock in one step, use [[stopEditAndUnlock]] instead.
+    *
+    * @param details
+    *   The collection details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a CollectionDefinitionView containing the saved collection.
+    * @see
+    *   [[stopEditAndUnlock]] to save and release the lock in one step.
+    */
+  def stopEdit(details: CollectionDefinitionEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], CollectionDefinitionView] =
+    withConvertedInput(details, CollectionConversions.toInput) { input =>
+      flatMutate(CollectionMutations.stopEdit(input, unlock = false) {
+        CollectionDefinitionView.selector
+      })
+    }
+
+  /** Stop editing a collection, saving changes and releasing the lock.
+    *
+    * The standard way to finish an edit session. Use [[stopEdit]] instead if you want to save but
+    * continue editing under the same lock.
+    *
+    * @param details
+    *   The collection details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a CollectionDefinitionView containing the saved collection.
+    * @see
+    *   [[stopEdit]] to save while keeping the lock.
+    */
+  def stopEditAndUnlock(details: CollectionDefinitionEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], CollectionDefinitionView] =
+    withConvertedInput(details, CollectionConversions.toInput) { input =>
+      flatMutate(CollectionMutations.stopEdit(input, unlock = true) {
+        CollectionDefinitionView.selector
+      })
+    }
 
   /** Delete a collection.
     *
@@ -244,4 +295,5 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
         BaseEntityReferenceView.selector
       }
     )
+
 }

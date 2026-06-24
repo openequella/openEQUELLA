@@ -28,6 +28,18 @@ import io.github.openequella.graphql.test.BaseEntityApiTestHelper
 /** Helper object for CollectionDefinitionApi tests containing collection utilities. */
 object CollectionDefinitionApiMutationsTestHelper {
 
+  /** Checks if a collection is locked for editing by attempting to start an edit session with a
+    * different user. A collection is considered locked if another user cannot start an edit session
+    * on it. If the current user created the lock, then they can still start an edit session, so we
+    * need to test with a different user.
+    */
+  def isCollectionLockedForEditing(collectionId: Long)(implicit cfg: ClientConfiguration): Boolean =
+    BaseEntityApiTestHelper.isEntityLockedForEditing(
+      collectionId,
+      (id, c) => CollectionDefinitionApi.startEdit(id)(c),
+      (id, c) => CollectionDefinitionApi.cancelEditForced(id)(c)
+    )
+
   /** Gets the ID of the first collection in the system for use in tests.
     *
     * @param cfg
