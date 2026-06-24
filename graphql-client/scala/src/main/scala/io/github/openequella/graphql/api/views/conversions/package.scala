@@ -63,6 +63,12 @@ package object conversions {
   )(execute: Input => Either[List[ApiError], A]): Either[List[ApiError], A] =
     Either
       .catchNonFatal(convert(view))
-      .leftMap(e => List(UnknownError(s"Failed to convert details to input type: ${e.getMessage}")))
+      .leftMap(e =>
+        List(
+          UnknownError(
+            s"Failed to convert ${view.getClass.getSimpleName} to input type: ${e.getMessage}"
+          )
+        )
+      )
       .flatMap(execute)
 }
