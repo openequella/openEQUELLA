@@ -119,6 +119,7 @@ object CollectionConversions {
       : Transformer[CollectionDefinitionEditView, EditableEntityCollectionDefinitionInput] =
     Transformer
       .define[CollectionDefinitionEditView, EditableEntityCollectionDefinitionInput]
+      // The GraphQL wrapper type uses the generic field name 'entity'; the view uses 'collection'
       .withFieldRenamed(_.collection, _.entity)
       .buildTransformer
 
