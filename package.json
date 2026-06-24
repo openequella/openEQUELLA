@@ -27,7 +27,7 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "7.28.6",
+    "@babel/eslint-parser": "8.0.1",
     "@commitlint/cli": "21.0.2",
     "@commitlint/config-conventional": "21.0.2",
     "@typescript-eslint/eslint-plugin": "8.58.0",
