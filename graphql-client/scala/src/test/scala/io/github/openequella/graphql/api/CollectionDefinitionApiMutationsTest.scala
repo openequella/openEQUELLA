@@ -275,9 +275,10 @@ class CollectionDefinitionApiMutationsTest
 
       withEditSession(collectionId) { editView =>
         And("the edit view is modified to have an invalid collection ID")
-        val editViewWithBadId = editView.copy(
+        val invalidCollectionId = -1L
+        val editViewWithBadId   = editView.copy(
           collection = editView.collection.copy(
-            details = editView.collection.details.copy(id = -1L)
+            details = editView.collection.details.copy(id = invalidCollectionId)
           )
         )
 
