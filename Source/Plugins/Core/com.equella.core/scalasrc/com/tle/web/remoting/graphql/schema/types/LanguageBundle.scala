@@ -19,6 +19,7 @@
 package com.tle.web.remoting.graphql.schema.types
 
 import caliban.schema.Annotations.GQLDescription
+import org.slf4j.LoggerFactory
 
 import scala.jdk.CollectionConverters._
 
@@ -46,18 +47,50 @@ final case class LanguageBundle(
     strings: List[LanguageString]
 )
 object LanguageBundle {
+  private val LOGGER = LoggerFactory.getLogger(classOf[LanguageBundle])
+
   def apply(bundle: com.tle.beans.entity.LanguageBundle): LanguageBundle =
     LanguageBundle(
       id = bundle.getId,
-      strings = bundle.getStrings.asScala.toList.map { case (_, langString) =>
+      strings = Option(bundle.getStrings)
+        .map(_.asScala.values.toList)
+        .getOrElse(List.empty)
+        .flatMap(toLanguageString)
+    )
+
+  /** Converts a Java [[com.tle.beans.entity.LanguageString]] to its GraphQL representation,
+    * returning [[None]] if the entry is null or has null required fields (`locale` or `text`).
+    *
+    * Null entries can arise from legacy data. Since both `locale` and `text` are non-nullable in
+    * the GraphQL schema (`String!`), passing null values through would cause caliban's renderer to
+    * crash. Entries with null required fields are logged and dropped rather than propagated.
+    */
+  private def toLanguageString(
+      langString: com.tle.beans.entity.LanguageString
+  ): Option[LanguageString] = {
+    val result = Option(langString)
+      .filter(_.getLocale != null)
+      .filter(_.getText != null)
+      .map { ls =>
         LanguageString(
-          id = langString.getId,
-          priority = langString.getPriority,
-          locale = langString.getLocale,
-          text = langString.getText
+          id = ls.getId,
+          priority = ls.getPriority,
+          locale = ls.getLocale,
+          text = ls.getText
         )
       }
-    )
+
+    if (result.isEmpty) {
+      val context = Option(langString)
+        .map(ls =>
+          s"id=${ls.getId}, locale=${Option(ls.getLocale).getOrElse("null")}, text=${Option(ls.getText)
+              .fold("null")(t => s"'${t.take(20)}...'")}"
+        )
+        .getOrElse("null entry")
+      LOGGER.debug(s"Dropping invalid LanguageString ($context) from bundle")
+    }
+    result
+  }
 }
 
 /** Unlike [[LanguageBundle]], it represents a resolved display text for a language bundle, where

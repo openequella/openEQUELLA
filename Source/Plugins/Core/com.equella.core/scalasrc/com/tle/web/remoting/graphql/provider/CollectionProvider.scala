@@ -26,6 +26,8 @@ import com.tle.core.guice.Bind
 import com.tle.core.remoting.RemoteItemDefinitionService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
 import com.tle.core.xml.service.XmlService
+import com.tle.web.remoting.graphql.schema.conversion.CollectionDefinitionConverter
+import com.tle.web.remoting.graphql.schema.conversion.EditableEntityConverter.toEntityPack
 import com.tle.web.remoting.graphql.schema.types.{
   BaseEntityReference,
   CollectionDefinition,
@@ -87,6 +89,38 @@ class CollectionProvider @Inject() (
       itemDefinitionService.startEdit(id),
       (entity: ItemDefinition) => CollectionDefinition(entity, xmlService)
     )
+  }
+
+  /** Completes the editing session for an existing collection by saving the changes — following the
+    * initial `startEdit` or `importCollection` call. Optionally unlocks the collection after saving
+    * if `unlock` is true; otherwise, keeps it locked for continued editing. Note that the details
+    * parameter must contain the necessary information to identify the collection being edited, as
+    * returned from `startEdit` or `importCollection`.
+    *
+    * @param details
+    *   the details of the collection being saved.
+    * @param unlock
+    *   if true, unlocks the collection after saving; if false, keeps it locked (useful for
+    *   continuing to edit).
+    * @return
+    *   Either a ProviderError if the operation fails, or a CollectionDefinition representing the
+    *   saved entity on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def stopEdit(
+      details: EditableEntity[CollectionDefinition],
+      unlock: Boolean
+  ): Either[ProviderError, CollectionDefinition] = {
+    LOGGER.debug(s"Stopping edit of collection with details: ${details.entity}")
+    ProviderError.Try("Failed to stop edit of collection: ") {
+      CollectionDefinition(
+        itemDefinitionService.stopEdit(
+          toEntityPack(details, CollectionDefinitionConverter.toItemDefinition(_, xmlService)),
+          unlock
+        ),
+        xmlService
+      )
+    }
   }
 
   /** Export a collection as a base64 String representing the contents of a zip file. This can then
