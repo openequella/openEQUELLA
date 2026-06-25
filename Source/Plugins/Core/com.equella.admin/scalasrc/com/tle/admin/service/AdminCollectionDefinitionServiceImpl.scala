@@ -78,6 +78,9 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
       CollectionDefinitionApi.exportCollectionWithSecurity
     )(id, withSecurity)
 
+  override def importEntity(zip: Array[Byte]): EntityPack[ItemDefinition] =
+    importWith(CollectionDefinitionApi.importCollection)(_ convert toEntityPack)(zip)
+
   override def cancelEdit(id: Long, force: Boolean): Unit =
     cancelEditWith(CollectionDefinitionApi.cancelEdit, CollectionDefinitionApi.cancelEditForced)(
       id,

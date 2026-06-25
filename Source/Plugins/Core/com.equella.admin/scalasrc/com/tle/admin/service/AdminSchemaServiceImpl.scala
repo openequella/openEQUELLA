@@ -88,11 +88,7 @@ class AdminSchemaServiceImpl @Inject() (implicit
     )
 
   override def importEntity(zip: Array[Byte]): EntityPack[Schema] =
-    MetadataSchemaApi.importSchema(zip) match {
-      case Right(editView) => editView convert toEntityPack
-      case Left(errors)    =>
-        throw new ClientRequestException("Error importing schema.", errors)
-    }
+    importWith(MetadataSchemaApi.importSchema)(_ convert toEntityPack)(zip)
 
   override def startEdit(id: Long): EntityPack[Schema] =
     MetadataSchemaApi.startEdit(id) match {
