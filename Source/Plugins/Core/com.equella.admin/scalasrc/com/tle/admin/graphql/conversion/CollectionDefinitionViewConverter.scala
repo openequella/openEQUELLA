@@ -18,13 +18,31 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionDynamicMetadataRuleViewConverter.toDynamicMetadataRule
-import com.tle.admin.graphql.conversion.CollectionItemMetadataRuleViewConverter.toItemMetadataRule
-import com.tle.admin.graphql.conversion.CollectionMetadataMappingViewConverter.toMetadataMapping
-import com.tle.admin.graphql.conversion.CollectionSearchDetailsViewConverter.toSearchDetails
-import com.tle.admin.graphql.conversion.CollectionSummaryDisplayTemplateViewConverter.toSummaryDisplayTemplate
-import com.tle.admin.graphql.conversion.CollectionWizardViewConverter.toWizard
-import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.applyToBaseEntity
+import com.tle.admin.graphql.conversion.CollectionDynamicMetadataRuleViewConverter.{
+  fromDynamicMetadataRule,
+  toDynamicMetadataRule
+}
+import com.tle.admin.graphql.conversion.CollectionItemMetadataRuleViewConverter.{
+  fromItemMetadataRule,
+  toItemMetadataRule
+}
+import com.tle.admin.graphql.conversion.CollectionMetadataMappingViewConverter.{
+  fromMetadataMapping,
+  toMetadataMapping
+}
+import com.tle.admin.graphql.conversion.CollectionSearchDetailsViewConverter.{
+  fromSearchDetails,
+  toSearchDetails
+}
+import com.tle.admin.graphql.conversion.CollectionSummaryDisplayTemplateViewConverter.{
+  fromSummaryDisplayTemplate,
+  toSummaryDisplayTemplate
+}
+import com.tle.admin.graphql.conversion.CollectionWizardViewConverter.{fromWizard, toWizard}
+import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.{
+  applyToBaseEntity,
+  fromBaseEntity
+}
 import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.workflow.Workflow
@@ -67,4 +85,24 @@ object CollectionDefinitionViewConverter {
         view.dynamicMetadataRules.map(toDynamicMetadataRule).asArrayList
       )
     }
+
+  def fromItemDefinition(itemDef: ItemDefinition): CollectionDefinitionView =
+    CollectionDefinitionView(
+      details = fromBaseEntity(itemDef),
+      // Only the related entity's id is carried back, mirroring the id-only forward conversion.
+      schemaId = Option(itemDef.getSchema).map(_.getId),
+      wizardCategory = Option(itemDef.getWizardcategory),
+      workflowId = Option(itemDef.getWorkflow).map(_.getId),
+      reviewPeriod = Option.when(itemDef.hasReviewPeriod)(itemDef.getReviewperiod),
+      scormPackagingTransformation = Option(itemDef.getScormPackagingTransformation),
+      denyDirectContribution = itemDef.isDenyDirectContribution,
+      wizard = Option(itemDef.getWizard).map(fromWizard),
+      searchDetails = Option(itemDef.getSearchDetails).map(fromSearchDetails),
+      metadataMapping = Option(itemDef.getMetadataMapping).map(fromMetadataMapping),
+      itemMetadataRules = NullSafeList(itemDef.getItemMetadataRules) convert fromItemMetadataRule,
+      dynamicMetadataRules =
+        NullSafeList(itemDef.getDynamicMetadataRules) convert fromDynamicMetadataRule,
+      itemSummaryDisplayTemplate =
+        Option(itemDef.getItemSummaryDisplayTemplate).map(fromSummaryDisplayTemplate)
+    )
 }

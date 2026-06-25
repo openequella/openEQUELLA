@@ -18,7 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
+import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.{
+  fromLanguageBundle,
+  toLanguageBundle
+}
 import com.tle.beans.entity.itemdef.DisplayNode
 import io.github.openequella.graphql.api.views.CollectionDisplayNodeView
 
@@ -33,4 +36,14 @@ object CollectionDisplayNodeViewConverter {
     view.title.foreach(t => dn.setTitle(toLanguageBundle(t)))
     view.truncateLength.foreach(len => dn.setTruncateLength(len))
   }
+
+  def fromDisplayNode(node: DisplayNode): CollectionDisplayNodeView =
+    CollectionDisplayNodeView(
+      node = Option(node.getNode),
+      nodeType = Option(node.getType),
+      mode = Option(node.getMode),
+      splitter = Option(node.getSplitter),
+      title = Option(node.getTitle).map(fromLanguageBundle),
+      truncateLength = Option(node.getTruncateLength).map(_.intValue())
+    )
 }

@@ -28,4 +28,10 @@ object CollectionHtmlMappingViewConverter {
     m.setHtml(view.html)
     m.setItemdef(view.itemdef)
   }
+
+  def fromHtmlMapping(mapping: HTMLMapping): CollectionHtmlMappingView =
+    CollectionHtmlMappingView(
+      html = mapping.getHtml,
+      itemdef = mapping.getItemdef
+    )
 }

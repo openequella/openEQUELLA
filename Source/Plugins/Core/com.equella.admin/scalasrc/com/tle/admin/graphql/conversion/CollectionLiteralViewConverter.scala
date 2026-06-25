@@ -28,4 +28,10 @@ object CollectionLiteralViewConverter {
     l.setValue(view.value.orNull)
     l.setScript(view.script.orNull)
   }
+
+  def fromLiteral(literal: Literal): CollectionLiteralView =
+    CollectionLiteralView(
+      value = Option(literal.getValue),
+      script = Option(literal.getScript)
+    )
 }

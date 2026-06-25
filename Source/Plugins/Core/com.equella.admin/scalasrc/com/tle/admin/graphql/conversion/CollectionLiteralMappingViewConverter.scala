@@ -18,10 +18,11 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionLiteralViewConverter.toLiteral
+import com.tle.admin.graphql.conversion.CollectionLiteralViewConverter.{fromLiteral, toLiteral}
 import com.tle.beans.entity.itemdef.mapping.LiteralMapping
 import io.github.openequella.graphql.api.views.CollectionLiteralMappingView
 
+import scala.jdk.CollectionConverters._
 import scala.util.chaining.scalaUtilChainingOps
 
 object CollectionLiteralMappingViewConverter {
@@ -31,4 +32,10 @@ object CollectionLiteralMappingViewConverter {
       // LiteralMapping.getLiterals() returns a mutable Collection, so we can addAll
       m.getLiterals.addAll(view.literals.map(toLiteral).asArrayList)
     }
+
+  def fromLiteralMapping(mapping: LiteralMapping): CollectionLiteralMappingView =
+    CollectionLiteralMappingView(
+      value = Option(mapping.getValue),
+      literals = mapping.getLiterals.asScala.map(fromLiteral).toList
+    )
 }

@@ -18,7 +18,7 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.TargetListConverter.toTargetList
+import com.tle.admin.graphql.conversion.TargetListConverter.{fromTargetList, toTargetList}
 import com.tle.beans.entity.itemdef.DynamicMetadataRule
 import io.github.openequella.graphql.api.views.CollectionDynamicMetadataRuleView
 
@@ -34,4 +34,15 @@ object CollectionDynamicMetadataRuleViewConverter {
     r.setType(view.ruleType.orNull)
     r.setTargetList(view.targetList convert toTargetList)
   }
+
+  def fromDynamicMetadataRule(
+      rule: DynamicMetadataRule
+  ): CollectionDynamicMetadataRuleView =
+    CollectionDynamicMetadataRuleView(
+      ruleId = Option(rule.getId),
+      name = Option(rule.getName),
+      path = Option(rule.getPath),
+      ruleType = Option(rule.getType),
+      targetList = rule.getTargetList convert fromTargetList
+    )
 }

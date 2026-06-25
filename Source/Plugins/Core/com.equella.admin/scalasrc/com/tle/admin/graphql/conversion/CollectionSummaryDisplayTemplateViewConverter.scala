@@ -18,7 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionSummarySectionConfigViewConverter.toSummarySectionConfig
+import com.tle.admin.graphql.conversion.CollectionSummarySectionConfigViewConverter.{
+  fromSummarySectionConfig,
+  toSummarySectionConfig
+}
 import com.tle.beans.entity.itemdef.SummaryDisplayTemplate
 import io.github.openequella.graphql.api.views.CollectionSummaryDisplayTemplateView
 
@@ -33,4 +36,13 @@ object CollectionSummaryDisplayTemplateViewConverter {
       sdt.setHideOwner(view.hideOwner)
       sdt.setHideCollaborators(view.hideCollaborators)
     }
+
+  def fromSummaryDisplayTemplate(
+      template: SummaryDisplayTemplate
+  ): CollectionSummaryDisplayTemplateView =
+    CollectionSummaryDisplayTemplateView(
+      configList = NullSafeList(template.getConfigList) convert fromSummarySectionConfig,
+      hideOwner = template.isHideOwner,
+      hideCollaborators = template.isHideCollaborators
+    )
 }
