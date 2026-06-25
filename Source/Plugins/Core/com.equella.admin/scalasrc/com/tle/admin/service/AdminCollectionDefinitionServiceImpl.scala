@@ -97,14 +97,7 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     cloneWith(CollectionDefinitionApi.clone)(id)
 
   override def startEdit(id: Long): EntityPack[ItemDefinition] =
-    CollectionDefinitionApi.startEdit(id) match {
-      case Right(editView) => editView convert toEntityPack
-      case Left(errors)    =>
-        throw new ClientRequestException(
-          s"Error starting edit of collection with ID: $id",
-          errors
-        )
-    }
+    startEditWith(CollectionDefinitionApi.startEdit)(_ convert toEntityPack)(id)
 
   override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
     logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")
