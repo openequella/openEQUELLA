@@ -21,4 +21,8 @@ testNGSuites := {
   tc.getStringList("suitenames").asScala.map(n => (baseDirectory.value / n).absolutePath)
 }
 
-Test / javaOptions += s"-Dtestng.output.dir=${testNGOutputDirectory.value}"
+Test / testOptions += {
+  val outDir = testNGOutputDirectory.value
+  Tests.Setup(() => System.setProperty("testng.output.dir", outDir))
+}
+Test / testOptions += Tests.Cleanup(() => System.clearProperty("testng.output.dir"))
