@@ -1,6 +1,7 @@
 package com.tle.webtests.framework.factory;
 
 import com.google.common.base.Function;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,6 +9,7 @@ import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -66,11 +68,19 @@ public class RefreshingElementHandler implements InvocationHandler {
                     }
                     return new InvokeResponse(returnVal);
                   } catch (InvocationTargetException ite) {
-                    if (ite.getCause() instanceof StaleElementReferenceException) {
+                    Throwable cause = ite.getCause();
+                    // Chrome 143+ sometimes reports a detached node as a generic
+                    // WebDriverException ("Node with given id does not belong to the document")
+                    // rather than a StaleElementReferenceException; treat both as staleness so
+                    // the element is re-located and the call retried.
+                    if (cause instanceof StaleElementReferenceException
+                        || (cause instanceof WebDriverException
+                            && ExpectedConditions2.isChromeStaleNodeException(
+                                (WebDriverException) cause))) {
                       locator.invalidateCache();
                       return null;
                     } else {
-                      throw new InvokeException(ite.getCause());
+                      throw new InvokeException(cause);
                     }
                   } catch (Throwable t) {
                     throw new InvokeException(t);
