@@ -81,8 +81,7 @@ public class CheckStepOperation extends TaskOperation {
             getParams().getAttributes().get(ItemOperationParams.ATTRIBUTE_ORIGINAL_ITEM_XML))
         .filter(StringUtils::isNotEmpty)
         .map(PropBagEx::new)
-        .or(this::getItemXmlAsPropBag)
-        .or(() -> Optional.ofNullable(getItemXml()))
+        .or(() -> Optional.ofNullable(getItem()).map(itemService::getItemXmlPropBag))
         .orElseGet(PropBagEx::new);
   }
 
