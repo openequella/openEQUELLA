@@ -690,9 +690,9 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
    * calculate which moderators were valid before the metadata edit.
    */
   private void attachOriginalXmlForWorkflowCheck(ItemOperationParamsImpl params) {
-    if (originalMetadataXml != null) {
-      params.setAttribute(ItemOperationParams.ATTRIBUTE_ORIGINAL_ITEM_XML, originalMetadataXml);
-    }
+    Optional.ofNullable(originalMetadataXml)
+        .ifPresent(
+            xml -> params.setAttribute(ItemOperationParams.ATTRIBUTE_ORIGINAL_ITEM_XML, xml));
   }
 
   @Override
