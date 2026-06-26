@@ -121,15 +121,13 @@ public class TaskStatus extends AbstractNodeStatus {
    * Repairs metadata-derived task assignments after item metadata changes.
    *
    * <p>Only reassigns when the eligible moderator set has changed and the current assignee appears
-   * stale: they were a valid metadata moderator before the edit but are not one now. Assignees
-   * still in the current moderator set are preserved, as are likely manual overrides.
+   * stale. Assignees still in the current moderator set are preserved, as are likely manual
+   * assignments made by users who could moderate outside the metadata-derived moderator set.
    *
-   * <p>This method is intentionally heuristic-based. Manual overrides such as {@code
-   * MANAGE_WORKFLOW} users clicking <em>assign to me</em> update persisted {@code assignedTo}
-   * without changing item XML, so they are inferred when the assignee was never in {@code
-   * originalModerators}. An explicit persisted provenance flag was rejected for this fix because it
-   * would require schema migration and updates across all assignment paths, while legacy rows would
-   * still need the same inference fallback.
+   * <p>One known case is the system/super user, such as {@code TLE_ADMINISTRATOR}. {@code
+   * WorkflowServiceImpl.canCurrentUserModerate} allows system users to moderate regardless of the
+   * task moderator list, so their self-assignment can update persisted {@code assignedTo} without
+   * changing item XML.
    *
    * @param originalModerators moderators resolved from item XML before the metadata edit
    * @return {@code true} if the persisted {@code assignedTo} value changed
