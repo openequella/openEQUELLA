@@ -80,7 +80,7 @@ libraryDependencies ++= Seq(
   "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
   "com.google.api-client"         % "google-api-client"           % "2.9.0",
   "com.google.apis"               % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260430-2.0.0",
+  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260608-2.0.0",
   "com.google.code.gson"          % "gson"                        % "2.14.0",
   "com.google.guava"              % "guava"                       % "33.6.0-jre",
   "com.google.inject"             % "guice"                       % guiceVersion excludeAll (
@@ -110,12 +110,12 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "7.0.2" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "7.1.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
   "commons-codec"             % "commons-codec"         % "1.22.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.6.0",
+  "commons-daemon"            % "commons-daemon"        % "1.6.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.22.0",
@@ -246,7 +246,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.12.0",
+  "org.scala-sbt"                %% "io"                       % "1.12.1",
   "org.mozilla"                   % "rhino"                    % "1.9.1",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
