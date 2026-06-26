@@ -33,6 +33,13 @@ import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Re-checks active workflow steps for an item already in moderation.
+ *
+ * <p>This operation is used when workflow state may need to be refreshed without re-entering the
+ * whole workflow. For item tasks, it also supplies the original item XML needed to detect
+ * metadata-driven moderator changes
+ */
 @Bind
 public class CheckStepOperation extends TaskOperation {
 
