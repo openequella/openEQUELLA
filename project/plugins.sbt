@@ -7,7 +7,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.3.1")
 addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 // Update JGit so as to support git worktrees. The bundled version in sbt-git is limited to
 // their desire to support Java 8 still. But we're on JDK 21 so we can just force a newer JGit.
-libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "7.6.0.202603022253-r"
+libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "7.7.0.202606012155-r"
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
