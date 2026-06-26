@@ -265,6 +265,48 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       toBaseEntityLabel
     }
 
+  /** Imports an entity from a ZIP file using a GraphQL import function.
+    *
+    * @param importer
+    *   API function that accepts ZIP bytes and returns a GraphQL result containing a view
+    * @param converter
+    *   function to convert the returned view into an `EntityPack[E]`
+    * @param zip
+    *   the ZIP file bytes to import
+    * @tparam V
+    *   the type of the view returned by the import API
+    * @return
+    *   an `EntityPack` for the imported entity
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  protected def importWith[V](
+      importer: Array[Byte] => GraphQLClientResult[V]
+  )(converter: V => EntityPack[E])(zip: Array[Byte]): EntityPack[E] =
+    handleEither(importer(zip), s"Error importing $entityDescription from zip file") { converter }
+
+  /** Starts editing an entity using a GraphQL start-edit function.
+    *
+    * @param starter
+    *   API function that accepts an entity ID and returns a GraphQL result containing an edit view
+    * @param converter
+    *   function to convert the returned view into an `EntityPack[E]`
+    * @param id
+    *   the ID of the entity to start editing
+    * @tparam V
+    *   the type of the edit view returned by the start-edit API
+    * @return
+    *   an `EntityPack` for the entity being edited
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  protected def startEditWith[V](
+      starter: Long => GraphQLClientResult[V]
+  )(converter: V => EntityPack[E])(id: Long): EntityPack[E] =
+    handleEither(starter(id), s"Error starting edit of $entityDescription with ID: $id") {
+      converter
+    }
+
   // ---------------------------------------------------------------------------
   // RemoteAbstractEntityService default implementations (delegate to implementMe)
   // ---------------------------------------------------------------------------
