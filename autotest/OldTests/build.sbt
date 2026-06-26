@@ -20,3 +20,9 @@ testNGSuites := {
   val tc = autotestBuildConfig.value.getConfig("tests")
   tc.getStringList("suitenames").asScala.map(n => (baseDirectory.value / n).absolutePath)
 }
+
+Test / testOptions += {
+  val outDir = testNGOutputDirectory.value
+  Tests.Setup(() => System.setProperty("testng.output.dir", outDir))
+}
+Test / testOptions += Tests.Cleanup(() => System.clearProperty("testng.output.dir"))
