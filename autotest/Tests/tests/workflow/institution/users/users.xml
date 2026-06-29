@@ -25,6 +25,14 @@
     <password>MD5:115dbe1db3b5dc7da556fad50fe17436</password>
   </com.tle.beans.user.TLEUser>
   <com.tle.beans.user.TLEUser>
+    <id>929300</id>
+    <uuid>b6c0f662-0c32-438b-b5a4-38e979212087</uuid>
+    <username>AutoAssignTarget2</username>
+    <firstName>AutoAssignTarget2</firstName>
+    <lastName>AutoAssignTarget2</lastName>
+    <password>MD5:115dbe1db3b5dc7da556fad50fe17436</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
     <id>29173</id>
     <uuid>0203b997-afa7-fb34-3793-57be9ee04524</uuid>
     <username>SecondStepModerator</username>
