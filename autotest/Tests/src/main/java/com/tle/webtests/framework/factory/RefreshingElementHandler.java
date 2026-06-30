@@ -69,14 +69,7 @@ public class RefreshingElementHandler implements InvocationHandler {
                     return new InvokeResponse(returnVal);
                   } catch (InvocationTargetException ite) {
                     Throwable cause = ite.getCause();
-                    // Chrome 143+ sometimes reports a detached node as a generic
-                    // WebDriverException ("Node with given id does not belong to the document")
-                    // rather than a StaleElementReferenceException; treat both as staleness so
-                    // the element is re-located and the call retried.
-                    if (cause instanceof StaleElementReferenceException
-                        || (cause instanceof WebDriverException
-                            && ExpectedConditions2.isChromeStaleNodeException(
-                                (WebDriverException) cause))) {
+                    if (isStaleElement(cause)) {
                       locator.invalidateCache();
                       return null;
                     } else {
@@ -91,6 +84,15 @@ public class RefreshingElementHandler implements InvocationHandler {
     } catch (InvokeException e) {
       throw e.getCause();
     }
+  }
+
+  private static boolean isStaleElement(Throwable cause) {
+    // Chrome 143+ sometimes reports a detached node as a generic WebDriverException
+    // ("Node with given id does not belong to the document") rather than a
+    // StaleElementReferenceException; treat both as staleness.
+    return cause instanceof StaleElementReferenceException
+        || (cause instanceof WebDriverException
+            && ExpectedConditions2.isChromeStaleNodeException((WebDriverException) cause));
   }
 
   public static class InvokeException extends RuntimeException {
