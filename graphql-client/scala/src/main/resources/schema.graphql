@@ -626,6 +626,18 @@ type Group {
   name: String!
 }
 
+"A Connection object paging through Groups as per the GraphQL Cursor Connections Specification"
+type GroupConnection {
+  pageInfo: PageInfo!
+  edges: [GroupEdge!]!
+}
+
+"An Edge object for Groups as per the GraphQL Cursor Connections Specification"
+type GroupEdge {
+  cursor: String!
+  node: Group!
+}
+
 "An entry in the result of fetching multiple groups by IDs."
 type GroupWithId {
   "The requested group ID"
@@ -904,6 +916,18 @@ type Role {
   name: String!
 }
 
+"A Connection object paging through Roles as per the GraphQL Cursor Connections Specification"
+type RoleConnection {
+  pageInfo: PageInfo!
+  edges: [RoleEdge!]!
+}
+
+"An Edge object for Roles as per the GraphQL Cursor Connections Specification"
+type RoleEdge {
+  cursor: String!
+  node: Role!
+}
+
 "An entry in the result of fetching multiple roles by IDs."
 type RoleWithId {
   "The requested role ID"
@@ -963,33 +987,33 @@ type UserDirectoryQueries {
   "Retrieve multiple users by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
   usersByIds("The unique IDs of the users to retrieve" userIds: [String!]!): [UserWithId!]!
   "Search for users matching the query. Wildcards at the start and end of the query are implied."
-  searchUsers("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!): [User!]!
-  "Search for users within the specified group, optionally searching subgroups recursively."
-  searchUsersInGroup("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "The unique ID of the parent group to restrict the search to, or none for all groups" parentGroupId: String, "Whether to search subgroups recursively" recursive: Boolean!): [User!]!
-  "Retrieve all roles assigned to the specified user"
-  rolesForUser("The unique ID of the user" userId: String!): [Role!]!
-  "Retrieve the IDs of all groups that contain the specified user"
-  groupIdsForUser("The unique ID of the user" userId: String!): [String!]!
-  "Retrieve all groups (including subgroups) that contain the specified user"
-  groupsForUser("The unique ID of the user" userId: String!): [Group!]!
-  "List all users in the specified group"
-  usersInGroup("The unique ID of the group" groupId: String!, "Whether to include users from subgroups recursively" recursive: Boolean!): [User!]!
-  "Retrieve a group by its unique ID"
+  searchUsers("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Search for users within the specified group, optionally searching subgroups recursively. Returns NOT_FOUND if the group cannot be resolved."
+  searchUsersInGroup("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!, "Whether to search subgroups recursively" recursive: Boolean!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Retrieve all roles assigned to the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  rolesForUser("The unique ID of the user" userId: String!): [Role!]
+  "Retrieve the IDs of all groups that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  groupIdsForUser("The unique ID of the user" userId: String!): [String!]
+  "Retrieve all groups (including subgroups) that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  groupsForUser("The unique ID of the user" userId: String!): [Group!]
+  "List all users in the specified group. Returns NOT_FOUND if the group cannot be resolved."
+  usersInGroup("The unique ID of the group" groupId: String!, "Whether to include users from subgroups recursively" recursive: Boolean!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Retrieve a group by its unique ID. Returns NOT_FOUND if the group cannot be resolved."
   groupById("The unique ID of the group to retrieve" groupId: String!): Group
   "Retrieve multiple groups by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
   groupsByIds("The unique IDs of the groups to retrieve" groupIds: [String!]!): [GroupWithId!]!
   "Search for groups matching the query across the entire group hierarchy. Wildcards at the start and end of the query are implied."
-  searchGroups("The query to search for groups by (server will surround with wildcard)" query: String!): [Group!]!
-  "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied."
-  searchGroupsInParent("The query to search for groups by (server will surround with wildcard)" query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!): [Group!]!
-  "Retrieve the parent group of the specified group, if one exists"
+  searchGroups("The query to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many groups to return from the start of the possible list of groups" first: Int, "Pagination - how many groups to return from the end of the possible list of groups" last: Int, "Pagination - the cursor for a group before which all groups should be returned" before: String, "Pagination - the cursor for a group after which all groups should be returned" after: String): GroupConnection
+  "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied. Returns NOT_FOUND if the parent group cannot be resolved."
+  searchGroupsInParent("The query to search for groups by (server will surround with wildcard)" query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!, "Pagination - how many groups to return from the start of the possible list of groups" first: Int, "Pagination - how many groups to return from the end of the possible list of groups" last: Int, "Pagination - the cursor for a group before which all groups should be returned" before: String, "Pagination - the cursor for a group after which all groups should be returned" after: String): GroupConnection
+  "Retrieve the parent group of the specified group, if one exists. Returns NOT_FOUND if the group cannot be resolved."
   parentGroup("The unique ID of the group to retrieve the parent for" groupId: String!): Group
-  "Retrieve a role by its unique ID"
+  "Retrieve a role by its unique ID. Returns NOT_FOUND if the role cannot be resolved."
   roleById("The unique ID of the role to retrieve" roleId: String!): Role
   "Retrieve multiple roles by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
   rolesByIds("The unique IDs of the roles to retrieve" roleIds: [String!]!): [RoleWithId!]!
   "Search for roles matching the query. Wildcards at the start and end of the query are implied."
-  searchRoles("The query to search for roles by (server will surround with wildcard)" query: String!): [Role!]!
+  searchRoles("The query to search for roles by (server will surround with wildcard)" query: String!, "Pagination - how many roles to return from the start of the possible list of roles" first: Int, "Pagination - how many roles to return from the end of the possible list of roles" last: Int, "Pagination - the cursor for a role before which all roles should be returned" before: String, "Pagination - the cursor for a role after which all roles should be returned" after: String): RoleConnection
 }
 
 "An Edge object for Users as per the GraphQL Cursor Connections Specification"

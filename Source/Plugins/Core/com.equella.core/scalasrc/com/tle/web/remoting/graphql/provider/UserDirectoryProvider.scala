@@ -24,6 +24,7 @@ import com.tle.common.usermanagement.user.valuebean.{GroupBean, UserBean, RoleBe
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.services.user.UserService
+import com.tle.web.remoting.graphql.ErrorCode
 import com.tle.web.remoting.graphql.schema.{Page, paginationOffsetLimit}
 import com.tle.web.remoting.graphql.schema.types.{
   Group,
@@ -75,6 +76,49 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     Page(items, total, offset, limit)
   }
 
+  /** Builds a page for [[searchUsersInGroup]].
+    */
+  private def searchUsersInGroupPage(
+      query: String,
+      groupId: String,
+      recursive: Boolean,
+      pagination: Pagination[Base64Cursor]
+  ): Page[User] =
+    paginatePage(
+      pagination,
+      userService.countUsers(query, groupId, recursive),
+      (limit, offset) =>
+        javaUsersToScala(userService.searchUsers(query, groupId, recursive, limit, offset))
+    )
+
+  /** Builds a page for [[usersInGroup]].
+    */
+  private def usersInGroupPage(
+      groupId: String,
+      recursive: Boolean,
+      pagination: Pagination[Base64Cursor]
+  ): Page[User] =
+    paginatePage(
+      pagination,
+      userService.countUsersInGroup(groupId, recursive),
+      (limit, offset) =>
+        javaUsersToScala(userService.getUsersInGroup(groupId, recursive, limit, offset))
+    )
+
+  /** Builds a page for [[searchGroupsInParent]].
+    */
+  private def searchGroupsInParentPage(
+      query: String,
+      parentGroupId: String,
+      pagination: Pagination[Base64Cursor]
+  ): Page[Group] =
+    paginatePage(
+      pagination,
+      userService.countGroups(query, parentGroupId),
+      (limit, offset) =>
+        javaGroupsToScala(userService.searchGroups(query, parentGroupId, limit, offset))
+    )
+
   // Formats the pagination parameters as a short string for debug logging.
   private def paginationInfo(pagination: Pagination[Base64Cursor]): String =
     s"[count=${pagination.count}, cursor=${pagination.cursor}]"
@@ -91,6 +135,28 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
   private def javaRolesToScala(beans: java.util.List[RoleBean]): List[Role] =
     beans.asScala.map(Role(_)).toList
 
+  private def userNotFound(userId: String): ProviderError =
+    ProviderError(s"User with id of $userId not found", ErrorCode.NOT_FOUND)
+
+  private def requireUser(userId: String): Either[ProviderError, String] =
+    Option(userService.getInformationForUser(userId))
+      .map(_ => userId)
+      .toRight(userNotFound(userId))
+
+  private def groupNotFound(groupId: String): ProviderError =
+    ProviderError(s"Group with id of $groupId not found", ErrorCode.NOT_FOUND)
+
+  private def requireGroup(groupId: String): Either[ProviderError, String] =
+    Option(userService.getInformationForGroup(groupId))
+      .map(_ => groupId)
+      .toRight(groupNotFound(groupId))
+
+  private def roleNotFound(roleId: String): ProviderError =
+    ProviderError(s"Role with id of $roleId not found", ErrorCode.NOT_FOUND)
+
+  private def requireRole(roleId: String): Either[ProviderError, Role] =
+    Option(userService.getInformationForRole(roleId)).map(Role(_)).toRight(roleNotFound(roleId))
+
   // ---------------------------------------------------------------------------
   // User operations
   // ---------------------------------------------------------------------------
@@ -100,12 +166,14 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param userId
     *   the unique ID of the user
     * @return
-    *   the [[User]], or `None` if not found
+    *   the [[User]], or a NOT_FOUND error if the user cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def userById(userId: String): Option[User] = {
+  def userById(userId: String): Either[ProviderError, User] = {
     LOGGER.debug("Retrieving user by ID: {}", userId)
-    Option(userService.getInformationForUser(userId)).map(User(_))
+    Option(userService.getInformationForUser(userId))
+      .map(User(_))
+      .toRight(userNotFound(userId))
   }
 
   /** Retrieve information for multiple users by their unique IDs. IDs that could not be resolved
@@ -163,7 +231,8 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param pagination
     *   the pagination parameters
     * @return
-    *   a [[UserConnection]] containing the page of matching users
+    *   a [[UserConnection]] containing the page of matching users, or a NOT_FOUND error if the
+    *   group cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def searchUsersInGroup(
@@ -171,7 +240,7 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
       parentGroupId: String,
       recursive: Boolean,
       pagination: Pagination[Base64Cursor]
-  ): UserConnection = {
+  ): Either[ProviderError, UserConnection] = {
     LOGGER.debug(
       "Searching users with query: {}, parentGroupId: {}, recursive: {}, pagination: {}",
       query,
@@ -179,17 +248,9 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
       recursive,
       paginationInfo(pagination)
     )
-    UserConnection(
-      paginatePage(
-        pagination,
-        userService.countUsers(query, parentGroupId, recursive),
-        (limit, offset) =>
-          javaUsersToScala(
-            userService
-              .searchUsers(query, parentGroupId, recursive, limit, offset)
-          )
-      )
-    )
+    requireGroup(parentGroupId).map { validParentGroupId =>
+      UserConnection(searchUsersInGroupPage(query, validParentGroupId, recursive, pagination))
+    }
   }
 
   /** Retrieve all roles assigned to the given user.
@@ -197,25 +258,30 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param userId
     *   the unique ID of the user
     * @return
-    *   a list of [[Role]] objects
+    *   a list of [[Role]] objects, or a NOT_FOUND error if the user cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def rolesForUser(userId: String): List[Role] = {
+  def rolesForUser(userId: String): Either[ProviderError, List[Role]] = {
     LOGGER.debug("Retrieving roles for user: {}", userId)
-    userService.getRolesForUser(userId).asScala.map(Role(_)).toList
+    requireUser(userId).map { validUserId =>
+      javaRolesToScala(userService.getRolesForUser(validUserId))
+    }
   }
 
-  /** Retrieve the IDs of all groups that contain the specified user.
+  /** Retrieve the IDs of all groups that contain the specified user. This is recursive: if a user
+    * belongs to a child group, parent groups are also treated as containing the user.
     *
     * @param userId
     *   the unique ID of the user
     * @return
-    *   a list of group unique IDs
+    *   a list of group unique IDs, or a NOT_FOUND error if the user cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def groupIdsForUser(userId: String): List[String] = {
+  def groupIdsForUser(userId: String): Either[ProviderError, List[String]] = {
     LOGGER.debug("Retrieving group IDs for user: {}", userId)
-    userService.getGroupIdsContainingUser(userId).asScala.toList
+    requireUser(userId).map { validUserId =>
+      userService.getGroupIdsContainingUser(validUserId).asScala.toList
+    }
   }
 
   /** Retrieve all groups (including subgroups) that contain the specified user.
@@ -223,12 +289,14 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param userId
     *   the unique ID of the user
     * @return
-    *   a list of [[Group]] objects
+    *   a list of [[Group]] objects, or a NOT_FOUND error if the user cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def groupsForUser(userId: String): List[Group] = {
+  def groupsForUser(userId: String): Either[ProviderError, List[Group]] = {
     LOGGER.debug("Retrieving groups for user: {}", userId)
-    javaGroupsToScala(userService.getGroupsContainingUser(userId))
+    requireUser(userId).map { validUserId =>
+      javaGroupsToScala(userService.getGroupsContainingUser(validUserId))
+    }
   }
 
   /** List all users in the specified group with pagination.
@@ -240,28 +308,24 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param pagination
     *   the pagination parameters
     * @return
-    *   a [[UserConnection]] containing the page of users
+    *   a [[UserConnection]] containing the page of users, or a NOT_FOUND error if the group cannot
+    *   be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def usersInGroup(
       groupId: String,
       recursive: Boolean,
       pagination: Pagination[Base64Cursor]
-  ): UserConnection = {
+  ): Either[ProviderError, UserConnection] = {
     LOGGER.debug(
       "Retrieving users in group: {}, recursive: {}, pagination: {}",
       groupId,
       recursive,
       paginationInfo(pagination)
     )
-    UserConnection(
-      paginatePage(
-        pagination,
-        userService.countUsersInGroup(groupId, recursive),
-        (limit, offset) =>
-          javaUsersToScala(userService.getUsersInGroup(groupId, recursive, limit, offset))
-      )
-    )
+    requireGroup(groupId).map { validGroupId =>
+      UserConnection(usersInGroupPage(validGroupId, recursive, pagination))
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -273,12 +337,14 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param groupId
     *   the unique ID of the group
     * @return
-    *   the [[Group]], or `None` if not found
+    *   the [[Group]], or a NOT_FOUND error if the group cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def groupById(groupId: String): Option[Group] = {
+  def groupById(groupId: String): Either[ProviderError, Group] = {
     LOGGER.debug("Retrieving group by ID: {}", groupId)
-    Option(userService.getInformationForGroup(groupId)).map(Group(_))
+    Option(userService.getInformationForGroup(groupId))
+      .map(Group(_))
+      .toRight(groupNotFound(groupId))
   }
 
   /** Retrieve information for multiple groups by their unique IDs. IDs that could not be resolved
@@ -333,28 +399,24 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param pagination
     *   the pagination parameters
     * @return
-    *   a [[GroupConnection]] containing the page of matching groups
+    *   a [[GroupConnection]] containing the page of matching groups, or a NOT_FOUND error if the
+    *   parent group cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def searchGroupsInParent(
       query: String,
       parentGroupId: String,
       pagination: Pagination[Base64Cursor]
-  ): GroupConnection = {
+  ): Either[ProviderError, GroupConnection] = {
     LOGGER.debug(
       "Searching groups with query: {}, parentGroupId: {}, pagination: {}",
       query,
       parentGroupId,
       paginationInfo(pagination)
     )
-    GroupConnection(
-      paginatePage(
-        pagination,
-        userService.countGroups(query, parentGroupId),
-        (limit, offset) =>
-          javaGroupsToScala(userService.searchGroups(query, parentGroupId, limit, offset))
-      )
-    )
+    requireGroup(parentGroupId).map { validParentGroupId =>
+      GroupConnection(searchGroupsInParentPage(query, validParentGroupId, pagination))
+    }
   }
 
   /** Retrieve the parent group of the specified group, if one exists.
@@ -362,12 +424,15 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param groupId
     *   the unique ID of the group
     * @return
-    *   the parent [[Group]], or `None` if the group has no parent
+    *   the parent [[Group]], `None` if the group has no parent, or a NOT_FOUND error if the group
+    *   cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def parentGroup(groupId: String): Option[Group] = {
+  def parentGroup(groupId: String): Either[ProviderError, Option[Group]] = {
     LOGGER.debug("Retrieving parent group of: {}", groupId)
-    Option(userService.getParentGroupForGroup(groupId)).map(Group(_))
+    requireGroup(groupId).map { validGroupId =>
+      Option(userService.getParentGroupForGroup(validGroupId)).map(Group(_))
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -379,12 +444,12 @@ class UserDirectoryProvider @Inject() (userService: UserService) {
     * @param roleId
     *   the unique ID of the role
     * @return
-    *   the [[Role]], or `None` if not found
+    *   the [[Role]], or a NOT_FOUND error if the role cannot be resolved
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def roleById(roleId: String): Option[Role] = {
+  def roleById(roleId: String): Either[ProviderError, Role] = {
     LOGGER.debug("Retrieving role by ID: {}", roleId)
-    Option(userService.getInformationForRole(roleId)).map(Role(_))
+    requireRole(roleId)
   }
 
   /** Retrieve information for multiple roles by their unique IDs. IDs that could not be resolved

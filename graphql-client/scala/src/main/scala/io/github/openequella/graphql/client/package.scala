@@ -43,6 +43,8 @@ package object client {
   type EditableEntitySkeleton
   type EntityDetails
   type Group
+  type GroupConnection
+  type GroupEdge
   type GroupWithId
   type InternalGroup
   type InternalGroupConnection
@@ -67,6 +69,8 @@ package object client {
   type PageInfo
   type PluginDetails
   type Role
+  type RoleConnection
+  type RoleEdge
   type RoleWithId
   type StringConnection
   type StringEdge

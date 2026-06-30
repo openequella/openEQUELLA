@@ -20,8 +20,10 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.NameValueView
-import io.github.openequella.graphql.test.TestHelper
-import io.github.openequella.graphql.test.TestHelper.assertAccessDeniedError
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -33,7 +35,7 @@ class JavaScriptApiTest
     with EitherValues
     with OptionValues {
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("listLibraries") {
     it("retrieves JavaScript library names and IDs") {
@@ -48,13 +50,7 @@ class JavaScriptApiTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls listLibraries")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        JavaScriptApi.listLibraries(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      assertAccessDeniedError(response)
+      assertAccessDeniedError(JavaScriptApi.listLibraries(_))
     }
   }
 
@@ -85,14 +81,7 @@ class JavaScriptApiTest
     it("denies access when not authenticated") {
       Given("a JavaScript library ID")
       val libraryId = getFirstLibraryId
-
-      When("an unauthenticated user calls modulesByLibraryId")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        JavaScriptApi.modulesByLibraryId(libraryId)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      assertAccessDeniedError(response)
+      assertAccessDeniedError(JavaScriptApi.modulesByLibraryId(libraryId)(_))
     }
   }
 

@@ -19,8 +19,17 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.test.TestHelper
-import io.github.openequella.graphql.test.TestHelper.specialCharacters
+import io.github.openequella.graphql.test.PaginationTestHelper.assertSupportsPagination
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  checkApiError,
+  loginToRestInstitution,
+  specialCharacters
+}
+import io.github.openequella.graphql.test.UserDirectoryTestHelper.{
+  DEFAULT_ENTRY_COUNT,
+  withTemporaryInternalUsers
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 import org.scalatest.prop.TableDrivenPropertyChecks._
@@ -36,7 +45,7 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     lastName = "Test"
   )
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("getByUsername") {
     it("should be able to retrieve a known user by username") {
@@ -50,11 +59,7 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalUserApi.getByUsername(knownUser.username)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalUserApi.getByUsername(knownUser.username)(_))
     }
   }
 
@@ -70,11 +75,7 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalUserApi.getByUniqueId(knownUser.uniqueId)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalUserApi.getByUniqueId(knownUser.uniqueId)(_))
     }
   }
 
@@ -92,15 +93,11 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
 
     it("should return None for an unknown user") {
       val response = InternalUserApi.deleteUser("no such user")
-      TestHelper.checkApiError(response) shouldBe a[NotFoundError]
+      checkApiError(response) shouldBe a[NotFoundError]
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalUserApi.deleteUser(knownUser.uniqueId)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalUserApi.deleteUser(knownUser.uniqueId)(_))
     }
   }
 
@@ -137,24 +134,18 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
 
     it("should return an error for an unknown user") {
       val response = InternalUserApi.updateUser("no such user", None, None, None, None, None)
-      TestHelper.checkApiError(response) shouldBe a[NotFoundError]
+      checkApiError(response) shouldBe a[NotFoundError]
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalUserApi.updateUser(knownUser.uniqueId, None, None, None, None, None)(
-          unauthenticated
-        )
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(
+        InternalUserApi.updateUser(knownUser.uniqueId, None, None, None, None, None)(_)
+      )
     }
   }
 
   describe("searchUsers") {
-    // There are 12 users in the target institution
-    val TOTAL_USERS = 12
-    val BIG_LIMIT   = 100
+    val BIG_LIMIT = 100
 
     it("supports searching for all users") {
       // I know there's less than 100 users in the test institution
@@ -168,8 +159,11 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("supports forward and backward pagination") {
-      TestHelper.testPagination(pageSize = 4, totalExpectedItems = TOTAL_USERS) {
-        (pagination: Pagination) => InternalUserApi.searchUsers(pagination)
+      val namePrefix = "InternalUserApiTest-searchUsers"
+      withTemporaryInternalUsers(namePrefix) {
+        assertSupportsPagination { pagination =>
+          InternalUserApi.searchUsers(pagination, Some(namePrefix))
+        }
       }
     }
 
@@ -184,12 +178,15 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("returns all partially matching users") {
-      val response = InternalUserApi.searchUsers(ForwardPagination(BIG_LIMIT), Some("test"))
-      response match {
-        case Right(users) =>
-          // There are five known users with 'test' in their details
-          assert(users.items.size == 5)
-        case Left(errors) => fail("Failed to search for users: " + errors)
+      val namePrefix = "InternalUserApiTest-partialSearchUsers"
+      withTemporaryInternalUsers(namePrefix) {
+        val response =
+          InternalUserApi.searchUsers(ForwardPagination(BIG_LIMIT), Some(namePrefix))
+        response match {
+          case Right(users) =>
+            assert(users.items.size == DEFAULT_ENTRY_COUNT)
+          case Left(errors) => fail("Failed to search for users: " + errors)
+        }
       }
     }
 
@@ -212,11 +209,8 @@ class InternalUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalUserApi.searchUsers(ForwardPagination(BIG_LIMIT))(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalUserApi.searchUsers(ForwardPagination(BIG_LIMIT))(_))
     }
   }
+
 }

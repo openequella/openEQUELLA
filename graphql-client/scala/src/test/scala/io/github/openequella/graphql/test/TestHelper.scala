@@ -27,7 +27,6 @@ import org.scalatest.prop.Tables.Table
 import sttp.model.Uri
 
 import java.util.Properties
-import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try, Using}
 
 object TestHelper {
@@ -156,6 +155,26 @@ object TestHelper {
     action(unAuthenticatedCfg)
   }
 
+  /** Assert that an API call is rejected for unauthenticated users.
+    *
+    * @param apiCall
+    *   the API call to run with an unauthenticated client configuration
+    */
+  def assertAccessDeniedError[T](
+      apiCall: ClientConfiguration => Either[List[ApiError], T]
+  )(implicit cfg: ClientConfiguration): Unit = {
+    val response = asUnauthenticatedUser(apiCall)
+    checkApiError(response) shouldBe a[AccessDeniedError]
+  }
+
+  /** Assert that an API response failed because the requested resource was not found.
+    *
+    * @param response
+    *   the API response to check
+    */
+  def assertNotFoundError(response: Either[List[ApiError], _]): Unit =
+    checkApiError(response) shouldBe a[NotFoundError]
+
   /** Run the given action with a client configuration that is logged in with different credentials
     * to the given client configuration. This is useful for testing access control and multi-user
     * scenarios.
@@ -196,92 +215,6 @@ object TestHelper {
     }
   }
 
-  /** Test pagination using the given query function. Both forward and backward pagination are
-    * tested in the one test. This is because they should both result in the same order of items. So
-    * the result from one can be used to validate the other.
-    *
-    * @param pageSize
-    *   the number of items to retrieve per page
-    * @param totalExpectedItems
-    *   the total number of items expected to be retrieved
-    * @param queryFn
-    *   the function to call to retrieve the next page of items
-    * @tparam T
-    *   the type of item to retrieve
-    */
-  def testPagination[T](pageSize: Int, totalExpectedItems: Int)(
-      queryFn: Pagination => Either[List[ApiError], PaginationResult[T]]
-  ): Unit = {
-    val itemsForward  = TestHelper.paginateForward(pageSize) { queryFn }
-    val itemsBackward = TestHelper.paginateBackward(pageSize) { queryFn }
-
-    itemsBackward shouldBe itemsForward
-    itemsForward.size shouldBe totalExpectedItems
-    itemsBackward.size shouldBe totalExpectedItems
-  }
-
-  /** Paginate through a list of items using forward pagination via the given query function.
-    *
-    * @param pageSize
-    *   the number of items to retrieve per page
-    * @param queryFn
-    *   the function to call to retrieve the next page of items
-    * @tparam T
-    *   the type of item to retrieve
-    * @return
-    *   the list of items retrieved
-    */
-  def paginateForward[T](
-      pageSize: Int = Integer.MAX_VALUE
-  )(queryFn: ForwardPagination => Either[List[ApiError], PaginationResult[T]]): List[T] = {
-    @tailrec
-    def retrieveItems(
-        pagination: ForwardPagination,
-        items: List[T] = List.empty
-    ): List[T] = queryFn(pagination) match {
-      case Left(errors)                              => fail(s"Failed to get items: $errors")
-      case Right(result) if result.continue.nonEmpty =>
-        retrieveItems(result.continue.get.asInstanceOf[ForwardPagination], items ++ result.items)
-      case Right(result) => items ++ result.items
-    }
-
-    retrieveItems(ForwardPagination(pageSize))
-  }
-
-  /** Paginate through a list of items using backward pagination via the given query function.
-    *
-    * This pretty well identical to `paginateForward`, but with the way items are appended to the
-    * list reversed. This is to ensure that the order of users is the same as the forward
-    * pagination.
-    *
-    * There is value in having these two implementations stand-alone for reference purposes.
-    *
-    * @param pageSize
-    *   the number of items to retrieve per page
-    * @param queryFn
-    *   the function to call to retrieve the next page of items
-    * @tparam T
-    *   the type of item to retrieve
-    * @return
-    *   the list of items retrieved
-    */
-  def paginateBackward[T](
-      pageSize: Int = Integer.MAX_VALUE
-  )(queryFn: BackwardPagination => Either[List[ApiError], PaginationResult[T]]): List[T] = {
-    @tailrec
-    def retrieveItems(
-        pagination: BackwardPagination,
-        items: List[T] = List.empty
-    ): List[T] = queryFn(pagination) match {
-      case Left(errors)                              => fail(s"Failed to get items: $errors")
-      case Right(result) if result.continue.nonEmpty =>
-        retrieveItems(result.continue.get.asInstanceOf[BackwardPagination], result.items ++ items)
-      case Right(result) => result.items ++ items
-    }
-
-    retrieveItems(BackwardPagination(pageSize))
-  }
-
   /** Special characters to test in queries.
     */
   val specialCharacters = Table(
@@ -317,12 +250,4 @@ object TestHelper {
     "?",
     "/"
   )
-
-  /** Assert that the response is an AccessDeniedError.
-    *
-    * @param response
-    *   the response to check
-    */
-  def assertAccessDeniedError[T](response: Either[List[ApiError], T]): Unit =
-    checkApiError(response) shouldBe a[AccessDeniedError]
 }

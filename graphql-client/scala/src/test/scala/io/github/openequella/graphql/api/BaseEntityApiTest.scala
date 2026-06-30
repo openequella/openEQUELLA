@@ -19,7 +19,10 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -31,12 +34,12 @@ class BaseEntityApiTest
     with EitherValues
     with OptionValues {
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("getNameById") {
     it("retrieves name for a known base entity by ID") {
       Given("a valid base entity ID")
-      val id = getBaseEntityId()
+      val id = getBaseEntityId
 
       When("calling getNameById with the valid ID")
       val result = BaseEntityApi.getNameById(id)
@@ -68,18 +71,11 @@ class BaseEntityApiTest
 
     it("denies access when not authenticated") {
       val AnyEntityId = 1L
-
-      When("an unauthenticated user calls getNameById")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        BaseEntityApi.getNameById(AnyEntityId)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(BaseEntityApi.getNameById(AnyEntityId)(_))
     }
   }
 
-  private def getBaseEntityId(): Long = {
+  private def getBaseEntityId: Long = {
     val entities = MetadataSchemaApi.listSchemas().value
     entities should not be empty
     entities.head.id

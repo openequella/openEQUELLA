@@ -19,7 +19,10 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -39,7 +42,7 @@ class CollectionDefinitionApiQueriesTest
     with EitherValues
     with OptionValues
     with TableDrivenPropertyChecks {
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("listCollections") {
     it("returns all collections") {
@@ -53,13 +56,7 @@ class CollectionDefinitionApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls listCollections")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.listCollections()(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.listCollections()(_))
     }
   }
 
@@ -89,13 +86,7 @@ class CollectionDefinitionApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls getIdByUuid")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.getIdByUuid("some-uuid")(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.getIdByUuid("some-uuid")(_))
     }
   }
 

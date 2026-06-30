@@ -19,8 +19,13 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.test.TestHelper
-import io.github.openequella.graphql.test.TestHelper.specialCharacters
+import io.github.openequella.graphql.test.PaginationTestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  checkApiError,
+  loginToRestInstitution,
+  specialCharacters
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks._
@@ -51,7 +56,7 @@ class InternalGroupApiTest
     hasUsers = true
   )
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   // Keep track of groups created during the tests so they can be cleaned up
   // at the end via `after`.
@@ -73,11 +78,7 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.getByName(knownGroup.name)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalGroupApi.getByName(knownGroup.name)(_))
     }
   }
 
@@ -93,11 +94,7 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.getByUniqueId(knownGroup.uniqueId)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalGroupApi.getByUniqueId(knownGroup.uniqueId)(_))
     }
   }
 
@@ -132,16 +129,12 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+      assertAccessDeniedError(
         InternalGroupApi.getGroupsByIds(
           ForwardPagination(LARGE_PAGE_SIZE),
           Set(knownGroup.uniqueId)
-        )(
-          unauthenticated
-        )
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+        )(_)
+      )
     }
   }
 
@@ -193,11 +186,7 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.createGroup("createGroupTest")(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalGroupApi.createGroup("createGroupTest")(_))
     }
   }
 
@@ -234,15 +223,11 @@ class InternalGroupApiTest
 
     it("should return None for an unknown group") {
       val response = InternalGroupApi.deleteGroup("no such group")
-      TestHelper.checkApiError(response) shouldBe a[NotFoundError]
+      checkApiError(response) shouldBe a[NotFoundError]
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.deleteGroupOnly(knownGroup.uniqueId)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalGroupApi.deleteGroupOnly(knownGroup.uniqueId)(_))
     }
   }
 
@@ -348,11 +333,7 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.updateGroup(knownGroup.uniqueId, Some("newName"))(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(InternalGroupApi.updateGroup(knownGroup.uniqueId, Some("newName"))(_))
     }
   }
 
@@ -382,17 +363,15 @@ class InternalGroupApiTest
     }
 
     it("supports forward and backward pagination") {
-      TestHelper.testPagination(pageSize = 3, totalExpectedItems = TOTAL_GROUPS) {
+      PaginationTestHelper.testPagination(pageSize = 3, totalExpectedItems = TOTAL_GROUPS) {
         InternalGroupApi.listGroups(_, None)
       }
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.listGroups(ForwardPagination(LARGE_PAGE_SIZE), None)(unauthenticated)
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(
+        InternalGroupApi.listGroups(ForwardPagination(LARGE_PAGE_SIZE), None)(_)
+      )
     }
   }
 
@@ -422,19 +401,15 @@ class InternalGroupApiTest
       } yield group.uniqueId
 
       Then("All users in the group should be returned")
-      TestHelper.testPagination(pageSize = 33, totalExpectedItems = totalUsers) {
+      PaginationTestHelper.testPagination(pageSize = 33, totalExpectedItems = totalUsers) {
         InternalGroupApi.listGroupUsers(_, groupId.value)
       }
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.listGroupUsers(ForwardPagination(LARGE_PAGE_SIZE), knownGroup.uniqueId)(
-          unauthenticated
-        )
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(
+        InternalGroupApi.listGroupUsers(ForwardPagination(LARGE_PAGE_SIZE), knownGroup.uniqueId)(_)
+      )
     }
   }
 
@@ -451,7 +426,7 @@ class InternalGroupApiTest
     }
 
     it("supports forward and backward pagination") {
-      TestHelper.testPagination(pageSize = 2, totalExpectedItems = TOTAL_GROUPS) {
+      PaginationTestHelper.testPagination(pageSize = 2, totalExpectedItems = TOTAL_GROUPS) {
         (pagination: Pagination) => InternalGroupApi.searchGroups(pagination, QUERY_ALL_GROUPS)
       }
     }
@@ -488,13 +463,9 @@ class InternalGroupApiTest
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        InternalGroupApi.searchGroups(ForwardPagination(LARGE_PAGE_SIZE), knownGroup.name)(
-          unauthenticated
-        )
-      }
-
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(
+        InternalGroupApi.searchGroups(ForwardPagination(LARGE_PAGE_SIZE), knownGroup.name)(_)
+      )
     }
   }
 
@@ -518,17 +489,17 @@ class InternalGroupApiTest
     InternalGroupApi.updateGroup(groupId, parentId = Some(parentId))
 
   private def getAllUsersInGroup(groupId: String, pageSize: Int = LARGE_PAGE_SIZE) =
-    TestHelper.paginateForward(pageSize) {
+    PaginationTestHelper.paginateForward(pageSize) {
       InternalGroupApi.listGroupUsers(_, groupId)
     }
 
   private def getAllGroupsInGroup(groupId: Option[String], pageSize: Int = LARGE_PAGE_SIZE) =
-    TestHelper.paginateForward(pageSize) { pagination =>
+    PaginationTestHelper.paginateForward(pageSize) { pagination =>
       InternalGroupApi.listGroups(pagination, groupId)
     }
 
   private def getGroupsByIds(ids: Set[String], pageSize: Int = LARGE_PAGE_SIZE) =
-    TestHelper.paginateForward(pageSize) { pagination =>
+    PaginationTestHelper.paginateForward(pageSize) { pagination =>
       InternalGroupApi.getGroupsByIds(pagination, ids)
     }
 }

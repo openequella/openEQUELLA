@@ -26,7 +26,13 @@ import io.github.openequella.graphql.api.views.{
   MetadataSchemaEditView,
   MetadataSchemaView
 }
-import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  CREDENTIALS_ADMIN,
+  assertAccessDeniedError,
+  checkApiError,
+  loginToRestInstitution,
+  withUser
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -42,7 +48,7 @@ class MetadataSchemaApiMutationsTest
     with GivenWhenThen
     with EitherValues
     with OptionValues {
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("startEdit") {
     it("initiates an edit session for a valid schema") {
@@ -67,17 +73,11 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.startEdit(invalidSchemaId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls startEdit")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.startEdit(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.startEdit(1)(_))
     }
   }
 
@@ -96,13 +96,7 @@ class MetadataSchemaApiMutationsTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls startCreate")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.startCreate()(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.startCreate()(_))
     }
   }
 
@@ -132,7 +126,7 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.cancelEdit(invalidSchemaId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("forcefully releases locks when cancelEditForced is used") {
@@ -140,7 +134,7 @@ class MetadataSchemaApiMutationsTest
       val schemaId = getFirstSchemaId()
 
       // Lock the schema as the ADMIN user
-      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
+      withUser(CREDENTIALS_ADMIN) { implicit adminSession =>
         val adminEditResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
         adminEditResult.isRight shouldBe true
       }
@@ -172,13 +166,7 @@ class MetadataSchemaApiMutationsTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls cancelEdit")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.cancelEditForced(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.cancelEditForced(1)(_))
     }
   }
 
@@ -215,14 +203,7 @@ class MetadataSchemaApiMutationsTest
 
       And("a fully populated MetadataSchemaEditView")
       val newSchemaDetails = buildNewSchemaDetails(skeleton)
-
-      When("an unauthenticated user calls add")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.add(newSchemaDetails)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.add(newSchemaDetails)(_))
     }
   }
 
@@ -288,7 +269,7 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.stopEditAndUnlock(editViewWithBadId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
@@ -299,13 +280,7 @@ class MetadataSchemaApiMutationsTest
       val editView = MetadataSchemaApi.startEdit(schemaId).value
 
       try {
-        When("an unauthenticated user calls stopEdit")
-        val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-          MetadataSchemaApi.stopEditAndUnlock(editView)(unauthenticated)
-        }
-
-        Then("returns an AccessDeniedError")
-        TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+        assertAccessDeniedError(MetadataSchemaApi.stopEditAndUnlock(editView)(_))
       } finally {
         // Best-effort cleanup: force-cancel to release any lingering lock.
         MetadataSchemaApi.cancelEditForced(schemaId)
@@ -339,7 +314,7 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.delete(invalidSchemaId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("fails when deleteWithReferenceCheck is used and schema has references") {
@@ -355,17 +330,11 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.deleteWithReferenceCheck(schemaId)
 
       Then("returns an InUseError indicating references exist")
-      TestHelper.checkApiError(result) shouldBe a[InUseError]
+      checkApiError(result) shouldBe a[InUseError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls delete")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.delete(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.delete(1)(_))
     }
   }
 
@@ -403,17 +372,11 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.clone(invalidSchemaId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls clone")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.clone(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.clone(1)(_))
     }
   }
 
@@ -459,18 +422,12 @@ class MetadataSchemaApiMutationsTest
       val result = MetadataSchemaApi.importSchema(invalidBytes)
 
       Then("returns an InternalError indicating the import failed")
-      TestHelper.checkApiError(result) shouldBe a[InternalError]
+      checkApiError(result) shouldBe a[InternalError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls importSchema")
       val dummyBytes = Array[Byte](0, 1, 2, 3)
-      val response   = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.importSchema(dummyBytes)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.importSchema(dummyBytes)(_))
     }
   }
 }

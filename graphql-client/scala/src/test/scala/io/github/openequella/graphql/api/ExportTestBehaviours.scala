@@ -19,8 +19,8 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{AccessDeniedError, ApiError}
-import io.github.openequella.graphql.test.{TestHelper, ZipTestHelper}
+import io.github.openequella.graphql.test.TestHelper.assertAccessDeniedError
+import io.github.openequella.graphql.test.ZipTestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -160,11 +160,7 @@ trait ExportTestBehaviours {
     }
 
     it("denies access when not authenticated") {
-      When(s"an unauthenticated user calls export ${config.entityName}")
-      val response = TestHelper.asUnauthenticatedUser(config.unauthExportFn)
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(config.unauthExportFn)
     }
   }
 }
