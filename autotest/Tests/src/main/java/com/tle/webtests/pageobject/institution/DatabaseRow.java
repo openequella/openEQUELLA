@@ -52,23 +52,12 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
     return statusCell().getText();
   }
 
-  // public boolean isUninitialised()
-  // {
-  // return UNINITIALISED.equals(getStatus());
-  // }
-  //
   private boolean isChecking() {
     return getStatus().startsWith("Checking");
   }
 
   public void waitForCheck() {
-    waiter.until(
-        new Function<WebDriver, Boolean>() {
-          @Override
-          public Boolean apply(WebDriver driver) {
-            return !isChecking();
-          }
-        });
+    waiter.until((Function<WebDriver, Boolean>) driver -> !isChecking());
   }
 
   public void waitForMigrate() {
