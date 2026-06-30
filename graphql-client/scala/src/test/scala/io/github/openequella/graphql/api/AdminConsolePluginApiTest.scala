@@ -20,8 +20,10 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.PluginDetailsView
-import io.github.openequella.graphql.test.TestHelper
-import io.github.openequella.graphql.test.TestHelper.assertAccessDeniedError
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -33,7 +35,7 @@ class AdminConsolePluginApiTest
     with EitherValues
     with OptionValues {
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("listPlugins") {
     it("retrieves admin console plugin details") {
@@ -48,15 +50,7 @@ class AdminConsolePluginApiTest
     }
 
     it("denies access when not authenticated") {
-      Given("an unauthenticated user")
-
-      When("calling listPlugins")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        AdminConsolePluginApi.listPlugins(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      assertAccessDeniedError(response)
+      assertAccessDeniedError(AdminConsolePluginApi.listPlugins(_))
     }
   }
 

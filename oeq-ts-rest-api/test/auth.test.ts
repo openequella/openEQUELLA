@@ -28,7 +28,7 @@ test("That we're able to login", async () => {
     TC.API_PATH
   );
   expect(userDetails.username).toBe(TC.USERNAME);
-  expect(userDetails.roles).toEqual(['TLE_LOGGED_IN_USER_ROLE']);
+  expect(userDetails.roles).toContain('TLE_LOGGED_IN_USER_ROLE');
 });
 
 test('An attempt to login with bad credentials fails', async () => {

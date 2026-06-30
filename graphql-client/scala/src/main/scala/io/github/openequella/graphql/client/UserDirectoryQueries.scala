@@ -47,80 +47,125 @@ object UserDirectoryQueries {
 
   /** Search for users matching the query. Wildcards at the start and end of the query are implied.
     */
-  def searchUsers[A](query: String)(innerSelection: SelectionBuilder[User, A])(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "searchUsers",
-    ListOf(Obj(innerSelection)),
-    arguments = List(Argument("query", query, "String!"))
-  )
+  def searchUsers[A](
+      query: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "searchUsers",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("query", query, "String!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
+      )
+    )
 
   /** Search for users within the specified group, optionally searching subgroups recursively.
+    * Returns NOT_FOUND if the group cannot be resolved.
     */
   def searchUsersInGroup[A](
       query: String,
-      parentGroupId: scala.Option[String] = None,
-      recursive: Boolean
-  )(innerSelection: SelectionBuilder[User, A])(implicit
+      parentGroupId: String,
+      recursive: Boolean,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
       encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]],
-      encoder2: ArgEncoder[Boolean]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "searchUsersInGroup",
-    ListOf(Obj(innerSelection)),
-    arguments = List(
-      Argument("query", query, "String!"),
-      Argument("parentGroupId", parentGroupId, "String"),
-      Argument("recursive", recursive, "Boolean!")
+      encoder1: ArgEncoder[Boolean],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "searchUsersInGroup",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("query", query, "String!"),
+        Argument("parentGroupId", parentGroupId, "String!"),
+        Argument("recursive", recursive, "Boolean!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
+      )
     )
-  )
 
-  /** Retrieve all roles assigned to the specified user
+  /** Retrieve all roles assigned to the specified user. Returns NOT_FOUND if the user cannot be
+    * resolved.
     */
   def rolesForUser[A](userId: String)(innerSelection: SelectionBuilder[Role, A])(implicit
       encoder0: ArgEncoder[String]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "rolesForUser",
-    ListOf(Obj(innerSelection)),
-    arguments = List(Argument("userId", userId, "String!"))
-  )
-
-  /** Retrieve the IDs of all groups that contain the specified user
-    */
-  def groupIdsForUser(
-      userId: String
-  )(implicit encoder0: ArgEncoder[String]): SelectionBuilder[UserDirectoryQueries, List[String]] =
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[List[A]]] =
     _root_.caliban.client.SelectionBuilder.Field(
-      "groupIdsForUser",
-      ListOf(Scalar()),
+      "rolesForUser",
+      OptionOf(ListOf(Obj(innerSelection))),
       arguments = List(Argument("userId", userId, "String!"))
     )
 
-  /** Retrieve all groups (including subgroups) that contain the specified user
+  /** Retrieve the IDs of all groups that contain the specified user. Returns NOT_FOUND if the user
+    * cannot be resolved.
+    */
+  def groupIdsForUser(userId: String)(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[List[String]]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "groupIdsForUser",
+      OptionOf(ListOf(Scalar())),
+      arguments = List(Argument("userId", userId, "String!"))
+    )
+
+  /** Retrieve all groups (including subgroups) that contain the specified user. Returns NOT_FOUND
+    * if the user cannot be resolved.
     */
   def groupsForUser[A](userId: String)(innerSelection: SelectionBuilder[Group, A])(implicit
       encoder0: ArgEncoder[String]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "groupsForUser",
-    ListOf(Obj(innerSelection)),
-    arguments = List(Argument("userId", userId, "String!"))
-  )
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[List[A]]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "groupsForUser",
+      OptionOf(ListOf(Obj(innerSelection))),
+      arguments = List(Argument("userId", userId, "String!"))
+    )
 
-  /** List all users in the specified group
+  /** List all users in the specified group. Returns NOT_FOUND if the group cannot be resolved.
     */
-  def usersInGroup[A](groupId: String, recursive: Boolean)(
-      innerSelection: SelectionBuilder[User, A]
-  )(implicit
+  def usersInGroup[A](
+      groupId: String,
+      recursive: Boolean,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
       encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[Boolean]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "usersInGroup",
-    ListOf(Obj(innerSelection)),
-    arguments =
-      List(Argument("groupId", groupId, "String!"), Argument("recursive", recursive, "Boolean!"))
-  )
+      encoder1: ArgEncoder[Boolean],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "usersInGroup",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("groupId", groupId, "String!"),
+        Argument("recursive", recursive, "Boolean!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
+      )
+    )
 
-  /** Retrieve a group by its unique ID
+  /** Retrieve a group by its unique ID. Returns NOT_FOUND if the group cannot be resolved.
     */
   def groupById[A](groupId: String)(innerSelection: SelectionBuilder[Group, A])(implicit
       encoder0: ArgEncoder[String]
@@ -146,30 +191,59 @@ object UserDirectoryQueries {
   /** Search for groups matching the query across the entire group hierarchy. Wildcards at the start
     * and end of the query are implied.
     */
-  def searchGroups[A](query: String)(innerSelection: SelectionBuilder[Group, A])(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "searchGroups",
-    ListOf(Obj(innerSelection)),
-    arguments = List(Argument("query", query, "String!"))
-  )
-
-  /** Search for groups matching the query within the specified parent group. Wildcards at the start
-    * and end of the query are implied.
-    */
-  def searchGroupsInParent[A](query: String, parentGroupId: String)(
-      innerSelection: SelectionBuilder[Group, A]
-  )(implicit encoder0: ArgEncoder[String]): SelectionBuilder[UserDirectoryQueries, List[A]] =
+  def searchGroups[A](
+      query: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
-      "searchGroupsInParent",
-      ListOf(Obj(innerSelection)),
+      "searchGroups",
+      OptionOf(Obj(innerSelection)),
       arguments = List(
         Argument("query", query, "String!"),
-        Argument("parentGroupId", parentGroupId, "String!")
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
-  /** Retrieve the parent group of the specified group, if one exists
+  /** Search for groups matching the query within the specified parent group. Wildcards at the start
+    * and end of the query are implied. Returns NOT_FOUND if the parent group cannot be resolved.
+    */
+  def searchGroupsInParent[A](
+      query: String,
+      parentGroupId: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "searchGroupsInParent",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("query", query, "String!"),
+        Argument("parentGroupId", parentGroupId, "String!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
+      )
+    )
+
+  /** Retrieve the parent group of the specified group, if one exists. Returns NOT_FOUND if the
+    * group cannot be resolved.
     */
   def parentGroup[A](groupId: String)(innerSelection: SelectionBuilder[Group, A])(implicit
       encoder0: ArgEncoder[String]
@@ -180,7 +254,7 @@ object UserDirectoryQueries {
       arguments = List(Argument("groupId", groupId, "String!"))
     )
 
-  /** Retrieve a role by its unique ID
+  /** Retrieve a role by its unique ID. Returns NOT_FOUND if the role cannot be resolved.
     */
   def roleById[A](roleId: String)(innerSelection: SelectionBuilder[Role, A])(implicit
       encoder0: ArgEncoder[String]
@@ -204,11 +278,26 @@ object UserDirectoryQueries {
 
   /** Search for roles matching the query. Wildcards at the start and end of the query are implied.
     */
-  def searchRoles[A](query: String)(innerSelection: SelectionBuilder[Role, A])(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[UserDirectoryQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
-    "searchRoles",
-    ListOf(Obj(innerSelection)),
-    arguments = List(Argument("query", query, "String!"))
-  )
+  def searchRoles[A](
+      query: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[RoleConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[UserDirectoryQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "searchRoles",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("query", query, "String!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
+      )
+    )
 }

@@ -20,7 +20,11 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
-import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  checkApiError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -40,7 +44,7 @@ class MetadataSchemaApiQueriesTest
     with EitherValues
     with OptionValues
     with TableDrivenPropertyChecks {
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("listSchemas") {
     it("returns all metadata schemas") {
@@ -54,13 +58,7 @@ class MetadataSchemaApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls listSchemas")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.listSchemas()(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.listSchemas()(_))
     }
   }
 
@@ -90,13 +88,7 @@ class MetadataSchemaApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls getIdByUuid")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.getIdByUuid("some-uuid")(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.getIdByUuid("some-uuid")(_))
     }
   }
 
@@ -126,13 +118,7 @@ class MetadataSchemaApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls getUses")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.getUses(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.getUses(1)(_))
     }
   }
 
@@ -157,17 +143,11 @@ class MetadataSchemaApiQueriesTest
       val result = MetadataSchemaApi.hasReferences(invalidSchemaId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls hasReferences")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.hasReferences(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.hasReferences(1)(_))
     }
   }
 
@@ -197,13 +177,7 @@ class MetadataSchemaApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls getImportTypes")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.getImportTypes(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.getImportTypes(1)(_))
     }
   }
 
@@ -248,13 +222,7 @@ class MetadataSchemaApiQueriesTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls getById")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.getById(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(MetadataSchemaApi.getById(1)(_))
     }
   }
 }

@@ -188,12 +188,13 @@ object InternalUserApi extends NestedApi[InternalUserQueries, InternalUserMutati
   )(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[InternalUserView]] = {
-    // Set up the various selectors
-    val userEdge =
-      (UserEdge.cursor ~ UserEdge.node { tleUser }).mapN(NodeWithCursorView[InternalUserView](_, _))
     val userConnection =
-      (UserConnection.pageInfo { PageInfoView.selector } ~ UserConnection.edges { userEdge })
-        .mapN(ConnectionView[InternalUserView](_, _))
+      ConnectionView.selector[UserConnection, UserEdge, InternalUserView](
+        UserConnection.pageInfo,
+        UserConnection.edges,
+        UserEdge.cursor,
+        UserEdge.node { tleUser }
+      )
 
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalUserQueries.list(query, first, last, before, after) {

@@ -238,7 +238,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
   )
   private case class UserDirectoryQueryOps(
       @GQLDescription("Retrieve a user by their unique ID")
-      userById: UserByIdArgs => Option[User],
+      userById: UserByIdArgs => ResultWithErrors[User],
       @GQLDescription(
         "Retrieve multiple users by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
       )
@@ -248,21 +248,29 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       )
       searchUsers: SearchUsersArgs => IO[CalibanError, UserConnection],
       @GQLDescription(
-        "Search for users within the specified group, optionally searching subgroups recursively."
+        "Search for users within the specified group, optionally searching subgroups recursively. Returns NOT_FOUND if the group cannot be resolved."
       )
       searchUsersInGroup: SearchUsersInGroupArgs => IO[CalibanError, UserConnection],
-      @GQLDescription("Retrieve all roles assigned to the specified user")
-      rolesForUser: RolesForUserArgs => List[Role],
-      @GQLDescription("Retrieve the IDs of all groups that contain the specified user")
-      groupIdsForUser: GroupIdsForUserArgs => List[String],
       @GQLDescription(
-        "Retrieve all groups (including subgroups) that contain the specified user"
+        "Retrieve all roles assigned to the specified user. Returns NOT_FOUND if the user cannot be resolved."
       )
-      groupsForUser: GroupsForUserArgs => List[Group],
-      @GQLDescription("List all users in the specified group")
+      rolesForUser: RolesForUserArgs => ResultWithErrors[List[Role]],
+      @GQLDescription(
+        "Retrieve the IDs of all groups that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+      )
+      groupIdsForUser: GroupIdsForUserArgs => ResultWithErrors[List[String]],
+      @GQLDescription(
+        "Retrieve all groups (including subgroups) that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+      )
+      groupsForUser: GroupsForUserArgs => ResultWithErrors[List[Group]],
+      @GQLDescription(
+        "List all users in the specified group. Returns NOT_FOUND if the group cannot be resolved."
+      )
       usersInGroup: UsersInGroupArgs => IO[CalibanError, UserConnection],
-      @GQLDescription("Retrieve a group by its unique ID")
-      groupById: GroupByIdArgs => Option[Group],
+      @GQLDescription(
+        "Retrieve a group by its unique ID. Returns NOT_FOUND if the group cannot be resolved."
+      )
+      groupById: GroupByIdArgs => ResultWithErrors[Group],
       @GQLDescription(
         "Retrieve multiple groups by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
       )
@@ -272,13 +280,17 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       )
       searchGroups: SearchGroupsArgs => IO[CalibanError, GroupConnection],
       @GQLDescription(
-        "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied."
+        "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied. Returns NOT_FOUND if the parent group cannot be resolved."
       )
       searchGroupsInParent: SearchGroupsInParentArgs => IO[CalibanError, GroupConnection],
-      @GQLDescription("Retrieve the parent group of the specified group, if one exists")
-      parentGroup: ParentGroupArgs => Option[Group],
-      @GQLDescription("Retrieve a role by its unique ID")
-      roleById: RoleByIdArgs => Option[Role],
+      @GQLDescription(
+        "Retrieve the parent group of the specified group, if one exists. Returns NOT_FOUND if the group cannot be resolved."
+      )
+      parentGroup: ParentGroupArgs => ResultWithErrors[Option[Group]],
+      @GQLDescription(
+        "Retrieve a role by its unique ID. Returns NOT_FOUND if the role cannot be resolved."
+      )
+      roleById: RoleByIdArgs => ResultWithErrors[Role],
       @GQLDescription(
         "Retrieve multiple roles by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
       )
@@ -312,7 +324,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       searchUsersInGroup = args =>
         for {
           pagination <- Pagination(args)
-          result = userDirectoryProvider.searchUsersInGroup(
+          result     <- userDirectoryProvider.searchUsersInGroup(
             args.query,
             args.parentGroupId,
             args.recursive,
@@ -325,7 +337,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       usersInGroup = args =>
         for {
           pagination <- Pagination(args)
-          result = userDirectoryProvider.usersInGroup(
+          result     <- userDirectoryProvider.usersInGroup(
             args.groupId,
             args.recursive,
             pagination
@@ -341,7 +353,7 @@ class UserDirectorySchema @Inject() (userDirectoryProvider: UserDirectoryProvide
       searchGroupsInParent = args =>
         for {
           pagination <- Pagination(args)
-          result = userDirectoryProvider.searchGroupsInParent(
+          result     <- userDirectoryProvider.searchGroupsInParent(
             args.query,
             args.parentGroupId,
             pagination

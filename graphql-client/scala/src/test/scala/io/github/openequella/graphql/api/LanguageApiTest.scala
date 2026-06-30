@@ -20,8 +20,10 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.{LanguageBundleNameView, LanguageView}
-import io.github.openequella.graphql.test.TestHelper
-import io.github.openequella.graphql.test.TestHelper.assertAccessDeniedError
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -33,7 +35,7 @@ class LanguageApiTest
     with EitherValues
     with OptionValues {
 
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("listLanguages") {
     it("retrieves configured languages") {
@@ -48,13 +50,7 @@ class LanguageApiTest
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls listLanguages")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        LanguageApi.listLanguages(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      assertAccessDeniedError(response)
+      assertAccessDeniedError(LanguageApi.listLanguages(_))
     }
   }
 
@@ -100,14 +96,7 @@ class LanguageApiTest
     it("denies access when not authenticated") {
       Given("known language bundle IDs")
       val bundleIds = getBundleIds
-
-      When("an unauthenticated user calls namesByBundleIds")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        LanguageApi.namesByBundleIds(bundleIds)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      assertAccessDeniedError(response)
+      assertAccessDeniedError(LanguageApi.namesByBundleIds(bundleIds)(_))
     }
   }
 

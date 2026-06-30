@@ -30,7 +30,11 @@ import io.github.openequella.graphql.api.views.{
   CollectionDefinitionEditView,
   CollectionDefinitionView
 }
-import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.{
+  assertAccessDeniedError,
+  checkApiError,
+  loginToRestInstitution
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
@@ -53,7 +57,7 @@ class CollectionDefinitionApiMutationsTest
     with GivenWhenThen
     with EitherValues
     with OptionValues {
-  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+  private implicit val cfg: ClientConfiguration = loginToRestInstitution()
 
   describe("startEdit") {
     it("initiates an edit session for a valid collection") {
@@ -78,17 +82,11 @@ class CollectionDefinitionApiMutationsTest
       val result = CollectionDefinitionApi.startEdit(invalidCollectionId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls startEdit")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.startEdit(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.startEdit(1)(_))
     }
   }
 
@@ -131,18 +129,12 @@ class CollectionDefinitionApiMutationsTest
       val result = CollectionDefinitionApi.importCollection(invalidBytes)
 
       Then("returns an InternalError indicating the import failed")
-      TestHelper.checkApiError(result) shouldBe a[InternalError]
+      checkApiError(result) shouldBe a[InternalError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls importCollection")
       val dummyBytes = Array[Byte](0, 1, 2, 3)
-      val response   = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.importCollection(dummyBytes)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.importCollection(dummyBytes)(_))
     }
   }
 
@@ -175,17 +167,11 @@ class CollectionDefinitionApiMutationsTest
       val result = CollectionDefinitionApi.clone(invalidId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls clone")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.clone(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.clone(1)(_))
     }
   }
 
@@ -214,17 +200,11 @@ class CollectionDefinitionApiMutationsTest
       val result = CollectionDefinitionApi.delete(invalidId)
 
       Then("returns a NotFoundError")
-      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls delete")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.delete(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.delete(1)(_))
     }
   }
 
@@ -316,13 +296,7 @@ class CollectionDefinitionApiMutationsTest
     //  start editing and then cancel without saving.
 
     it("denies access when not authenticated") {
-      When("an unauthenticated user calls cancelEdit")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        CollectionDefinitionApi.cancelEdit(1)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      assertAccessDeniedError(CollectionDefinitionApi.cancelEdit(1)(_))
     }
   }
 }

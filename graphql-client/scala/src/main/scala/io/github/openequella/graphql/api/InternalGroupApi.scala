@@ -64,14 +64,13 @@ object InternalGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMut
   private val tleGroup =
     (InternalGroup.uniqueId ~ InternalGroup.parentId ~ InternalGroup.name ~ InternalGroup.description ~ InternalGroup.hasGroups ~ InternalGroup.hasUsers)
       .mapN(InternalGroupView)
-  private val groupEdge =
-    (InternalGroupEdge.cursor ~ InternalGroupEdge.node { tleGroup })
-      .mapN(NodeWithCursorView[InternalGroupView](_, _))
   private val groupConnection =
-    (InternalGroupConnection.pageInfo { PageInfoView.selector } ~ InternalGroupConnection.edges {
-      groupEdge
-    })
-      .mapN(ConnectionView[InternalGroupView](_, _))
+    ConnectionView.selector[InternalGroupConnection, InternalGroupEdge, InternalGroupView](
+      InternalGroupConnection.pageInfo,
+      InternalGroupConnection.edges,
+      InternalGroupEdge.cursor,
+      InternalGroupEdge.node { tleGroup }
+    )
 
   /** Retrieves the details of an individual group by its unique identifier.
     *
@@ -257,11 +256,13 @@ object InternalGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMut
   def listGroupUsers(pagination: Pagination, groupId: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[String]] = {
-    val userEdge =
-      (StringEdge.cursor ~ StringEdge.node).mapN(NodeWithCursorView[String](_, _))
     val userConnection =
-      (StringConnection.pageInfo { PageInfoView.selector } ~ StringConnection.edges { userEdge })
-        .mapN(ConnectionView[String](_, _))
+      ConnectionView.selector[StringConnection, StringEdge, String](
+        StringConnection.pageInfo,
+        StringConnection.edges,
+        StringEdge.cursor,
+        StringEdge.node
+      )
 
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalGroupQueries.users(groupId, first, last, before, after) {

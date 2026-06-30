@@ -67,6 +67,33 @@ final case class NodeWithCursorView[T](cursor: String, node: T)
   */
 final case class ConnectionView[T](pageInfo: PageInfoView, edges: List[NodeWithCursorView[T]])
 
+object ConnectionView {
+
+  /** Builds a selector for GraphQL Connection responses.
+    *
+    * @param pageInfo
+    *   The generated selector for the connection's pageInfo field.
+    * @param edges
+    *   The generated selector for the connection's edges field.
+    * @param cursor
+    *   The generated selector for the edge's cursor field.
+    * @param node
+    *   The selector for the edge's node field.
+    */
+  def selector[C, E, A](
+      pageInfo: SelectionBuilder[PageInfo, PageInfoView] => SelectionBuilder[C, PageInfoView],
+      edges: SelectionBuilder[E, NodeWithCursorView[A]] => SelectionBuilder[
+        C,
+        List[NodeWithCursorView[A]]
+      ],
+      cursor: SelectionBuilder[E, String],
+      node: SelectionBuilder[E, A]
+  ): SelectionBuilder[C, ConnectionView[A]] = {
+    val edge = (cursor ~ node).mapN(NodeWithCursorView[A](_, _))
+    (pageInfo(PageInfoView.selector) ~ edges(edge)).mapN(ConnectionView[A](_, _))
+  }
+}
+
 /** The pagination information used in a GraphQL query
   */
 sealed abstract class Pagination {
