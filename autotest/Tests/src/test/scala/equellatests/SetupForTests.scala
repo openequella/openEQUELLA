@@ -15,6 +15,7 @@ object ImportInsts {
       .getOrElse((_: String) => true)
   }
   val INSTITUTION_FILE = "institution"
+  val DEFAULT_SCHEMA   = "Default schema"
 }
 
 class ImportInsts(allowed: String => Boolean) {
@@ -33,6 +34,13 @@ class ImportInsts(allowed: String => Boolean) {
     TestChecker.withServerAdmin(
       "import",
       { context =>
+        // Confirm the system is healthy before importing: on a fresh/slow instance the Default
+        // schema migration may still be running, in which case no schema is available and the
+        // import tab renders "No available schemas". Wait for it to come online first.
+        val schemaRow = new DatabasesPage(context).load().getDatabaseRow(DEFAULT_SCHEMA)
+        schemaRow.waitForMigrate()
+        schemaRow.assertOnline()
+
         insts.foreach { instFolder =>
           val shortName      = instFolder.getName
           val institutionUrl = context.getTestConfig.getInstitutionUrl(shortName)
