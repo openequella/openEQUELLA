@@ -41,6 +41,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -114,6 +115,75 @@ public class TaskStatus extends AbstractNodeStatus {
 
   public String getAssignedTo() {
     return taskbean.getAssignedTo();
+  }
+
+  /**
+   * Repairs metadata-derived task assignments after item metadata changes.
+   *
+   * <p>Only reassigns when the eligible moderator set has changed and the current assignee appears
+   * stale. Assignees still in the current moderator set are preserved, as are likely manual
+   * assignments made by users who could moderate outside the metadata-derived moderator set.
+   *
+   * <p>One known case is the system/super user, such as {@code TLE_ADMINISTRATOR}. {@code
+   * WorkflowServiceImpl.canCurrentUserModerate} allows system users to moderate regardless of the
+   * task moderator list, so their self-assignment can update persisted {@code assignedTo} without
+   * changing item XML.
+   *
+   * @param originalModerators moderators resolved from item XML before the metadata edit
+   * @return {@code true} if the persisted {@code assignedTo} value changed
+   */
+  public boolean reassignIfStale(Set<String> originalModerators) {
+    WorkflowItem task = (WorkflowItem) node;
+    Set<String> currentModerators = op.getUsersToModerate(task);
+
+    String originalAssignee = getAssignedTo();
+
+    if (shouldKeepAssignee(originalAssignee, originalModerators, currentModerators)) {
+      return false;
+    }
+
+    setAssignedTo(null);
+    processAutoAssign(task, currentModerators);
+    return !Objects.equals(originalAssignee, getAssignedTo());
+  }
+
+  /**
+   * Determines whether the current assignee should be kept based on the original and current
+   * moderator sets. Preserves assignees that are still current moderators or appear to be
+   * manual/admin assignments.
+   */
+  private boolean shouldKeepAssignee(
+      String assignee, Set<String> originalModerators, Set<String> currentModerators) {
+    boolean areModeratorSetsUnchanged = Objects.equals(originalModerators, currentModerators);
+    if (areModeratorSetsUnchanged) {
+      return true;
+    }
+
+    boolean isAssigneeCurrentModerator = isAssignedToCurrentModerators(assignee, currentModerators);
+    boolean isAssigneeManualOverride = isManualAssignment(assignee, originalModerators);
+    return isAssigneeCurrentModerator || isAssigneeManualOverride;
+  }
+
+  private boolean isAssignedToCurrentModerators(String assignee, Set<String> currentModerators) {
+    return !Check.isEmpty(assignee) && currentModerators.contains(assignee);
+  }
+
+  /**
+   * Detects manual task assignment overrides that should survive metadata refresh.
+   *
+   * <p>Metadata-driven assignments come from item XML and workflow config, so the assignee is
+   * normally in {@code originalModerators}. Manual overrides do not change item XML; they only
+   * update persisted {@code assignedTo}.
+   *
+   * <p>Typical case: a user with {@code MANAGE_WORKFLOW} (often a system administrator) opens a
+   * task they are not eligible to moderate from metadata and clicks <em>assign to me</em>. That
+   * sets {@code assignedTo} to themselves even though they were never in the metadata moderator
+   * pool. When metadata later changes, that assignment must be preserved.
+   */
+  private boolean isManualAssignment(String assignee, Set<String> originalModerators) {
+    return !Check.isEmpty(assignee)
+        && originalModerators != null
+        && !originalModerators.contains(assignee);
   }
 
   @Override

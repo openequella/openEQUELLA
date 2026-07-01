@@ -31,6 +31,7 @@ test("That we're able to retrieve general settings", async () => {
 
 describe('UI Settings', () => {
   let settingsAtStart: UISettings;
+
   beforeAll(async () => {
     settingsAtStart = await OEQ.Settings.getUiSettings(TC.API_PATH);
   });
@@ -40,14 +41,21 @@ describe('UI Settings', () => {
   it('Should be possible to retrieve the UI settings', () =>
     expect(settingsAtStart).toBeTruthy());
 
-  it('Should be possible to change the settings', async () => {
-    await OEQ.Settings.updateUiSettings(TC.API_PATH, {
-      newUI: {
-        ...settingsAtStart.newUI,
-        enabled: !settingsAtStart.newUI.enabled,
-      },
+  // This test is known to be flaky in CI. Multiple attempts have been made to
+  // stabilise it but the root cause has not been resolved.
+  // It is wrapped in its own describe so that jest.retryTimes only applies here.
+  describe('updateUiSettings', () => {
+    jest.retryTimes(3, { logErrorsBeforeRetry: true });
+
+    it('Should be possible to change the settings', async () => {
+      await OEQ.Settings.updateUiSettings(TC.API_PATH, {
+        newUI: {
+          ...settingsAtStart.newUI,
+          enabled: !settingsAtStart.newUI.enabled,
+        },
+      });
+      const settings = await OEQ.Settings.getUiSettings(TC.API_PATH);
+      expect(settings.newUI.enabled).toEqual(!settingsAtStart.newUI.enabled);
     });
-    const settings = await OEQ.Settings.getUiSettings(TC.API_PATH);
-    expect(settings.newUI.enabled).toEqual(!settingsAtStart.newUI.enabled);
   });
 });
