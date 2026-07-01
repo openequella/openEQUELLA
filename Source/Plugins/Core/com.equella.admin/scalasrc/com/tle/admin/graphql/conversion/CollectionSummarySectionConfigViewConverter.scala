@@ -18,7 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
+import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.{
+  fromLanguageBundle,
+  toLanguageBundle
+}
 import com.tle.beans.entity.itemdef.SummarySectionsConfig
 import io.github.openequella.graphql.api.views.CollectionSummarySectionConfigView
 
@@ -33,4 +36,14 @@ object CollectionSummarySectionConfigViewConverter {
       ssc.setConfiguration(view.configuration.orNull)
       view.bundleTitle.foreach(bt => ssc.setBundleTitle(toLanguageBundle(bt)))
     }
+
+  def fromSummarySectionConfig(
+      config: SummarySectionsConfig
+  ): CollectionSummarySectionConfigView =
+    CollectionSummarySectionConfigView(
+      uuid = Option(config.getUuid),
+      value = config.getValue,
+      configuration = Option(config.getConfiguration),
+      bundleTitle = Option(config.getBundleTitle).map(fromLanguageBundle)
+    )
 }

@@ -104,21 +104,10 @@ class AdminSchemaServiceImpl @Inject() (implicit
   override def cancelEdit(id: Long, force: Boolean): Unit =
     cancelEditWith(MetadataSchemaApi.cancelEdit, MetadataSchemaApi.cancelEditForced)(id, force)
 
-  override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema = {
-    val details        = pack convert fromEntityPack
-    val stopEditResult =
-      if (unlock) MetadataSchemaApi.stopEditAndUnlock(details)
-      else MetadataSchemaApi.stopEdit(details)
-
-    stopEditResult match {
-      case Right(updatedView) => updatedView convert toSchema
-      case Left(errors)       =>
-        throw new ClientRequestException(
-          s"Error saving changes for schema with ID: ${pack.getEntity.getId}",
-          errors
-        )
-    }
-  }
+  override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema =
+    stopEditWith(MetadataSchemaApi.stopEdit, MetadataSchemaApi.stopEditAndUnlock)(
+      _ convert fromEntityPack
+    )(_ convert toSchema)(pack, unlock)
 
   override def delete(entityid: Long, checkReferences: Boolean): Unit =
     deleteWith(MetadataSchemaApi.delete, MetadataSchemaApi.deleteWithReferenceCheck)(

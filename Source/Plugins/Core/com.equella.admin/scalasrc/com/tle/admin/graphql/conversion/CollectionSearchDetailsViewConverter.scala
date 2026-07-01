@@ -18,7 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionDisplayNodeViewConverter.toDisplayNode
+import com.tle.admin.graphql.conversion.CollectionDisplayNodeViewConverter.{
+  fromDisplayNode,
+  toDisplayNode
+}
 import com.tle.beans.entity.itemdef.SearchDetails
 import io.github.openequella.graphql.api.views.CollectionSearchDetailsView
 
@@ -33,4 +36,13 @@ object CollectionSearchDetailsViewConverter {
       sd.setIntegrationOpen(view.integrationOpen)
       sd.setDisplayNodes(view.displayNodes.map(toDisplayNode).asArrayList)
     }
+
+  def fromSearchDetails(searchDetails: SearchDetails): CollectionSearchDetailsView =
+    CollectionSearchDetailsView(
+      attDisplay = Option(searchDetails.getAttDisplay),
+      disableThumbnail = searchDetails.isDisableThumbnail,
+      standardOpen = searchDetails.isStandardOpen,
+      integrationOpen = searchDetails.isIntegrationOpen,
+      displayNodes = NullSafeList(searchDetails.getDisplayNodes) convert fromDisplayNode
+    )
 }

@@ -18,12 +18,22 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionHtmlMappingViewConverter.toHtmlMapping
-import com.tle.admin.graphql.conversion.CollectionImsMappingViewConverter.toImsMapping
-import com.tle.admin.graphql.conversion.CollectionLiteralMappingViewConverter.toLiteralMapping
+import com.tle.admin.graphql.conversion.CollectionHtmlMappingViewConverter.{
+  fromHtmlMapping,
+  toHtmlMapping
+}
+import com.tle.admin.graphql.conversion.CollectionImsMappingViewConverter.{
+  fromImsMapping,
+  toImsMapping
+}
+import com.tle.admin.graphql.conversion.CollectionLiteralMappingViewConverter.{
+  fromLiteralMapping,
+  toLiteralMapping
+}
 import com.tle.beans.entity.itemdef.MetadataMapping
 import io.github.openequella.graphql.api.views.CollectionMetadataMappingView
 
+import scala.jdk.CollectionConverters._
 import scala.util.chaining.scalaUtilChainingOps
 
 object CollectionMetadataMappingViewConverter {
@@ -34,4 +44,11 @@ object CollectionMetadataMappingViewConverter {
       mm.getHtmlMapping.addAll(view.htmlMapping.map(toHtmlMapping).asArrayList)
       mm.getLiteralMapping.addAll(view.literalMapping.map(toLiteralMapping).asArrayList)
     }
+
+  def fromMetadataMapping(mapping: MetadataMapping): CollectionMetadataMappingView =
+    CollectionMetadataMappingView(
+      imsMapping = mapping.getImsMapping.asScala.map(fromImsMapping).toList,
+      htmlMapping = mapping.getHtmlMapping.asScala.map(fromHtmlMapping).toList,
+      literalMapping = mapping.getLiteralMapping.asScala.map(fromLiteralMapping).toList
+    )
 }

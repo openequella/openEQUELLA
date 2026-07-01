@@ -18,7 +18,11 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.toEntityPack
+import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.{
+  fromEntityPack,
+  toEntityPack
+}
+import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.toItemDefinition
 import com.tle.admin.graphql.conversion.Converter
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
@@ -98,6 +102,11 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
 
   override def startEdit(id: Long): EntityPack[ItemDefinition] =
     startEditWith(CollectionDefinitionApi.startEdit)(_ convert toEntityPack)(id)
+
+  override def stopEdit(pack: EntityPack[ItemDefinition], unlock: Boolean): ItemDefinition =
+    stopEditWith(CollectionDefinitionApi.stopEdit, CollectionDefinitionApi.stopEditAndUnlock)(
+      _ convert fromEntityPack
+    )(_ convert toItemDefinition)(pack, unlock)
 
   override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
     logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")

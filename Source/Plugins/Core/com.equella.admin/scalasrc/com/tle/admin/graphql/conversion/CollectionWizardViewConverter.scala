@@ -36,6 +36,21 @@ object CollectionWizardViewConverter {
     view.fixedMetadata.foreach(xml => w.setMetadata(deserialiseXml(xml)))
   }
 
+  def fromWizard(wizard: Wizard): CollectionWizardView =
+    CollectionWizardView(
+      name = Option(wizard.getName),
+      redraftScript = Option(wizard.getRedraftScript),
+      saveScript = Option(wizard.getSaveScript),
+      allowNonSequentialNavigation = wizard.isAllowNonSequentialNavigation,
+      showPageTitlesNextPrev = wizard.isShowPageTitlesNextPrev,
+      additionalCssClass = Option(wizard.getAdditionalCssClass),
+      pages = Option(wizard.getPages).map(serialiseXml),
+      fixedMetadata = Option(wizard.getMetadata).map(serialiseXml)
+    )
+
   private def deserialiseXml[T](xml: String): T =
     XStreamSecurityManager.newXStream().fromXML(xml).asInstanceOf[T]
+
+  private def serialiseXml(obj: Any): String =
+    XStreamSecurityManager.newXStream().toXML(obj)
 }

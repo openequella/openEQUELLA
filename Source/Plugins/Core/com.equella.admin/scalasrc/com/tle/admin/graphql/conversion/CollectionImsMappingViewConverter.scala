@@ -30,4 +30,12 @@ object CollectionImsMappingViewConverter {
     m.setType(view.mappingType)
     m.setReplace(view.replace)
   }
+
+  def fromImsMapping(mapping: IMSMapping): CollectionImsMappingView =
+    CollectionImsMappingView(
+      ims = mapping.getIms,
+      itemdef = mapping.getItemdef,
+      mappingType = mapping.getType,
+      replace = mapping.isReplace
+    )
 }

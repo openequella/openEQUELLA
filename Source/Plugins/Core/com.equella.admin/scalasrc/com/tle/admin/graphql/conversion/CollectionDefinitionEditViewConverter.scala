@@ -18,7 +18,12 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.toItemDefinition
+import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.{
+  fromItemDefinition,
+  toItemDefinition
+}
+import com.tle.admin.graphql.conversion.OtherTargetListViewConverter.fromTargetListMap
+import com.tle.admin.graphql.conversion.TargetListConverter.fromTargetList
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.EntityPack
 import io.github.openequella.graphql.api.views.CollectionDefinitionEditView
@@ -31,4 +36,13 @@ object CollectionDefinitionEditViewConverter {
       .withTargetList(view.targetList)
       .withOtherTargetList(view.otherTargetLists)
       .build()
+
+  def fromEntityPack(pack: EntityPack[ItemDefinition]): CollectionDefinitionEditView =
+    CollectionDefinitionEditView(
+      collection = pack.getEntity convert fromItemDefinition,
+      stagingId = pack.getStagingID,
+      version = Option(pack.getVersion),
+      targetList = pack.getTargetList convert fromTargetList,
+      otherTargetLists = pack.getOtherTargetLists convert fromTargetListMap
+    )
 }

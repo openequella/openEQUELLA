@@ -30,4 +30,11 @@ object CollectionItemMetadataRuleViewConverter {
       r.setName(view.name.orNull)
       r.setScript(view.script.orNull)
     }
+
+  def fromItemMetadataRule(rule: ItemMetadataRule): CollectionItemMetadataRuleView =
+    CollectionItemMetadataRuleView(
+      ruleId = Option(rule.getId),
+      name = Option(rule.getName),
+      script = Option(rule.getScript)
+    )
 }

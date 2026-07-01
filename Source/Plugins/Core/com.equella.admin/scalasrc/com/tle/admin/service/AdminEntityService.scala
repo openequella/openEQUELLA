@@ -307,6 +307,42 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       converter
     }
 
+  /** Stops editing an entity, saving changes and optionally releasing the lock.
+    *
+    * @param save
+    *   API function that saves the changes while keeping the lock
+    * @param saveAndUnlock
+    *   API function that saves the changes and releases the lock
+    * @param fromPack
+    *   function to convert the `EntityPack[E]` into the details view expected by the API
+    * @param converter
+    *   function to convert the returned view into the saved entity `E`
+    * @param pack
+    *   the entity pack holding the changes to save
+    * @param unlock
+    *   whether to release the lock after saving
+    * @tparam D
+    *   the type of the details view sent to the save API
+    * @tparam V
+    *   the type of the view returned by the save API
+    * @return
+    *   the saved entity `E`
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  protected def stopEditWith[D, V](
+      save: D => GraphQLClientResult[V],
+      saveAndUnlock: D => GraphQLClientResult[V]
+  )(fromPack: EntityPack[E] => D)(converter: V => E)(pack: EntityPack[E], unlock: Boolean): E = {
+    val details        = fromPack(pack)
+    val stopEditResult = if (unlock) saveAndUnlock(details) else save(details)
+
+    handleEither(
+      stopEditResult,
+      s"Error saving changes for $entityDescription with ID: ${pack.getEntity.getId}"
+    ) { converter }
+  }
+
   // ---------------------------------------------------------------------------
   // RemoteAbstractEntityService default implementations (delegate to implementMe)
   // ---------------------------------------------------------------------------
