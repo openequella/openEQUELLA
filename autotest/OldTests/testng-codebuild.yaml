@@ -15,6 +15,7 @@ tests:
       - io.github.openequella.rest
       - io.github.openequella.search
       - io.github.openequella.security
+      - io.github.openequella.workflow
       - com.tle.webtests.test.accessibility
       - com.tle.webtests.test.acl
       - com.tle.webtests.test.admin

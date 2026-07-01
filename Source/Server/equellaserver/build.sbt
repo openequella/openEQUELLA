@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.118"
+val TomcatVersion     = "9.0.119"
 val axis2Version      = "2.0.1"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
@@ -245,7 +245,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.12.1",
+  "org.scala-sbt"                %% "io"                       % "1.12.2",
   "org.mozilla"                   % "rhino"                    % "1.9.1",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",

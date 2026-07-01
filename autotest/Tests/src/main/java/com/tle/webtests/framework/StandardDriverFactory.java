@@ -6,8 +6,12 @@ import com.tle.webtests.pageobject.DownloadFilePage;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -15,7 +19,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.bidi.log.GenericLogEntry;
 import org.openqa.selenium.bidi.log.LogLevel;
+import org.openqa.selenium.bidi.log.StackFrame;
+import org.openqa.selenium.bidi.log.StackTrace;
 import org.openqa.selenium.bidi.module.LogInspector;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -181,28 +188,54 @@ public class StandardDriverFactory {
   // interaction with OEQ.
   private void setupLogInspector(WebDriver driver) {
     try (LogInspector logInspector = new LogInspector(driver)) {
-      Marker jsMarker = MarkerFactory.getMarker("JS_ERROR");
-      logInspector.onJavaScriptException(
-          logEntry -> {
-            switch (logEntry.getLevel()) {
-              case LogLevel.ERROR:
-                logger.error(jsMarker, logEntry.getText());
-                break;
-              case LogLevel.WARNING:
-                logger.warn(jsMarker, logEntry.getText());
-                break;
-              case LogLevel.INFO:
-                logger.info(jsMarker, logEntry.getText());
-                break;
-              case LogLevel.DEBUG:
-                logger.debug(jsMarker, logEntry.getText());
-                break;
-              default:
-                // Nothing to do
-            }
-          });
+      logInspector.onJavaScriptLog(this::captureLogs);
+      logInspector.onConsoleEntry(this::captureLogs);
     } catch (IllegalArgumentException e) {
       logger.error("Failed to set up BIDI log inspector", e);
+    }
+  }
+
+  private String buildStackFrameMessage(StackFrame frame) {
+    return String.format(
+        "\n\s\s\sat %s (%s:%d:%d)",
+        frame.getFunctionName(), frame.getUrl(), frame.getLineNumber(), frame.getColumnNumber());
+  }
+
+  private String getFullJavascriptLog(GenericLogEntry logEntry) {
+    Optional<Stream<StackFrame>> stackTraceFrames =
+        Optional.ofNullable(logEntry.getStackTrace())
+            .map(StackTrace::getCallFrames)
+            .map(Collection::stream);
+
+    Optional<String> stackTraceString =
+        stackTraceFrames.map(
+            frame ->
+                frame
+                    .map(this::buildStackFrameMessage)
+                    .collect(Collectors.joining("", "\nStack Trace:", "")));
+
+    return stackTraceString.map(st -> logEntry.getText() + st).orElseGet(logEntry::getText);
+  }
+
+  private void captureLogs(GenericLogEntry logEntry) {
+    Marker jsMarker = MarkerFactory.getMarker("JS_ERROR");
+    switch (logEntry.getLevel()) {
+      case LogLevel.ERROR:
+        String error = getFullJavascriptLog(logEntry);
+        logger.error(jsMarker, error);
+        break;
+      case LogLevel.WARNING:
+        String warning = getFullJavascriptLog(logEntry);
+        logger.warn(jsMarker, warning);
+        break;
+      case LogLevel.INFO:
+        logger.info(jsMarker, logEntry.getText());
+        break;
+      case LogLevel.DEBUG:
+        logger.debug(jsMarker, logEntry.getText());
+        break;
+      default:
+        // No need to capture other logs.
     }
   }
 }

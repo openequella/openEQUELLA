@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
   "org.apache.commons"        % "commons-lang3"            % "3.20.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "4.44.0",
+  "org.seleniumhq.selenium"   % "selenium-java"            % "4.45.0",
   "com.codeborne"             % "selenide"                 % "7.16.2",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
@@ -44,7 +44,7 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-client" % "0.23.17", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
   "org.http4s"    %% "http4s-circe"      % http4sVersion,
   "org.typelevel" %% "cats-free"         % catsVersion,
-  "com.unboundid"  % "unboundid-ldapsdk" % "7.0.4",
+  "com.unboundid"  % "unboundid-ldapsdk" % "7.0.5",
   jacksonDataBind,
   jacksonDataFormatYaml,
   "com.auth0" % "jwks-rsa" % "0.24.1"
