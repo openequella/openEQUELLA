@@ -69,12 +69,12 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "cglib"                          % "cglib"                         % "3.3.0",
-  "co.fs2"                        %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
-  "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
+  "cglib"                          % "cglib"       % "3.3.0",
+  "co.fs2"                        %% "fs2-io"      % fs2Version,
+  "com.softwaremill.sttp.client3" %% "core"        % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "fs2"         % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe"       % sttpVersion,
+  "com.flickr4java"                % "flickr4java" % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
@@ -103,12 +103,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "org.asynchttpclient" % "async-http-client"    % "2.15.0",
-  "com.rometools"       % "rome"                 % "2.1.0",
-  "io.swagger"          % "swagger-core"         % SwaggerVersion,
-  "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
-  "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
-  "io.swagger"         %% "swagger-scala-module" % "1.0.6",
+  "com.rometools" % "rome"                 % "2.1.0",
+  "io.swagger"    % "swagger-core"         % SwaggerVersion,
+  "io.swagger"    % "swagger-annotations"  % SwaggerVersion,
+  "io.swagger"    % "swagger-jaxrs"        % SwaggerVersion,
+  "io.swagger"   %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "7.1.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
@@ -266,15 +265,15 @@ libraryDependencies ++= {
   }
 }
 dependencyOverrides ++= Seq(
-  "javax.mail" % "mail"                % "1.4.7",
-  "io.netty"   % "netty-common"        % nettyVersion,
-  "io.netty"   % "netty-buffer"        % nettyVersion,
-  "io.netty"   % "netty-codec"         % nettyVersion,
-  "io.netty"   % "netty-handler"       % nettyVersion,
-  "io.netty"   % "netty-transport"     % nettyVersion,
-  "io.netty"   % "netty-codec-socks"   % nettyVersion,
-  "io.netty"   % "netty-handler-proxy" % nettyVersion,
-  "io.netty"   % "netty-codec-http"    % nettyVersion
+  "javax.mail" % "mail" % "1.4.7",
+  // Netty is pulled in transitively by Apache ZooKeeper (via Curator); these overrides pin it to a
+  // single consistent version. The former netty-codec / netty-codec-http / netty-codec-socks /
+  // netty-handler-proxy overrides were only needed by async-http-client and were removed along with
+  // it.
+  "io.netty" % "netty-common"    % nettyVersion,
+  "io.netty" % "netty-buffer"    % nettyVersion,
+  "io.netty" % "netty-handler"   % nettyVersion,
+  "io.netty" % "netty-transport" % nettyVersion
 )
 
 excludeDependencies ++= Seq(
