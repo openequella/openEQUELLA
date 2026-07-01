@@ -32,6 +32,7 @@ import io.github.openequella.graphql.api.views.{
 }
 import io.github.openequella.graphql.test.TestHelper.{
   assertAccessDeniedError,
+  asUnauthenticatedUser,
   checkApiError,
   loginToRestInstitution
 }
@@ -266,7 +267,7 @@ class CollectionDefinitionApiMutationsTest
         val result = CollectionDefinitionApi.stopEditAndUnlock(editViewWithBadId)
 
         Then("returns a NotFoundError")
-        TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+        checkApiError(result) shouldBe a[NotFoundError]
       }
     }
 
@@ -277,12 +278,12 @@ class CollectionDefinitionApiMutationsTest
 
       try {
         When("an unauthenticated user calls stopEditAndUnlock")
-        val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        val response = asUnauthenticatedUser { unauthenticated =>
           CollectionDefinitionApi.stopEditAndUnlock(editView)(unauthenticated)
         }
 
         Then("returns an AccessDeniedError")
-        TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+        checkApiError(response) shouldBe a[AccessDeniedError]
       } finally {
         // Best-effort cleanup: force-cancel to release any lingering lock.
         CollectionDefinitionApi.cancelEditForced(collectionId)
