@@ -38,21 +38,15 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandler;
-import java.net.http.HttpResponse.BodySubscriber;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
@@ -108,7 +102,8 @@ public class URLCheckerService {
       "Mozilla/5.0 (compatible; equellaurlbot/1.0; +http://support.equella.com/)";
 
   // Per-request (per redirect hop) timeout. The whole-round-trip bound that the legacy
-  // async-http-client value provided is restored separately via overallTimeout() (see checkUrl).
+  // async-http-client value provided is restored separately via the overallTimeout field (see
+  // checkUrl).
   private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(60);
 
   // The legacy async-http-client was configured with setMaxRedirects(25). We follow redirects
@@ -129,7 +124,31 @@ public class URLCheckerService {
 
   private final HttpClient client;
 
+  /** Decides whether a URL is checkable at all - see {@link URLValidator}. */
+  private final URLValidator urlValidator;
+
+  /**
+   * The overall wall-clock bound applied to a single {@link #checkUrl(ReferencedURL)} call,
+   * covering all redirect hops. This restores the async-http-client whole-round-trip request
+   * timeout - the per-hop {@link #REQUEST_TIMEOUT} only bounds a single request.
+   */
+  private final Duration overallTimeout;
+
+  /** Production constructor, used by Guice (collaborators arrive via field injection). */
   public URLCheckerService() {
+    this(URLCheckerService::isURL, REQUEST_TIMEOUT);
+  }
+
+  /**
+   * Constructs the service with an explicit URL validator and overall check timeout, so tests can
+   * supply a permissive validator (embedded test servers live on ephemeral ports the production
+   * pattern rejects) and a short timeout. Production behaviour comes from the no-arg constructor's
+   * defaults.
+   */
+  URLCheckerService(URLValidator urlValidator, Duration overallTimeout) {
+    this.urlValidator = urlValidator;
+    this.overallTimeout = overallTimeout;
+
     final SSLContext sslContext = blindTrustSslContext();
     final SSLParameters sslParameters = sslContext.getDefaultSSLParameters();
     // Disable hostname verification as well: the previous async-http-client/Netty backend did not
@@ -175,34 +194,19 @@ public class URLCheckerService {
   }
 
   /**
-   * Test seam: constructs the service with explicit collaborators so unit tests can supply mocks
-   * without relying on Guice field injection. Delegates to the default constructor to build the
-   * underlying HTTP client.
+   * Test constructor: explicit collaborators (so unit tests can supply mocks without Guice field
+   * injection) plus the validator/timeout overrides.
    */
-  URLCheckerService(URLCheckerDao dao, HttpService httpService, URLCheckerPolicy policy) {
-    this();
+  URLCheckerService(
+      URLCheckerDao dao,
+      HttpService httpService,
+      URLCheckerPolicy policy,
+      URLValidator urlValidator,
+      Duration overallTimeout) {
+    this(urlValidator, overallTimeout);
     this.dao = dao;
     this.httpService = httpService;
     this.policy = policy;
-  }
-
-  /**
-   * Test seam: indirection over the static {@link #isURL(String)} validation so tests can override
-   * URL validation (e.g. to target a local test server on an ephemeral port). Production behaviour
-   * is unchanged - it simply delegates to {@link #isURL(String)}.
-   */
-  protected boolean isValidUrl(String url) {
-    return isURL(url);
-  }
-
-  /**
-   * Test seam: the overall wall-clock bound applied to a single {@link #checkUrl(ReferencedURL)}
-   * call, covering all redirect hops. This restores the async-http-client whole-round-trip request
-   * timeout - the per-hop {@link #REQUEST_TIMEOUT} only bounds a single request. Overridable so
-   * tests can shorten it. Production behaviour is unchanged.
-   */
-  protected Duration overallTimeout() {
-    return REQUEST_TIMEOUT;
   }
 
   public boolean isUrlDisabled(String url) {
@@ -271,17 +275,18 @@ public class URLCheckerService {
   CompletableFuture<ReferencedURL> checkUrl(final ReferencedURL rurl) {
     return checkUrl(rurl, true)
         .thenApply(Pair::getFirst)
-        // Bound the whole check - including every redirect hop - to overallTimeout(), restoring the
+        // Bound the whole check - including every redirect hop - to overallTimeout, restoring the
         // async-http-client whole-round-trip request timeout. Placed before exceptionally(...) so a
         // timeout is turned into a normal failure record rather than surfacing to the caller.
-        .orTimeout(overallTimeout().toMillis(), TimeUnit.MILLISECONDS)
+        .orTimeout(overallTimeout.toMillis(), TimeUnit.MILLISECONDS)
         // If checking throws an exception, it's probably because we haven't been able to reach the
         // URL (eg, java.nio.channels.UnresolvedAddressException) so return an updated ReferencedURL
         // based on the old one.
-        .exceptionally(t -> onCheckFailed(rurl, t));
+        .exceptionally(t -> createFailureRecord(rurl, t));
   }
 
-  private ReferencedURL onCheckFailed(final ReferencedURL rurl, final Throwable t) {
+  /** Maps a failed check onto a new failure-state {@link ReferencedURL} based on the old one. */
+  private ReferencedURL createFailureRecord(final ReferencedURL rurl, final Throwable t) {
     final Throwable cause =
         (t instanceof CompletionException && t.getCause() != null) ? t.getCause() : t;
     if (LOGGER.isDebugEnabled()) {
@@ -307,7 +312,7 @@ public class URLCheckerService {
    */
   private CompletableFuture<Pair<ReferencedURL, Boolean>> checkUrl(
       final ReferencedURL rurl, final boolean head) {
-    if (!isValidUrl(rurl.getUrl())) {
+    if (!urlValidator.isValid(rurl.getUrl())) {
       // Most likely because the URL is not a URL at all, like "http://" or "beatlejuice".
       LOGGER.debug("Invalid URL: " + rurl.getUrl());
       return CompletableFuture.failedFuture(new IllegalArgumentException("Invalid URL"));
@@ -317,9 +322,9 @@ public class URLCheckerService {
     try {
       uri = URI.create(rurl.getUrl());
     } catch (RuntimeException e) {
-      // e.g. IllegalArgumentException for a URL that passed isValidUrl but is not a legal URI (such
-      // as a bad percent-escape). Surface it through the future so it becomes a failure record
-      // instead of throwing synchronously and aborting the whole scheduled batch.
+      // e.g. IllegalArgumentException for a URL that passed the validator but is not a legal URI
+      // (such as a bad percent-escape). Surface it through the future so it becomes a failure
+      // record instead of throwing synchronously and aborting the whole scheduled batch.
       LOGGER.debug("Malformed URL: " + rurl.getUrl());
       return CompletableFuture.failedFuture(e);
     }
@@ -328,7 +333,7 @@ public class URLCheckerService {
     return sendFollowingRedirects(uri, head, MAX_REDIRECTS)
         .thenCompose(
             response -> {
-              final Pair<ReferencedURL, Boolean> result = interpret(rurl, head, response);
+              final Pair<ReferencedURL, Boolean> result = interpretResponse(rurl, head, response);
               if (result.getSecond()) {
                 // The HEAD request needs retrying with a GET.
                 return checkUrl(result.getFirst(), false);
@@ -365,14 +370,7 @@ public class URLCheckerService {
       final URI uri, final boolean head, final int remainingRedirects) {
     final HttpRequest request;
     try {
-      request =
-          HttpRequest.newBuilder(uri)
-              .timeout(REQUEST_TIMEOUT)
-              .header("User-Agent", USER_AGENT)
-              // Pre-emptive basic auth for EQ-411.
-              .header("Authorization", PREEMPTIVE_AUTH)
-              .method(head ? "HEAD" : "GET", HttpRequest.BodyPublishers.noBody())
-              .build();
+      request = buildRequest(uri, head);
     } catch (RuntimeException e) {
       // e.g. IllegalArgumentException if the URI (possibly a redirect target) has no host or a
       // non-http scheme. Surface it through the future rather than throwing synchronously.
@@ -380,18 +378,37 @@ public class URLCheckerService {
     }
 
     return client
-        .sendAsync(request, boundedBodyHandler(head))
-        .thenCompose(
-            response -> {
-              final Optional<URI> next = redirectTarget(uri, response, remainingRedirects);
-              if (next.isPresent()) {
-                if (LOGGER.isDebugEnabled()) {
-                  LOGGER.debug("Following redirect " + uri + " -> " + next.get());
-                }
-                return sendFollowingRedirects(next.get(), head, remainingRedirects - 1);
-              }
-              return CompletableFuture.completedFuture(response);
-            });
+        .sendAsync(request, new BoundedBodyHandler(head))
+        .thenCompose(response -> followRedirectIfNeeded(uri, head, response, remainingRedirects));
+  }
+
+  private HttpRequest buildRequest(final URI uri, final boolean head) {
+    return HttpRequest.newBuilder(uri)
+        .timeout(REQUEST_TIMEOUT)
+        .header("User-Agent", USER_AGENT)
+        // Pre-emptive basic auth for EQ-411.
+        .header("Authorization", PREEMPTIVE_AUTH)
+        .method(head ? "HEAD" : "GET", HttpRequest.BodyPublishers.noBody())
+        .build();
+  }
+
+  /**
+   * Continues the redirect chain when {@code response} is a redirect that should be followed (see
+   * {@link #redirectTarget}), otherwise completes with the response as-is.
+   */
+  private CompletableFuture<HttpResponse<String>> followRedirectIfNeeded(
+      final URI current,
+      final boolean head,
+      final HttpResponse<String> response,
+      final int remainingRedirects) {
+    final Optional<URI> next = redirectTarget(current, response, remainingRedirects);
+    if (next.isEmpty()) {
+      return CompletableFuture.completedFuture(response);
+    }
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Following redirect " + current + " -> " + next.get());
+    }
+    return sendFollowingRedirects(next.get(), head, remainingRedirects - 1);
   }
 
   /**
@@ -407,8 +424,21 @@ public class URLCheckerService {
     return response.headers().firstValue("Location").map(current::resolve);
   }
 
-  private static boolean isRedirect(final int code) {
+  /** True when the status code is a redirect (3xx). */
+  static boolean isRedirect(final int code) {
     return code >= HTTP_MULT_CHOICE && code < HTTP_BAD_REQUEST;
+  }
+
+  /**
+   * True when the status code means the URL exists: any 2xx, plus 401/402. For the latter two we
+   * make an educated guess that if we're told we're not allowed to look at something (eg, behind
+   * basic authentication or we haven't paid for the thing) the thing does actually exist, but we
+   * can't truly verify it.
+   */
+  static boolean isTreatedAsExists(final int code) {
+    return (code >= HTTP_OK && code < HTTP_MULT_CHOICE)
+        || code == HTTP_UNAUTHORIZED
+        || code == HTTP_PAYMENT_REQUIRED;
   }
 
   /**
@@ -417,7 +447,7 @@ public class URLCheckerService {
    * @return a pair whose second value is true if this was a HEAD request that should be retried as
    *     a GET request.
    */
-  private Pair<ReferencedURL, Boolean> interpret(
+  private Pair<ReferencedURL, Boolean> interpretResponse(
       final ReferencedURL rurl, final boolean head, final HttpResponse<String> response) {
     final String url = rurl.getUrl();
     final int code = response.statusCode();
@@ -437,16 +467,10 @@ public class URLCheckerService {
       return new Pair<>(rurl, true);
     }
 
-    // Retrieved status code is valid here.
     rurl.setStatus(code);
     rurl.setLastChecked(new Date());
 
-    // NOTE: Make an educated guess that if we're told we're not allowed to look at something (eg,
-    // behind basic authentication or we haven't paid for the thing) that the thing does actually
-    // exist, but we can't truely verify it.
-    if ((code >= HTTP_OK && code < HTTP_MULT_CHOICE)
-        || code == HTTP_UNAUTHORIZED
-        || code == HTTP_PAYMENT_REQUIRED) {
+    if (isTreatedAsExists(code)) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Found to be OK " + url);
       }
@@ -461,88 +485,10 @@ public class URLCheckerService {
     }
     rurl.setSuccess(false);
     rurl.setTries(rurl.getTries() + 1);
-    // The body is already bounded to MAX_MESSAGE_LENGTH by boundedBodyHandler; setMessage also
+    // The body is already bounded to MAX_MESSAGE_LENGTH by BoundedBodyHandler; setMessage also
     // truncates defensively.
     rurl.setMessage(response.body());
     return new Pair<>(rurl, false);
-  }
-
-  /**
-   * A body handler that only downloads the response body when it is actually needed - i.e. to
-   * capture the failure message of a GET request. HEAD responses carry no body, redirect responses
-   * are about to be followed, and successful responses ({@code 2xx}, plus {@code 401}/{@code 402}
-   * which we treat as "exists") discard their body, so in those cases the body is aborted before
-   * any of it is transferred. This reproduces async-http-client, whose {@code AsyncHandler}
-   * returned {@code State.ABORT} on a successful status (never reading the body) and stopped
-   * reading once the captured body reached {@link ReferencedURL#MAX_MESSAGE_LENGTH}.
-   */
-  private static BodyHandler<String> boundedBodyHandler(final boolean head) {
-    return responseInfo -> {
-      final int code = responseInfo.statusCode();
-      final boolean success =
-          (code >= HTTP_OK && code < HTTP_MULT_CHOICE)
-              || code == HTTP_UNAUTHORIZED
-              || code == HTTP_PAYMENT_REQUIRED;
-      final boolean bodyNeeded = !head && !isRedirect(code) && !success;
-      return new BoundedStringSubscriber(bodyNeeded ? ReferencedURL.MAX_MESSAGE_LENGTH : 0);
-    };
-  }
-
-  /**
-   * A {@link BodySubscriber} that accumulates at most {@code maxBytes} bytes of the response body
-   * as a UTF-8 string and then cancels the subscription, so large or slow bodies are not downloaded
-   * in full. A {@code maxBytes} of {@code 0} aborts before any body is transferred.
-   */
-  private static final class BoundedStringSubscriber implements BodySubscriber<String> {
-    private final int maxBytes;
-    private final CompletableFuture<String> result = new CompletableFuture<>();
-    private final StringBuilder body = new StringBuilder();
-    private Flow.Subscription subscription;
-    private int bytesRead;
-
-    BoundedStringSubscriber(final int maxBytes) {
-      this.maxBytes = maxBytes;
-    }
-
-    @Override
-    public CompletionStage<String> getBody() {
-      return result;
-    }
-
-    @Override
-    public void onSubscribe(final Flow.Subscription subscription) {
-      this.subscription = subscription;
-      if (maxBytes <= 0) {
-        subscription.cancel();
-        result.complete("");
-      } else {
-        subscription.request(Long.MAX_VALUE);
-      }
-    }
-
-    @Override
-    public void onNext(final List<ByteBuffer> buffers) {
-      for (final ByteBuffer buffer : buffers) {
-        final byte[] bytes = new byte[buffer.remaining()];
-        buffer.get(bytes);
-        body.append(new String(bytes, StandardCharsets.UTF_8));
-        bytesRead += bytes.length;
-      }
-      if (bytesRead >= maxBytes) {
-        subscription.cancel();
-        result.complete(body.toString());
-      }
-    }
-
-    @Override
-    public void onError(final Throwable throwable) {
-      result.completeExceptionally(throwable);
-    }
-
-    @Override
-    public void onComplete() {
-      result.complete(body.toString());
-    }
   }
 
   public static boolean isURL(String url) {

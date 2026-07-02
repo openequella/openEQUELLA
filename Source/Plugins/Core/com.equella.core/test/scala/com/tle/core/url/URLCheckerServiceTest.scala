@@ -262,8 +262,9 @@ class URLCheckerServiceTest extends AnyFunSpec with Matchers with BeforeAndAfter
     if (httpsServer != null) httpsServer.stop(0)
   }
 
-  /** Builds a service wired to mocked collaborators. `isValidUrl` is overridden so URLs pointing at
-    * the ephemeral test-server port (which the production regex would reject) reach the HTTP logic.
+  /** Builds a service wired to mocked collaborators. A permissive `URLValidator` is injected so
+    * URLs pointing at the ephemeral test-server port (which the production regex would reject)
+    * reach the HTTP logic.
     */
   private def serviceFor(
       rurl: ReferencedURL,
@@ -278,12 +279,11 @@ class URLCheckerServiceTest extends AnyFunSpec with Matchers with BeforeAndAfter
     ).thenReturn(rurl)
     when(httpService.canAccessInternet()).thenReturn(true)
 
-    new URLCheckerService(dao, httpService, policy) {
-      override protected def isValidUrl(url: String): Boolean = true
-      override protected def overallTimeout(): Duration       =
-        if (overallTimeoutMillis >= 0) Duration.ofMillis(overallTimeoutMillis)
-        else super.overallTimeout()
-    }
+    val permissiveValidator: URLValidator = (_: String) => true
+    val overallTimeout                    =
+      if (overallTimeoutMillis >= 0) Duration.ofMillis(overallTimeoutMillis)
+      else Duration.ofSeconds(60) // the production default
+    new URLCheckerService(dao, httpService, policy, permissiveValidator, overallTimeout)
   }
 
   private def newRurl(url: String, tries: Int = 0): ReferencedURL = {
