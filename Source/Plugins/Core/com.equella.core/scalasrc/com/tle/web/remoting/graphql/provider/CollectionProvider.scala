@@ -100,7 +100,7 @@ class CollectionProvider @Inject() (
     * @return
     *   an `EditableEntitySkeleton` ready for editing.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def startCreate(): EditableEntitySkeleton = {
     LOGGER.debug("Creating new collection, ready for editing")
     EditableEntitySkeleton(
@@ -124,7 +124,7 @@ class CollectionProvider @Inject() (
     *   Either a ProviderError if the operation fails, or a BaseEntityReference to the newly created
     *   collection on success.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def add(
       details: EditableEntity[CollectionDefinition],
       lockAfterwards: Boolean
@@ -201,7 +201,7 @@ class CollectionProvider @Inject() (
     *   Either a ProviderError if the operation fails, or an EditableEntity containing the imported
     *   collection ready for editing.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def importCollection(
       zipBase64: String
   ): Either[ProviderError, EditableEntity[CollectionDefinition]] = {
@@ -232,7 +232,7 @@ class CollectionProvider @Inject() (
     *   Either a ProviderError if the operation fails, or a BaseEntityReference to the cloned
     *   collection on success.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def cloneCollection(id: Long): Either[ProviderError, BaseEntityReference] = {
     LOGGER.debug(s"Cloning collection with id $id")
     ProviderError.Try(s"Failed to clone collection with id $id: ") {
