@@ -21,15 +21,9 @@ package io.github.openequella.graphql.api
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views._
 import io.github.openequella.graphql.test.BaseEntityApiTestHelper
-import org.scalatest.EitherValues._
-
-import java.util.Locale
 
 /** Helper object for MetadataSchemaApiMutationsTest containing schema creation utilities. */
 object MetadataSchemaApiMutationsTestHelper {
-  val NEW_ENTITY_ID          = 0L
-  val DEFAULT_PRIORITY       = 1
-  val DEFAULT_LOCALE: String = Locale.ENGLISH.toString
 
   /** Checks if a metadata schema is locked for editing by attempting to start an edit session with
     * a different user. A schema is considered locked for editing if another user cannot start an
@@ -63,10 +57,7 @@ object MetadataSchemaApiMutationsTestHelper {
     *   The name text if present, or None if the name bundle or strings are missing.
     */
   def getSchemaName(schema: MetadataSchemaView): Option[String] =
-    for {
-      bundle      <- schema.details.nameBundle
-      firstString <- bundle.strings.headOption
-    } yield firstString.text
+    BaseEntityApiTestHelper.getEntityName(schema.details)
 
   /** Builds a MetadataSchemaEditView for a new schema using the skeleton from startCreate.
     *
@@ -84,46 +75,8 @@ object MetadataSchemaApiMutationsTestHelper {
       name: String = "Test Schema",
       description: Option[String] = Some("A test schema")
   ): MetadataSchemaEditView = {
-    val nameBundle = LanguageBundleView(
-      id = NEW_ENTITY_ID,
-      strings = List(
-        LanguageStringView(
-          id = NEW_ENTITY_ID,
-          priority = DEFAULT_PRIORITY,
-          locale = DEFAULT_LOCALE,
-          text = name
-        )
-      )
-    )
-
-    val descriptionBundle = description.map { desc =>
-      LanguageBundleView(
-        id = NEW_ENTITY_ID,
-        strings = List(
-          LanguageStringView(
-            id = NEW_ENTITY_ID,
-            priority = DEFAULT_PRIORITY,
-            locale = DEFAULT_LOCALE,
-            text = desc
-          )
-        )
-      )
-    }
-
-    val details = EntityDetailsView(
-      id = NEW_ENTITY_ID,
-      uuid = skeleton.uuid,
-      owner = skeleton.owner,
-      dateCreated = None,
-      dateModified = None,
-      nameBundle = Some(nameBundle),
-      descriptionBundle = descriptionBundle,
-      attributes = Map.empty,
-      disabled = false
-    )
-
     val schemaView = MetadataSchemaView(
-      details = details,
+      details = BaseEntityApiTestHelper.buildNewEntityDetails(skeleton, name, description),
       exportTransforms = List.empty,
       importTransforms = List.empty,
       itemNamePath = "/item/name",
@@ -188,21 +141,14 @@ object MetadataSchemaApiMutationsTestHelper {
   )(
       name: String,
       description: Option[String]
-  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit = {
-    val skeleton  = MetadataSchemaApi.startCreate().value
-    val details   = buildNewSchemaDetails(skeleton, name = name, description = description)
-    val reference = addFn(details).value
-    val schemaId  = reference.id
-
-    try {
-      test(reference)
-    } finally {
-      // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
-      // Errors are ignored — the schema may already be unlocked or deleted by the test.
-      MetadataSchemaApi.cancelEditForced(schemaId)
-      MetadataSchemaApi.delete(schemaId)
-    }
-  }
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
+    BaseEntityApiTestHelper.withTestEntity(
+      MetadataSchemaApi.startCreate _,
+      buildNewSchemaDetails(_, name = name, description = description),
+      addFn,
+      MetadataSchemaApi.cancelEditForced,
+      MetadataSchemaApi.delete
+    )(test)
 
   /** Loan-pattern helper that starts an edit session on an existing schema and guarantees cleanup.
     *
