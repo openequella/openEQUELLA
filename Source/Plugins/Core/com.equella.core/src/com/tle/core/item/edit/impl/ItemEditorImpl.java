@@ -64,7 +64,6 @@ import com.tle.core.item.edit.ItemMetadataListener;
 import com.tle.core.item.edit.NavigationEditor;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.edit.attachment.AttachmentEditor;
-import com.tle.core.item.edit.attachment.AttachmentEditorProvider;
 import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.helper.ItemHelper;
@@ -90,9 +89,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
+import org.java.plugin.registry.Extension;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -102,6 +103,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 
   @Inject private PluginTracker<ItemMetadataListener> metadataListenerTracker;
   @Inject private PluginTracker<ItemAttachmentListener> attachmentListenerTracker;
+  @Inject private PluginTracker<AbstractAttachmentEditor> attachmentEditorTracker;
   @Inject private ItemService itemService;
   @Inject private ItemHelper itemHelper;
   @Inject private ItemDao itemDao;
@@ -312,8 +314,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
         checkValidUuid(uuid);
       }
     }
-    AbstractAttachmentEditor attachEditor =
-        AttachmentEditorProvider.createEditorForType(type.getName());
+    AbstractAttachmentEditor attachEditor = getAttachmentEditor(type.getName());
     attachEditor.setItemEditorChangeTracker(this);
     attachEditor.setItem(item);
     attachEditor.setFileHandle(fileHandle);
@@ -769,5 +770,12 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   @Override
   public boolean isNewItem() {
     return newItem;
+  }
+
+  private AbstractAttachmentEditor getAttachmentEditor(String className) {
+    Map<String, Extension> extMap = attachmentEditorTracker.getExtensionMap();
+    return Optional.ofNullable(extMap.get(className))
+        .map(attachmentEditorTracker::getNewBeanByExtension)
+        .orElseThrow(() -> new ItemEditingException("No editor for '" + className + "'"));
   }
 }

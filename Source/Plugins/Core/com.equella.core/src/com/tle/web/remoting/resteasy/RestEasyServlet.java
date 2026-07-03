@@ -62,7 +62,6 @@ import com.tle.web.api.settings.SearchFilterResource;
 import com.tle.web.api.settings.SearchSettingsResource;
 import com.tle.web.api.settings.SettingsResource;
 import com.tle.web.api.users.UserQueryResource;
-import com.tle.web.api.wizard.WizardApi;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import java.io.IOException;
@@ -130,8 +129,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           SearchSettingsResource.class,
           SelectionApi.class,
           SettingsResource.class,
-          UserQueryResource.class,
-          WizardApi.class);
+          UserQueryResource.class);
 
   // API classes which can use Guice normal Dependency Injection.
   private static final List<Class> apiClasses =
