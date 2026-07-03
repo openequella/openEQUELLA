@@ -19,7 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.NameValueViewConverter.toNameValue
-import com.tle.admin.helper.GraphQLQueryHelper.getEntity
+import com.tle.admin.helper.GraphQLQueryHelper.getOptionalEntity
 import com.tle.common.NameValue
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.JavaScriptApi
@@ -46,7 +46,11 @@ class AdminJavaScriptServiceImpl @Inject() (implicit
   override def modulesByLibraryId(
       libraryId: String
   ): java.util.Optional[java.util.List[NameValue]] =
-    getEntity("JavaScript modules [by library ID]", libraryId, JavaScriptApi.modulesByLibraryId)
+    getOptionalEntity(
+      "JavaScript modules [by library ID]",
+      libraryId,
+      JavaScriptApi.modulesByLibraryId
+    )
       .map(_.map(toNameValue).asJava)
       .toJava
 }

@@ -18,7 +18,7 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
+import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getOptionalEntity}
 import com.tle.beans.user.GroupTreeNode
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.{InternalGroupApi, InternalGroupView}
@@ -86,7 +86,7 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
 
   override def getByName(name: String): Optional[BasicGroupDetails] = {
     LOGGER.debug("Retrieving internal group by name: {}", name)
-    getEntity("Internal group [by name]", name, InternalGroupApi.getByName)
+    getOptionalEntity("Internal group [by name]", name, InternalGroupApi.getByName)
       .map(toBasicGroupDetails)
       .toJava
   }
@@ -94,7 +94,7 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
   override def getInformationForGroups(
       groups: util.Collection[String]
   ): util.List[BasicGroupDetails] =
-    getAll() {
+    getAll("internal groups") {
       InternalGroupApi.getGroupsByIds(_, groups.asScala.toSet)
     }.map(toBasicGroupDetails).asJava
 
@@ -104,7 +104,8 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
   override def searchTree(query: String): GroupTreeNode = {
     val builder = new GroupTreeBuilder(
       getGroupsByQuery = q => getGroupsByQuery(q),
-      getListGroups = parentId => getAll() { InternalGroupApi.listGroups(_, parentId) },
+      getListGroups = parentId =>
+        getAll("internal child groups") { InternalGroupApi.listGroups(_, parentId) },
       getGroup = id => getGroup(id)
     )
     builder.buildSearchTree(query)
@@ -112,19 +113,19 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
 
   private def getGroupsByQuery(query: String): List[InternalGroupView] = {
     LOGGER.debug("Searching for internal groups: [{}]", query)
-    getAll() {
+    getAll("internal groups matching query") {
       InternalGroupApi.searchGroups(_, query)
     }
   }
 
   private def getGroup(id: String): Option[InternalGroupView] = {
     LOGGER.debug("Retrieving internal group by ID: {}", id)
-    getEntity("Internal group [by UUID]", id, InternalGroupApi.getByUniqueId)
+    getOptionalEntity("Internal group [by UUID]", id, InternalGroupApi.getByUniqueId)
   }
 
   private def toBasicGroupDetails(view: InternalGroupView): BasicGroupDetails = {
     LOGGER.debug("Retrieving internal users for group: {}", view.uniqueId)
-    val users = getAll() {
+    val users = getAll("internal group users") {
       InternalGroupApi.listGroupUsers(_, view.uniqueId)
     }
     new BasicGroupDetails(

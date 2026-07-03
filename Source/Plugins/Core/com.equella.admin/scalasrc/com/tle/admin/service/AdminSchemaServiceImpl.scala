@@ -25,7 +25,7 @@ import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.{
 }
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
-import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
+import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getOptionalEntityOrNotFound}
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
 import io.github.openequella.graphql.ClientConfiguration
@@ -47,7 +47,7 @@ class AdminSchemaServiceImpl @Inject() (implicit
   override def entityDescription: String = "schema"
 
   override def get(id: Long): Schema =
-    getEntityOrNotFound("Schema [by id]", id, MetadataSchemaApi.getById) convert toSchema
+    getOptionalEntityOrNotFound("Schema [by id]", id, MetadataSchemaApi.getById) convert toSchema
 
   override def getSchemaUses(id: Long): util.List[BaseEntityLabel] =
     getAllUnpaginated("Schema uses", id, MetadataSchemaApi.getUses).map(toBaseEntityLabel).asJava
