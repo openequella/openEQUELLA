@@ -210,6 +210,7 @@ public class TextExtracter {
               if (type.equals("scorm") && indexImsPackages) {
                 indexIms(attach, sbuf, item);
               }
+              break;
             case IMS:
               if (indexImsPackages) {
                 indexIms(attach, sbuf, item);
