@@ -21,6 +21,7 @@ package com.tle.admin.graphql
 import java.time.LocalDateTime
 import java.util
 import java.util.Date
+import scala.jdk.OptionConverters._
 
 /** This package contains support for converting types between the GraphQL schema and internal
   * classes used in the AdminConsole.
@@ -83,6 +84,56 @@ package object conversion {
       hashMap
     }
   }
+
+  /** Converts an Option to a Java Optional by applying a mapping function.
+    *
+    * @param f
+    *   function mapping each element to the target type
+    * @param option
+    *   the source Option
+    * @tparam A
+    *   the element type of the source Option
+    * @tparam B
+    *   the element type of the resulting Optional
+    * @return
+    *   a [[java.util.Optional]] containing the mapped value, or empty if the Option was [[None]]
+    */
+  def asOptional[A, B](f: A => B)(option: Option[A]): util.Optional[B] =
+    option.map(f).toJava
+
+  /** Converts an iterable to a mutable Java ArrayList by applying a mapping function.
+    *
+    * @param f
+    *   function mapping each element to the target type
+    * @param iterable
+    *   the source iterable
+    * @tparam A
+    *   the element type of the source iterable
+    * @tparam B
+    *   the element type of the resulting ArrayList
+    * @return
+    *   a new mutable ArrayList containing all mapped elements
+    */
+  def asArrayList[A, B](f: A => B)(iterable: Iterable[A]): util.ArrayList[B] =
+    iterable.map(f).asArrayList
+
+  /** Converts an iterable to a mutable Java HashMap by applying a key-value mapping function.
+    *
+    * @param f
+    *   function mapping each element to a key-value pair
+    * @param iterable
+    *   the source iterable
+    * @tparam A
+    *   the element type of the source iterable
+    * @tparam K
+    *   the key type of the resulting HashMap
+    * @tparam V
+    *   the value type of the resulting HashMap
+    * @return
+    *   a new mutable HashMap containing all mapped key-value pairs
+    */
+  def asHashMap[A, K, V](f: A => (K, V))(iterable: Iterable[A]): util.Map[K, V] =
+    iterable.map(f).toMap.asHashMap
 
   /** Converts a Java `Date` to a Scala `LocalDateTime`. This is useful for converting Dates from
     * the Java world (e.g. from the database) to the Scala world; keeping in mind they may be null.

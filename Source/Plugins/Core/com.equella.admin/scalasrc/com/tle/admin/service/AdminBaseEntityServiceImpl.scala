@@ -19,7 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
-import com.tle.admin.helper.GraphQLQueryHelper.getEntity
+import com.tle.admin.helper.GraphQLQueryHelper.getOptionalEntity
 import com.tle.beans.entity.LanguageBundle
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.BaseEntityApi
@@ -34,5 +34,5 @@ class AdminBaseEntityServiceImpl @Inject() (implicit
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminBaseEntityServiceImpl])
 
   override def getNameForId(id: Long): Option[LanguageBundle] =
-    getEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
+    getOptionalEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
 }

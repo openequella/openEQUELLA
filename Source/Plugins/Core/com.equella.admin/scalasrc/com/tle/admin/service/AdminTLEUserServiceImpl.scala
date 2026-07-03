@@ -18,7 +18,7 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
+import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getOptionalEntity}
 import com.tle.beans.user.TLEUser
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api._
@@ -75,10 +75,10 @@ class AdminTLEUserServiceImpl @Inject() (implicit
   }
 
   override def get(uniqueId: String): Optional[TLEUser] =
-    getEntity("Internal user [by UUID]", uniqueId, InternalUserApi.getByUniqueId)
+    getOptionalEntity("Internal user [by UUID]", uniqueId, InternalUserApi.getByUniqueId)
 
   override def getByUsername(username: String): Optional[TLEUser] =
-    getEntity("Internal user [by username]", username, InternalUserApi.getByUsername)
+    getOptionalEntity("Internal user [by username]", username, InternalUserApi.getByUsername)
 
   /** Delete a user by UUID.
     *
@@ -125,7 +125,7 @@ class AdminTLEUserServiceImpl @Inject() (implicit
 
   override def searchUsers(query: String): java.util.List[TLEUser] = {
     LOGGER.debug("Searching for internal users with query: {}", query)
-    val users = getAll() {
+    val users = getAll("internal users matching query") {
       InternalUserApi.searchUsers(_, Option(query))
     }
     LOGGER.debug("Found {} users", users.size)
