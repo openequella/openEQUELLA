@@ -33,7 +33,7 @@ addSbtPlugin("net.nmoncho" % "sbt-dependency-check" % "1.8.5")
 //    - revision is optional
 addDependencyTreePlugin
 
-val circeVersion = "0.14.15"
+val circeVersion = "0.14.16"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
