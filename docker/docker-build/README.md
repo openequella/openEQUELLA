@@ -1,85 +1,13 @@
 # Building and Testing openEQUELLA in Docker
 
-This directory contains Dockerfiles and helper scripts for building openEQUELLA inside a Docker
-container. There are two broad approaches:
-
-- **Artefact only build** — produces the installer/upgrader ZIPs
-- **Full build** — includes everything needed to build _and_ run the end-to-end test suite
-
-## Artefact only build
-
-Pulls the latest openEQUELLA repo, sets up the environment, and copies over the helper scripts to
-build and save the openEQUELLA installer and upgrader. While there is an Oracle JDK version of the
-docker build file, you need to ensure you're within the bounds of the Oracle JDK licensing terms and
-conditions. All examples will use the openJDK technology so as to avoid the licensing issues.
-
-```sh
-$ cd docker/docker-build
-$ docker build -t apereo/oeq-builder -f Dockerfile-openjdk-2018.2 .
-
-$ docker run -it --name oeqbuilder -v /home/user/temp/oeqbuilder-ws:/artifacts apereo/oeq-builder
-```
-
-Build the upgrader and save it to the host directory
-
-```sh
-cd /home/equella
-sh build-upgrader.sh
-sh move-upgrader-to-host.sh
-```
-
-Separately, you can also build the upgrader and save it to the host directory
-
-```sh
-cd /home/equella
-sh build-installer.sh
-sh move-installer-to-host.sh
-```
-
-### Reset the oeqbuilder Container
-
-```sh
-cd ~/repo/Equella
-rm -r Source/Plugins/Kaltura
-git reset --hard
-git checkout master
-cd ../Equella-Kaltura
-git reset --hard
-git checkout master
-```
-
-### GZip Error With SBT
-
-Not specifically a Docker issue, but when running SBT, if you hit the error below, in the Docker container, run `cd ~/repo/Equella ; find . -name target -exec rm -r "{}" \; ; cd ~` and retry the SBT command. Solution found on https://github.com/sbt/sbt/issues/3050.
-
-```
-Loading project definition from /home/equella/repo/Equella/project
-Error wrapping InputStream in GZIPInputStream: java.util.zip.ZipException: Not in GZIP format
-    at sbt.ErrorHandling$.translate(ErrorHandling.scala:10)
-    ...
-```
-
-### Using a Non-Default Java Signing Cert
-
-Using an `apereo/oeq-builder` image and a Java keystore (keystore.jks), invoke `docker run` with an additional host directory `-v /directory/location/of/java/keystore:/non-default-keystore`. There are several options on how to create and populate the build.conf. Without installing editors onto the docker image, you can add a `build.conf` with the following contents into your host directory containing the keystore, and then in the container, run `cp /non-default-keystore/build.conf /home/equella/repo/Equella/project`.
-
-```sbt
-signer {
-  keystore = "/non-default-keystore/keystore.jks"
-  storePassword = "<storepasswd>"
-  keyPassword = "<optional>" # defaults to storePassword
-  alias = "<keyalias>"
-}
-```
-
-See <https://github.com/openequella/openEQUELLA#keystore> for more details.
+This directory contains a `Dockerfile` and helper scripts for building openEQUELLA — and running its
+end-to-end test suite — inside a Docker container.
 
 ## Full build
 
-This focuses on the default `Dockerfile` in this directory. The intention being that the resultant
-image can be used for completely fresh builds and also the execution of the end-to-end tests. This
-could also be used for an image to run a CI type build, and so in a similar thought can also be used
-to diagnose CI build issues.
+The `Dockerfile` in this directory produces an image that can be used for completely fresh builds
+and also the execution of the end-to-end tests. This could also be used for an image to run a CI
+type build, and so in a similar thought can also be used to diagnose CI build issues.
 
 It uses eclipse-temurin:21 as its base image. For the installation of dependent build tools,
 SBT relies on the `./sbt` wrapper in the repository to ensure the correct version is always used.
