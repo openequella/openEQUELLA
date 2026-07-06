@@ -19,7 +19,8 @@ case class StagingFile(
     size: Long,
     etag: String,
     contentType: String,
-    links: Map[String, String]
+    links: Map[String, String],
+    folder: Option[Boolean]
 )
 case class StagingArea(
     uuid: String,
@@ -154,6 +155,99 @@ class StagingApiTest extends AbstractRestApiTest {
     }
 
     softAssert.assertAll()
+  }
+
+  /** Runs `testCode` against a staging area pre-populated with a nested file
+    * (`scoped/inner/one.png`) and a top-level file (`toplevel.png`) — the fixture shared by the
+    * listing query param tests.
+    */
+  private def withPopulatedStaging(testCode: String => Unit): Unit = withStaging { stagingUuid =>
+    val file = getTestFile(AVATAR_FILENAME)
+    assertEquals(
+      StagingApi.uploadFile(stagingUuid, "scoped/inner/one.png", file).status,
+      HttpStatus.SC_OK
+    )
+    assertEquals(StagingApi.uploadFile(stagingUuid, "toplevel.png", file).status, HttpStatus.SC_OK)
+    testCode(stagingUuid)
+  }
+
+  @Test(description =
+    "The default-params listing response is unchanged by the query param additions: files only," +
+      " named by full path, with etags and no folder flags"
+  )
+  def defaultListingUnchangedTest(): Unit = withPopulatedStaging { stagingUuid =>
+    val response = StagingApi.getStaging(stagingUuid)
+    assertEquals(response.status, HttpStatus.SC_OK)
+    response.body.foreach { staging =>
+      assertEquals(
+        staging.files.map(_.name).sorted,
+        List("scoped/inner/one.png", "toplevel.png"),
+        "Default listing should contain only files, named by full path"
+      )
+      assertTrue(
+        staging.files.forall(f => f.etag != null && f.folder.isEmpty),
+        "Default listing should have etags and no folder flags"
+      )
+    }
+  }
+
+  @Test(description =
+    "A listing scoped with the path param has names relative to the scoped folder and excludes" +
+      " entries outside it"
+  )
+  def scopedListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    // A trailing slash (as sent by the Admin Console) is tolerated
+    List("scoped", "scoped/").foreach { scope =>
+      val response = StagingApi.getStaging(stagingUuid, path = Some(scope))
+      assertEquals(response.status, HttpStatus.SC_OK)
+      response.body.foreach(staging =>
+        assertEquals(
+          staging.files.map(_.name),
+          List("inner/one.png"),
+          s"Scoped listing (path=$scope) should be relative and exclude outside entries"
+        )
+      )
+    }
+  }
+
+  @Test(description = "A listing with folders=true includes folder entries, flagged as folders")
+  def folderListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    val response = StagingApi.getStaging(stagingUuid, folders = Some(true))
+    assertEquals(response.status, HttpStatus.SC_OK)
+    response.body.foreach { staging =>
+      val (folderEntries, fileEntries) = staging.files.partition(_.folder.contains(true))
+      assertEquals(
+        folderEntries.map(_.name).sorted,
+        List("scoped", "scoped/inner"),
+        "Folder entries should be listed when folders=true"
+      )
+      assertEquals(
+        fileEntries.map(_.name).sorted,
+        List("scoped/inner/one.png", "toplevel.png"),
+        "File entries should be unaffected by folders=true"
+      )
+    }
+  }
+
+  @Test(description = "A listing with checksums=false skips etag computation")
+  def checksumSkipListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    val response = StagingApi.getStaging(stagingUuid, checksums = Some(false))
+    assertEquals(response.status, HttpStatus.SC_OK)
+    response.body.foreach(staging =>
+      assertTrue(
+        staging.files.forall(_.etag == null),
+        "No etags should be computed when checksums=false"
+      )
+    )
+  }
+
+  @Test(description = "Scoped listing of a non-existent folder returns an empty listing")
+  def scopedListingMissingPathTest(): Unit = withStaging { stagingUuid =>
+    val response = StagingApi.getStaging(stagingUuid, path = Some("does-not-exist"))
+    assertEquals(response.status, HttpStatus.SC_OK)
+    response.body.foreach(staging =>
+      assertTrue(staging.files.isEmpty, "Missing folder should list as empty, not error")
+    )
   }
 
   @Test(description = "Delete a specific file from the staging area")
@@ -325,10 +419,24 @@ class StagingApiTest extends AbstractRestApiTest {
     def createStaging(): ApiResponse[Option[String]] =
       execute(new PostMethod(endpoint))(m => getHeader(m, HEADER_EPS_STAGING_ID).get)
 
-    def getStaging(stagingUuid: String): ApiResponse[Option[StagingArea]] =
-      execute(new GetMethod(endpoint + stagingUuid)) { m =>
+    def getStaging(
+        stagingUuid: String,
+        path: Option[String] = None,
+        folders: Option[Boolean] = None,
+        checksums: Option[Boolean] = None
+    ): ApiResponse[Option[StagingArea]] = {
+      val method = new GetMethod(endpoint + stagingUuid)
+      val params = Seq(
+        path.map(p => new NameValuePair("path", p)),
+        folders.map(f => new NameValuePair("folders", f.toString)),
+        checksums.map(c => new NameValuePair("checksums", c.toString))
+      ).flatten.toArray
+      if (params.nonEmpty) method.setQueryString(params)
+
+      execute(method) { m =>
         scalaMapper.readValue(m.getResponseBodyAsStream, classOf[StagingArea])
       }
+    }
 
     def uploadFile(
         stagingUuid: String,
