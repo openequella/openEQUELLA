@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { stringify } from 'query-string';
+import qs from 'query-string';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
 import { SearchResultCodec, SearchResultItemRawCodec } from './gen/Search';
@@ -632,7 +632,7 @@ export const searchWithAdvancedParams = (
 export const buildExportUrl = (
   apiBasePath: string,
   params: SearchParams
-): string => apiBasePath + EXPORT_PATH + '?' + stringify(params);
+): string => apiBasePath + EXPORT_PATH + '?' + qs.stringify(params);
 
 /**
  * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
