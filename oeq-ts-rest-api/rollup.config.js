@@ -26,6 +26,14 @@ export default {
       format: 'cjs',
       exports: 'named',
       sourcemap: true,
+      // `query-string` is a pure ESM package (no CJS build). When Rollup leaves it
+      // as an external dependency in the CJS output, it otherwise assumes a
+      // default import can be accessed directly on the `require(...)` result
+      // (i.e. CJS `module.exports = X` shape), which is wrong for a real ES
+      // module whose values live under `.default`. Forcing `esModule` interop
+      // for this specific external ensures `qs.stringify(...)` etc. resolve
+      // correctly at runtime (`require('query-string').default.stringify`).
+      interop: (id) => (id === 'query-string' ? 'esModule' : 'default'),
     },
     {
       file: pkg.module,
