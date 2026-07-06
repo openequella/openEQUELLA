@@ -24,7 +24,11 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * A convenience class to help with the signature generation used in the D2L authentication system
  */
-public class D2LSigner {
+public final class D2LSigner {
+
+  private D2LSigner() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Provides the D2L custom encoded version of hmacSha256 hash of the data provided using the key

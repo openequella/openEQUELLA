@@ -15,7 +15,9 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
   @Override
   public void transform(
       ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
-    if (testMethod == null) return;
+    if (testMethod == null) {
+      return;
+    }
 
     checkRetryAnnotation(annotation, testMethod);
     checkSkipTestAnnotation(annotation, testMethod);

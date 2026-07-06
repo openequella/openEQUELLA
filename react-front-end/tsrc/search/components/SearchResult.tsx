@@ -437,7 +437,7 @@ export default function SearchResult({
     <Grid
       id={uuid}
       container
-      alignItems="center"
+      sx={{ alignItems: "center" }}
       className={getSearchPageItemClass()} // Give a class so each item can be dropped to the course list.
       data-itemuuid={uuid}
       data-itemversion={version}

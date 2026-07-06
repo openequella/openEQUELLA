@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Alert, Button, Grid, List } from "@mui/material";
+import { Alert, Box, Button, List, Stack } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
@@ -84,15 +84,13 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
 
   return (
     <DraggablePortlet portlet={cfg} isLoading={isLoading} {...restProps}>
-      <Grid container direction="column" spacing={2}>
-        <Grid>
-          {errorMessage ? (
-            <Alert severity="error">{errorMessage}</Alert>
-          ) : (
-            myResourcesTypesList
-          )}
-        </Grid>
-        <Grid display="flex" justifyContent="center">
+      <Stack spacing={2}>
+        {errorMessage ? (
+          <Alert severity="error">{errorMessage}</Alert>
+        ) : (
+          myResourcesTypesList
+        )}
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
           <Button
             aria-label={showAllText}
             variant="outlined"
@@ -101,8 +99,8 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
           >
             {showAllText}
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
     </DraggablePortlet>
   );
 };

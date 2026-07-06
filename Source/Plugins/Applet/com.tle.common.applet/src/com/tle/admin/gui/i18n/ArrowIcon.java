@@ -73,7 +73,9 @@ public class ArrowIcon implements Icon {
 
   private void paintTriangle(Graphics g, int x, int y, int size) {
     Color oldColor = g.getColor();
-    int mid, i, j;
+    int mid;
+    int i;
+    int j;
 
     j = 0;
     size = Math.max(size, 2);

@@ -77,6 +77,9 @@ object InstallFirstTime extends App {
     val dbRow = dbPage.getDatabaseRow(DEFAULT_SCHEMA)
     dbRow.initialise()
     dbRow.waitForMigrate()
+    // Fail loudly if the Default schema did not come online, rather than silently proceeding
+    // to setupForTests against a system with no available schema.
+    dbRow.assertOnline()
   }
 
   private def fillInstallationForm(

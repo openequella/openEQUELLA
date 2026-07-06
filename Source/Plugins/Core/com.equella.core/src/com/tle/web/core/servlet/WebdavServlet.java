@@ -450,7 +450,7 @@ public class WebdavServlet extends HttpServlet {
    * <?xml version = '1.0' encoding = 'UTF-8'?>
    *  <a:propfind xmlns:a="DAV:" xmlns:b="urn:schemas-microsoft-com:datatypes">
    *     <a:prop>
-   *     	<a:name/>
+   *         <a:name/>
    * <a:parentname/>
    * <a:href/>
    * <a:ishidden/>
@@ -502,7 +502,7 @@ public class WebdavServlet extends HttpServlet {
    *      </propstat>
    *      <propstat>
    *         <prop>
-   *         	  <name/>
+   *               <name/>
    *            <href/>
    *            <displayname/>
    *            <getcontentlength>0</getcontentlength>

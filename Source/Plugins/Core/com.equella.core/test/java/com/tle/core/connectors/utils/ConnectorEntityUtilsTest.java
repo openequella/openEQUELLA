@@ -1,8 +1,8 @@
 package com.tle.core.connectors.utils;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.ConnectorFolder;
@@ -12,7 +12,7 @@ import com.tle.core.connectors.blackboard.beans.Content.ContentHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("nls")
 public class ConnectorEntityUtilsTest {

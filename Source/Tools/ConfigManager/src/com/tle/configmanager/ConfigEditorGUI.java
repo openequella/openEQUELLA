@@ -36,17 +36,26 @@ public class ConfigEditorGUI extends JDialog implements ActionListener {
   // GUI Components
   JTabbedPane jtp;
   JComboBox<String> cmbDbTypes;
-  JTextField txtPort, txtHost, txtUser, txtDb, txtAdminURL, txtProfName, txtHttp, txtHttps, txtAjp;
+  JTextField txtPort;
+  JTextField txtHost;
+  JTextField txtUser;
+  JTextField txtDb;
+  JTextField txtAdminURL;
+  JTextField txtProfName;
+  JTextField txtHttp;
+  JTextField txtHttps;
+  JTextField txtAjp;
   JPasswordField txtPass;
-  JButton save, cancel;
-  JPathBrowser pbrFiles,
-      pbrJava,
-      pbrFree,
-      pbrStop,
-      pbrReport,
-      pbrPlugins,
-      pbrConPath,
-      pbrImageMagick;
+  JButton save;
+  JButton cancel;
+  JPathBrowser pbrFiles;
+  JPathBrowser pbrJava;
+  JPathBrowser pbrFree;
+  JPathBrowser pbrStop;
+  JPathBrowser pbrReport;
+  JPathBrowser pbrPlugins;
+  JPathBrowser pbrConPath;
+  JPathBrowser pbrImageMagick;
   JCheckBox chkDevInst;
 
   // Configuration Profile

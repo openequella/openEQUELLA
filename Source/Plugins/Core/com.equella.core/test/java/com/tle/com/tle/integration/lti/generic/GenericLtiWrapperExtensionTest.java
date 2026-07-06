@@ -1,9 +1,9 @@
 package com.tle.com.tle.integration.lti.generic;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,7 +11,7 @@ import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.integration.lti.generic.GenericLtiWrapperExtension;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("nls")
 public class GenericLtiWrapperExtensionTest {

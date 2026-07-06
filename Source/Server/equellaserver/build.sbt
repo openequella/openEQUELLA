@@ -17,20 +17,20 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.117"
-val axis2Version      = "2.0.0"
+val TomcatVersion     = "9.0.119"
+val axis2Version      = "2.0.1"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
-val cxfVersion        = "3.6.10"
+val cxfVersion        = "3.6.11"
 val fs2Version        = "3.13.0"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.22.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
-val tikaVersion       = "3.3.0"
+val tikaVersion       = "3.3.1"
 val luceneVersion     = "10.4.0"
-val nettyVersion      = "4.2.12.Final"
+val nettyVersion      = "4.2.15.Final"
 val rampartVersion    = "1.8.0"
 
 libraryDependencies ++= Seq(
@@ -49,8 +49,8 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
-  "com.auth0" % "java-jwt" % "4.5.1",
-  "com.auth0" % "jwks-rsa" % "0.23.1"
+  "com.auth0" % "java-jwt" % "4.5.2",
+  "com.auth0" % "jwks-rsa" % "0.24.1"
 )
 
 // Jackson dependencies
@@ -69,21 +69,21 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "co.fs2"                        %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
-  "cglib"                          % "cglib"                         % "3.3.0",
-  "io.bit3"                        % "jsass"                         % jsassVersion,
-  "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
+  "cglib"                          % "cglib"       % "3.3.0",
+  "co.fs2"                        %% "fs2-io"      % fs2Version,
+  "com.softwaremill.sttp.client3" %% "core"        % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "fs2"         % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe"       % sttpVersion,
+  "com.flickr4java"                % "flickr4java" % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.9.0",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260412-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.13.2",
-  "com.google.guava"      % "guava"                       % "33.6.0-jre",
-  "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
+  "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
+  "com.google.api-client"         % "google-api-client"           % "2.9.0",
+  "com.google.apis"               % "google-api-services-books"   % "v1-rev20240214-2.0.0",
+  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260608-2.0.0",
+  "com.google.code.gson"          % "gson"                        % "2.14.0",
+  "com.google.guava"              % "guava"                       % "33.6.0-jre",
+  "com.google.inject"             % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
@@ -103,19 +103,18 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "org.asynchttpclient" % "async-http-client"    % "2.14.5",
-  "com.rometools"       % "rome"                 % "2.1.0",
-  "io.swagger"          % "swagger-core"         % SwaggerVersion,
-  "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
-  "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
-  "io.swagger"         %% "swagger-scala-module" % "1.0.6",
+  "com.rometools" % "rome"                 % "2.1.0",
+  "io.swagger"    % "swagger-core"         % SwaggerVersion,
+  "io.swagger"    % "swagger-annotations"  % SwaggerVersion,
+  "io.swagger"    % "swagger-jaxrs"        % SwaggerVersion,
+  "io.swagger"   %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "7.0.2" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "7.1.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
   "commons-codec"             % "commons-codec"         % "1.22.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.5.1",
+  "commons-daemon"            % "commons-daemon"        % "1.6.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.22.0",
@@ -123,6 +122,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
+  "io.bit3"                   % "jsass"                 % jsassVersion,
   "javax.inject"              % "javax.inject"          % "1",
   "javax.mail"                % "mail"                  % "1.4.7",
   "javax.servlet"             % "jstl"                  % "1.2",
@@ -214,7 +214,7 @@ libraryDependencies ++= Seq(
   "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                      % "cql-java"                       % "1.0",
   "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.freemarker"                  % "freemarker"                     % "2.3.23",
+  "org.freemarker"                  % "freemarker"                     % "2.3.34",
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
@@ -225,8 +225,8 @@ libraryDependencies ++= Seq(
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.17",
-  "org.slf4j"        % "slf4j-api"      % "2.0.17",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.18",
+  "org.slf4j"        % "slf4j-api"      % "2.0.18",
   springAop,
   springWeb,
   springContext,
@@ -243,7 +243,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.10.5",
+  "org.scala-sbt"                %% "io"                       % "1.12.2",
   "org.mozilla"                   % "rhino"                    % "1.9.1",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
@@ -263,15 +263,15 @@ libraryDependencies ++= {
   }
 }
 dependencyOverrides ++= Seq(
-  "javax.mail" % "mail"                % "1.4.7",
-  "io.netty"   % "netty-common"        % nettyVersion,
-  "io.netty"   % "netty-buffer"        % nettyVersion,
-  "io.netty"   % "netty-codec"         % nettyVersion,
-  "io.netty"   % "netty-handler"       % nettyVersion,
-  "io.netty"   % "netty-transport"     % nettyVersion,
-  "io.netty"   % "netty-codec-socks"   % nettyVersion,
-  "io.netty"   % "netty-handler-proxy" % nettyVersion,
-  "io.netty"   % "netty-codec-http"    % nettyVersion
+  "javax.mail" % "mail" % "1.4.7",
+  // Netty is pulled in transitively by Apache ZooKeeper (via Curator); these overrides pin it to a
+  // single consistent version. The former netty-codec / netty-codec-http / netty-codec-socks /
+  // netty-handler-proxy overrides were only needed by async-http-client and were removed along with
+  // it.
+  "io.netty" % "netty-common"    % nettyVersion,
+  "io.netty" % "netty-buffer"    % nettyVersion,
+  "io.netty" % "netty-handler"   % nettyVersion,
+  "io.netty" % "netty-transport" % nettyVersion
 )
 
 excludeDependencies ++= Seq(
@@ -498,10 +498,7 @@ upgradeZip := {
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
-    upgraderJar -> "installation-upgrader.jar",
-    // Temporary, for upgrades from before 2025.2 - remove as part of OEQ-2761
-    // This is it's OLD name, which was misleading as it implied it was only for DB upgrades.
-    upgraderJar                                         -> "database-upgrader.jar",
+    upgraderJar                                         -> "installation-upgrader.jar",
     (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
     (LocalProject("equella") / versionProperties).value -> "version.properties"
   )

@@ -69,7 +69,7 @@ public class ItemApiEditTest extends AbstractItemApiTest {
       String[] stagingParams = createStaging();
       stagingUuid = stagingParams[0];
       String stagingDirUrl = stagingParams[1];
-      uploadFile(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
+      uploadFileToStaging(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
     }
 
     createItemFromJsonFile("newitem.json", token, stagingUuid);
@@ -486,8 +486,8 @@ public class ItemApiEditTest extends AbstractItemApiTest {
     String[] stagingParams = createStaging();
 
     String stagingDirUrl = stagingParams[1];
-    uploadFile(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
-    uploadFile(stagingDirUrl, "shopimage.jpeg", Attachments.get("shopimage.jpeg"));
+    uploadFileToStaging(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
+    uploadFileToStaging(stagingDirUrl, "shopimage.jpeg", Attachments.get("shopimage.jpeg"));
 
     ObjectNode item =
         (ObjectNode) mapper.readTree(readJsonFile("thumbitem.json", standardParams()));

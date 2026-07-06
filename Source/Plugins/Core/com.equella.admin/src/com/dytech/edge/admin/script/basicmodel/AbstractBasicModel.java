@@ -435,11 +435,9 @@ public abstract class AbstractBasicModel extends IfModel implements ActionListen
   protected void defaultPopulateValues() {
     switch (xpathField.getType()) {
       case MODERATION:
-        {
-          valueSelection.addItem(new NameValue("true", "true"));
-          valueSelection.addItem(new NameValue("false", "false"));
-          break;
-        }
+        valueSelection.addItem(new NameValue("true", "true"));
+        valueSelection.addItem(new NameValue("false", "false"));
+        break;
 
       case ITEM_STATUS:
         addStatuses();

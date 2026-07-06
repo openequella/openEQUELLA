@@ -1,8 +1,8 @@
 package io.github.openequella.rest;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;

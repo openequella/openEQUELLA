@@ -38,11 +38,17 @@ public class CExecute extends Command {
     this.command = command;
     this.secondsToWait = secondsToWait;
 
-    if (env == null) this.env = null;
-    else this.env = new String[] {env};
+    if (env == null) {
+      this.env = null;
+    } else {
+      this.env = new String[] {env};
+    }
 
-    if (path == null) this.path = null;
-    else this.path = new File(path);
+    if (path == null) {
+      this.path = null;
+    } else {
+      this.path = new File(path);
+    }
   }
 
   @Override

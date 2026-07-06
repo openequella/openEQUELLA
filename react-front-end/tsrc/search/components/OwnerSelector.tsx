@@ -61,7 +61,7 @@ const OwnerSelector = ({
 
   return (
     <>
-      <Grid container alignItems="center" spacing={1}>
+      <Grid container spacing={1} sx={{ alignItems: "center" }}>
         {value ? (
           <Grid size={12}>
             <List disablePadding>

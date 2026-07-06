@@ -48,6 +48,11 @@ public class Triple<FIRST, SECOND, THIRD> extends Pair<FIRST, SECOND> {
   }
 
   @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public boolean checkFields(Pair<FIRST, SECOND> rhs) {
     Triple<FIRST, SECOND, THIRD> t = (Triple<FIRST, SECOND, THIRD>) rhs;

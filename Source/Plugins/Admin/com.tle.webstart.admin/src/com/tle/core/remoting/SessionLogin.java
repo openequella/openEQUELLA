@@ -27,7 +27,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class SessionLogin {
+public final class SessionLogin {
+
+  private SessionLogin() {
+    throw new UnsupportedOperationException();
+  }
 
   public static void postLogin(URL endpointUrl, Map<String, String> params)
       throws IOException, BadCredentialsException {

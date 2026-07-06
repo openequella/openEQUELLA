@@ -138,7 +138,7 @@ public class SuperDuperFilter extends Filter {
       try {
         for (String pair : query.split("[&]")) // $NON-NLS-1$
         {
-          final String param[] = pair.split("[=]"); // $NON-NLS-1$
+          final String[] param = pair.split("[=]"); // $NON-NLS-1$
 
           String paramName = ""; // $NON-NLS-1$
           String paramValue = ""; // $NON-NLS-1$

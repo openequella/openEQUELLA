@@ -3,6 +3,7 @@
 <suite name="Auto Test Suite workflow" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
 	<test name="Workflow Tests">
 		<packages>	
+			<package name="io.github.openequella.workflow" />
 			<package name="com.tle.webtests.test.workflow" />
 			<package name="com.tle.webtests.test.workflow.assignment" />
 			<package name="com.tle.webtests.test.workflow.movetolive" />

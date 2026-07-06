@@ -1,7 +1,6 @@
 package io.github.openequella.rest;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,14 +40,14 @@ public class UserQueryApiTest extends AbstractRestApiTest {
           "Search for all users matching a query, with no group filter specified (so all users)")
   public void filter_unfilteredQueryTest() throws IOException {
     final List<UserDetails> result = filterEndpointQuery(200, COMMON_QUERY, null);
-    assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(11));
+    assertEquals(result.size(), 11, REASON_UNEXPECTED_NUM_USERS);
   }
 
   @Test(description = "Search for all users matching a query, limiting to a single group")
   public void filter_singleFilterQueryTest() throws IOException {
     final List<UserDetails> result =
         filterEndpointQuery(200, COMMON_QUERY, Collections.singleton(GROUPID_AUTOGROUP_1));
-    assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(1));
+    assertEquals(result.size(), 1, REASON_UNEXPECTED_NUM_USERS);
     assertTrue(REASON_MISSING_USERS, collectUserIds(result).contains(USERID_AUTOTEST));
   }
 
@@ -59,7 +58,7 @@ public class UserQueryApiTest extends AbstractRestApiTest {
             200,
             COMMON_QUERY,
             new HashSet<>(Arrays.asList(GROUPID_AUTOGROUP_1, GROUPID_OUTGROUP_1)));
-    assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(2));
+    assertEquals(result.size(), 2, REASON_UNEXPECTED_NUM_USERS);
     assertTrue(
         REASON_MISSING_USERS,
         collectUserIds(result).containsAll(Arrays.asList(USERID_AUTOTEST, USERID_DONOTUSE)));
@@ -88,7 +87,7 @@ public class UserQueryApiTest extends AbstractRestApiTest {
     method.setQueryString(queryParams.toArray(new NameValuePair[0]));
 
     int statusCode = makeClientRequest(method);
-    assertThat("Unexpected response from server", statusCode, is(expectedCode));
+    assertEquals(statusCode, expectedCode, "Unexpected response from server");
 
     return statusCode == 200
         ? mapper.readValue(

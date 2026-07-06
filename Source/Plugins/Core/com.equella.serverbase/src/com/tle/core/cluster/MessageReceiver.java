@@ -80,7 +80,9 @@ public class MessageReceiver implements Runnable {
         try {
           Thread.sleep(MAX_ATTEMPT - timeSinceLastAttempt);
         } catch (InterruptedException e) {
-          if (die) break;
+          if (die) {
+            break;
+          }
         }
       }
 

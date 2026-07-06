@@ -97,7 +97,7 @@ public class TLEGroupServiceImpl
     }
 
     TLEGroup group = new TLEGroup();
-    group.setId(0l);
+    group.setId(0L);
     group.setName(name);
     group.setInstitution(CurrentInstitution.get());
     if (groupId != null) {
@@ -147,13 +147,11 @@ public class TLEGroupServiceImpl
   @Transactional(propagation = Propagation.REQUIRED)
   public String edit(final TLEGroup group) {
     boolean parentSame;
-    {
-      TLEGroup original = get(group.getUuid());
-      TLEGroup oldParent = original.getParent();
-      dao.unlinkFromSession(original);
-      dao.unlinkFromSession(oldParent);
-      parentSame = Objects.equals(oldParent, group.getParent());
-    }
+    TLEGroup original = get(group.getUuid());
+    TLEGroup oldParent = original.getParent();
+    dao.unlinkFromSession(original);
+    dao.unlinkFromSession(oldParent);
+    parentSame = Objects.equals(oldParent, group.getParent());
 
     group.setInstitution(CurrentInstitution.get());
 

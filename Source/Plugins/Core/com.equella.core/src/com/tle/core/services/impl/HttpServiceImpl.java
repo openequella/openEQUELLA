@@ -315,7 +315,7 @@ public class HttpServiceImpl implements HttpService {
     private String path;
 
     public ACookie(URI uri, String header) {
-      String attributes[] = header.split(";");
+      String[] attributes = header.split(";");
       String nameValue = attributes[0].trim();
       this.uri = uri;
       this.name = nameValue.substring(0, nameValue.indexOf('='));
@@ -659,13 +659,11 @@ public class HttpServiceImpl implements HttpService {
   public String queryString(String... paramNameValues) {
     final List<NameValuePair> params = Lists.newArrayList();
     // if( paramNameValues != null )
-    {
-      if (paramNameValues.length % 2 != 0) {
-        throw new RuntimeException("Must supply an even number of paramNameValues");
-      }
-      for (int i = 0; i < paramNameValues.length; i += 2) {
-        params.add(new BasicNameValuePair(paramNameValues[i], paramNameValues[i + 1]));
-      }
+    if (paramNameValues.length % 2 != 0) {
+      throw new RuntimeException("Must supply an even number of paramNameValues");
+    }
+    for (int i = 0; i < paramNameValues.length; i += 2) {
+      params.add(new BasicNameValuePair(paramNameValues[i], paramNameValues[i + 1]));
     }
     return queryStringNv(params);
   }

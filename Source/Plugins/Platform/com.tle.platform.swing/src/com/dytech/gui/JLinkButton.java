@@ -71,7 +71,7 @@ public class JLinkButton extends JButton {
     setContentAreaFilled(false);
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     JDialog d = new JDialog();
     d.setSize(300, 300);
     d.setModal(true);

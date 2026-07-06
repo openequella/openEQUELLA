@@ -845,7 +845,9 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
         stream = zipFile.getInputStream(zipEntry);
         return new ArchiveEntry(
             zipEntry.getName().replace('\\', '/'), zipEntry.isDirectory(), zipEntry.getSize());
-      } else return null;
+      } else {
+        return null;
+      }
     }
 
     @Override

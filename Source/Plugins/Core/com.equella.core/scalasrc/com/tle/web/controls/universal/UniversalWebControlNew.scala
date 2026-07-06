@@ -34,7 +34,6 @@ import com.tle.core.mimetypes.MimeTypeService
 import com.tle.core.services.FileSystemService
 import com.tle.core.workflow.thumbnail.service.ThumbnailService
 import com.tle.core.workflow.video.VideoService
-import com.tle.web.cloudproviders.CloudWizardControl
 import com.tle.web.controls.universal.UniversalWebControlNew._
 import com.tle.web.controls.universal.handlers.FileUploadHandlerNew
 import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{
@@ -255,8 +254,6 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "toomany_1",
             CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments.1")
           ),
-          "reloadState",
-          CloudWizardControl.reloadState,
           "dialog",
           PartiallyApply.partial(dialog.getOpenFunction, 2),
           "commandUrl",

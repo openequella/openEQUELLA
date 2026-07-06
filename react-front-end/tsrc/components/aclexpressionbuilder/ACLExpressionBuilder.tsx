@@ -16,31 +16,40 @@
  * limitations under the License.
  */
 import { TabContext, TabPanel } from "@mui/lab";
-import { AppBar, Button, Grid, Paper, Tab, Tabs } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Grid,
+  Paper,
+  Stack,
+  Tab,
+  Tabs,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { constant, flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as S from "fp-ts/string";
-import * as E from "fp-ts/Either";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
+import * as S from "fp-ts/string";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
-  parse,
   ACLExpression,
   addRecipients,
   compactACLExpressions,
   flattenRecipients,
+  generate,
   getACLExpressionById,
+  parse,
   removeACLExpression,
+  removeRedundantExpressions,
   replaceACLExpression,
   revertCompactedACLExpressions,
-  generate,
-  removeRedundantExpressions,
 } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
@@ -66,10 +75,10 @@ const classes = {
   panelWrapper: `${PREFIX}-panelWrapper`,
   paper: `${PREFIX}-paper`,
   tabPanel: `${PREFIX}-tabPanel`,
-  actionBtn: `${PREFIX}-actionBtn`,
+  footer: `${PREFIX}-footer`,
 };
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledStack = styled(Stack)(({ theme }) => ({
   [`& .${classes.appBar}`]: {
     backgroundColor: "transparent",
     boxShadow: "0px 0px 0px 0px rgb(0 0 0 / 0%)",
@@ -93,8 +102,9 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   [`& .${classes.tabPanel}`]: {
     padding: 0,
   },
-  [`& .${classes.actionBtn}`]: {
-    float: "right",
+  [`& .${classes.footer}`]: {
+    display: "flex",
+    justifyContent: "flex-end",
   },
 }));
 
@@ -261,25 +271,18 @@ const ACLExpressionBuilder = ({
     panelWrapper: panelWrapperClass,
     paper: paperClass,
     tabPanel: tabPanelClass,
-    actionBtn: actionBtnClass,
+    footer: footerClass,
   } = classes;
 
   return (
-    <StyledGrid
-      spacing={2}
-      container
-      justifyContent="flex-start"
-      direction="column"
-    >
+    <StyledStack spacing={2}>
       <TabContext value={activeTabValue}>
-        <Grid>
-          <AppBar position="static" color="default" className={appBarClass}>
-            <Tabs value={activeTabValue} onChange={handleTabChanged}>
-              <Tab label={homeTabLabel} value={homeTabLabel} />
-              <Tab label={otherTabLabel} value={otherTabLabel} />
-            </Tabs>
-          </AppBar>
-        </Grid>
+        <AppBar position="static" color="default" className={appBarClass}>
+          <Tabs value={activeTabValue} onChange={handleTabChanged}>
+            <Tab label={homeTabLabel} value={homeTabLabel} />
+            <Tab label={otherTabLabel} value={otherTabLabel} />
+          </Tabs>
+        </AppBar>
         <Grid container className={mainContentClass}>
           <Grid size={6} className={panelWrapperClass}>
             <Paper className={paperClass}>
@@ -313,11 +316,10 @@ const ACLExpressionBuilder = ({
             </Paper>
           </Grid>
         </Grid>
-        <Grid>
+        <Box className={footerClass}>
           <Button
             variant="contained"
             color="primary"
-            className={actionBtnClass}
             onClick={() =>
               pipe(
                 currentACLExpression,
@@ -337,9 +339,9 @@ const ACLExpressionBuilder = ({
           >
             {languageStrings.common.action.ok}
           </Button>
-        </Grid>
+        </Box>
       </TabContext>
-    </StyledGrid>
+    </StyledStack>
   );
 };
 

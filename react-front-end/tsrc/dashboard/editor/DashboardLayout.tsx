@@ -15,27 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from "react";
-import * as React from "react";
-import { Alert, Grid, Typography } from "@mui/material";
+import { Alert, Box, Stack, Typography } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import { DashboardPageContext } from "../DashboardPageContext";
-import { DashboardLayoutSelector } from "./DashboardLayoutSelector";
-import { languageStrings } from "../../util/langstrings";
-import { AppContext } from "../../mainui/App";
-import { pipe, constVoid } from "fp-ts/function";
 import * as A from "fp-ts/Array";
-import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
+import { constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
+import * as React from "react";
+import { useContext } from "react";
+import { AppContext } from "../../mainui/App";
 import {
   batchUpdatePortletPreferences,
   updateDashboardLayout,
 } from "../../modules/DashboardModule";
+import { languageStrings } from "../../util/langstrings";
+import { DashboardPageContext } from "../DashboardPageContext";
 import {
   isSecondColumnPortlet,
   isTwoColumnLayout,
 } from "../portlet/PortletHelper";
+import { DashboardLayoutSelector } from "./DashboardLayoutSelector";
 
 const { dashboardLayout: strings } = languageStrings.dashboard.editor;
 
@@ -127,14 +127,12 @@ export const DashboardLayout = () => {
   );
 
   return dashboardDetails ? (
-    <Grid container direction="column" spacing={2}>
-      <Grid>
-        <Typography variant="body1">{strings.chooseLayout}</Typography>
-      </Grid>
-      <Grid display="flex" justifyContent="center">
+    <Stack spacing={2}>
+      <Typography variant="body1">{strings.chooseLayout}</Typography>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DashboardLayoutSelector value={activeLayout} onChange={handleChange} />
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   ) : (
     <Alert severity="error">{strings.alertNoDashboardDetails}</Alert>
   );

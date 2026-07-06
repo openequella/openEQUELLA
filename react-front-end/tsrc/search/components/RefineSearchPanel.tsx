@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CloseIcon from "@mui/icons-material/Close";
+import FilterList from "@mui/icons-material/FilterList";
 import {
   Button,
   Card,
@@ -23,11 +25,10 @@ import {
   Grid,
   List,
   ListItem,
+  Stack,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import FilterList from "@mui/icons-material/FilterList";
-import CloseIcon from "@mui/icons-material/Close";
 import type { Theme } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
@@ -142,24 +143,20 @@ export const RefineSearchPanel = ({
   const renderRefineControl = (control: RefinePanelControl) => {
     return (
       <ListItem key={control.title}>
-        <Grid
+        <Stack
           id={`RefineSearchPanel-${control.idSuffix}`}
-          container
-          direction="column"
-          size="grow"
+          sx={{ width: "100%" }}
         >
-          <Grid>
-            <RefinePanelControlHeading title={control.title} />
-          </Grid>
-          <Grid>{control.component}</Grid>
-        </Grid>
+          <RefinePanelControlHeading title={control.title} />
+          {control.component}
+        </Stack>
       </ListItem>
     );
   };
   return (
     <Card>
       <CardContent>
-        <Grid container alignItems="center">
+        <Grid container sx={{ alignItems: "center" }}>
           <Grid size={11}>
             <Typography variant="h5">{title}</Typography>
           </Grid>

@@ -31,7 +31,6 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.URLUtils;
 import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.TextExtracterExtension;
-import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
@@ -110,117 +109,108 @@ public class TextExtracter {
         if (indexAttachments) {
           switch (attach.getAttachmentType()) {
             case FILE:
-              {
-                if (!attach.isErroredIndexing()) {
-                  final String filename = attach.getUrl();
+              if (!attach.isErroredIndexing()) {
+                final String filename = attach.getUrl();
 
-                  // Allow for searching by the filename
-                  sbuf.append(filename);
-                  sbuf.append(' ');
+                // Allow for searching by the filename
+                sbuf.append(filename);
+                sbuf.append(' ');
 
-                  indexSingleFile(item, sbuf, filename);
-                }
-                break;
+                indexSingleFile(item, sbuf, filename);
               }
+              break;
             case HTML:
-              {
-                final HtmlAttachment htmlAttach = (HtmlAttachment) attach;
-                final String filename = htmlAttach.getFilename();
-                final MimeEntry mimeEntry = mimeService.getEntryForFilename(filename);
+              final HtmlAttachment htmlAttach = (HtmlAttachment) attach;
+              final String filename = htmlAttach.getFilename();
+              final MimeEntry mimeEntry = mimeService.getEntryForFilename(filename);
 
-                final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
-                if (!extractors.isEmpty()) {
-                  try (InputStream input =
-                      fileSystemService.read(itemFileService.getItemFile(item), filename)) {
-                    extractTextFromStream(extractors, input, mimeEntry, sbuf);
-                  }
+              final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
+              if (!extractors.isEmpty()) {
+                try (InputStream input =
+                    fileSystemService.read(itemFileService.getItemFile(item), filename)) {
+                  extractTextFromStream(extractors, input, mimeEntry, sbuf);
                 }
-                break;
               }
+              break;
 
             case LINK:
-              {
-                if (urlLevel == SearchSettings.URL_DEPTH_LEVEL_NONE) {
-                  break;
-                }
-
-                URL url = new URL(attach.getUrl());
-                Robots robots = new Robots(url);
-
-                if (robots.isAllowed(url.getPath())) {
-                  boolean needsGet = false;
-                  URLConnection urlcon = url.openConnection();
-                  if (urlcon instanceof HttpURLConnection) {
-                    ((HttpURLConnection) urlcon).setRequestMethod("HEAD");
-                    needsGet = true;
-                  }
-                  urlcon.setConnectTimeout(URL_TIMEOUT);
-                  urlcon.setReadTimeout(URL_TIMEOUT);
-                  InputStream input = urlcon.getInputStream();
-
-                  try {
-                    MimeEntry mimeEntry = getMimeEntryFromContentType(urlcon.getContentType());
-                    List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
-
-                    boolean isHtmlAndNeedsParsing =
-                        (mimeEntry != null
-                            && mimeEntry.getType().indexOf("html") != -1
-                            && urlLevel >= SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED);
-                    boolean isIndexable = extractors.size() > 0;
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    if (isIndexable || isHtmlAndNeedsParsing) {
-                      // Now do a GET if required
-                      if (needsGet) {
-                        Closeables.close(input, true);
-                        urlcon = url.openConnection();
-                        urlcon.setConnectTimeout(URL_TIMEOUT);
-                        urlcon.setReadTimeout(URL_TIMEOUT);
-                        input = urlcon.getInputStream();
-                      }
-
-                      byte[] buf = new byte[8192];
-                      while (true) {
-                        int amount = input.read(buf);
-                        if (amount <= 0) {
-                          break;
-                        }
-                        baos.write(buf, 0, amount);
-                      }
-                    }
-
-                    if (isHtmlAndNeedsParsing) {
-                      try {
-                        new URLDownloader(
-                                new ByteArrayInputStream(baos.toByteArray()), url, sbuf, robots)
-                            .download();
-                      } catch (Exception e) {
-                        if (LOGGER.isDebugEnabled()) {
-                          LOGGER.debug("Error download referenced links in:" + url, e);
-                        }
-                      }
-                    }
-
-                    if (isIndexable) {
-                      ByteArrayInputStream binput = new ByteArrayInputStream(baos.toByteArray());
-                      extractTextFromStream(extractors, binput, mimeEntry, sbuf);
-                    }
-                  } finally {
-                    Closeables.close(input, true);
-                  }
-                }
+              if (urlLevel == SearchSettings.URL_DEPTH_LEVEL_NONE) {
                 break;
               }
+
+              URL url = new URL(attach.getUrl());
+              Robots robots = new Robots(url);
+
+              if (robots.isAllowed(url.getPath())) {
+                boolean needsGet = false;
+                URLConnection urlcon = url.openConnection();
+                if (urlcon instanceof HttpURLConnection) {
+                  ((HttpURLConnection) urlcon).setRequestMethod("HEAD");
+                  needsGet = true;
+                }
+                urlcon.setConnectTimeout(URL_TIMEOUT);
+                urlcon.setReadTimeout(URL_TIMEOUT);
+                InputStream input = urlcon.getInputStream();
+
+                try {
+                  MimeEntry linkMimeEntry = getMimeEntryFromContentType(urlcon.getContentType());
+                  List<TextExtracterExtension> linkExtractors = getExtractors(linkMimeEntry);
+
+                  boolean isHtmlAndNeedsParsing =
+                      (linkMimeEntry != null
+                          && linkMimeEntry.getType().indexOf("html") != -1
+                          && urlLevel >= SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED);
+                  boolean isIndexable = linkExtractors.size() > 0;
+                  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                  if (isIndexable || isHtmlAndNeedsParsing) {
+                    // Now do a GET if required
+                    if (needsGet) {
+                      Closeables.close(input, true);
+                      urlcon = url.openConnection();
+                      urlcon.setConnectTimeout(URL_TIMEOUT);
+                      urlcon.setReadTimeout(URL_TIMEOUT);
+                      input = urlcon.getInputStream();
+                    }
+
+                    byte[] buf = new byte[8192];
+                    while (true) {
+                      int amount = input.read(buf);
+                      if (amount <= 0) {
+                        break;
+                      }
+                      baos.write(buf, 0, amount);
+                    }
+                  }
+
+                  if (isHtmlAndNeedsParsing) {
+                    try {
+                      new URLDownloader(
+                              new ByteArrayInputStream(baos.toByteArray()), url, sbuf, robots)
+                          .download();
+                    } catch (Exception e) {
+                      if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Error download referenced links in:" + url, e);
+                      }
+                    }
+                  }
+
+                  if (isIndexable) {
+                    ByteArrayInputStream binput = new ByteArrayInputStream(baos.toByteArray());
+                    extractTextFromStream(linkExtractors, binput, linkMimeEntry, sbuf);
+                  }
+                } finally {
+                  Closeables.close(input, true);
+                }
+              }
+              break;
 
             case CUSTOM:
               final CustomAttachment customAttach = (CustomAttachment) attach;
               String type = customAttach.getType();
-              if (type.equals(CloudProviderService.CloudAttachmentType())) {
-                for (String fname : CloudProviderService.filesToIndex(customAttach)) {
-                  indexSingleFile(item, sbuf, fname);
-                }
-              } else if (type.equals("scorm") && indexImsPackages) {
+              if (type.equals("scorm") && indexImsPackages) {
                 indexIms(attach, sbuf, item);
               }
+              break;
             case IMS:
               if (indexImsPackages) {
                 indexIms(attach, sbuf, item);

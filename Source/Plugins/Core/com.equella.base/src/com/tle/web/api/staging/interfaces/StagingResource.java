@@ -39,6 +39,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -47,6 +48,7 @@ import javax.ws.rs.core.UriInfo;
 @Api(value = "Staging files", description = "staging")
 public interface StagingResource {
   @POST
+  @StagingAreaCreatedResponse
   @ApiOperation(value = "Create a file area")
   Response createStaging();
 
@@ -64,6 +66,7 @@ public interface StagingResource {
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Read a file")
   Response getFile(
+      @Context Request request,
       @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath);
@@ -110,6 +113,8 @@ public interface StagingResource {
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Put a file")
   Response putFile(
+      @Context Request request,
+      @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,
@@ -118,7 +123,16 @@ public interface StagingResource {
           String unzipTo,
       @ApiParam("Path of an existing staging file to copy from. Cannot be combined with 'unzipto'.")
           @QueryParam("copyfrom")
-          String copySource,
-      @HeaderParam("content-type") String contentType)
+          String copySource)
       throws IOException;
+
+  @POST
+  @Path("/copy")
+  @StagingAreaCreatedResponse
+  @ApiOperation(value = "Creates a staging area and populates it with the specified item's files.")
+  Response createStagingFromItem(
+      @ApiParam(value = "UUID of the source item", required = true) @QueryParam("itemUuid")
+          String itemUuid,
+      @ApiParam(value = "Version of the source item", required = true) @QueryParam("itemVersion")
+          int itemVersion);
 }

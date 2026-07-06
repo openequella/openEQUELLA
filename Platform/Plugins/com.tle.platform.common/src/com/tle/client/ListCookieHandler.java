@@ -145,7 +145,7 @@ class Cookie {
   private String path;
 
   public Cookie(URI uri, String header) {
-    String attributes[] = header.split(";");
+    String[] attributes = header.split(";");
     String nameValue = attributes[0].trim();
     this.uri = uri;
     this.name = nameValue.substring(0, nameValue.indexOf('='));

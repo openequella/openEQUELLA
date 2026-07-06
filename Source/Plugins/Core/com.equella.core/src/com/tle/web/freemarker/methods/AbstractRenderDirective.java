@@ -28,6 +28,7 @@ import com.tle.web.sections.render.NestedRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.StyleableRenderer;
 import freemarker.core.Environment;
+import freemarker.core.TemplateElement;
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -37,22 +38,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public abstract class AbstractRenderDirective extends SectionsTemplateModel
     implements TemplateDirectiveModel {
-  private static Method currentContextMethod;
-  @Nullable private static Field bodyField;
 
-  static {
-    try {
-      currentContextMethod =
-          Environment.class.getDeclaredMethod("getCurrentMacroContext"); // $NON-NLS-1$
-      currentContextMethod.setAccessible(true);
-    } catch (Exception e) {
-      throw new SectionsRuntimeException(e);
-    }
-  }
+  private static final MacroContextIntrospector macroIntrospector = new MacroContextIntrospector();
 
   @NonNullByDefault(false)
   @SuppressWarnings({"unchecked", "nls", "rawtypes"})
@@ -74,7 +68,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
                 .setStyles(
                     getParam("style", params), getParam("class", params), getParam("id", params));
           }
-          if (renderable instanceof NestedRenderable && body != null && getBodyField(env) != null) {
+          if (renderable instanceof NestedRenderable && body != null && hasNestedContent(env)) {
             ((NestedRenderable) renderable).setNestedRenderable(new BodyDirectiveRenderable(body));
           }
           SectionWriter writer = new SectionWriter(env.getOut(), info);
@@ -129,13 +123,87 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   protected abstract SectionRenderable getRenderable(
       Object section, Map<String, TemplateModel> params);
 
-  @Nullable
-  private static synchronized Object getBodyField(Environment env) throws Exception {
-    Object context = currentContextMethod.invoke(env);
-    if (bodyField == null) {
-      bodyField = context.getClass().getDeclaredField("nestedContent");
-      bodyField.setAccessible(true);
+  /**
+   * Checks whether the current macro call has nested content by reflecting on FreeMarker internals.
+   *
+   * <p>Reflection is required because the public {@code getCurrentDirectiveCallPlace()} API returns
+   * the call site of <em>this</em> directive ({@code _render}), not the enclosing macro ({@code
+   * render}). See {@code Dev/docs/freemarker-reflection.md} for full analysis.
+   *
+   * @return true if the macro was called with nested content, false otherwise
+   */
+  static boolean hasNestedContent(Environment env) {
+    return macroIntrospector
+        .getMacroCallPlace(env)
+        .filter(callPlace -> callPlace.getChildCount() > 0)
+        .isPresent();
+  }
+
+  /**
+   * Encapsulates reflective access to FreeMarker's package-private macro context internals.
+   *
+   * <p>In FreeMarker 2.3.34, {@code Macro.Context} no longer has a {@code nestedContent} field.
+   * Instead, the {@code callPlace} field references the {@code UnifiedCall} element, and nested
+   * content is determined via the public {@code TemplateElement.getChildCount()} method.
+   *
+   * <p>This class handles lazy initialisation of reflective handles, error recovery via a
+   * circuit-breaker pattern, and provides a clean {@code Optional}-based API.
+   */
+  private static class MacroContextIntrospector {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MacroContextIntrospector.class);
+
+    private final Method currentContextMethod;
+    @Nullable private volatile Field callPlaceField;
+    private volatile boolean reflectionFailed = false;
+
+    MacroContextIntrospector() {
+      try {
+        currentContextMethod = Environment.class.getDeclaredMethod("getCurrentMacroContext");
+        currentContextMethod.setAccessible(true);
+      } catch (Exception e) {
+        throw new SectionsRuntimeException(
+            "Failed to setup getCurrentMacroContext for reflection.", e);
+      }
     }
-    return bodyField.get(context);
+
+    /**
+     * Returns the {@link TemplateElement} representing the macro call site, if available.
+     *
+     * <p>This traverses: {@code Environment} → {@code Macro.Context} (via reflection) → {@code
+     * callPlace} field (via reflection) → {@code TemplateElement} (public type).
+     */
+    Optional<TemplateElement> getMacroCallPlace(Environment env) {
+      if (reflectionFailed) {
+        return Optional.empty();
+      }
+      try {
+        return getMacroContext(env).flatMap(this::getCallPlace);
+      } catch (Exception e) {
+        LOGGER.warn(
+            "Failed to check nested content via reflection on FreeMarker internals. "
+                + "Body directives will not be wrapped for nested rendering.",
+            e);
+        reflectionFailed = true;
+        return Optional.empty();
+      }
+    }
+
+    private Optional<Object> getMacroContext(Environment env) throws Exception {
+      return Optional.ofNullable(currentContextMethod.invoke(env));
+    }
+
+    private Optional<TemplateElement> getCallPlace(Object context) {
+      try {
+        if (callPlaceField == null) {
+          callPlaceField = context.getClass().getDeclaredField("callPlace");
+          callPlaceField.setAccessible(true);
+        }
+        return Optional.of(callPlaceField.get(context))
+            .filter(TemplateElement.class::isInstance)
+            .map(TemplateElement.class::cast);
+      } catch (Exception e) {
+        throw new SectionsRuntimeException(e);
+      }
+    }
   }
 }

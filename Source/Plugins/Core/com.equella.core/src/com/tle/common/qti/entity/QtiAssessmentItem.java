@@ -95,16 +95,16 @@ public class QtiAssessmentItem implements Serializable, IdCloneable {
   // this all JQTI supports, and to implement the whole domain of QTI objects
   // would take forever and a day.
   // @formatter:off
-  //	private String toolName;
-  //	private String toolVersion;
-  //	private List<QtiResponseDeclaration> responseDeclaration;
-  //	private List<QtiOutcomeDeclaration> outcomeDeclaration;
-  //	private List<QtiTemplateDeclaration> templateDeclaration;
-  //	private QtiTemplateProcessing templateProcessing;
-  //	private List<QtiStylesheet> stylesheets;
-  //	private QtiItemBody itemBody;
-  //	private QtiResponseProcessing responseProcessing;
-  //	private List<QtiModalFeedback> modalFeedback;
+  //    private String toolName;
+  //    private String toolVersion;
+  //    private List<QtiResponseDeclaration> responseDeclaration;
+  //    private List<QtiOutcomeDeclaration> outcomeDeclaration;
+  //    private List<QtiTemplateDeclaration> templateDeclaration;
+  //    private QtiTemplateProcessing templateProcessing;
+  //    private List<QtiStylesheet> stylesheets;
+  //    private QtiItemBody itemBody;
+  //    private QtiResponseProcessing responseProcessing;
+  //    private List<QtiModalFeedback> modalFeedback;
   // @formatter:on
 
   @Override

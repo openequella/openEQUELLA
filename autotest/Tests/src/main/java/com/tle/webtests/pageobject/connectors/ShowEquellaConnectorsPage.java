@@ -2,7 +2,12 @@ package com.tle.webtests.pageobject.connectors;
 
 import com.tle.webtests.pageobject.PrefixedName;
 
-public class ShowEquellaConnectorsPage {
+public final class ShowEquellaConnectorsPage {
+
+  private ShowEquellaConnectorsPage() {
+    throw new UnsupportedOperationException();
+  }
+
   public static ShowConnectorsPage addEquellaConnection(
       ShowConnectorsPage showConnectorsPage, PrefixedName name) {
     EditEquellaConnectorPage editPage =

@@ -49,7 +49,9 @@ public class PageContext {
   private void changePrefix() {
     if (namePrefix != null) {
       prefix = namePrefix + " - ";
-      if (subPrefix != null) prefix += subPrefix + " ";
+      if (subPrefix != null) {
+        prefix += subPrefix + " ";
+      }
     } else {
       prefix = "";
     }

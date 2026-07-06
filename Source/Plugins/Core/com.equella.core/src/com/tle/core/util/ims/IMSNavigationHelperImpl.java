@@ -92,7 +92,7 @@ public class IMSNavigationHelperImpl implements IMSNavigationHelper {
     ItemNavigationNode node = new ItemNavigationNode(treeInfo.getItem());
     node.setName(org.getTitle());
     node.setParent(parent);
-    //		node.setIcon("icons/organization.gif"); //$NON-NLS-1$
+    //        node.setIcon("icons/organization.gif"); //$NON-NLS-1$
     node.ensureTabs();
 
     boolean valid = false;
@@ -119,7 +119,7 @@ public class IMSNavigationHelperImpl implements IMSNavigationHelper {
     node.setName(imsitem.getTitle());
     node.setParent(parent);
     node.setIdentifier(imsitem.getIdentifier());
-    //		node.setIcon("icons/IMSitem.gif"); //$NON-NLS-1$
+    //        node.setIcon("icons/IMSitem.gif"); //$NON-NLS-1$
     node.ensureTabs();
 
     boolean haveurl = false;

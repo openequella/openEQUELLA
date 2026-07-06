@@ -138,7 +138,7 @@ public class MultiTargetChooser extends TargetChooser implements ActionListener,
         }
       }
     } else if (e.getSource() == remove) {
-      final int indices[] = list.getSelectedIndices();
+      final int[] indices = list.getSelectedIndices();
       if (indices.length > 0) {
         changed = true;
         for (int i = indices.length; i > 0; i--) {

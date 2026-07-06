@@ -197,21 +197,21 @@ public interface SoapInterfaceV1 {
    * <br>
    * where: The BNF for the where clause is<br>
    * <code><pre>
-   * 	      WHERE STATEMENT ::= "where"? BOOLEAN_EXPR
-   * 			 BOOLEAN_EXPR ::= OR_BOOLEAN_EXPR
-   * 		  OR_BOOLEAN_EXPR ::= AND_BOOLEAN_EXPR ("or" AND_BOOLEAN_EXPR)*
-   * 		 AND_BOOLEAN_EXPR ::= CLAUSE ("and" CLAUSE)*
-   * 				   CLAUSE ::= "not" CLAUSE | BRACKETS | COMPARISON | EXISTS_CLAUSE
-   * 	             BRACKETS ::= "(" BOOLEAN_EXPR ")"
-   * 		       COMPARISON ::= XPATH COMPARISON_OP COMPARISON_RHS
-   * 			EXISTS_CLAUSE ::= XPATH "exists"
-   * 	                XPATH ::= "/" (ALPHA | NUMBER | [/._:@])+
-   * 			COMPARISON_OP ::= "=" | "is" | "&lt;>" | "is not" | "&lt;" | "&lt;=" | ">" | ">=" |
-   * 							  "like" | "not like" | "in" | "not in"
-   * 		   COMPARISON_RHS ::= "null" | NUMBER_VALUE | STRING_VALUE | GROUP_VALUE
-   * 	         STRING_VALUE ::= "'" STRING "'"
-   * 			 NUMBER_VALUE ::= NUMBER+
-   * 	          GROUP_VALUE ::= "(" STRING_VALUE ("," STRING_VALUE)* ")"
+   *           WHERE STATEMENT ::= "where"? BOOLEAN_EXPR
+   *              BOOLEAN_EXPR ::= OR_BOOLEAN_EXPR
+   *           OR_BOOLEAN_EXPR ::= AND_BOOLEAN_EXPR ("or" AND_BOOLEAN_EXPR)*
+   *          AND_BOOLEAN_EXPR ::= CLAUSE ("and" CLAUSE)*
+   *                    CLAUSE ::= "not" CLAUSE | BRACKETS | COMPARISON | EXISTS_CLAUSE
+   *                  BRACKETS ::= "(" BOOLEAN_EXPR ")"
+   *                COMPARISON ::= XPATH COMPARISON_OP COMPARISON_RHS
+   *             EXISTS_CLAUSE ::= XPATH "exists"
+   *                     XPATH ::= "/" (ALPHA | NUMBER | [/._:@])+
+   *             COMPARISON_OP ::= "=" | "is" | "&lt;>" | "is not" | "&lt;" | "&lt;=" | ">" | ">=" |
+   *                               "like" | "not like" | "in" | "not in"
+   *            COMPARISON_RHS ::= "null" | NUMBER_VALUE | STRING_VALUE | GROUP_VALUE
+   *              STRING_VALUE ::= "'" STRING "'"
+   *              NUMBER_VALUE ::= NUMBER+
+   *               GROUP_VALUE ::= "(" STRING_VALUE ("," STRING_VALUE)* ")"
    *                 STRING ::= (ALPHA | [0-9] | ...)*
    *                  ALPHA ::= [a-zA-Z]
    *                 NUMBER ::= [0-9]</code></pre>

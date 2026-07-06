@@ -733,7 +733,9 @@ public class FlatterSpinnerUI extends SpinnerUI {
       /*
        * Deal with the spinner's componentOrientation property.
        */
-      int editorX, editorWidth, buttonsX;
+      int editorX;
+      int editorWidth;
+      int buttonsX;
       if (parent.getComponentOrientation().isLeftToRight()) {
         editorX = insets.left;
         editorWidth = width - insets.left - buttonsWidth - buttonInsets.right;

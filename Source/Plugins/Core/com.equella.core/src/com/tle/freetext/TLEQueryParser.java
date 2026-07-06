@@ -29,6 +29,7 @@ import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
+import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.queryparser.flexible.standard.builders.FuzzyQueryNodeBuilder;
 import org.apache.lucene.queryparser.flexible.standard.builders.PrefixWildcardQueryNodeBuilder;
@@ -40,6 +41,7 @@ import org.apache.lucene.queryparser.flexible.standard.nodes.PrefixWildcardQuery
 import org.apache.lucene.queryparser.flexible.standard.nodes.WildcardQueryNode;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardQuery;
 
 /**
@@ -63,9 +65,6 @@ public class TLEQueryParser extends StandardQueryParser {
         FreeTextQuery.FIELD_ATTACHMENT_VECTORED, FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM);
   }
 
-  private static final Pattern pattern =
-      Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
-
   public TLEQueryParser(
       String[] fields, Analyzer analyzer, Map<String, Float> boosts, Operator defaultOperator) {
     super(analyzer);
@@ -84,7 +83,15 @@ public class TLEQueryParser extends StandardQueryParser {
     setQueryBuilder(queryTreeBuilder);
   }
 
-  public org.apache.lucene.search.Query parse(String rawQuery) throws QueryNodeException {
+  public Query parseLiteral(String rawQuery) throws QueryNodeException {
+    String fullyEscapedQuery = escapeForStandardQueryParser(rawQuery);
+    // Use `null` as the default field because the class was originally extended from
+    // `MultiFieldQueryParser`
+    // where `field` is always `null` when we were using Lucene v3.
+    return super.parse(fullyEscapedQuery, null);
+  }
+
+  public Query parseWithSyntax(String rawQuery) throws QueryNodeException {
     /**
      * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
      * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
@@ -107,7 +114,12 @@ public class TLEQueryParser extends StandardQueryParser {
      * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
      */
     String query = rawQuery.replace("/", "\\/");
-    Matcher matcher = pattern.matcher(query);
+
+    // Regex to find any char of "+", "-" and "!" that needs escaping.
+    final Pattern operatorsToEscapePattern =
+        Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]");
+
+    Matcher matcher = operatorsToEscapePattern.matcher(query);
     StringBuilder s = new StringBuilder();
     while (matcher.find()) {
       matcher.appendReplacement(s, "\\\\" + matcher.group());
@@ -119,10 +131,7 @@ public class TLEQueryParser extends StandardQueryParser {
       query = buffered;
     }
 
-    // Use `null` as the default field because the class was originally extended from
-    // `MultiFieldQueryParser`
-    // where `field` is always `null` when we were using Lucene v3.
-    return parse(query, null);
+    return super.parse(query, null);
   }
 
   private static String getNonStemmedField(String stemmedField) {
@@ -163,5 +172,22 @@ public class TLEQueryParser extends StandardQueryParser {
       FuzzyQueryNode fuzzyQueryNode = (FuzzyQueryNode) queryNode;
       return super.build(nonStemmedQueryNode(fuzzyQueryNode));
     }
+  }
+
+  /**
+   * Completely escapes a query string for safe use with {@link StandardQueryParser}. This applies
+   * Lucene's standard escaping followed by additional characters (@, =, <, >) that cause
+   * ParseException in StandardQueryParser.
+   *
+   * @param rawQuery The raw, unescaped user query
+   * @return Fully escaped query safe for parsing
+   */
+  private String escapeForStandardQueryParser(String rawQuery) {
+    String standardEscaped = QueryParserUtil.escape(rawQuery);
+    return standardEscaped
+        .replace("@", "\\@")
+        .replace("=", "\\=")
+        .replace("<", "\\<")
+        .replace(">", "\\>");
   }
 }

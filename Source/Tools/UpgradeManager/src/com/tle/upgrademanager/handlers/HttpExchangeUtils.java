@@ -27,7 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("nls")
-public class HttpExchangeUtils {
+public final class HttpExchangeUtils {
+
+  private HttpExchangeUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   private static final Map<String, String> EXT_TO_MIME = new HashMap<String, String>();
   private static final String DEFAULT_MIME = "text/plain";
 

@@ -57,7 +57,6 @@ const props: InlineFileUploaderProps = {
   dialog: jest.fn(),
   editable: true,
   commandUrl: "https://localhost:8080/test/upload",
-  reloadState: jest.fn(),
   strings: {
     edit: "edit",
     replace: "replace",

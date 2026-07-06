@@ -138,7 +138,7 @@ public class Md5 {
    * with the decompilation of the original implementation back in the day. For now, keeping just
    * for good measure.
    */
-  public static void main(String args[]) throws IOException {
+  public static void main(String[] args) throws IOException {
     if (args.length != 1) {
       System.out.println("Md5 <file>");
       System.exit(1);

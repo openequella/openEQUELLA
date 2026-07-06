@@ -7,7 +7,6 @@ import cats.effect.unsafe.implicits.global
 import cats.effect.{ExitCode, IO, IOApp}
 import integtester.oauthredirector.OAuthRedirector
 import integtester.oidc.OidcIntegration
-import integtester.testprovider.TestingCloudProvider
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
@@ -111,19 +110,16 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
 
   val appService = HttpRoutes.of[IO] {
     case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
-    case request @ (GET | POST) -> Root / "viewitem.html"     => viewItemHtml(request)
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
     case request @ (GET | POST) -> Root / "oauthredirector"   =>
       OAuthRedirector.oauthRedirector(request)
-    case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }
 
   def buildServer(args: List[String]) = {
     val httpApp: HttpApp[IO] = Router(
-      "/"          -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
-      "/"          -> appService,
-      "/provider/" -> new TestingCloudProvider().oauthService,
-      "/oidc/"     -> oidcService
+      "/"      -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
+      "/"      -> appService,
+      "/oidc/" -> oidcService
     ).orNotFound
 
     BlazeServerBuilder[IO]
@@ -134,8 +130,6 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
   def integTesterUrl: String = "http://localhost:8083/index.html"
 
   def echoServerUrl: String = "http://localhost:8083/echo"
-
-  def providerRegistrationUrl: String = "http://localhost:8083/provider.html"
 
   /** Starts the HTTP server and keeps it running until the JVM is terminated. The stream does not
     * emit any values and runs indefinitely.

@@ -41,7 +41,7 @@ export const ListItemContent: React.FC<ListItemContentProps> = ({
     <ListItemIcon>{icon ? icon : <FolderIcon />}</ListItemIcon>
     <ListItemText
       primary={
-        <Box display="flex" alignItems="center" gap={1}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <span>{text}</span>
           {count > 0 && <Chip label={count} color="primary" size="small" />}
         </Box>

@@ -1,5 +1,9 @@
 package com.tle.webtests.pageobject.wizard;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
+
 import com.tle.common.PathUtils;
 import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
@@ -33,7 +37,6 @@ import java.io.File;
 import java.net.URL;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractWizardControlPage<T extends AbstractWizardControlPage<T>>
@@ -252,16 +255,8 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
         ExpectedConditions2.updateOfElementLocated(existingControl, driver, by), this);
   }
 
-  public ExpectedCondition<WebElement> getNewAttachmentExpectation(String item) {
-    return ExpectedConditions.visibilityOfElementLocated(
-        By.xpath(
-            "//div[contains(@class, 'universalresources')]/div/ul/div/.//a[text()="
-                + quoteXPath(item)
-                + "]"));
-  }
-
   public void waitForSelectedItem(String item) {
-    waiter.until(getNewAttachmentExpectation(item));
+    $$(".universalresources a").findBy(text(item)).shouldBe(visible);
   }
 
   /** Move values from left to right */

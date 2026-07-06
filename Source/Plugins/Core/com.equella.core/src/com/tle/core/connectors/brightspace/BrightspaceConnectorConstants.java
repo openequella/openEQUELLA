@@ -19,7 +19,12 @@
 package com.tle.core.connectors.brightspace;
 
 @SuppressWarnings("nls")
-public class BrightspaceConnectorConstants {
+public final class BrightspaceConnectorConstants {
+
+  private BrightspaceConnectorConstants() {
+    throw new UnsupportedOperationException();
+  }
+
   public static final String CONNECTOR_TYPE = "brightspace";
   public static final String AUTH_URL = "brightspaceauth";
 

@@ -17,12 +17,13 @@
  */
 import CloseIcon from "@mui/icons-material/Close";
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Grid,
+  Stack,
   Typography,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
@@ -177,12 +178,7 @@ export const AdvancedSearchPanel = ({
       />
       <CardContent>
         {definitionRetrieved ? (
-          <Grid
-            id="advanced-search-form"
-            container
-            direction="column"
-            spacing={2}
-          >
+          <Stack id="advanced-search-form" spacing={2}>
             <WizardErrorContext.Provider
               value={{ handleError: searchPageErrorHandler }}
             >
@@ -193,19 +189,17 @@ export const AdvancedSearchPanel = ({
                 buildVisibilityScriptContext(currentValues, currentUser),
               ).map((e) => (
                 // width is a tricky way to fix additional whitespace issue caused by user selector
-                <Grid key={e.props.id} style={{ width: "100%" }}>
+                <Box key={e.props.id} style={{ width: "100%" }}>
                   {e}
-                </Grid>
+                </Box>
               ))}
             </WizardErrorContext.Provider>
             {hasRequiredFields && (
-              <Grid>
-                <Typography variant="caption" color="textSecondary">
-                  {languageStrings.common.required}
-                </Typography>
-              </Grid>
+              <Typography variant="caption" color="textSecondary">
+                {languageStrings.common.required}
+              </Typography>
             )}
-          </Grid>
+          </Stack>
         ) : (
           <LoadingCircle />
         )}

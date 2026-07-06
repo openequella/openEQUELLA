@@ -36,6 +36,7 @@ export const defaultSearchSettings: OEQ.SearchSettings.Settings = {
   fileCountDisabled: false,
   defaultSearchSort: "rank",
   authenticateFeedsByDefault: false,
+  escapeSpecialChars: false,
 
   urlLevel: 0,
   titleBoost: 0,
