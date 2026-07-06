@@ -24,6 +24,7 @@ import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.{
 }
 import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.toItemDefinition
 import com.tle.admin.graphql.conversion.Converter
+import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.EntityPack
@@ -37,7 +38,9 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDefinitionService)(
-    implicit val cfg: ClientConfiguration
+    implicit
+    val cfg: ClientConfiguration,
+    val restCfg: RestConfiguration
 ) extends AdminEntityService[ItemDefinition]
     with AdminCollectionDefinitionService {
   private implicit val LOGGER: Logger =

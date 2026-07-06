@@ -98,4 +98,38 @@ package object rest {
   def extractAction(request: Request[_, Any]): String =
     s"[${request.method} - /${request.uri.path.mkString("/")}]"
 
+  /** Handles the result of a REST API call whose response body is decoded into `T` (e.g. via
+    * circe's `asJson` or sttp's `asByteArray`), unwrapping the decoded body and converting a
+    * decoding failure into an `UnexpectedResponseError`.
+    *
+    * @param request
+    *   the request to send
+    * @param describeError
+    *   renders the body-level error `E` as a message for logging and the returned error
+    * @tparam E
+    *   the type of the body-level error produced by the response handler
+    * @tparam T
+    *   the type of the decoded response body
+    * @return
+    *   the decoded body, or the error that occurred
+    */
+  def handleDecodedResult[E, T](
+      request: Request[Either[E, T], Any]
+  )(describeError: E => String)(implicit LOGGER: Logger): Either[RestError, T] =
+    handleResult(extractAction(request), send(request)) { response =>
+      response.body match {
+        case Left(error) =>
+          val message = describeError(error)
+          LOGGER.error(s"Failed to decode response body: $message")
+          Left(UnexpectedResponseError(message))
+        case Right(value) => Right(value)
+      }
+    }
+
+  /** Splits a file path into its non-empty segments — the single definition of path splitting
+    * shared by URI building and tree rebuilding, so the two can never disagree.
+    */
+  def splitPath(path: String): List[String] =
+    path.split('/').filter(_.nonEmpty).toList
+
 }

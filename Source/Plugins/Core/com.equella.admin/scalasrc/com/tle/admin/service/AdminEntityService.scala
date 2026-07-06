@@ -19,6 +19,14 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
+import com.tle.admin.rest.{
+  splitPath,
+  RestConfiguration,
+  RestError,
+  StagingApi,
+  StagingFileTree,
+  StatusCodeError
+}
 import com.tle.beans.entity.{BaseEntity, BaseEntityLabel}
 import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
@@ -26,6 +34,8 @@ import com.tle.common.filesystem.FileEntry
 import com.tle.core.remoting.RemoteAbstractEntityService
 import io.github.openequella.graphql.api.ApiError
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+
+import sttp.model.StatusCode
 
 import java.{lang, util}
 import scala.jdk.CollectionConverters._
@@ -51,6 +61,11 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     * such as `"collection"` or `"schema"`.
     */
   def entityDescription: String = "entity"
+
+  /** Configuration for the REST API client, used by the staging file operations implemented in this
+    * class. Satisfied by subclasses via an injected constructor parameter.
+    */
+  protected implicit def restCfg: RestConfiguration
 
   /** This method is used to flag which methods in a RemoteAbstractEntityService instance need to be
     * implemented. It is intended to be overridden by the subclasses to provide a map back to an
@@ -125,6 +140,33 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       result: GraphQLClientResult[Unit],
       errorMessage: String
   ): Unit = handleEither(result, errorMessage)(_ => ())
+
+  /** The REST counterpart of [[handleEither]]: unwraps a REST client `Either` result, delegating
+    * successful values to `onSuccess` and throwing a `RestRequestException` on errors. Used by the
+    * staging file operations, which go over the REST API rather than GraphQL.
+    *
+    * @param result
+    *   the `Either` result from a REST call
+    * @param errorMessage
+    *   the message to include in the exception if the result is a `Left`
+    * @param onSuccess
+    *   function applied to the unwrapped value when the result is a `Right`
+    * @tparam A
+    *   the type of the successful result
+    * @tparam B
+    *   the return type of `onSuccess`
+    * @return
+    *   the value produced by `onSuccess`
+    * @throws RestRequestException
+    *   on REST errors
+    */
+  private def handleRestEither[A, B](
+      result: Either[RestError, A],
+      errorMessage: String
+  )(onSuccess: A => B): B = result match {
+    case Right(value) => onSuccess(value)
+    case Left(error)  => throw new RestRequestException(errorMessage, error)
+  }
 
   /** Lists all entities using a GraphQL lister that returns `BaseEntityReferenceView`, converting
     * each result to a `BaseEntityLabel`.
@@ -457,24 +499,42 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     _.clone(id)
   }
 
+  // ---------------------------------------------------------------------------
+  // Staging file operations (REST implementations)
+  // These operate purely on the staging area identified by the staging ID — no entity type is
+  // involved — so they are implemented once here, over the REST staging API, for all entities.
+  // ---------------------------------------------------------------------------
+
   override def uploadFile(stagingID: String, filename: String, bytes: Array[Byte]): Unit =
-    implementMe {
-      _.uploadFile(stagingID, filename, bytes)
+    handleRestEither(
+      StagingApi.putFile(stagingID, filename, bytes),
+      s"Error uploading file '$filename' to staging area: $stagingID"
+    )(identity)
+
+  override def downloadFile(stagingID: String, filename: String): Array[Byte] =
+    handleRestEither(
+      StagingApi.getFile(stagingID, filename),
+      s"Error downloading file '$filename' from staging area: $stagingID"
+    )(identity)
+
+  override def deleteFileFolder(stagingID: String, path: String): Unit =
+    StagingApi.deleteFile(stagingID, path) match {
+      // Match the legacy invoker behaviour: deleting a path that no longer exists (e.g. a stale
+      // tree entry) is a silent no-op rather than an error.
+      case Left(StatusCodeError(_, code)) if code == StatusCode.NotFound => ()
+      case other                                                         =>
+        handleRestEither(other, s"Error deleting '$path' from staging area: $stagingID")(identity)
     }
-
-  override def downloadFile(stagingID: String, filename: String): Array[Byte] = implementMe {
-    _.downloadFile(stagingID, filename)
-  }
-
-  override def deleteFileFolder(stagingID: String, path: String): Unit = implementMe {
-    _.deleteFileFolder(stagingID, path)
-  }
 
   override def createFolder(stagingID: String, path: String, name: String): Unit = implementMe {
     _.createFolder(stagingID, path, name)
   }
 
-  override def buildStagingTree(stagingID: String, path: String): FileEntry = implementMe {
-    _.buildStagingTree(stagingID, path)
-  }
+  override def buildStagingTree(stagingID: String, path: String): FileEntry =
+    handleRestEither(
+      StagingApi.getStaging(stagingID, Some(path)),
+      s"Error listing files in staging area: $stagingID"
+    ) { listing =>
+      StagingFileTree.buildFileEntryTree(listing.files, splitPath(path).lastOption.getOrElse(""))
+    }
 }

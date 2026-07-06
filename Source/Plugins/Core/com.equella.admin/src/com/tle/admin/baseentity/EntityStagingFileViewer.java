@@ -52,8 +52,6 @@ import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings({"nls", "serial"})
 public class EntityStagingFileViewer extends JPanel {
-  private static final int UPLOAD_CHUNK_SIZE = 1048576;
-
   private final RemoteAbstractEntityService<?> service;
   private final String stagingID;
 
@@ -323,26 +321,11 @@ public class EntityStagingFileViewer extends JPanel {
         }
       };
 
-  // Stolen from Driver
+  // The whole file is sent in a single call: the REST-backed uploadFile overwrites the target
+  // on each call, so it must not be invoked repeatedly with partial content for the same path.
   private void uploadFile(String staging, String filename, InputStream stream) throws IOException {
     try {
-      byte[] bytes = new byte[UPLOAD_CHUNK_SIZE];
-      int read = 0;
-      int offset = 0;
-      while ((read = stream.read(bytes, 0, UPLOAD_CHUNK_SIZE)) > 0) {
-        byte[] data = bytes;
-
-        // hack: uploadFile doesn't take length param,
-        // which is fine, we don't want to send unused bytes over the
-        // wire...
-        if (read < UPLOAD_CHUNK_SIZE) {
-          data = new byte[read];
-          System.arraycopy(bytes, 0, data, 0, read);
-        }
-
-        service.uploadFile(staging, filename, data);
-        offset += read;
-      }
+      service.uploadFile(staging, filename, stream.readAllBytes());
     } catch (IOException e) {
       try {
         // Try to remove grotesque, disfigured, incomplete, aborted
