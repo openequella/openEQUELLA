@@ -29,7 +29,7 @@ val jsoupVersion      = "1.22.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.1"
-val luceneVersion     = "10.4.0"
+val luceneVersion     = "10.5.0"
 val nettyVersion      = "4.2.15.Final"
 val rampartVersion    = "1.8.0"
 
