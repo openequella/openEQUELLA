@@ -18,6 +18,7 @@
 
 package com.tle.web.api.interfaces.beans;
 
+import com.tle.annotation.Nullable;
 import java.util.Date;
 
 public class BlobBean extends AbstractExtendableBean {
@@ -26,6 +27,10 @@ public class BlobBean extends AbstractExtendableBean {
   private String etag;
   private Date lastModified;
   private String contentType;
+
+  // Nullable so it is absent from JSON unless folder entries were requested, keeping existing
+  // responses unchanged.
+  @Nullable private Boolean folder;
 
   public String getName() {
     return name;
@@ -65,5 +70,13 @@ public class BlobBean extends AbstractExtendableBean {
 
   public void setContentType(String contentType) {
     this.contentType = contentType;
+  }
+
+  public Boolean getFolder() {
+    return folder;
+  }
+
+  public void setFolder(Boolean folder) {
+    this.folder = folder;
   }
 }
