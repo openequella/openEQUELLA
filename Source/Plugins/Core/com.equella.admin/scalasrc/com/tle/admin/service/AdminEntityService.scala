@@ -98,32 +98,46 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     */
   private type GraphQLClientResult[A] = Either[List[ApiError], A]
 
-  /** Unwraps a GraphQL `Either` result, delegating successful values to `onSuccess` and throwing a
-    * `ClientRequestException` on errors. All other GraphQL helpers delegate their `Either`
-    * pattern-match to this method.
+  /** Unwraps an `Either` result, delegating successful values to `onSuccess` and throwing the
+    * exception produced by `makeException` on errors. The GraphQL and REST handlers below delegate
+    * their `Either` pattern-match to this method.
     *
     * @param result
-    *   the `Either` result from a GraphQL call
+    *   the `Either` result from a client call
     * @param errorMessage
     *   the message to include in the exception if the result is a `Left`
+    * @param makeException
+    *   builds the exception to throw from the message and the error value
     * @param onSuccess
     *   function applied to the unwrapped value when the result is a `Right`
+    * @tparam Err
+    *   the type of the error value
     * @tparam A
     *   the type of the successful result
     * @tparam B
     *   the return type of `onSuccess`
     * @return
     *   the value produced by `onSuccess`
+    */
+  private def unwrapOrThrow[Err, A, B](
+      result: Either[Err, A],
+      errorMessage: String,
+      makeException: (String, Err) => Exception
+  )(onSuccess: A => B): B = result match {
+    case Right(value) => onSuccess(value)
+    case Left(error)  => throw makeException(errorMessage, error)
+  }
+
+  /** Unwraps a GraphQL `Either` result, throwing a `ClientRequestException` on errors.
+    *
     * @throws ClientRequestException
     *   on GraphQL errors
     */
   private def handleEither[A, B](
       result: GraphQLClientResult[A],
       errorMessage: String
-  )(onSuccess: A => B): B = result match {
-    case Right(value) => onSuccess(value)
-    case Left(errors) => throw new ClientRequestException(errorMessage, errors)
-  }
+  )(onSuccess: A => B): B =
+    unwrapOrThrow(result, errorMessage, new ClientRequestException(_, _))(onSuccess)
 
   /** Specialized handler for GraphQL operations that return `Unit` (operations with no result
     * payload, such as cancel-edit or delete). Unwraps the result and throws
@@ -141,32 +155,18 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       errorMessage: String
   ): Unit = handleEither(result, errorMessage)(_ => ())
 
-  /** The REST counterpart of [[handleEither]]: unwraps a REST client `Either` result, delegating
-    * successful values to `onSuccess` and throwing a `RestRequestException` on errors. Used by the
-    * staging file operations, which go over the REST API rather than GraphQL.
+  /** The REST counterpart of [[handleEither]]: unwraps a REST client `Either` result, throwing a
+    * `RestRequestException` on errors. Used by the staging file operations, which go over the REST
+    * API rather than GraphQL.
     *
-    * @param result
-    *   the `Either` result from a REST call
-    * @param errorMessage
-    *   the message to include in the exception if the result is a `Left`
-    * @param onSuccess
-    *   function applied to the unwrapped value when the result is a `Right`
-    * @tparam A
-    *   the type of the successful result
-    * @tparam B
-    *   the return type of `onSuccess`
-    * @return
-    *   the value produced by `onSuccess`
     * @throws RestRequestException
     *   on REST errors
     */
   private def handleRestEither[A, B](
       result: Either[RestError, A],
       errorMessage: String
-  )(onSuccess: A => B): B = result match {
-    case Right(value) => onSuccess(value)
-    case Left(error)  => throw new RestRequestException(errorMessage, error)
-  }
+  )(onSuccess: A => B): B =
+    unwrapOrThrow(result, errorMessage, new RestRequestException(_, _))(onSuccess)
 
   /** Lists all entities using a GraphQL lister that returns `BaseEntityReferenceView`, converting
     * each result to a `BaseEntityLabel`.
@@ -517,14 +517,20 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       s"Error downloading file '$filename' from staging area: $stagingID"
     )(identity)
 
-  override def deleteFileFolder(stagingID: String, path: String): Unit =
-    StagingApi.deleteFile(stagingID, path) match {
-      // Match the legacy invoker behaviour: deleting a path that no longer exists (e.g. a stale
-      // tree entry) is a silent no-op rather than an error.
-      case Left(StatusCodeError(_, code)) if code == StatusCode.NotFound => ()
-      case other                                                         =>
-        handleRestEither(other, s"Error deleting '$path' from staging area: $stagingID")(identity)
+  /** Treats a NotFound response as success: deleting a path that no longer exists (e.g. a stale
+    * tree entry) is a silent no-op, matching the legacy invoker behaviour.
+    */
+  private def ignoreNotFound(result: Either[RestError, Unit]): Either[RestError, Unit] =
+    result match {
+      case Left(StatusCodeError(_, code)) if code == StatusCode.NotFound => Right(())
+      case other                                                         => other
     }
+
+  override def deleteFileFolder(stagingID: String, path: String): Unit =
+    handleRestEither(
+      ignoreNotFound(StagingApi.deleteFile(stagingID, path)),
+      s"Error deleting '$path' from staging area: $stagingID"
+    )(identity)
 
   override def createFolder(stagingID: String, path: String, name: String): Unit = implementMe {
     _.createFolder(stagingID, path, name)

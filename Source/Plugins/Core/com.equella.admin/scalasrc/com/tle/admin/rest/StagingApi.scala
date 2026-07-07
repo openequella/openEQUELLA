@@ -56,14 +56,14 @@ object StagingApi {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(StagingApi.getClass)
   private val API_PATH                = "staging"
 
-  /** Builds the URI for a file within a staging area. The file path is split into segments so that
-    * each is individually encoded — passing the whole path as one segment would encode its `/`
-    * separators.
-    */
   /** Builds the base URI for a staging area. */
   private def stagingUri(stagingUuid: String)(implicit cfg: RestConfiguration): Uri =
     cfg.apiUrl().addPath(API_PATH, stagingUuid)
 
+  /** Builds the URI for a file within a staging area. The file path is split into segments so that
+    * each is individually encoded — passing the whole path as one segment would encode its `/`
+    * separators.
+    */
   private def fileUri(stagingUuid: String, filepath: String)(implicit
       cfg: RestConfiguration
   ): Uri =
