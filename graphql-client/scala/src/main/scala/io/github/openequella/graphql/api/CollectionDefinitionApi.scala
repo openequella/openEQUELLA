@@ -24,7 +24,8 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   CollectionDefinitionEditView,
-  CollectionDefinitionView
+  CollectionDefinitionView,
+  EntitySkeletonView
 }
 import io.github.openequella.graphql.api.views.conversions.{
   CollectionConversions,
@@ -106,6 +107,70 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
 
     mutate(mutation)
   }
+
+  /** Start creating a new collection.
+    *
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or an EntitySkeletonView representing the skeleton for the new
+    *   collection.
+    */
+  def startCreate()(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], EntitySkeletonView] = {
+    val mutation = CollectionMutations.startCreate {
+      EntitySkeletonView.selector
+    }
+
+    mutate(mutation)
+  }
+
+  /** Add a new collection.
+    *
+    * Typically called after a `startCreate` operation, with the details for the new collection
+    * populated. The collection is not locked after creation — use [[addAndLock]] to keep it locked.
+    *
+    * @param details
+    *   The collection details to add, using the same view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created collection.
+    * @see
+    *   [[addAndLock]] to keep the collection locked after creation.
+    */
+  def add(details: CollectionDefinitionEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], BaseEntityReferenceView] =
+    withConvertedInput(details, CollectionConversions.toInput) { input =>
+      flatMutate(CollectionMutations.add(input, lockAfterwards = false) {
+        BaseEntityReferenceView.selector
+      })
+    }
+
+  /** Add a new collection, keeping it locked for further editing.
+    *
+    * Like [[add]] but keeps the collection locked after creation, allowing the caller to continue
+    * editing without a separate lock acquisition step.
+    *
+    * @param details
+    *   The collection details to add, using the same view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created collection.
+    * @see
+    *   [[add]] to create without keeping it locked.
+    */
+  def addAndLock(details: CollectionDefinitionEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], BaseEntityReferenceView] =
+    withConvertedInput(details, CollectionConversions.toInput) { input =>
+      flatMutate(CollectionMutations.add(input, lockAfterwards = true) {
+        BaseEntityReferenceView.selector
+      })
+    }
 
   /** Exports a collection as a ZIP file, without security information.
     *

@@ -19,6 +19,7 @@
 package com.tle.web.remoting.graphql.provider
 
 import com.tle.common.security.SecurityConstants
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.filesystem.staging.service.StagingService
@@ -31,7 +32,8 @@ import com.tle.web.remoting.graphql.schema.conversion.EditableEntityConverter.to
 import com.tle.web.remoting.graphql.schema.types.{
   BaseEntityReference,
   CollectionDefinition,
-  EditableEntity
+  EditableEntity,
+  EditableEntitySkeleton
 }
 import org.slf4j.LoggerFactory
 
@@ -89,6 +91,52 @@ class CollectionProvider @Inject() (
       itemDefinitionService.startEdit(id),
       (entity: ItemDefinition) => CollectionDefinition(entity, xmlService)
     )
+  }
+
+  /** Start creating a new collection. This method returns an `EditableEntitySkeleton` that contains
+    * the necessary information to start creating a new collection. It is expected that it will be
+    * followed by a call to `add` with the details of the new collection to be created.
+    *
+    * @return
+    *   an `EditableEntitySkeleton` ready for editing.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
+  def startCreate(): EditableEntitySkeleton = {
+    LOGGER.debug("Creating new collection, ready for editing")
+    EditableEntitySkeleton(
+      owner = CurrentUser.getUserID,
+      stagingId = stagingService.createStagingArea().getUuid
+    )
+  }
+
+  /** Completes the editing session for a new collection by saving the changes - following the
+    * initial `startCreate` call. Optionally re-locks the collection for continued editing if
+    * `lockAfterwards` is true; otherwise, leaves it unlocked. Note that the details parameter must
+    * contain the necessary information to identify the collection being added based on that
+    * returned from `startCreate`.
+    *
+    * @param details
+    *   the details of the collection being added.
+    * @param lockAfterwards
+    *   if true, re-locks the collection after saving (useful for continuing to edit); if false,
+    *   leaves it unlocked.
+    * @return
+    *   Either a ProviderError if the operation fails, or a BaseEntityReference to the newly created
+    *   collection on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
+  def add(
+      details: EditableEntity[CollectionDefinition],
+      lockAfterwards: Boolean
+  ): Either[ProviderError, BaseEntityReference] = {
+    LOGGER.debug(s"Adding new collection with details: ${details.entity}")
+    ProviderError.Try("Failed to add new collection: ") {
+      val ref = itemDefinitionService.add(
+        toEntityPack(details, CollectionDefinitionConverter.toItemDefinition(_, xmlService)),
+        lockAfterwards
+      )
+      BaseEntityReference(ref)
+    }
   }
 
   /** Completes the editing session for an existing collection by saving the changes — following the
@@ -153,7 +201,7 @@ class CollectionProvider @Inject() (
     *   Either a ProviderError if the operation fails, or an EditableEntity containing the imported
     *   collection ready for editing.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def importCollection(
       zipBase64: String
   ): Either[ProviderError, EditableEntity[CollectionDefinition]] = {
@@ -184,7 +232,7 @@ class CollectionProvider @Inject() (
     *   Either a ProviderError if the operation fails, or a BaseEntityReference to the cloned
     *   collection on success.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def cloneCollection(id: Long): Either[ProviderError, BaseEntityReference] = {
     LOGGER.debug(s"Cloning collection with id $id")
     ProviderError.Try(s"Failed to clone collection with id $id: ") {

@@ -94,7 +94,7 @@ class MetadataSchemaProvider @Inject() (
     *   Either a ProviderError if the operation fails, or an EditableEntity containing the imported
     *   metadata schema ready for editing.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def importSchema(
       zipBase64: String
   ): Either[ProviderError, EditableEntity[MetadataSchema]] = {
@@ -138,7 +138,7 @@ class MetadataSchemaProvider @Inject() (
     * @return
     *   an `EditableBaseEntitySkeleton` ready for editing.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def startCreate(): EditableEntitySkeleton = {
     LOGGER.debug("Creating new metadata schema, ready for editing")
     EditableEntitySkeleton(
@@ -180,7 +180,7 @@ class MetadataSchemaProvider @Inject() (
     *   Either a ProviderError if the operation fails, or a BaseEntityReference to the newly created
     *   metadata schema on success.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def add(
       details: EditableEntity[MetadataSchema],
       lockAfterwards: Boolean
@@ -303,7 +303,7 @@ class MetadataSchemaProvider @Inject() (
     *   Either a ProviderError if the operation fails, or a BaseEntityReference to the cloned
     *   metadata schema on success.
     */
-  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   def clone(id: Long): Either[ProviderError, BaseEntityReference] = {
     LOGGER.debug(s"Cloning metadata schema with id $id")
     ProviderError.Try(s"Failed to clone metadata schema with id $id: ") {
