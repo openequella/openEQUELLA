@@ -43,7 +43,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:18.3
+    image: postgres:18.4
     restart: always
     networks:
       - oeq-cluster
