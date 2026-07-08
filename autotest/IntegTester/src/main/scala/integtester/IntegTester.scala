@@ -22,30 +22,6 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
 
   val Logger = LoggerFactory.getLogger("IntegTester")
 
-  val viewItemDocument = {
-    val inpStream = getClass.getResourceAsStream(s"/www/viewitem.html")
-    val htmlDoc   = Jsoup.parse(inpStream, "UTF-8", "")
-    inpStream.close()
-    htmlDoc
-  }
-
-  def viewItemHtml(request: Request[IO]): IO[Response[IO]] =
-    request.decode[UrlForm] { form =>
-      val formJson = form.values.view.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
-        "authenticated" ->
-          Seq(request.headers.get[Authorization].isDefined.toString)
-      )
-
-      val doc = viewItemDocument.clone()
-      doc
-        .body()
-        .insertChildren(
-          0,
-          new Element("script").text(s"var postValues = ${formJson.asJson.noSpaces}")
-        )
-      Ok(doc.toString, `Content-Type`(MediaType.text.html))
-    }
-
   val integDocument = {
     val inpStream = getClass.getResourceAsStream(s"/www/integtester.html")
     val htmlDoc   = Jsoup.parse(inpStream, "UTF-8", "")
