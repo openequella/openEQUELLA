@@ -919,6 +919,7 @@ public class PropBagEx implements Serializable {
     DocumentBuilder builder = null;
     try {
       builder = getBuilder();
+      builder.setErrorHandler(SecureXmlFactories.STRICT_ERROR_HANDLER);
       Document doc = builder.parse(new InputSource(filterer));
 
       // Get the root element

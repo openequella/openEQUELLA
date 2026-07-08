@@ -22,10 +22,24 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /** Shared helpers for configuring JAXP parser factories securely. */
 public final class SecureXmlFactories {
   private static final Logger LOGGER = LoggerFactory.getLogger(SecureXmlFactories.class);
+
+  /**
+   * A strict {@link ErrorHandler} that rethrows parse errors instead of writing them to {@code
+   * System.err}. When a {@link javax.xml.parsers.DocumentBuilder} has no error handler registered,
+   * the JAXP default prints misleading "[Fatal Error] ..." lines to stderr (bypassing the logging
+   * framework) before throwing - which is noisy and alarming for operators whenever a client sends
+   * malformed or disallowed (e.g. DOCTYPE/XXE) XML. Registering this handler before parsing
+   * preserves the throw-on-invalid-input behaviour while suppressing that stderr output. Warnings
+   * are non-fatal and ignored.
+   */
+  public static final ErrorHandler STRICT_ERROR_HANDLER = new StrictErrorHandler();
 
   private SecureXmlFactories() {}
 
@@ -57,6 +71,23 @@ public final class SecureXmlFactories {
               + " injection",
           feature,
           e);
+    }
+  }
+
+  private static final class StrictErrorHandler implements ErrorHandler {
+    @Override
+    public void warning(SAXParseException e) {
+      // Non-fatal - ignore (the JAXP default only prints it to stderr).
+    }
+
+    @Override
+    public void error(SAXParseException e) throws SAXException {
+      throw e;
+    }
+
+    @Override
+    public void fatalError(SAXParseException e) throws SAXException {
+      throw e;
     }
   }
 }

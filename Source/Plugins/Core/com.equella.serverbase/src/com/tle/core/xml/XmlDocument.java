@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -67,25 +68,23 @@ public class XmlDocument {
   }
 
   public XmlDocument(String xmlString) {
-    try {
-      domDoc =
-          getFactory().newDocumentBuilder().parse(new InputSource(new StringReader(xmlString)));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    domDoc = parse(new InputSource(new StringReader(xmlString)));
     xpathDoc = getXPathFactory().newXPath();
   }
 
   public XmlDocument(InputStream xmlStream) {
+    domDoc = parse(new InputSource(new InputStreamReader(xmlStream)));
+    xpathDoc = getXPathFactory().newXPath();
+  }
+
+  private static Document parse(InputSource source) {
     try {
-      domDoc =
-          getFactory()
-              .newDocumentBuilder()
-              .parse(new InputSource(new InputStreamReader(xmlStream)));
+      DocumentBuilder builder = getFactory().newDocumentBuilder();
+      builder.setErrorHandler(SecureXmlFactories.STRICT_ERROR_HANDLER);
+      return builder.parse(source);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    xpathDoc = getXPathFactory().newXPath();
   }
 
   private static synchronized XPathFactory getXPathFactory() {
