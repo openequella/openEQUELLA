@@ -28,7 +28,8 @@ import com.tle.web.remoting.graphql.schema.CollectionGraphQLInstances._
 import com.tle.web.remoting.graphql.schema.types.{
   BaseEntityReference,
   CollectionDefinition,
-  EditableEntity
+  EditableEntity,
+  EditableEntitySkeleton
 }
 
 import javax.inject.{Inject, Singleton}
@@ -55,6 +56,8 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
   private val mutations = Mutations(
     collection = CollectionMutationOps(
       startEdit = args => collectionProvider.startEdit(args.id),
+      startCreate = () => collectionProvider.startCreate(),
+      add = args => collectionProvider.add(args.details, args.lockAfterwards),
       cloneCollection = args => collectionProvider.cloneCollection(args.id),
       delete =
         args => collectionProvider.deleteCollection(args.id, args.checkReferences.getOrElse(true)),
@@ -97,6 +100,14 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
         "Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit operation."
       )
       startEdit: CollectionStartEditArgs => EditableEntity[CollectionDefinition],
+      @GQLDescription(
+        "Start creating a new collection. Typically followed by an add operation with details for new collection."
+      )
+      startCreate: () => EditableEntitySkeleton,
+      @GQLDescription(
+        "Add a new collection - typically after a startCreate operation, with details for the new collection."
+      )
+      add: CollectionAddArgs => ResultWithErrors[BaseEntityReference],
       @GQLName("clone")
       @GQLDescription(
         "Clone a collection - creating a copy of the collection with a new ID."
@@ -126,6 +137,15 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
   case class CollectionStartEditArgs(
       @GQLDescription("ID of the collection to edit")
       id: Long
+  )
+
+  case class CollectionAddArgs(
+      @GQLDescription("Details of the collection to add")
+      details: EditableEntity[CollectionDefinition],
+      @GQLDescription(
+        "Whether the newly added collection should be locked for editing after creation"
+      )
+      lockAfterwards: Boolean
   )
 
   case class CollectionCloneArgs(

@@ -32,6 +32,32 @@ object CollectionMutations {
     _root_.caliban.client.SelectionBuilder
       .Field("startEdit", Obj(innerSelection), arguments = List(Argument("id", id, "Long!")))
 
+  /** Start creating a new collection. Typically followed by an add operation with details for new
+    * collection.
+    */
+  def startCreate[A](
+      innerSelection: SelectionBuilder[EditableEntitySkeleton, A]
+  ): SelectionBuilder[CollectionMutations, A] =
+    _root_.caliban.client.SelectionBuilder.Field("startCreate", Obj(innerSelection))
+
+  /** Add a new collection - typically after a startCreate operation, with details for the new
+    * collection.
+    */
+  def add[A](details: EditableEntityCollectionDefinitionInput, lockAfterwards: Boolean)(
+      innerSelection: SelectionBuilder[BaseEntityReference, A]
+  )(implicit
+      encoder0: ArgEncoder[EditableEntityCollectionDefinitionInput],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[CollectionMutations, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "add",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("details", details, "EditableEntityCollectionDefinitionInput!"),
+        Argument("lockAfterwards", lockAfterwards, "Boolean!")
+      )
+    )
+
   /** Clone a collection - creating a copy of the collection with a new ID.
     */
   def clone$[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(implicit

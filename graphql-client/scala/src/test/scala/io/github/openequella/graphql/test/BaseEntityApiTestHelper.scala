@@ -19,10 +19,18 @@
 package io.github.openequella.graphql.test
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  EntityDetailsView,
+  EntitySkeletonView,
+  LanguageBundleView,
+  LanguageStringView
+}
 import io.github.openequella.graphql.api.{ApiError, LockedError}
 import org.scalatest.Assertions.fail
 import org.scalatest.EitherValues._
+
+import java.util.Locale
 
 /** Shared utility helpers for mutation-level API tests.
   *
@@ -31,6 +39,108 @@ import org.scalatest.EitherValues._
   * than reimplementing these patterns.
   */
 object BaseEntityApiTestHelper {
+  val NEW_ENTITY_ID          = 0L
+  val DEFAULT_PRIORITY       = 1
+  val DEFAULT_LOCALE: String = Locale.ENGLISH.toString
+
+  private def makeLanguageBundle(text: String): LanguageBundleView =
+    LanguageBundleView(
+      id = NEW_ENTITY_ID,
+      strings = List(
+        LanguageStringView(
+          id = NEW_ENTITY_ID,
+          priority = DEFAULT_PRIORITY,
+          locale = DEFAULT_LOCALE,
+          text = text
+        )
+      )
+    )
+
+  /** Builds the common `EntityDetailsView` for a new entity using the skeleton from a `startCreate`
+    * operation. Entity-specific test helpers wrap this in their own view types.
+    *
+    * @param skeleton
+    *   The skeleton returned from the entity API's `startCreate()`.
+    * @param name
+    *   The name to use for the entity.
+    * @param description
+    *   Optional description for the entity.
+    * @return
+    *   An `EntityDetailsView` populated for a new (not yet persisted) entity.
+    */
+  def buildNewEntityDetails(
+      skeleton: EntitySkeletonView,
+      name: String,
+      description: Option[String]
+  ): EntityDetailsView =
+    EntityDetailsView(
+      id = NEW_ENTITY_ID,
+      uuid = skeleton.uuid,
+      owner = skeleton.owner,
+      dateCreated = None,
+      dateModified = None,
+      nameBundle = Some(makeLanguageBundle(name)),
+      descriptionBundle = description.map(makeLanguageBundle),
+      attributes = Map.empty,
+      disabled = false
+    )
+
+  /** Extracts the default locale name text from an entity's details.
+    *
+    * @param details
+    *   The entity details to extract the name from.
+    * @return
+    *   The name text if present, or None if the name bundle or strings are missing.
+    */
+  def getEntityName(details: EntityDetailsView): Option[String] =
+    for {
+      bundle      <- details.nameBundle
+      firstString <- bundle.strings.headOption
+    } yield firstString.text
+
+  /** Loan-pattern helper that creates a test entity, runs the test body, and guarantees cleanup.
+    *
+    * Creates a new entity using the `startCreateFn` / `addFn` pair, and passes its reference to the
+    * test body. In the `finally` block, any lingering edit lock is force-cancelled and the entity
+    * is deleted — ensuring no resource leaks even when assertions fail. All function parameters
+    * should have their ClientConfiguration captured at the call site.
+    *
+    * @param startCreateFn
+    *   Function that starts creation of a new entity, returning its skeleton.
+    * @param buildDetailsFn
+    *   Function that builds the entity details to add from the skeleton.
+    * @param addFn
+    *   Function that adds the new entity, returning its reference.
+    * @param cancelEditForcedFn
+    *   Function that force-cancels an edit session for the entity.
+    * @param deleteFn
+    *   Function that deletes an entity by ID.
+    * @param test
+    *   The test body, receiving the newly created entity's reference.
+    * @tparam D
+    *   The entity-specific edit view type passed to `addFn`.
+    */
+  def withTestEntity[D](
+      startCreateFn: () => Either[List[ApiError], EntitySkeletonView],
+      buildDetailsFn: EntitySkeletonView => D,
+      addFn: D => Either[List[ApiError], BaseEntityReferenceView],
+      cancelEditForcedFn: Long => Either[List[ApiError], Unit],
+      deleteFn: Long => Either[List[ApiError], Unit]
+  )(test: BaseEntityReferenceView => Unit): Unit = {
+    val skeleton  = startCreateFn().value
+    val details   = buildDetailsFn(skeleton)
+    val reference = addFn(details).value
+    val entityId  = reference.id
+
+    try {
+      test(reference)
+    } finally {
+      // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
+      // Errors are ignored — the entity may already be unlocked or deleted by the test.
+      cancelEditForcedFn(entityId)
+      deleteFn(entityId)
+    }
+  }
 
   /** Returns the ID of the first entity in the list, or fails the test if the list is empty.
     *

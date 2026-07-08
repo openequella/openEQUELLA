@@ -481,6 +481,10 @@ type CollectionMetadataMapping {
 type CollectionMutations {
   "Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit operation."
   startEdit("ID of the collection to edit" id: Long!): EditableEntityCollectionDefinition!
+  "Start creating a new collection. Typically followed by an add operation with details for new collection."
+  startCreate: EditableEntitySkeleton!
+  "Add a new collection - typically after a startCreate operation, with details for the new collection."
+  add("Details of the collection to add" details: EditableEntityCollectionDefinitionInput!, "Whether the newly added collection should be locked for editing after creation" lockAfterwards: Boolean!): BaseEntityReference
   "Clone a collection - creating a copy of the collection with a new ID."
   clone("ID of the collection to clone" id: Long!): BaseEntityReference
   "Delete a collection - with consideration to references controllable by args."

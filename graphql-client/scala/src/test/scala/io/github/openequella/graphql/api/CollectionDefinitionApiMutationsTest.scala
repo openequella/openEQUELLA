@@ -19,22 +19,20 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.CollectionDefinitionApiMutationsTestHelper.{
-  getFirstCollectionId,
-  isCollectionLockedForEditing,
-  withClonedCollection,
-  withEditSession
-}
+import io.github.openequella.graphql.api.CollectionDefinitionApiMutationsTestHelper._
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   CollectionDefinitionEditView,
-  CollectionDefinitionView
+  CollectionDefinitionView,
+  EntitySkeletonView
 }
 import io.github.openequella.graphql.test.TestHelper.{
+  CREDENTIALS_ADMIN,
   assertAccessDeniedError,
   asUnauthenticatedUser,
   checkApiError,
-  loginToRestInstitution
+  loginToRestInstitution,
+  withUser
 }
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -42,15 +40,13 @@ import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 
 /** Tests for the mutation operations in the CollectionDefinitionApi.
   *
-  * These tests cover state-changing operations for collections, including importing, cloning,
-  * deleting, and cancelling edits. They also verify proper error handling and unauthenticated
-  * access denial.
+  * These tests cover state-changing operations for collections, including creating, importing,
+  * cloning, deleting, and cancelling edits. They also verify proper error handling and
+  * unauthenticated access denial.
   *
-  * TODO: Once this test suite is fully implemented, consider refactoring to use a shared set of
-  * test utilities for collection-related tests, as there will likely be significant overlap with
-  * tests for other collection-related APIs (e.g. MetadataSchemaApi). Maybe look to what was done on
-  * the server side with `com.tle.web.remoting.graphql.provider.ImportBase64ZipValidationTests` but
-  * taking it further.
+  * Shared, entity-agnostic test utilities live in
+  * [[io.github.openequella.graphql.test.BaseEntityApiTestHelper]]; the collection-specific wrappers
+  * are in [[CollectionDefinitionApiMutationsTestHelper]].
   */
 class CollectionDefinitionApiMutationsTest
     extends AnyFunSpec
@@ -88,6 +84,70 @@ class CollectionDefinitionApiMutationsTest
 
     it("denies access when not authenticated") {
       assertAccessDeniedError(CollectionDefinitionApi.startEdit(1)(_))
+    }
+  }
+
+  describe("startCreate") {
+    it("initiates creation of a new collection") {
+      When("calling startCreate")
+      val result = CollectionDefinitionApi.startCreate()
+
+      Then("returns an EntitySkeletonView")
+      result.isRight shouldBe true
+      val skeleton = result.value
+      skeleton shouldBe a[EntitySkeletonView]
+      skeleton.uuid should not be empty
+      skeleton.owner should not be empty
+      skeleton.stagingId should not be empty
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(CollectionDefinitionApi.startCreate()(_))
+    }
+  }
+
+  describe("add") {
+    it("creates a new collection") {
+      When("creating a new collection with valid details")
+      withTestCollection() { reference =>
+        Then("the add result returns a valid BaseEntityReferenceView")
+        reference shouldBe a[BaseEntityReferenceView]
+        reference.id should be > 0L
+        reference.uuid should not be empty
+        reference.owner should not be empty
+        reference.forCollection shouldBe true
+
+        And("the collection can be resolved by its UUID")
+        CollectionDefinitionApi.getIdByUuid(reference.uuid).value.value shouldBe reference.id
+
+        And("the collection appears in the collection listing")
+        CollectionDefinitionApi.listCollections().value.map(_.id) should contain(reference.id)
+
+        And("the collection has the expected name")
+        withEditSession(reference.id) { editView =>
+          getCollectionName(editView.collection).value shouldBe "Test Collection"
+        }
+
+        And("the collection is not locked for editing")
+        isCollectionLockedForEditing(reference.id) shouldBe false
+      }
+    }
+
+    it("can keep the collection locked after creation with addAndLock") {
+      When("creating a new collection with addAndLock")
+      withTestCollectionLocked() { ref =>
+        Then("the collection is locked for editing")
+        isCollectionLockedForEditing(ref.id) shouldBe true
+      }
+    }
+
+    it("denies access when not authenticated") {
+      Given("a skeleton from startCreate (authenticated)")
+      val skeleton = CollectionDefinitionApi.startCreate().value
+
+      And("a fully populated CollectionDefinitionEditView")
+      val newCollectionDetails = buildNewCollectionDetails(skeleton)
+      assertAccessDeniedError(CollectionDefinitionApi.add(newCollectionDetails)(_))
     }
   }
 
@@ -141,22 +201,31 @@ class CollectionDefinitionApiMutationsTest
 
   describe("clone") {
     it("creates a copy of an existing collection") {
-      // TODO: This needs to be reworked to be the same as the clone tests for MetadataSchemaApi,
-      //       however this is not possible until we have an `add` method to create new collections.
-      //       Once that's available, we can create a withTestCollection helper.
       Given("an existing collection")
-      withClonedCollection { cloneRef =>
+      withTestCollection(name = "Original Collection") { original =>
+        When("calling clone with the collection ID")
+        val cloneResult = CollectionDefinitionApi.clone(original.id)
+
         Then("returns a BaseEntityReferenceView for the new clone")
+        cloneResult.isRight shouldBe true
+        val cloneRef = cloneResult.value
         cloneRef shouldBe a[BaseEntityReferenceView]
+        cloneRef.id should not be original.id
+        cloneRef.uuid should not be original.uuid
 
-        And("the clone has a different ID and UUID from any known collection")
-        val allCollections = CollectionDefinitionApi.listCollections().value
-        allCollections.map(_.id) should contain(cloneRef.id)
+        And("the clone appears in the collection listing")
+        CollectionDefinitionApi.listCollections().value.map(_.id) should contain(cloneRef.id)
 
-        val original = allCollections.find(c => c.id != cloneRef.id && c.forCollection)
-        original should not be empty
-        cloneRef.id should not be original.get.id
-        cloneRef.uuid should not be original.get.uuid
+        try {
+          And("the cloned collection has a 'Copy of' name")
+          withEditSession(cloneRef.id) { editView =>
+            val cloneName = getCollectionName(editView.collection)
+            cloneName.value should startWith("Copy of ")
+            cloneName.value should include("Original Collection")
+          }
+        } finally {
+          CollectionDefinitionApi.delete(cloneRef.id)
+        }
       }
     }
 
@@ -177,20 +246,19 @@ class CollectionDefinitionApiMutationsTest
   }
 
   describe("delete") {
-    it("deletes a cloned collection") {
-      Given("a cloned collection")
-      val collectionId = getFirstCollectionId()
-      val cloneRef     = CollectionDefinitionApi.clone(collectionId).value
+    it("deletes an existing collection") {
+      Given("an existing collection")
+      withTestCollection(name = "Collection to Delete") { reference =>
+        When("calling delete with the collection ID")
+        val deleteResult = CollectionDefinitionApi.delete(reference.id)
 
-      When("calling delete with the cloned collection ID")
-      val deleteResult = CollectionDefinitionApi.delete(cloneRef.id)
+        Then("completes without errors")
+        deleteResult.isRight shouldBe true
 
-      Then("completes without errors")
-      deleteResult.isRight shouldBe true
-
-      And("the collection ID is no longer resolvable")
-      val uuidResult = CollectionDefinitionApi.getIdByUuid(cloneRef.uuid)
-      uuidResult.value shouldBe None
+        And("the collection ID is no longer resolvable")
+        val uuidResult = CollectionDefinitionApi.getIdByUuid(reference.uuid)
+        uuidResult.value shouldBe None
+      }
     }
 
     it("returns a NotFoundError for an invalid collection ID") {
@@ -211,9 +279,9 @@ class CollectionDefinitionApiMutationsTest
 
   describe("stopEdit") {
     it("saves changes to a collection and unlocks") {
-      Given("a cloned collection to use for testing")
-      withClonedCollection { cloneRef =>
-        val collectionId = cloneRef.id
+      Given("a collection in edit mode")
+      withTestCollectionLocked() { reference =>
+        val collectionId = reference.id
 
         When("calling stopEditAndUnlock")
         val editView   = CollectionDefinitionApi.startEdit(collectionId).value
@@ -231,44 +299,47 @@ class CollectionDefinitionApiMutationsTest
     }
 
     it("saves changes and keeps the collection locked") {
-      Given("a cloned collection")
-      withClonedCollection { cloneRef =>
+      Given("a collection in edit mode")
+      withTestCollectionLocked() { reference =>
+        val collectionId = reference.id
+
         When("calling stopEdit (keeping locked)")
-        withEditSession(cloneRef.id) { editView =>
-          val stopResult = CollectionDefinitionApi.stopEdit(editView)
+        val editView   = CollectionDefinitionApi.startEdit(collectionId).value
+        val stopResult = CollectionDefinitionApi.stopEdit(editView)
 
-          Then("completes without errors and returns the collection")
-          stopResult.isRight shouldBe true
-          val savedCollection = stopResult.value
-          savedCollection shouldBe a[CollectionDefinitionView]
-          savedCollection.details.id shouldBe cloneRef.id
+        Then("completes without errors and returns the collection")
+        stopResult.isRight shouldBe true
+        val savedCollection = stopResult.value
+        savedCollection shouldBe a[CollectionDefinitionView]
+        savedCollection.details.id shouldBe collectionId
 
-          And("the collection remains locked for editing")
-          isCollectionLockedForEditing(cloneRef.id) shouldBe true
-          // withEditSession's finally calls cancelEditForced automatically
-        }
+        And("the collection remains locked for editing")
+        isCollectionLockedForEditing(collectionId) shouldBe true
+
+        And("cleanup: cancel the edit session to release the lock")
+        CollectionDefinitionApi.cancelEdit(collectionId)
       }
     }
 
     it("returns a NotFoundError for an invalid collection ID") {
-      Given("an existing collection in an edit session")
-      val collectionId = getFirstCollectionId()
+      Given("an invalid collection ID")
+      val invalidCollectionId = -1L
 
-      withEditSession(collectionId) { editView =>
-        And("the edit view is modified to have an invalid collection ID")
-        val invalidCollectionId = -1L
-        val editViewWithBadId   = editView.copy(
-          collection = editView.collection.copy(
-            details = editView.collection.details.copy(id = invalidCollectionId)
-          )
+      And("a valid CollectionDefinitionEditView")
+      val skeleton = CollectionDefinitionApi.startCreate().value
+      val editView = buildNewCollectionDetails(skeleton)
+
+      When("calling stopEdit with the invalid collection ID")
+      // Create a view with the invalid ID to test the mutation error handling
+      val editViewWithBadId = editView.copy(
+        collection = editView.collection.copy(
+          details = editView.collection.details.copy(id = invalidCollectionId)
         )
+      )
+      val result = CollectionDefinitionApi.stopEditAndUnlock(editViewWithBadId)
 
-        When("calling stopEditAndUnlock with the invalid collection ID")
-        val result = CollectionDefinitionApi.stopEditAndUnlock(editViewWithBadId)
-
-        Then("returns a NotFoundError")
-        checkApiError(result) shouldBe a[NotFoundError]
-      }
+      Then("returns a NotFoundError")
+      checkApiError(result) shouldBe a[NotFoundError]
     }
 
     it("denies access when not authenticated") {
@@ -291,10 +362,71 @@ class CollectionDefinitionApiMutationsTest
     }
   }
 
-  describe("cancelEdit") {
-    // TODO: Once `add` method is implemented, add a test to verify that `cancelEdit` properly
-    //  cancels an edit session and unlocks the collection. This will require the ability to
-    //  start editing and then cancel without saving.
+  describe("cancelEdit/cancelEditForced") {
+    it("cancels an edit session and releases the lock") {
+      Given("a collection in edit mode")
+      withTestCollection() { reference =>
+        val collectionId = reference.id
+
+        When("calling cancelEdit after startEdit")
+        val editResult = CollectionDefinitionApi.startEdit(collectionId)
+        editResult.isRight shouldBe true
+
+        val cancelResult = CollectionDefinitionApi.cancelEdit(collectionId)
+
+        Then("completes without errors")
+        cancelResult.isRight shouldBe true
+
+        And("the collection is no longer locked for editing")
+        isCollectionLockedForEditing(collectionId) shouldBe false
+      }
+    }
+
+    it("returns a NotFoundError for an invalid collection ID") {
+      Given("an invalid collection ID")
+      val invalidCollectionId = -1L
+
+      When("calling cancelEdit with the invalid collection ID")
+      val result = CollectionDefinitionApi.cancelEdit(invalidCollectionId)
+
+      Then("returns a NotFoundError")
+      checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("forcefully releases locks when cancelEditForced is used") {
+      Given("a collection locked by another user")
+      withTestCollection() { reference =>
+        val collectionId = reference.id
+
+        // Lock the collection as the ADMIN user
+        withUser(CREDENTIALS_ADMIN) { implicit adminSession =>
+          val adminEditResult = CollectionDefinitionApi.startEdit(collectionId)(adminSession)
+          adminEditResult.isRight shouldBe true
+        }
+
+        // No inner try/finally needed: withTestCollection's cleanup force-cancels any
+        // lingering lock (regardless of owner) before deleting the collection.
+        And("the current user cannot start an edit session due to the lock")
+        val blockedEditResult = CollectionDefinitionApi.startEdit(collectionId)
+        blockedEditResult.isLeft shouldBe true
+        blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+
+        When("calling cancelEditForced to release the other user's lock")
+        val forceUnlockResult = CollectionDefinitionApi.cancelEditForced(collectionId)
+
+        Then("completes without errors")
+        forceUnlockResult.isRight shouldBe true
+
+        And("the current user can now start an edit session")
+        val editResult = CollectionDefinitionApi.startEdit(collectionId)
+        editResult.isRight shouldBe true
+
+        And("after cancelling the edit, the collection is no longer locked")
+        val cancelResult = CollectionDefinitionApi.cancelEditForced(collectionId)
+        cancelResult.isRight shouldBe true
+        isCollectionLockedForEditing(collectionId) shouldBe false
+      }
+    }
 
     it("denies access when not authenticated") {
       assertAccessDeniedError(CollectionDefinitionApi.cancelEdit(1)(_))
