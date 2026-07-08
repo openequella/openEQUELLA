@@ -63,6 +63,19 @@ public class ModerationView extends AbstractPage<ModerationView> {
     return assignLink.getText().equalsIgnoreCase("cancel assignment");
   }
 
+  /**
+   * The assignee shown in the task details line, e.g. "Me", "Unassigned" or the assignee's display
+   * name.
+   */
+  public String getAssignedTo() {
+    WebElement detail =
+        driver.findElement(
+            By.xpath("id('moderate')//div[@class='details']/div[@class='detail'][1]"));
+    String text = detail.getText().replaceFirst("^Assigned to:", "").trim();
+    int parenthetical = text.lastIndexOf('(');
+    return (parenthetical >= 0 ? text.substring(0, parenthetical) : text).trim();
+  }
+
   public ModerationCommentsPage moderationComments() {
     return new ModerationCommentsPage(context).get();
   }
