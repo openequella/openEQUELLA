@@ -18,6 +18,7 @@
 
 package com.tle.core.xml;
 
+import com.tle.common.xml.SecureXmlFactories;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -105,6 +106,7 @@ public class XmlDocument {
       domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
       domFactory.setFeature(
           "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      SecureXmlFactories.hardenAgainstXxe(domFactory);
     }
     return domFactory;
   }
