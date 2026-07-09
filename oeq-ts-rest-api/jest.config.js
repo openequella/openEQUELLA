@@ -21,13 +21,13 @@
 module.exports = {
   clearMocks: true,
   coverageDirectory: 'coverage',
-  // Required (instead of plan 'ts-jest') to support axios-cookiejar-support.
+  // Required (instead of plan 'ts-jest') to support axios-cookiejar-support and query-string.
   preset: 'ts-jest/presets/js-with-babel',
   testEnvironment: 'node',
   transformIgnorePatterns: [
-    // Using the following negative look-ahead, we're requesting that the transforms only apply to `axios-cookiejar-support`.
-    // This was required because axios-cookiejar-support only supports ESM from v6.
-    'node_modules/(?!axios-cookiejar-support)/',
+    // Using the following negative look-ahead, we're requesting that the transforms only apply to `axios-cookiejar-support` and `query-string`.
+    // This was required because axios-cookiejar-support only supports ESM from v6, and query-string only supports ESM from v8.
+    'node_modules/(?!(axios-cookiejar-support|query-string))/',
   ],
   setupFiles: ['./jest.setup.ts'],
 };
