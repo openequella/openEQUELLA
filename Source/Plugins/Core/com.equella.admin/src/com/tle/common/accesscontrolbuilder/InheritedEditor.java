@@ -18,19 +18,20 @@
 
 package com.tle.common.accesscontrolbuilder;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.util.List;
 import javax.swing.JComponent;
 
 public class InheritedEditor implements PrivilegeListEditor {
   private final RemoteTLEAclManager aclManager;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
-  public InheritedEditor(RemoteTLEAclManager aclManager, RemoteUserService userService) {
+  public InheritedEditor(
+      RemoteTLEAclManager aclManager, AdminUserDirectoryService userDirectoryService) {
     this.aclManager = aclManager;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
   }
 
   /*
@@ -59,6 +60,7 @@ public class InheritedEditor implements PrivilegeListEditor {
     if (entries != null) {
       entries.clear();
     }
-    return new InheritedEditorPanel(aclManager, userService, domainObj, list.getPrivilege());
+    return new InheritedEditorPanel(
+        aclManager, userDirectoryService, domainObj, list.getPrivilege());
   }
 }

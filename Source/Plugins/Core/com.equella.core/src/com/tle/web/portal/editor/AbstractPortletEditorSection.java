@@ -39,6 +39,7 @@ import com.tle.core.portal.service.PortletEditingBean;
 import com.tle.core.portal.service.PortletEditingSession;
 import com.tle.core.portal.service.PortletService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.portal.service.PortletWebService;
@@ -233,7 +234,10 @@ public abstract class AbstractPortletEditorSection<
     if (Check.isEmpty(expression)) {
       expression = SecurityConstants.getRecipient(Recipient.OWNER);
     }
-    model.setExpressionPretty(new ExpressionFormatter(userService).convertToInfix(expression));
+
+    UserServiceEntityResolverAdapter entityResolver =
+        new UserServiceEntityResolverAdapter(userService);
+    model.setExpressionPretty(new ExpressionFormatter(entityResolver).convertToInfix(expression));
     selector.setExpression(context, expression);
 
     model.setPageTitle(

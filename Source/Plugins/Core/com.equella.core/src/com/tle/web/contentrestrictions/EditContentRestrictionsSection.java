@@ -24,6 +24,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.contentrestrictions.dialog.SelectedQuota;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -143,8 +144,10 @@ public class EditContentRestrictionsSection
     if (Check.isEmpty(userExpression)) {
       model.setExpressionPretty("");
     } else {
+      UserServiceEntityResolverAdapter entityResolver =
+          new UserServiceEntityResolverAdapter(userService);
       model.setExpressionPretty(
-          new ExpressionFormatter(userService).convertToInfix(userExpression));
+          new ExpressionFormatter(entityResolver).convertToInfix(userExpression));
     }
 
     quotaSizeField.setValue(

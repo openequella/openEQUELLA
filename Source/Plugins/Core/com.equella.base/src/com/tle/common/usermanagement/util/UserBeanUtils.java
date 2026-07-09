@@ -24,7 +24,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
+import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,17 +39,16 @@ public final class UserBeanUtils {
     return new NameValue(Format.format(details), details.getUniqueID());
   }
 
-  public static NameValue getUser(RemoteUserService userService, String uuid) {
-    if (uuid == null || uuid.length() == 0 || uuid.equals("0")) // $NON-NLS-1$
-    {
+  public static NameValue getUser(UserDirectoryEntityResolver userDirectoryResolver, String uuid) {
+    if (uuid == null || uuid.isEmpty() || uuid.equals("0")) {
       return new NameValue(CurrentLocale.get("com.dytech.edge.admin.helper.utils.nouser"), "");
     }
 
     NameValue user = null;
     try {
-      UserBean informationForUser = userService.getInformationForUser(uuid);
-      if (informationForUser != null) {
-        user = formatUser(informationForUser);
+      Optional<UserBean> informationForUser = userDirectoryResolver.getInformationForUser(uuid);
+      if (informationForUser.isPresent()) {
+        user = formatUser(informationForUser.get());
       }
     } catch (Exception ex) {
       LOGGER.warn("Problem looking up user " + uuid, ex);
@@ -64,17 +63,17 @@ public final class UserBeanUtils {
     return user;
   }
 
-  public static NameValue getGroup(RemoteUserService userService, String uuid) {
-    if (uuid.length() == 0 || uuid.equals("0")) // $NON-NLS-1$
+  public static NameValue getGroup(UserDirectoryEntityResolver userDirectoryResolver, String uuid) {
+    if (uuid.isEmpty() || uuid.equals("0")) // $NON-NLS-1$
     {
       return new NameValue(CurrentLocale.get("com.dytech.edge.admin.helper.utils.nogroup"), "");
     }
     NameValue group = null;
 
     try {
-      GroupBean informationForGroup = userService.getInformationForGroup(uuid);
-      if (informationForGroup != null) {
-        group = formatGroup(informationForGroup);
+      Optional<GroupBean> informationForGroup = userDirectoryResolver.getInformationForGroup(uuid);
+      if (informationForGroup.isPresent()) {
+        group = formatGroup(informationForGroup.get());
       }
     } catch (Exception ex) {
       LOGGER.warn("Problem looking up group " + uuid, ex);
@@ -89,21 +88,21 @@ public final class UserBeanUtils {
     return group;
   }
 
-  public static NameValue getRole(RemoteUserService userService, String uuid) {
-    if (uuid.length() == 0 || uuid.equals("0")) // $NON-NLS-1$
-    {
+  public static NameValue getRole(UserDirectoryEntityResolver userDirectoryResolver, String uuid) {
+    if (uuid.isEmpty() || uuid.equals("0")) {
       return new NameValue(CurrentLocale.get("com.dytech.edge.admin.helper.utils.norole"), "");
     }
 
     NameValue role = null;
 
     try {
-      RoleBean informationForRole = userService.getInformationForRole(uuid);
-      if (informationForRole != null) {
-        role = new NameValue(Format.format(informationForRole), informationForRole.getUniqueID());
+      Optional<RoleBean> informationForRole = userDirectoryResolver.getInformationForRole(uuid);
+      if (informationForRole.isPresent()) {
+        RoleBean roleBean = informationForRole.get();
+        role = new NameValue(Format.format(roleBean), roleBean.getUniqueID());
       }
     } catch (Exception ex) {
-      LOGGER.warn("Problem looking up group " + uuid, ex);
+      LOGGER.warn("Problem looking up role " + uuid, ex);
     }
 
     if (role == null) {

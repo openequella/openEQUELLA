@@ -20,20 +20,23 @@ package com.tle.admin.workflow.editor;
 
 import com.dytech.gui.TableLayout;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.io.Serial;
 import javax.swing.JDialog;
 import javax.swing.JTabbedPane;
 
 public class ScriptEditor extends NodeEditor {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  public ScriptEditor(final RemoteUserService userService, final AdminSchemaService schemaService) {
-    super(userService, schemaService, "com.tle.admin.workflow.editor.scripteditor.title");
+  public ScriptEditor(
+      final AdminUserDirectoryService userDirectoryService,
+      final AdminSchemaService schemaService) {
+    super(userDirectoryService, schemaService, "com.tle.admin.workflow.editor.scripteditor.title");
   }
 
   @Override
@@ -47,7 +50,7 @@ public class ScriptEditor extends NodeEditor {
   }
 
   public class WorkflowItemPanel extends WorkflowNodePanel {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
     private ScriptTab scriptTab;
     private NotificationsTab notificationsTab;
 
@@ -80,7 +83,7 @@ public class ScriptEditor extends NodeEditor {
     @Override
     protected void setup() {
       scriptTab = new ScriptTab(changeDetector);
-      notificationsTab = new NotificationsTab(changeDetector, userService);
+      notificationsTab = new NotificationsTab(changeDetector, userDirectoryService);
       final JTabbedPane tabs = new JTabbedPane();
       tabs.add(CurrentLocale.get("com.tle.admin.workflow.editor.scripteditor.details"), scriptTab);
       tabs.add(

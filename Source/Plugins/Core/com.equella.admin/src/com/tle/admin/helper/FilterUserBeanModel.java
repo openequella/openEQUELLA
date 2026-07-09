@@ -19,9 +19,9 @@
 package com.tle.admin.helper;
 
 import com.dytech.gui.filter.FilterModel;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Format;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,16 +31,16 @@ import org.apache.commons.logging.LogFactory;
 public class FilterUserBeanModel extends FilterModel<UserBean> {
   private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
 
-  private RemoteUserService userService;
+  private AdminUserDirectoryService userDirectoryService;
 
-  public FilterUserBeanModel(RemoteUserService userService) {
-    this.userService = userService;
+  public FilterUserBeanModel(AdminUserDirectoryService userDirectoryService) {
+    this.userDirectoryService = userDirectoryService;
   }
 
   @Override
   public List<UserBean> search(String pattern) {
     try {
-      List<UserBean> users = removeExclusions(userService.searchUsers(pattern));
+      List<UserBean> users = removeExclusions(userDirectoryService.searchUsers(pattern));
       Collections.sort(users, Format.USER_BEAN_COMPARATOR);
       return users;
     } catch (Exception ex) {

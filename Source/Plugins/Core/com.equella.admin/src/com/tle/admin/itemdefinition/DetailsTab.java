@@ -27,6 +27,7 @@ import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.SchemaTransform;
@@ -41,7 +42,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -246,7 +246,7 @@ public class DetailsTab extends AbstractItemdefTab
     description = new I18nTextArea(BundleCache.getLanguages());
     descriptionLabel.setLabelFor(description);
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
     ownerLabel.setLabelFor(owner);
 
     schemaList = new JComboBox();

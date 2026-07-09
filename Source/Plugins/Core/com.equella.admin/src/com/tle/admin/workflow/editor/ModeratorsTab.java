@@ -32,6 +32,7 @@ import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
@@ -40,7 +41,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.workflow.node.WorkflowItem;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -81,14 +81,14 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
 
   public ModeratorsTab(
       ChangeDetector changeDetector,
-      RemoteUserService userService,
+      AdminUserDirectoryService userDirectoryService,
       AdminSchemaService schemaService) {
     this.schemaService = schemaService;
-    setupGui(userService);
+    setupGui(userDirectoryService);
     setupChangeDetector(changeDetector);
   }
 
-  private void setupGui(RemoteUserService userService) {
+  private void setupGui(AdminUserDirectoryService userDirectoryService) {
 
     unanimous =
         new JCheckBox(
@@ -103,7 +103,7 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
 
     group = new ButtonGroup();
 
-    finderControl = new MultipleFinderControl(userService);
+    finderControl = new MultipleFinderControl(userDirectoryService);
     finderControl.addActionListener(this);
 
     staticGroup = GroupBox.withRadioButton(strings.text("choosestatic"), false);

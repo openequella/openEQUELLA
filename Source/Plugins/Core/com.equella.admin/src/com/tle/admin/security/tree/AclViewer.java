@@ -20,6 +20,7 @@ package com.tle.admin.security.tree;
 
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.accesscontrolbuilder.ActionTableCellRenderer;
 import com.tle.common.applet.client.ClientService;
@@ -30,7 +31,6 @@ import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,7 +48,7 @@ public class AclViewer extends JPanel implements ActionListener, SecurityTreeTab
   private final Node privilegeNode;
   protected final Object target;
   protected final RemoteTLEAclManager aclManager;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   private JComboBox<String> privSelector;
   protected MyTableModel model;
@@ -58,7 +58,7 @@ public class AclViewer extends JPanel implements ActionListener, SecurityTreeTab
     this.target = target;
 
     aclManager = clientService.getService(RemoteTLEAclManager.class);
-    userService = clientService.getService(RemoteUserService.class);
+    userDirectoryService = clientService.getService(AdminUserDirectoryService.class);
 
     setupGui(clientService);
   }
@@ -80,7 +80,7 @@ public class AclViewer extends JPanel implements ActionListener, SecurityTreeTab
     table
         .getColumnModel()
         .getColumn(2)
-        .setCellRenderer(new ExpressionTableCellRenderer(userService));
+        .setCellRenderer(new ExpressionTableCellRenderer(userDirectoryService));
     table.getColumnModel().getColumn(1).setCellRenderer(new ActionTableCellRenderer());
 
     JScrollPane scroller = new JScrollPane(table);

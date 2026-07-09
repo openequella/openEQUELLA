@@ -26,10 +26,10 @@ import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.Schema;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -37,7 +37,6 @@ import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-@SuppressWarnings("nls")
 public class DetailsTab extends BaseEntityTab<Schema> implements AbstractDetailsTab<Schema> {
   private final SchemaModel model;
 
@@ -81,7 +80,7 @@ public class DetailsTab extends BaseEntityTab<Schema> implements AbstractDetails
     description = new I18nTextArea(BundleCache.getLanguages());
     descriptionLabel.setLabelFor(description);
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
     ownerLabel.setLabelFor(owner);
 
     nameXpathChooser = new SingleTargetChooser(model, null);

@@ -18,11 +18,11 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Format;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -37,14 +37,14 @@ public class SingleUserSelector extends JPanel implements ActionListener {
   private final JTextField userField;
   private final JButton searchForUser;
   private UserBean selectedUser;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
-  public SingleUserSelector(RemoteUserService userService) {
-    this(userService, null);
+  public SingleUserSelector(AdminUserDirectoryService userDirectoryService) {
+    this(userDirectoryService, null);
   }
 
-  public SingleUserSelector(RemoteUserService userService, String text) {
-    this.userService = userService;
+  public SingleUserSelector(AdminUserDirectoryService userDirectoryService, String text) {
+    this.userDirectoryService = userDirectoryService;
 
     userField = new JTextField();
     userField.setEditable(false);
@@ -69,7 +69,7 @@ public class SingleUserSelector extends JPanel implements ActionListener {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    SingleFinderDialog ugd = new SingleFinderDialog(userService, RecipientFilter.USERS);
+    SingleFinderDialog ugd = new SingleFinderDialog(userDirectoryService, RecipientFilter.USERS);
     Pair<RecipientFilter, Object> result = ugd.showFinder(this.getParent());
 
     if (result != null) {
@@ -94,7 +94,7 @@ public class SingleUserSelector extends JPanel implements ActionListener {
     if (userId == null) {
       setUser(null);
     } else {
-      setUser(userService.getInformationForUser(userId));
+      setUser(userDirectoryService.getInformationForUser(userId).orElse(null));
     }
   }
 

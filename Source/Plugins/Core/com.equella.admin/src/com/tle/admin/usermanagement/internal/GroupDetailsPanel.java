@@ -29,6 +29,7 @@ import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.helper.FilterUserBeanModel;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.service.AdminTLEGroupService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.service.BasicGroupDetails;
 import com.tle.common.Format;
 import com.tle.common.applet.client.ClientService;
@@ -37,7 +38,6 @@ import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.io.Serial;
@@ -63,7 +63,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
   private final Logger LOGGER = LoggerFactory.getLogger(GroupDetailsPanel.class);
 
   private final AdminTLEGroupService groupService;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
   private final TLEAction saveAction;
 
   private transient BasicGroupDetails loadedGroup;
@@ -79,7 +79,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
   public GroupDetailsPanel(ClientService services, TLEAction saveAction) {
     this.saveAction = saveAction;
     this.groupService = services.getService(AdminTLEGroupService.class);
-    this.userService = services.getService(RemoteUserService.class);
+    this.userDirectoryService = services.getService(AdminUserDirectoryService.class);
 
     setupGui();
 
@@ -113,7 +113,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     users =
         new FilteredShuffleList<UserBean>(
             CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.search"),
-            new FilterUserBeanModel(userService),
+            new FilterUserBeanModel(userDirectoryService),
             Format.USER_BEAN_COMPARATOR);
     users.setSearchText(strings.text("internal.groupdetailspanel.searchbutton"));
     users.setRemoveText(strings.text("internal.groupdetailspanel.removebutton"));
@@ -242,7 +242,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
         new GlassSwingWorker<>() {
           @Override
           public Collection<UserBean> construct() {
-            return userService.getInformationForUsers(loadedGroup.getUsers()).values();
+            return userDirectoryService.getInformationForUsers(loadedGroup.getUsers()).values();
           }
 
           @Override

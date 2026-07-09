@@ -27,6 +27,7 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.SearchSettings;
@@ -37,7 +38,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -86,7 +86,7 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
     descriptionField = new I18nTextField(BundleCache.getLanguages());
     timeoutModel = new SpinnerNumberModel(TIMEOUT_DEFAULT, TIMEOUT_START, TIMEOUT_END, 1);
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     collections = new JComboBox();
     transforms = new JComboBox();

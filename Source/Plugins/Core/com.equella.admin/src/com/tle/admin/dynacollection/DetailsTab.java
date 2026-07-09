@@ -23,11 +23,11 @@ import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.event.KeyListener;
@@ -63,7 +63,7 @@ public class DetailsTab extends BaseEntityTab<DynaCollection>
     name = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextArea(BundleCache.getLanguages());
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     setLayout(new MigLayout("wrap 2,fillx", "[align label][fill, grow]25%"));
 
