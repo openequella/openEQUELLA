@@ -667,7 +667,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     /** Triggered when user chooses `remove unzip files`.
       */
-    def removeUnzipped: Unit = {
+    def removeUnzipped(): Unit = {
       val eds       = getEditState
       val newCommit = (eds.commit, eds.a) match {
         // triggered if it's during during edit process

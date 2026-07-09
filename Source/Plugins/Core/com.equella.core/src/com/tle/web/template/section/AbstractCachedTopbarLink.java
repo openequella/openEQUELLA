@@ -30,7 +30,7 @@ public abstract class AbstractCachedTopbarLink implements TopbarLink {
     Integer count = countCache.getIfPresent(getSessionKey());
     if (count == null) {
       count = getCount();
-      countCache.put(getSessionKey(), new Integer(count));
+      countCache.put(getSessionKey(), Integer.valueOf(count));
     }
     return count;
   }

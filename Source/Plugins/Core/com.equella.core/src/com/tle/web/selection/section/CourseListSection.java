@@ -196,7 +196,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
                 reloadFolderFunction,
                 drop ? new ScriptVariable("p2") : null,
                 eventArray,
-                new ArrayExpression(ajaxIds))
+                new ArrayExpression((Object[]) ajaxIds))
             .getExpression(info);
       }
     };
