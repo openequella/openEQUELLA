@@ -33,15 +33,16 @@ trait SchemaProvider {
 @Bind
 @Singleton
 class Schema {
-  @Inject private var adminConsolePluginSchema: AdminConsolePluginSchema = _
-  @Inject private var baseEntitySchema: BaseEntitySchema                 = _
-  @Inject private var collectionSchema: CollectionSchema                 = _
-  @Inject private var javaScriptSchema: JavaScriptSchema                 = _
-  @Inject private var languageSchema: LanguageSchema                     = _
-  @Inject private var metadataSchemaSchema: MetadataSchemaSchema         = _
-  @Inject private var tleGroupSchema: TLEGroupSchema                     = _
-  @Inject private var tleUserSchema: TLEUserSchema                       = _
-  @Inject private var userDirectorySchema: UserDirectorySchema           = _
+  @Inject private var adminConsolePluginSchema: AdminConsolePluginSchema   = _
+  @Inject private var baseEntitySchema: BaseEntitySchema                   = _
+  @Inject private var collectionSchema: CollectionSchema                   = _
+  @Inject private var javaScriptSchema: JavaScriptSchema                   = _
+  @Inject private var languageSchema: LanguageSchema                       = _
+  @Inject private var metadataSchemaSchema: MetadataSchemaSchema           = _
+  @Inject private var tleGroupSchema: TLEGroupSchema                       = _
+  @Inject private var tleUserSchema: TLEUserSchema                         = _
+  @Inject private var userDirectoryConfigSchema: UserDirectoryConfigSchema = _
+  @Inject private var userDirectorySchema: UserDirectorySchema             = _
 
   /** Get the full API for the GraphQL interface.
     */
@@ -61,6 +62,7 @@ class Schema {
       metadataSchemaSchema,
       tleGroupSchema,
       tleUserSchema,
+      userDirectoryConfigSchema,
       userDirectorySchema
     ).map(_.getApi).reduce(_ |+| _)
   }
