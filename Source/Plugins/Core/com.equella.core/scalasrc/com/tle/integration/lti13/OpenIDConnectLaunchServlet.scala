@@ -142,6 +142,9 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
         case PlatformDetailsError(_) =>
           LOGGER.error(s"LTI 1.3 Platform configuration error: $msg")
           s"Authentication failed due to the configuration of LTI 1.3 Platform: $msg"
+        case GeneralLtiError(_) =>
+          LOGGER.error(s"Authentication failed: $msg")
+          s"Authentication failed: $msg"
       }
 
       resp.setContentType("text/plain")

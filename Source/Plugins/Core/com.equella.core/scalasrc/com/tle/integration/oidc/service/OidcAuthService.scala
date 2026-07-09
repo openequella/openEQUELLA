@@ -421,35 +421,36 @@ class OidcAuthService @Inject() (
     * into two categories: `DeserializationError` and `HttpError`. Depending on the received error
     * type, return either an instance of [[GeneralError]] or [[TokenError]].
     */
-  private def handleTokenError(error: ResponseException[String, Error]): OAuth2Error = error match {
-    case DeserializationException(_, error) =>
-      ServerError(
-        s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}"
-      )
-    // For general HTTP client errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
-    case HttpError(body, status) if status.isClientError =>
-      parse(body)
-        .flatMap(_.as[TokenErrorResponse])
-        .fold(
-          _ => {
-            LOGGER.error(s"Failed to request an ID token. Received response: $body")
-            ServerError(
-              "Failed to request an ID token, but the error is unknown due to unexpected response format."
-            )
-          },
-          resp => {
-            val msg = resp.error_description.getOrElse(NO_FURTHER_INFO)
-            status.code match {
-              case 400 => TokenError(resp.error, msg)
-              case 401 => NotAuthorized(msg)
-              case 403 => AccessDenied(msg)
-              case _   => ServerError(msg)
-            }
-          }
+  private[service] def handleTokenError(error: ResponseException[String, Error]): OAuth2Error =
+    error match {
+      case DeserializationException(_, error) =>
+        ServerError(
+          s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}"
         )
-    case HttpError(body, status) if status.isServerError =>
-      ServerError(s"Failed to request an ID token: $body")
-  }
+      // For general HTTP client errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
+      case HttpError(body, status) if status.isClientError =>
+        parse(body)
+          .flatMap(_.as[TokenErrorResponse])
+          .fold(
+            _ => {
+              LOGGER.error(s"Failed to request an ID token. Received response: $body")
+              ServerError(
+                "Failed to request an ID token, but the error is unknown due to unexpected response format."
+              )
+            },
+            resp => {
+              val msg = resp.error_description.getOrElse(NO_FURTHER_INFO)
+              status.code match {
+                case 400 => TokenError(resp.error, msg)
+                case 401 => NotAuthorized(msg)
+                case 403 => AccessDenied(msg)
+                case _   => ServerError(msg)
+              }
+            }
+          )
+      case HttpError(body, _) =>
+        ServerError(s"Failed to request an ID token: $body")
+    }
 
   private def redirectUri = s"${CurrentInstitution.get().getUrl}oidc/callback"
 }

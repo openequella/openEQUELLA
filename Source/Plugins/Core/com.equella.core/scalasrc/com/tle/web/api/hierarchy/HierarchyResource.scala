@@ -126,6 +126,7 @@ class HierarchyResource {
           }
           case Failure(e: ItemNotFoundException) =>
             ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
+          case Failure(other) => throw other
         }
 
       Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
