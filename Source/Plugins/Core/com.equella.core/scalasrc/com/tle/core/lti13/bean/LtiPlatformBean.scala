@@ -26,6 +26,7 @@ import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.integration.lti13.UnknownUserHandling
+import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 import java.net.URL
@@ -87,8 +88,8 @@ case class LtiPlatformBean(
 )
 
 object LtiPlatformBean {
-  implicit val encoder = deriveEncoder[LtiPlatformBean]
-  implicit val decoder = deriveDecoder[LtiPlatformBean]
+  implicit val encoder: Encoder.AsObject[LtiPlatformBean] = deriveEncoder[LtiPlatformBean]
+  implicit val decoder: Decoder[LtiPlatformBean]          = deriveDecoder[LtiPlatformBean]
 
   def apply(platform: LtiPlatform): LtiPlatformBean = {
     new LtiPlatformBean(

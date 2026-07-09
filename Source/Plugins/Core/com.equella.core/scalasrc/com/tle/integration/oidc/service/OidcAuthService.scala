@@ -55,7 +55,7 @@ import com.tle.integration.oidc.{
   verifyIdToken => verifyToken
 }
 import com.tle.integration.util.{NO_FURTHER_INFO, getParam}
-import io.circe.Error
+import io.circe.{Decoder, Encoder, Error}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser._
 import org.apache.http.client.utils.URIBuilder
@@ -87,8 +87,9 @@ final case class OidcTokenResponse(
 )
 
 object OidcTokenResponse {
-  implicit val tokenResponseEncoder = deriveEncoder[OidcTokenResponse]
-  implicit val tokenResponseDecoder = deriveDecoder[OidcTokenResponse]
+  implicit val tokenResponseEncoder: Encoder.AsObject[OidcTokenResponse] =
+    deriveEncoder[OidcTokenResponse]
+  implicit val tokenResponseDecoder: Decoder[OidcTokenResponse] = deriveDecoder[OidcTokenResponse]
 }
 
 /** Structure for a successful verification of a callback request.
