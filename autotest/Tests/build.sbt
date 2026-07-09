@@ -6,6 +6,10 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 
 inConfig(Serial)(Defaults.testTasks)
 
+// sbt auto-generates a `configuration` setting key for every custom Configuration and flags it as
+// unused by lintUnused, even though the Serial config itself is actively used (see .github/workflows/ci.yaml).
+Global / excludeLintKeys += Serial / configuration
+
 val circeVersion  = "0.14.12"
 val http4sVersion = "0.23.34"
 val catsVersion   = "2.13.0"
