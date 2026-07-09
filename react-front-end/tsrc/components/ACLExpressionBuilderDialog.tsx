@@ -31,14 +31,13 @@ import ACLExpressionBuilder, {
 
 const { title } = languageStrings.aclExpressionBuilderDialog;
 
-export interface ACLExpressionBuilderDialogProps
-  extends Pick<
-    ACLExpressionBuilderProps,
-    | "searchUserProvider"
-    | "searchGroupProvider"
-    | "searchRoleProvider"
-    | "aclEntityResolversProvider"
-  > {
+export interface ACLExpressionBuilderDialogProps extends Pick<
+  ACLExpressionBuilderProps,
+  | "searchUserProvider"
+  | "searchGroupProvider"
+  | "searchRoleProvider"
+  | "aclEntityResolversProvider"
+> {
   /** Open the dialog when true. */
   open: boolean;
   /** The currently selected ACLExpression. */

@@ -27,11 +27,10 @@ import ConfigureLti13Platform, {
 const { name: createPageName } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
 
-export interface CreateLti13PlatformProps
-  extends Omit<
-    ConfigureLti13PlatformProps,
-    "pageName" | "configurePlatformProvider"
-  > {
+export interface CreateLti13PlatformProps extends Omit<
+  ConfigureLti13PlatformProps,
+  "pageName" | "configurePlatformProvider"
+> {
   /**
    * Function to create platform.
    */

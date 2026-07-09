@@ -21,8 +21,10 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { TooltipProps } from "@mui/material/Tooltip/Tooltip";
 
-export interface TooltipCustomComponentProps
-  extends Omit<TooltipProps, "children" | "title"> {
+export interface TooltipCustomComponentProps extends Omit<
+  TooltipProps,
+  "children" | "title"
+> {
   /** The text to be displayed on the tooltip. */
   title: string;
   /** The children to be rendered inside the tooltip. */

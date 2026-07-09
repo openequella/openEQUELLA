@@ -342,8 +342,7 @@ describe("Rendering of wizard", () => {
 
     // Collect _all_ values.
     const getCurrentLabelsAndValues = (): (
-      | WizardControlLabelValue
-      | undefined
+      WizardControlLabelValue | undefined
     )[] =>
       buildMockedControls().map(([c, controlValue]) =>
         getControlValue(

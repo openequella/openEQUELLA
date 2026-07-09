@@ -31,27 +31,25 @@ const buildGalleryEntry = (name: string): GalleryEntry => ({
 });
 
 export const buildItems = (howMany: number): GallerySearchResultItem[] =>
-  range(howMany).map(
-    (i: number): GallerySearchResultItem => ({
-      uuid: crypto.randomUUID(),
-      version: 1,
-      status: "live",
-      name: `Test item ${i}`,
-      drmStatus: {
-        isAuthorised: true,
-        termsAccepted: true,
-        isAllowSummary: true,
-      },
-      links: {
-        self: `link-to-self-${i}`,
-        view: `link-to-view-${i}`,
-      },
-      mainEntry: buildGalleryEntry(`Main Entry #${i}`),
-      additionalEntries: range([0, 1, 2, 3, 5][i % 5]).map((_, idx) =>
-        buildGalleryEntry(`Additional Entry #${i}/${idx}`),
-      ),
-    }),
-  );
+  range(howMany).map((i: number): GallerySearchResultItem => ({
+    uuid: crypto.randomUUID(),
+    version: 1,
+    status: "live",
+    name: `Test item ${i}`,
+    drmStatus: {
+      isAuthorised: true,
+      termsAccepted: true,
+      isAllowSummary: true,
+    },
+    links: {
+      self: `link-to-self-${i}`,
+      view: `link-to-view-${i}`,
+    },
+    mainEntry: buildGalleryEntry(`Main Entry #${i}`),
+    additionalEntries: range([0, 1, 2, 3, 5][i % 5]).map((_, idx) =>
+      buildGalleryEntry(`Additional Entry #${i}/${idx}`),
+    ),
+  }));
 
 export const galleryDrmItem: GallerySearchResultItem = {
   uuid: crypto.randomUUID(),

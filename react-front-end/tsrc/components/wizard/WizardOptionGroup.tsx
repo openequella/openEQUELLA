@@ -33,8 +33,7 @@ const StyledDiv = styled("div", {
   },
 }));
 
-export interface WizardCheckBoxGroupTemplateProps
-  extends WizardControlBasicProps {
+export interface WizardCheckBoxGroupTemplateProps extends WizardControlBasicProps {
   /**
    * The list of CheckBox options.
    */
