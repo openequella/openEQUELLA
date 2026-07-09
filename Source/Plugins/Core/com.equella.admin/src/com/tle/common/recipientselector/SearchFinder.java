@@ -20,17 +20,18 @@ package com.tle.common.recipientselector;
 
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Format;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,12 +55,11 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-@SuppressWarnings("nls")
 public class SearchFinder extends JPanel
     implements ActionListener, UserGroupRoleFinder, ListSelectionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   private EventListenerList eventListenerList;
 
@@ -71,13 +71,13 @@ public class SearchFinder extends JPanel
   private JList results;
   private GenericListModel<Object> resultsModel;
 
-  public SearchFinder(RemoteUserService userService, RecipientFilter... filters) {
+  public SearchFinder(AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
     if (filters.length == 0) {
       throw new IllegalArgumentException(
           CurrentLocale.get("com.tle.admin.recipients.searchfinder.onefilter"));
     }
 
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
 
     setupGUI(filters);
   }
@@ -300,7 +300,7 @@ public class SearchFinder extends JPanel
             new ResultsWorker<UserBean>() {
               @Override
               public List<UserBean> doSearch(String query) {
-                return userService.searchUsers(query);
+                return userDirectoryService.searchUsers(query);
               }
 
               @Override
@@ -313,7 +313,7 @@ public class SearchFinder extends JPanel
             new ResultsWorker<GroupBean>() {
               @Override
               public List<GroupBean> doSearch(String query) {
-                return userService.searchGroups(query);
+                return userDirectoryService.searchGroups(query);
               }
 
               @Override
@@ -326,7 +326,7 @@ public class SearchFinder extends JPanel
             new ResultsWorker<RoleBean>() {
               @Override
               public List<RoleBean> doSearch(String query) {
-                return userService.searchRoles(query);
+                return userDirectoryService.searchRoles(query);
               }
 
               @Override

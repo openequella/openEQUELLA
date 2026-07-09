@@ -18,12 +18,12 @@
 
 package com.tle.admin.baseentity;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.accesscontrolbuilder.AccessEditor;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.GridLayout;
 
@@ -41,7 +41,7 @@ public class AccessControlTab<T extends BaseEntity> extends BaseEntityTab<T> {
     editor =
         new AccessEditor(
             clientService.getService(RemoteTLEAclManager.class),
-            clientService.getService(RemoteUserService.class));
+            clientService.getService(AdminUserDirectoryService.class));
 
     setLayout(new GridLayout(1, 1));
     add(editor);
@@ -54,7 +54,7 @@ public class AccessControlTab<T extends BaseEntity> extends BaseEntityTab<T> {
 
   @Override
   public String getTitle() {
-    return CurrentLocale.get("com.tle.admin.baseentity.accesscontroltab.title"); // $NON-NLS-1$
+    return CurrentLocale.get("com.tle.admin.baseentity.accesscontroltab.title");
   }
 
   @Override

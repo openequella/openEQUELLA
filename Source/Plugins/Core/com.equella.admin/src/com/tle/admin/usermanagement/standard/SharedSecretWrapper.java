@@ -27,6 +27,7 @@ import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.admin.service.AdminTLEGroupService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.service.BasicGroupDetails;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings.SharedSecretValue;
@@ -39,7 +40,6 @@ import com.tle.common.recipientselector.RecipientFilter;
 import com.tle.common.recipientselector.RecipientUtils;
 import com.tle.common.recipientselector.SingleFinderDialog;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyListener;
@@ -56,7 +56,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings("nls")
 public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
   private ListWithView<SharedSecretValue, Editor> listWithView;
 
@@ -264,11 +263,12 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
             }
           });
 
-      RemoteUserService userService = clientService.getService(RemoteUserService.class);
-      formatter = new ExpressionFormatter(userService);
+      AdminUserDirectoryService userDirectoryService =
+          clientService.getService(AdminUserDirectoryService.class);
+      formatter = new ExpressionFormatter(userDirectoryService);
       finder =
           new ExpressionBuilderFinder(
-              userService,
+              userDirectoryService,
               RecipientFilter.USERS,
               RecipientFilter.GROUPS,
               RecipientFilter.ROLES,

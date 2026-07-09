@@ -35,6 +35,7 @@ import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.workflow.tree.WorkflowTree;
 import com.tle.admin.workflow.tree.WorkflowTreeModel;
 import com.tle.beans.entity.LanguageBundle;
@@ -48,7 +49,6 @@ import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -188,7 +188,7 @@ public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetails
 
     nameField = new I18nTextField(BundleCache.getLanguages());
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     moveLive =
         new JCheckBox(CurrentLocale.get("com.tle.admin.workflow.stepstab.live")); // $NON-NLS-1$
@@ -225,7 +225,7 @@ public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetails
     tree =
         new WorkflowTree(
             model,
-            clientService.getService(RemoteUserService.class),
+            clientService.getService(AdminUserDirectoryService.class),
             clientService.getService(AdminSchemaService.class));
     tree.addTreeSelectionListener(
         new TreeSelectionListener() {

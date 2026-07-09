@@ -25,6 +25,7 @@ import com.tle.common.quota.settings.QuotaSettings;
 import com.tle.common.quota.settings.QuotaSettings.UserQuota;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.contentrestrictions.dialog.AddBannedExtDialog;
 import com.tle.web.contentrestrictions.dialog.SelectedQuota;
@@ -215,8 +216,10 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
             Label expressionLabel;
             try {
+              UserServiceEntityResolverAdapter entityResolver =
+                  new UserServiceEntityResolverAdapter(userService);
               expressionLabel =
-                  new TextLabel(new ExpressionFormatter(userService).convertToInfix(quotaExpr));
+                  new TextLabel(new ExpressionFormatter(entityResolver).convertToInfix(quotaExpr));
             } catch (Exception e) {
               expressionLabel = LABEL_INVALID_EXPRESSION;
             }

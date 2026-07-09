@@ -44,6 +44,7 @@ import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.web.customlinks.CustomLinkContentHandler;
 import com.tle.web.customlinks.CustomLinkListComponent;
 import com.tle.web.customlinks.menu.CustomLinksMenuContributor;
@@ -311,7 +312,9 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
     if (Check.isEmpty(expression)) {
       model.setExpressionPretty("");
     } else {
-      model.setExpressionPretty(new ExpressionFormatter(userService).convertToInfix(expression));
+      UserServiceEntityResolverAdapter entityResolver =
+          new UserServiceEntityResolverAdapter(userService);
+      model.setExpressionPretty(new ExpressionFormatter(entityResolver).convertToInfix(expression));
     }
     selector.setExpression(context, expression);
 
