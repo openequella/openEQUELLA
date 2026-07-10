@@ -29,7 +29,9 @@ import javax.inject.Singleton;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import org.hibernate.Session;
+import org.hibernate.annotations.AttributeAccessor;
 
+/** Migration to drop the 'entities' table that was created in v20191. */
 @Bind
 @Singleton
 public class DropNewEntityTable extends AbstractHibernateSchemaMigration {
@@ -46,7 +48,9 @@ public class DropNewEntityTable extends AbstractHibernateSchemaMigration {
 
   @Override
   protected void executeDataMigration(
-      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {}
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    // No data migration required - this is a pure schema drop operation
+  }
 
   @Override
   protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
@@ -68,7 +72,13 @@ public class DropNewEntityTable extends AbstractHibernateSchemaMigration {
     return new Class[] {FakeEntity.class};
   }
 
+  /**
+   * Placeholder entity class used by {@link HibernateMigrationHelper#getDropTableSql(String)} to
+   * generate the correct DROP TABLE SQL statement for the 'entities' table. This class does not
+   * represent actual domain logic; it's only used during migration.
+   */
   @Entity(name = "Entities")
+  @AttributeAccessor("field")
   public static class FakeEntity {
     @Id long id;
   }
