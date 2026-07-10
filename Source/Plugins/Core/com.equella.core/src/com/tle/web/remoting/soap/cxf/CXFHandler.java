@@ -18,7 +18,10 @@
 
 package com.tle.web.remoting.soap.cxf;
 
+import static com.tle.web.remoting.soap.Module.SOAPAPI_ENABLED;
+
 import com.dytech.edge.exceptions.QuietlyLoggable;
+import com.google.inject.name.Named;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
@@ -94,10 +97,35 @@ public class CXFHandler extends CXFNonSpringServlet {
 
   private final Set<String> registeredServices = Collections.synchronizedSet(new HashSet<String>());
 
+  private boolean soapApiEnabled = false;
+
+  @Inject
+  public void setSoapApiEnabled(@Named(SOAPAPI_ENABLED) boolean enabled) {
+    this.soapApiEnabled = enabled;
+  }
+
+  private static final String HARVESTER_PATH = "/SoapHarvesterService";
+
   @Override
   protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
     String pathInfo = request.getPathInfo();
+
+    if (soapApiEnabled) {
+      LOGGER.warn(
+          "The legacy SOAP API is enabled (soapapi.enabled=true). "
+              + "The SOAP API is deprecated, no longer meets modern security best practices, "
+              + "and will be removed in a future release. "
+              + "All SOAP services are available. Please migrate to the REST API.");
+    }
+
+    // If the legacy SOAP API is disabled and the target service is NOT `SoapHarvesterService`,
+    // returns 404.
+    if (!soapApiEnabled && !HARVESTER_PATH.equals(pathInfo)) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+
     Extension extension = endpointTracker.getExtension(pathInfo);
     if (extension != null) {
       synchronized (extension) {
