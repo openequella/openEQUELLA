@@ -111,14 +111,6 @@ public class CXFHandler extends CXFNonSpringServlet {
       throws ServletException {
     String pathInfo = request.getPathInfo();
 
-    if (soapApiEnabled) {
-      LOGGER.warn(
-          "The legacy SOAP API is enabled (soapapi.enabled=true). "
-              + "The SOAP API is deprecated, no longer meets modern security best practices, "
-              + "and will be removed in a future release. "
-              + "All SOAP services are available. Please migrate to the REST API.");
-    }
-
     // If the legacy SOAP API is disabled and the target service is NOT `SoapHarvesterService`,
     // returns 404.
     if (!soapApiEnabled && !HARVESTER_PATH.equals(pathInfo)) {
@@ -140,6 +132,14 @@ public class CXFHandler extends CXFNonSpringServlet {
 
   @Override
   protected void loadBus(ServletConfig sc) {
+    if (soapApiEnabled) {
+      LOGGER.warn(
+          "The legacy SOAP API is enabled (soapapi.enabled=true). "
+              + "The SOAP API is deprecated, no longer meets modern security best practices, "
+              + "and will be removed in a future release. "
+              + "All SOAP services are available. Please migrate to the REST API.");
+    }
+
     Thread currentThread = Thread.currentThread();
     ClassLoader oldLoader = currentThread.getContextClassLoader();
     try {
