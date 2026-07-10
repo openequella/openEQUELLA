@@ -120,8 +120,10 @@ class WorkflowRestClient(institutionUrl: String) {
     * apply `edit` to its metadata and PUT it back.
     */
   def editMetadata(itemId: ItemId)(edit: PropBagEx => Unit): Unit = {
-    val item = getItemWithMetadata(itemId)
-    val xml  = new PropBagEx(item.get(JsonKey.metadata).asText())
+    val item         = getItemWithMetadata(itemId)
+    val metadataNode = Option(item.get(JsonKey.metadata))
+      .getOrElse(throw new IllegalStateException(s"No metadata found for item $itemId"))
+    val xml = new PropBagEx(metadataNode.asText())
     edit(xml)
     item.put(JsonKey.metadata, xml.toString)
 
