@@ -58,7 +58,7 @@
     "@mui/lab": "9.0.0-beta.5",
     "@mui/material": "9.1.2",
     "@mui/x-date-pickers": "9.7.0",
-    "@mui/x-tree-view": "9.7.0",
+    "@mui/x-tree-view": "9.8.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "6.3.0",
     "axios": "1.18.1",
