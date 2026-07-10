@@ -103,8 +103,6 @@ public class XmlDocument {
       domFactory.setFeature("http://xml.org/sax/features/namespaces", false);
       domFactory.setFeature("http://xml.org/sax/features/validation", false);
       domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-      domFactory.setFeature(
-          "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
       SecureXmlFactories.hardenAgainstXxe(domFactory);
     }
     return domFactory;

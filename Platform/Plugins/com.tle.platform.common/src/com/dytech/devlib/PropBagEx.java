@@ -82,15 +82,6 @@ public class PropBagEx implements Serializable {
   static {
     factory = DocumentBuilderFactory.newInstance();
     factory.setValidating(false);
-
-    try {
-      factory.setFeature(
-          "http://apache.org/xml/features/nonvalidating/load-external-dtd", false); // $NON-NLS-1$
-    } catch (ParserConfigurationException e) {
-      // nothing
-    } catch (NoSuchMethodError nup) {
-      // java 1.4,doesn't like it
-    }
     SecureXmlFactories.hardenAgainstXxe(factory);
     factory.setNamespaceAware(false);
   }

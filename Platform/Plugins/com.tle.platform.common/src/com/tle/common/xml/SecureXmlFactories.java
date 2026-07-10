@@ -46,8 +46,8 @@ public final class SecureXmlFactories {
   /**
    * Hardens a {@link DocumentBuilderFactory} against XML External Entity (XXE) injection.
    * openEQUELLA never processes XML that legitimately contains a DOCTYPE, so rejecting DOCTYPE
-   * declarations outright is the primary guard; disabling external entity resolution is
-   * defence-in-depth.
+   * declarations outright is the primary guard; disabling external entity resolution and external
+   * DTD loading is defence-in-depth.
    *
    * <p>Each feature is applied independently: if a parser implementation rejects one, the failure
    * is logged as an error (rather than silently swallowed) and the remaining features are still
@@ -59,6 +59,8 @@ public final class SecureXmlFactories {
     setFeatureOrLog(factory, "http://apache.org/xml/features/disallow-doctype-decl", true);
     setFeatureOrLog(factory, "http://xml.org/sax/features/external-general-entities", false);
     setFeatureOrLog(factory, "http://xml.org/sax/features/external-parameter-entities", false);
+    setFeatureOrLog(
+        factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
   }
 
   private static void setFeatureOrLog(
