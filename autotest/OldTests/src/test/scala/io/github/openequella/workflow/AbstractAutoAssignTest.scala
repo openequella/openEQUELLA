@@ -54,8 +54,13 @@ object AutoAssignTestData {
   /** The system super user, who can moderate any task regardless of the moderator metadata. */
   val adminUsername = "TLE_ADMINISTRATOR"
 
+  /** The user who contributes items and, being their owner, drives all wizard edits in these tests.
+    */
   val contributor: TestActor = TestActor("AutoAssignContributor")
 
+  /** Primary metadata-selected moderator. Includes `fullName` so tests can assert the assignee
+    * shown in the moderation view when the task is assigned to (but not claimed by) this user.
+    */
   val moderatorA: TestActor = TestActor(
     "AutoAssignTarget",
     query = Some("autoassigntarget"),
@@ -63,6 +68,9 @@ object AutoAssignTestData {
     fullName = Some("AutoAssignTarget AutoAssignTarget")
   )
 
+  /** Secondary metadata-selected moderator, used as the reassignment/second target in tests that
+    * replace or add a moderator.
+    */
   val moderatorB: TestActor = TestActor(
     "AutoAssignTarget2",
     query = Some("autoassigntarget2"),
