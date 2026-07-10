@@ -1,5 +1,8 @@
 package com.tle.webtests.pageobject.tasklist;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.$;
+
 import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
@@ -14,6 +17,14 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class ModerationView extends AbstractPage<ModerationView> {
+  private static final String ASSIGNED_TO_LABEL = "Assigned to:";
+  private static final String ASSIGNEE_SELECTOR = "span[title]";
+  private static final String CANCEL_ASSIGNMENT_TEXT = "cancel assignment";
+  private static final String DETAIL_SELECTOR = ".detail";
+  private static final String ME_LABEL = "Me";
+  private static final String MODERATE_ROOT_ID = "moderate";
+  private static final String MODERATE_ROOT_SELECTOR = "#" + MODERATE_ROOT_ID;
+
   @FindBy(className = "moderate-reject")
   private WebElement rejectButton;
 
@@ -36,7 +47,7 @@ public class ModerationView extends AbstractPage<ModerationView> {
   private WebElement postCommentLink;
 
   public ModerationView(PageContext context) {
-    super(context, By.id("moderate"));
+    super(context, By.id(MODERATE_ROOT_ID));
   }
 
   public ModerationMessagePage reject() {
@@ -60,7 +71,8 @@ public class ModerationView extends AbstractPage<ModerationView> {
   }
 
   public boolean isAssignedToMe() {
-    return assignLink.getText().equalsIgnoreCase("cancel assignment");
+    return assignLink.getText().equalsIgnoreCase(CANCEL_ASSIGNMENT_TEXT)
+        && ME_LABEL.equals(getAssignedTo());
   }
 
   /**
@@ -68,12 +80,11 @@ public class ModerationView extends AbstractPage<ModerationView> {
    * name.
    */
   public String getAssignedTo() {
-    WebElement detail =
-        driver.findElement(
-            By.xpath("id('moderate')//div[@class='details']/div[@class='detail'][1]"));
-    String text = detail.getText().replaceFirst("^Assigned to:", "").trim();
-    int parenthetical = text.lastIndexOf('(');
-    return (parenthetical >= 0 ? text.substring(0, parenthetical) : text).trim();
+    return $(MODERATE_ROOT_SELECTOR)
+        .$$(DETAIL_SELECTOR)
+        .findBy(text(ASSIGNED_TO_LABEL))
+        .$(ASSIGNEE_SELECTOR)
+        .getText();
   }
 
   public ModerationCommentsPage moderationComments() {

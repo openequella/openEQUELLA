@@ -28,6 +28,8 @@ import org.testng.Assert.{assertFalse, assertTrue}
 import org.testng.annotations.AfterMethod
 
 object AutoAssignTestData {
+
+  /** Shared password for all test users in the "workflow" institution fixture. */
   val password = "``````"
 
   /** Collection whose workflow auto-assigns via the task's autoAssignNode metadata path. */
@@ -57,7 +59,8 @@ object AutoAssignTestData {
   val moderatorA: TestActor = TestActor(
     "AutoAssignTarget",
     query = Some("autoassigntarget"),
-    uuid = Some("43313ddd-5d4e-97bb-689d-7e149b252129")
+    uuid = Some("43313ddd-5d4e-97bb-689d-7e149b252129"),
+    fullName = Some("AutoAssignTarget AutoAssignTarget")
   )
 
   val moderatorB: TestActor = TestActor(
@@ -69,10 +72,11 @@ object AutoAssignTestData {
 
 object AutoAssignWizardControls {
 
-  /** Title field on the Data wizard page. */
+  /** Title field on the Data wizard page (first text input control, index 1). */
   val itemNameEditBoxIndex = 1
 
-  /** Moderator user-selector on the Data wizard page (third control). */
+  /** Moderator user-selector on the Data wizard page (third control after title and description).
+    */
   val moderatorSelectUserIndex = 3
 }
 
@@ -81,7 +85,8 @@ case class TestActor(
     username: String,
     password: String = AutoAssignTestData.password,
     query: Option[String] = None,
-    uuid: Option[String] = None
+    uuid: Option[String] = None,
+    fullName: Option[String] = None
 )
 
 /** Collection and metadata moderator used when contributing a new moderated item. */
@@ -105,8 +110,13 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
   setDeleteCredentials(contributor.username, contributor.password)
 
   @AfterMethod(alwaysRun = true)
-  def ensureLoggedOut(): Unit =
-    logout()
+  def ensureLoggedOut(): Unit = {
+    try {
+      logout()
+    } catch {
+      case _: Exception =>
+    }
+  }
 
   protected def withLoggedInUser[T](actor: TestActor)(function: => T): T =
     try {
@@ -200,8 +210,8 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     searchExactTask(itemName).moderate(itemName)
 
   protected def assertAssignedToMe(view: ModerationView): Unit =
-    assertTrue(view.isAssignedToMe)
+    assertTrue(view.isAssignedToMe, "Expected task to be assigned to the current user")
 
   protected def assertNoTaskResults(results: ModerateListSearchResults): Unit =
-    assertFalse(results.isResultsAvailable)
+    assertFalse(results.isResultsAvailable, "Expected no matching moderation tasks")
 }

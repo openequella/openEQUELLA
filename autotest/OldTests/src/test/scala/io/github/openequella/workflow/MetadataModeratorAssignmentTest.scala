@@ -28,40 +28,19 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
 
   import AutoAssignTestData._
 
+  private val ASSIGNED_TO_LABEL = "Assigned to"
+  private val ME_LABEL          = "Me"
+
   @Test
   def testReassignsWhenModeratorChanges(): Unit = {
     val item =
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
-    withLoggedInUser(moderatorA) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
-
+    verifyTaskAssignedToModerator(item, moderatorA)
     replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
-
-    withLoggedInUser(moderatorA) {
-      val taskList = new TaskListPage(context).load()
-      assertNoTaskResults(taskList.exactQuery(item.name))
-    }
-
-    withRestClient(contributor) { rest =>
-      assertEquals(
-        rest.getTaskAssignee(item.id, reviewDecisionsTaskUuid),
-        Some(requiredUuid(moderatorB))
-      )
-    }
-
-    withLoggedInUser(moderatorB) {
-      val results = searchExactTask(item.name)
-      assertEquals(results.getResultForTitle(item.name).getDetailText("Assigned to"), "Me")
-
-      val view = results.moderate(item.name)
-      assertAssignedToMe(view)
-      assertEquals(view.getAssignedTo, "Me")
-      assertFalse(view.moderationDisabled())
-      view.accept()
-      assertNoTaskResults(searchExactTask(item.name))
-    }
+    verifyNoTaskVisible(item, moderatorA)
+    verifyRestAssignee(item, moderatorB)
+    verifyModeratorCanModerateAndAcceptTask(item, moderatorB)
   }
 
   @Test
@@ -70,13 +49,15 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
     withAdmin {
-      val view = openModerationViewForCurrentUser(item.name)
-      assertFalse(view.isAssignedToMe)
-      view.assignToMe()
+      assertFalse(
+        openModerationViewForCurrentUser(item.name).isAssignedToMe,
+        s"item ${item.name} should not be assigned to the admin before they manually assign it to themselves"
+      )
+      openModerationViewForCurrentUser(item.name).assignToMe()
+      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
     }
 
     replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
-
     withAdmin {
       assertAssignedToMe(openModerationViewForCurrentUser(item.name))
     }
@@ -87,18 +68,17 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(ContributeItemFlow(multiModeratorCollection, moderatorA))
 
-    withLoggedInUser(moderatorA) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
+    verifyTaskAssignedToModerator(item, moderatorA)
 
     addModerator(AddModeratorFlow(item.name, moderatorB))
 
-    withLoggedInUser(moderatorA) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
     withLoggedInUser(moderatorB) {
       val view = openModerationViewForCurrentUser(item.name)
-      assertFalse(view.isAssignedToMe)
+      assertFalse(
+        view.isAssignedToMe,
+        s"item ${item.name} should stay with ${moderatorA.username} after adding ${moderatorB.username}"
+      )
+      assertEquals(view.getAssignedTo, moderatorA.fullName.get)
     }
   }
 
@@ -107,23 +87,60 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
-    withLoggedInUser(moderatorA) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
+    verifyTaskAssignedToModerator(item, moderatorA)
 
     withRestClient(contributor) { rest =>
       rest.editMetadata(item.id)(_.setNode(moderatorMetadataPath, requiredUuid(moderatorB)))
+    }
+
+    verifyRestAssignee(item, moderatorB)
+    verifyNoTaskVisible(item, moderatorA)
+    verifyTaskAssignedToModerator(item, moderatorB)
+  }
+
+  /** Log in as `moderator` and assert the item's task is assigned to them. */
+  private def verifyTaskAssignedToModerator(item: ContributedItem, moderator: TestActor): Unit =
+    withLoggedInUser(moderator) {
+      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
+    }
+
+  /** Log in as `moderator` and assert that no moderation task for the item is visible to them. */
+  private def verifyNoTaskVisible(item: ContributedItem, moderator: TestActor): Unit =
+    withLoggedInUser(moderator) {
+      val taskList = new TaskListPage(context).load()
+      assertNoTaskResults(taskList.exactQuery(item.name))
+    }
+
+  /** Assert, via the REST API, that the item's review task is assigned to `moderator`. */
+  private def verifyRestAssignee(item: ContributedItem, moderator: TestActor): Unit =
+    withRestClient(contributor) { rest =>
       assertEquals(
         rest.getTaskAssignee(item.id, reviewDecisionsTaskUuid),
-        Some(requiredUuid(moderatorB))
+        Some(requiredUuid(moderator))
       )
     }
 
-    withLoggedInUser(moderatorA) {
+  /** Log in as `moderator` and verify they can take ownership of the item's task, moderate it, and
+    * that it leaves their task list once accepted.
+    */
+  private def verifyModeratorCanModerateAndAcceptTask(
+      item: ContributedItem,
+      moderator: TestActor
+  ): Unit =
+    withLoggedInUser(moderator) {
+      val results = searchExactTask(item.name)
+      assertEquals(
+        results.getResultForTitle(item.name).getDetailText(ASSIGNED_TO_LABEL),
+        ME_LABEL
+      )
+
+      val view = results.moderate(item.name)
+      assertAssignedToMe(view)
+      assertFalse(
+        view.moderationDisabled(),
+        s"${moderator.username} should be able to moderate item ${item.name}"
+      )
+      view.accept()
       assertNoTaskResults(searchExactTask(item.name))
     }
-    withLoggedInUser(moderatorB) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
-  }
 }
