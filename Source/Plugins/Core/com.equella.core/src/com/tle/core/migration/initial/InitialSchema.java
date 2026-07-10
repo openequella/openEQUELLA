@@ -60,7 +60,6 @@ import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.beans.lti.LtiPlatform;
 import com.tle.beans.lti.LtiPlatformCustomRole;
 import com.tle.beans.mime.MimeEntry;
-import com.tle.beans.newentity.Entity;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
@@ -173,7 +172,6 @@ public class InitialSchema extends AbstractCreateMigration {
         AuditLogEntry.class,
         ViewcountItem.class,
         ViewcountAttachment.class,
-        Entity.class,
         WebKeySet.class,
         LtiPlatformCustomRole.class,
         LtiPlatform.class,

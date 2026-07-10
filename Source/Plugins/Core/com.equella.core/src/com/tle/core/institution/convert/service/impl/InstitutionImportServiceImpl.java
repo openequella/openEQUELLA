@@ -51,7 +51,6 @@ import com.tle.core.institution.convert.PostReadMigrator;
 import com.tle.core.institution.convert.ZippingConverter;
 import com.tle.core.institution.convert.extension.InstitutionInfoInitialiser;
 import com.tle.core.institution.convert.service.InstitutionImportService;
-import com.tle.core.newentity.convert.NewEntityConverter;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.SecureOnCallSystem;
@@ -104,7 +103,6 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   @Inject private PluginTracker<InstitutionInfoInitialiser> institutionInfoInitialisers;
   @Inject private ZippingConverter zippingConverter;
   @Inject private FilestoreConverter filestoreConverter;
-  @Inject private NewEntityConverter newEntityConverter;
 
   private List<Converter> converterList;
   private Map<String, Converter> converterMap;
@@ -184,10 +182,8 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
     if (converterList == null) {
       converterMap = Maps.newHashMap();
       converterList = Lists.newArrayList(converterTracker.getBeanList());
-      converterList.add(newEntityConverter);
       converterList.add(filestoreConverter);
       converterList.add(zippingConverter);
-      converterMap.put(NewEntityConverter.ID, newEntityConverter);
       converterMap.put(FilestoreConverter.CONVERTER_ID, filestoreConverter);
       converterMap.put(FilestoreConverter.CLEANUP_ID, filestoreConverter);
       converterMap.put(ZippingConverter.ID, zippingConverter);

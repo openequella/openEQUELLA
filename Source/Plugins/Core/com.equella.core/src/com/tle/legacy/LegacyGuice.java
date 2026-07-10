@@ -49,7 +49,6 @@ import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.lti13.service.LtiPlatformService;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.newentity.service.EntityService;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.powersearch.PowerSearchService;
@@ -145,8 +144,6 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static DynaCollectionService dynaCollectionService;
 
   @Inject public static EncryptionService encryptionService;
-
-  @Inject public static EntityService entityService;
 
   @Inject public static EventService eventService;
 

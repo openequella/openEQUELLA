@@ -1659,11 +1659,6 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
     <parameter id="date" value="2018-06-01" />
   </extension>
-  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewEntityTable">
-    <parameter id="id" value="NewEntityTable" />
-    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20191.NewEntityTable" />
-    <parameter id="date" value="2019-02-05" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="addIndexes">
     <parameter id="id" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes" />
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.EnsureForeignKeyIndexes" />
@@ -5997,9 +5992,6 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountAttachment">
     <parameter id="class" value="com.tle.beans.viewcount.ViewcountAttachment" />
   </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
-    <parameter id="class" value="com.tle.beans.newentity.Entity" />
-  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="WebKeySet">
     <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
   </extension>
@@ -6126,6 +6118,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
     <parameter id="date" value="2025-07-11"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="DropNewEntityTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="date" value="2026-07-10"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
