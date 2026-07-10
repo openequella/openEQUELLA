@@ -109,6 +109,9 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
 
   setDeleteCredentials(contributor.username, contributor.password)
 
+  /** Best-effort logout after every test method so a failed test cannot leave a stale session that
+    * would break the next one. Any logout failure (e.g. already logged out) is ignored.
+    */
   @AfterMethod(alwaysRun = true)
   def ensureLoggedOut(): Unit = {
     try {
@@ -118,6 +121,8 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     }
   }
 
+  /** Run `function` while logged in as `actor`, guaranteeing a logout afterwards even on failure.
+    */
   protected def withLoggedInUser[T](actor: TestActor)(function: => T): T =
     try {
       logon(actor.username, actor.password)
@@ -126,6 +131,7 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
       logout()
     }
 
+  /** Run `function` while logged in as the system super user, guaranteeing a logout afterwards. */
   protected def withAdmin[T](function: => T): T =
     try {
       logon(adminUsername, testConfig.getAdminPassword)
@@ -142,6 +148,10 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     finally client.logout()
   }
 
+  /** Contribute (and submit for moderation) a new item as the contributor, selecting
+    * `flow.moderator` in the metadata moderator control. Returns the contributed item's name and
+    * ID.
+    */
   protected def contribute(flow: ContributeItemFlow): ContributedItem = {
     val moderatorQuery = requiredQuery(flow.moderator)
 
@@ -155,6 +165,9 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     }
   }
 
+  /** Edit the item as the contributor, removing `flow.from` and selecting `flow.to` in the metadata
+    * moderator control (i.e. swap the metadata-selected moderator).
+    */
   protected def replaceModerator(flow: ReplaceModeratorFlow): Unit = {
     val newModeratorQuery = requiredQuery(flow.to)
 
@@ -167,6 +180,9 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     }
   }
 
+  /** Edit the item as the contributor, adding `flow.add` to the metadata moderator control without
+    * removing the existing moderator.
+    */
   protected def addModerator(flow: AddModeratorFlow): Unit = {
     val newModeratorQuery = requiredQuery(flow.add)
 
@@ -177,6 +193,8 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     }
   }
 
+  /** Search (including non-live results) for the item by exact name and open its admin edit wizard.
+    */
   protected def openItemWizardForEdit(itemName: String): WizardPageTab = {
     val searchPage = new SearchPage(context).load()
     searchPage.setIncludeNonLive(true)
@@ -187,31 +205,39 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
       .edit()
   }
 
+  /** Returns the actor's wizard search text, or fail if the actor was defined without one. */
   protected def requiredQuery(actor: TestActor): String =
     actor.query.getOrElse(
       throw new IllegalArgumentException(s"Moderator query required: ${actor.username}")
     )
 
+  /** Returns the actor's user UUID, or fail if the actor was defined without one. */
   protected def requiredUuid(actor: TestActor): String =
     actor.uuid.getOrElse(
       throw new IllegalArgumentException(s"User UUID required: ${actor.username}")
     )
 
+  /** Set the item title in the wizard's name edit box. */
   protected def setItemName(wizard: WizardPageTab, itemName: String): Unit =
     wizard.editbox(AutoAssignWizardControls.itemNameEditBoxIndex, itemName)
 
+  /** The metadata moderator user-selector control on the wizard's Data page. */
   protected def moderatorControl(wizard: WizardPageTab): SelectUserControl =
     wizard.selectUser(AutoAssignWizardControls.moderatorSelectUserIndex)
 
+  /** Search the current user's task list for tasks whose item exactly matches `itemName`. */
   protected def searchExactTask(itemName: String): ModerateListSearchResults =
     new TaskListPage(context).load().exactQuery(itemName)
 
+  /** Open the moderation view for `itemName` from the current user's task list. */
   protected def openModerationViewForCurrentUser(itemName: String): ModerationView =
     searchExactTask(itemName).moderate(itemName)
 
+  /** Assert the task shown in moderation view is assigned to the current user. */
   protected def assertAssignedToMe(view: ModerationView): Unit =
     assertTrue(view.isAssignedToMe, "Expected task to be assigned to the current user")
 
+  /** Assert the task-list search returned no matching moderation tasks. */
   protected def assertNoTaskResults(results: ModerateListSearchResults): Unit =
     assertFalse(results.isResultsAvailable, "Expected no matching moderation tasks")
 }
