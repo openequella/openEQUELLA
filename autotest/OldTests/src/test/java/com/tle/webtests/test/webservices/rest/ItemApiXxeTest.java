@@ -71,4 +71,26 @@ public class ItemApiXxeTest extends AbstractItemApiTest {
     final PropBagEx metadata = new PropBagEx(created.get("metadata").asText());
     assertEquals(metadata.getNode("item/name"), "ItemApiXxeTest - normal & ok");
   }
+
+  /**
+   * Regression for the PUT (edit) path: editing an existing item's metadata re-parses it via {@link
+   * PropBagEx} (a different code path to item creation - see {@code ItemEditorImpl.editMetadata}),
+   * so it must still work after the XXE hardening.
+   */
+  @Test
+  public void normalItemStillEditable() throws Exception {
+    final String token = getToken();
+    final ObjectNode item = createItemJson(COLLECTION_ATTACHMENTS);
+    item.put("metadata", "<xml><item><name>ItemApiXxeTest - before edit</name></item></xml>");
+
+    final ObjectNode created = createItem(item.toString(), token, "draft", true);
+    addDeletable(created);
+
+    created.put(
+        "metadata", "<xml><item><name>ItemApiXxeTest - after edit &amp; ok</name></item></xml>");
+    final ObjectNode edited = editItem(created, token);
+
+    final PropBagEx metadata = new PropBagEx(edited.get("metadata").asText());
+    assertEquals(metadata.getNode("item/name"), "ItemApiXxeTest - after edit & ok");
+  }
 }
