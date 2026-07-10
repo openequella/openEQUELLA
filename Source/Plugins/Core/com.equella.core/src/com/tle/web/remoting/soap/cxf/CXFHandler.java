@@ -18,7 +18,7 @@
 
 package com.tle.web.remoting.soap.cxf;
 
-import static com.tle.web.remoting.soap.Module.SOAPAPI_ENABLED;
+import static com.tle.web.remoting.soap.Module.SOAP_API_ENABLED_KEY;
 
 import com.dytech.edge.exceptions.QuietlyLoggable;
 import com.google.inject.name.Named;
@@ -100,7 +100,7 @@ public class CXFHandler extends CXFNonSpringServlet {
   private boolean soapApiEnabled = false;
 
   @Inject
-  public void setSoapApiEnabled(@Named(SOAPAPI_ENABLED) boolean enabled) {
+  public void setSoapApiEnabled(@Named(SOAP_API_ENABLED_KEY) boolean enabled) {
     this.soapApiEnabled = enabled;
   }
 
