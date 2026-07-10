@@ -18,6 +18,7 @@
 
 package com.tle.web.remoting.resteasy;
 
+import com.dytech.devlib.XmlParseException;
 import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.WebException;
@@ -83,6 +84,9 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable> {
     } else if (t instanceof ItemEditingException
         || t instanceof InvalidDataException
         || t instanceof InUseException) {
+      webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
+    } else if (t instanceof XmlParseException) {
+      // Malformed or disallowed (e.g. DOCTYPE/XXE) XML in the request is a client error.
       webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
     } else if (t instanceof AccessDeniedException) {
       webAppException = new WebApplicationException(t, Status.FORBIDDEN);
