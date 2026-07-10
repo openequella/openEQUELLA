@@ -30,6 +30,17 @@ public class ItemApiXxeTest extends AbstractItemApiTest {
     clients.add(new Pair<>(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
+  /** Creates an item with the given metadata XML and registers it for cleanup after the test. */
+  private ObjectNode createItemWithMetadata(String token, String metadataXml) throws Exception {
+    final ObjectNode item = createItemJson(COLLECTION_ATTACHMENTS);
+    item.put("metadata", metadataXml);
+
+    final ObjectNode created = createItem(item.toString(), token, "draft", true);
+    addDeletable(created);
+
+    return created;
+  }
+
   @Test
   public void xxeExternalEntityRejectedWithBadRequest() throws Exception {
     final String token = getToken();
@@ -62,11 +73,9 @@ public class ItemApiXxeTest extends AbstractItemApiTest {
   @Test
   public void normalItemStillCreatable() throws Exception {
     final String token = getToken();
-    final ObjectNode item = createItemJson(COLLECTION_ATTACHMENTS);
-    item.put("metadata", "<xml><item><name>ItemApiXxeTest - normal &amp; ok</name></item></xml>");
-
-    final ObjectNode created = createItem(item.toString(), token, "draft", true);
-    addDeletable(created);
+    final ObjectNode created =
+        createItemWithMetadata(
+            token, "<xml><item><name>ItemApiXxeTest - normal &amp; ok</name></item></xml>");
 
     final PropBagEx metadata = new PropBagEx(created.get("metadata").asText());
     assertEquals(metadata.getNode("item/name"), "ItemApiXxeTest - normal & ok");
@@ -80,11 +89,9 @@ public class ItemApiXxeTest extends AbstractItemApiTest {
   @Test
   public void normalItemStillEditable() throws Exception {
     final String token = getToken();
-    final ObjectNode item = createItemJson(COLLECTION_ATTACHMENTS);
-    item.put("metadata", "<xml><item><name>ItemApiXxeTest - before edit</name></item></xml>");
-
-    final ObjectNode created = createItem(item.toString(), token, "draft", true);
-    addDeletable(created);
+    final ObjectNode created =
+        createItemWithMetadata(
+            token, "<xml><item><name>ItemApiXxeTest - before edit</name></item></xml>");
 
     created.put(
         "metadata", "<xml><item><name>ItemApiXxeTest - after edit &amp; ok</name></item></xml>");
