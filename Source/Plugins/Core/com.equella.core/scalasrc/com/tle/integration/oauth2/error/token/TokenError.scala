@@ -47,8 +47,10 @@ final case class TokenErrorResponse(
     error_uri: Option[String]
 )
 object TokenErrorResponse {
-  implicit val tokenErrorResponseEncoder = deriveEncoder[TokenErrorResponse]
-  implicit val tokenErrorResponseDecoder = deriveDecoder[TokenErrorResponse]
+  implicit val tokenErrorResponseEncoder: Encoder.AsObject[TokenErrorResponse] =
+    deriveEncoder[TokenErrorResponse]
+  implicit val tokenErrorResponseDecoder: Decoder[TokenErrorResponse] =
+    deriveDecoder[TokenErrorResponse]
 }
 
 sealed abstract class TokenError(error: String) extends OAuth2Error with HasCode[Code] {

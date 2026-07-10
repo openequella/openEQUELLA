@@ -41,11 +41,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mike McKinney, Platinum Solutions, Inc.
  */
-@SuppressWarnings("nls")
 public class BlindSSLSocketFactory extends SSLSocketFactory {
   private static final Logger LOGGER = LoggerFactory.getLogger(BlindSSLSocketFactory.class);
-  private static SSLSocketFactory originalFactory;
-  private static HostnameVerifier originalHostnameVerifier;
 
   public static TrustManager createTrustManager() {
     return new X509TrustManager() {
@@ -97,8 +94,6 @@ public class BlindSSLSocketFactory extends SSLSocketFactory {
   /** Easy way of not worrying about stupid SSL validation. */
   public static void register() {
     if (!(HttpsURLConnection.getDefaultSSLSocketFactory() instanceof BlindSSLSocketFactory)) {
-      originalFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
-      originalHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
       LOGGER.info("Registering BlindSSLSocketFactory");
 
       HttpsURLConnection.setDefaultSSLSocketFactory(getDefaultSSL());
@@ -111,17 +106,6 @@ public class BlindSSLSocketFactory extends SSLSocketFactory {
             }
           });
     }
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    if (originalFactory != null) {
-      HttpsURLConnection.setDefaultSSLSocketFactory(originalFactory);
-    }
-    if (originalHostnameVerifier != null) {
-      HttpsURLConnection.setDefaultHostnameVerifier(originalHostnameVerifier);
-    }
-    super.finalize();
   }
 
   @Override
