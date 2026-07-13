@@ -20,8 +20,7 @@ import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
 type MyResourceType =
-  | OEQ.MyResource.MyResourcesCategory
-  | OEQ.MyResource.MyResourcesSubCategory;
+  OEQ.MyResource.MyResourcesCategory | OEQ.MyResource.MyResourcesSubCategory;
 
 type MyResourceTypeName =
   | OEQ.MyResource.MyResourcesCategoryName

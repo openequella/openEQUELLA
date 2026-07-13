@@ -153,10 +153,7 @@ interface DeleteUpload extends BasicUploadCommand {
  * String literal type for the response text
  */
 type UploadResponseType =
-  | "updateentry"
-  | "removeentries"
-  | "uploadfailed"
-  | "newuploadresponse";
+  "updateentry" | "removeentries" | "uploadfailed" | "newuploadresponse";
 
 interface BasicUploadResponse {
   response: UploadResponseType;

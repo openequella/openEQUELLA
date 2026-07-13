@@ -83,9 +83,7 @@ export interface LegacyContentResponse {
 }
 
 export type SubmitResponse =
-  | ExternalRedirect
-  | LegacyContentResponse
-  | ChangeRoute;
+  ExternalRedirect | LegacyContentResponse | ChangeRoute;
 
 export function isPageContent(
   response: SubmitResponse,

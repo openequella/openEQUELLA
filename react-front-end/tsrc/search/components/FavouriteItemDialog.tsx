@@ -24,11 +24,10 @@ import type { SelectItemVersionDialogProps } from "../../components/SelectItemVe
 const { add, remove, removeAlert, tagDescription } =
   languageStrings.searchpage.favouriteItem;
 
-export interface FavouriteItemDialogProps
-  extends Omit<
-    SelectItemVersionDialogProps,
-    "title" | "tagDescription" | "onConfirm"
-  > {
+export interface FavouriteItemDialogProps extends Omit<
+  SelectItemVersionDialogProps,
+  "title" | "tagDescription" | "onConfirm"
+> {
   /**
    * `true` if the Item is already added.
    */

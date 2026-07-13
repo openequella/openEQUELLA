@@ -206,8 +206,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const customSearchResultBuilder = ({
     searchState: { options },
   }: SearchContextProps):
-    | ((searchResult: SearchPageSearchResult) => ReactNode)
-    | undefined => {
+    ((searchResult: SearchPageSearchResult) => ReactNode) | undefined => {
     const renderScrapbook = buildRenderScrapbookResult(
       (key: string) => openLegacyFileEditingPage(key, history, options),
       setScrapbookToBeDeleted,

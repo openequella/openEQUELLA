@@ -24,12 +24,7 @@ import { validate } from './Utils';
  * IDs returned by GET /search/myresources for each MyResources category.
  */
 type MyResourcesCategoryId =
-  | 'published'
-  | 'draft'
-  | 'scrapbook'
-  | 'modqueue'
-  | 'archived'
-  | 'all';
+  'published' | 'draft' | 'scrapbook' | 'modqueue' | 'archived' | 'all';
 
 /**
  * Display names for each MyResources category.
@@ -51,9 +46,7 @@ type ModerationQueueSubCategoryId = 'moderating' | 'review' | 'rejected';
  * Display names for sub‑category under the "Moderation queue" type.
  */
 export type ModerationQueueSubCategoryName =
-  | 'In moderation'
-  | 'Under review'
-  | 'Rejected';
+  'In moderation' | 'Under review' | 'Rejected';
 
 /**
  * Type representing a sub-category for MyResourcesCategory especially used for "Moderation queue".

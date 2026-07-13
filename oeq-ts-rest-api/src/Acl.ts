@@ -33,11 +33,7 @@ export const ACL_VIEW_MANAGEMENT_PAGE = 'VIEW_MANAGEMENT_PAGE';
  * The unique ID of each system setting.
  */
 export type SETTING =
-  | 'loginnoticeeditor'
-  | 'lti13platforms'
-  | 'searching'
-  | 'theme'
-  | 'oidc';
+  'loginnoticeeditor' | 'lti13platforms' | 'searching' | 'theme' | 'oidc';
 
 const ACL_PRIVILEGE_CHECK_PATH = '/acl/privilegecheck';
 

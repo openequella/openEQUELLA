@@ -27,9 +27,7 @@ import { validate } from './Utils';
  * Restrictions applied to Taxonomy term selection.
  */
 export type SelectionRestriction =
-  | 'TOP_LEVEL_ONLY'
-  | 'LEAF_ONLY'
-  | 'UNRESTRICTED';
+  'TOP_LEVEL_ONLY' | 'LEAF_ONLY' | 'UNRESTRICTED';
 
 /**
  * Formats which are used to search for a term.

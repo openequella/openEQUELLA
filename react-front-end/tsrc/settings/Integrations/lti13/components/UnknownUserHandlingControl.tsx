@@ -39,8 +39,10 @@ import { languageStrings } from "../../../../util/langstrings";
 import SettingsListAlert from "../../../../components/SettingsListAlert";
 import { getGroupsTask } from "../../../../components/securityentitydialog/SecurityEntityHelper";
 
-export interface UnknownUserHandlingControlProps
-  extends Pick<SelectGroupDialogProps, "searchGroupsProvider"> {
+export interface UnknownUserHandlingControlProps extends Pick<
+  SelectGroupDialogProps,
+  "searchGroupsProvider"
+> {
   /**
    * Initial selected option.
    */

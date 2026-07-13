@@ -27,8 +27,7 @@ import BaseSearch, {
   wildcardQuery,
 } from "./BaseSearch";
 
-export interface RoleSearchProps
-  extends CommonEntitySearchProps<OEQ.UserQuery.RoleDetails> {
+export interface RoleSearchProps extends CommonEntitySearchProps<OEQ.UserQuery.RoleDetails> {
   search?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
