@@ -19,7 +19,7 @@ import { Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
-import { TooltipProps } from "@mui/material/Tooltip/Tooltip";
+import { TooltipProps } from "@mui/material/Tooltip";
 
 export interface TooltipCustomComponentProps
   extends Omit<TooltipProps, "children" | "title"> {

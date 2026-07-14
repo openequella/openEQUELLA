@@ -10,6 +10,7 @@
     "rootDir": "src",
     "strict": true,
     "target": "ES6",
-    "moduleResolution": "node"
+    "moduleResolution": "bundler",
+    "types": ["node"]
   }
 }
