@@ -89,8 +89,8 @@ export default defineConfig([
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          // Ignore the arg "_".
-          argsIgnorePattern: "^_$",
+          // Ignore args whose names start with "_".
+          argsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
