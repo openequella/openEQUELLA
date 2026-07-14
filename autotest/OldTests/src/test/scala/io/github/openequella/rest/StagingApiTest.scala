@@ -72,6 +72,10 @@ class StagingApiTest extends AbstractRestApiTest {
       StagingApi.deleteFile(stagingUuid, AVATAR_FILENAME).status,
       HttpStatus.SC_FORBIDDEN
     )
+    assertEquals(
+      StagingApi.createFolder(stagingUuid, Some("guest-folder")).status,
+      HttpStatus.SC_FORBIDDEN
+    )
     assertEquals(StagingApi.deleteStaging(stagingUuid), HttpStatus.SC_FORBIDDEN)
 
     // Restore the authenticated session so subsequent tests don't run as guest
@@ -228,6 +232,55 @@ class StagingApiTest extends AbstractRestApiTest {
     )
   }
 
+  @Test(description =
+    "A created empty folder is visible in a folders=true listing but absent from the default" +
+      " (files-only) listing"
+  )
+  def createFolderTest(): Unit = withStaging { stagingUuid =>
+    assertEquals(
+      StagingApi.createFolder(stagingUuid, Some("empty-folder")).status,
+      HttpStatus.SC_CREATED
+    )
+
+    assertEquals(folderNames(stagingUuid), List("empty-folder"), "Created folder should be listed")
+
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach(staging =>
+      assertTrue(
+        staging.files.isEmpty,
+        "Default (files-only) listing should not include the empty folder"
+      )
+    )
+  }
+
+  @Test(description = "Creating a nested folder path creates the missing parent folders")
+  def createNestedFolderTest(): Unit = withStaging { stagingUuid =>
+    assertEquals(StagingApi.createFolder(stagingUuid, Some("a/b/c")).status, HttpStatus.SC_CREATED)
+
+    assertEquals(
+      folderNames(stagingUuid),
+      List("a", "a/b", "a/b/c"),
+      "Parent folders should be created alongside the leaf folder"
+    )
+  }
+
+  @Test(description = "Creating a folder that already exists is idempotent")
+  def createFolderIdempotentTest(): Unit = withStaging { stagingUuid =>
+    assertEquals(StagingApi.createFolder(stagingUuid, Some("dupe")).status, HttpStatus.SC_CREATED)
+    assertEquals(
+      StagingApi.createFolder(stagingUuid, Some("dupe")).status,
+      HttpStatus.SC_CREATED,
+      "Re-creating an existing folder should still succeed"
+    )
+  }
+
+  @Test(description = "Creating a folder without a path is a bad request")
+  def createFolderNoPathTest(): Unit = withStaging { stagingUuid =>
+    assertEquals(
+      StagingApi.createFolder(stagingUuid, path = None).status,
+      HttpStatus.SC_BAD_REQUEST
+    )
+  }
+
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
     assertResponseOk(
@@ -367,6 +420,14 @@ class StagingApiTest extends AbstractRestApiTest {
   ): Option[StagingFile] =
     staging.flatMap(_.files.find(_.name == exactFilePath))
 
+  /** The sorted names of the folder entries in a `folders=true` listing of the staging area. */
+  private def folderNames(stagingUuid: String): List[String] =
+    assertResponseOk(StagingApi.getStaging(stagingUuid, folders = Some(true))).toList
+      .flatMap(_.files)
+      .filter(_.folder.contains(true))
+      .map(_.name)
+      .sorted
+
   private def getTestFile(filename: String): File =
     new File(AbstractPage.getPathFromUrl(Attachments.get(filename)))
 
@@ -429,6 +490,12 @@ class StagingApiTest extends AbstractRestApiTest {
 
     def deleteFile(stagingUuid: String, filePath: String): ApiResponse[Option[Unit]] =
       execute(new DeleteMethod(stagingUrl(stagingUuid, filePath)))(_ => ())
+
+    def createFolder(stagingUuid: String, path: Option[String]): ApiResponse[Option[Unit]] = {
+      val method = new PostMethod(stagingUrl(stagingUuid, "folder"))
+      path.foreach(p => method.setQueryString(Array(new NameValuePair("path", p))))
+      execute(method)(_ => ())
+    }
 
     def deleteStaging(stagingUuid: String): Int =
       makeClientRequest(new DeleteMethod(stagingUrl(stagingUuid)))
