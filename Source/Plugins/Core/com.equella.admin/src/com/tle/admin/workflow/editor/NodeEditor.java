@@ -24,18 +24,19 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.common.gui.EditorHelper;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.BorderFactory;
@@ -47,9 +48,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class NodeEditor extends JPanel implements ActionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  protected final RemoteUserService userService;
+  protected final AdminUserDirectoryService userDirectoryService;
   protected final AdminSchemaService schemaService;
   private final String dialogTitleKey;
 
@@ -63,10 +64,10 @@ public class NodeEditor extends JPanel implements ActionListener {
   private JDialog dialog;
 
   public NodeEditor(
-      final RemoteUserService userService,
+      final AdminUserDirectoryService userDirectoryService,
       final AdminSchemaService schemaService,
       final String dialogTitleKey) {
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
     this.schemaService = schemaService;
     this.dialogTitleKey = dialogTitleKey;
     setup();

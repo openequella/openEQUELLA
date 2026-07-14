@@ -24,19 +24,19 @@ import static com.tle.common.security.SecurityConstants.Recipient.OWNER;
 import static com.tle.common.security.SecurityConstants.Recipient.ROLE;
 import static com.tle.common.security.SecurityConstants.getRecipient;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.remoting.RemoteUserService;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
 
 public class BasicEditor implements PrivilegeListEditor {
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
-  public BasicEditor(RemoteUserService userService) {
-    this.userService = userService;
+  public BasicEditor(AdminUserDirectoryService userDirectoryService) {
+    this.userDirectoryService = userDirectoryService;
   }
 
   /*
@@ -60,7 +60,7 @@ public class BasicEditor implements PrivilegeListEditor {
    */
   @Override
   public JComponent createView(Object domainObj, Node privNode, PrivilegeList list) {
-    return new BasicEditorPanel(this, userService, privNode, list);
+    return new BasicEditorPanel(this, userDirectoryService, privNode, list);
   }
 
   public Mode getModeForPrivilegeList(Node privNode, PrivilegeList list) {

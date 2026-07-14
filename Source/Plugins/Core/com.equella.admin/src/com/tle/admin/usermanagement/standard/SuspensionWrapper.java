@@ -23,11 +23,11 @@ import com.dytech.gui.filter.FilterModel;
 import com.dytech.gui.filter.FilteredShuffleBox;
 import com.tle.admin.Driver;
 import com.tle.admin.plugin.GeneralPlugin;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -56,11 +56,12 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
 
   @Override
   public void load(SuspendedUserWrapperSettings settings) {
-    RemoteUserService userService = clientService.getService(RemoteUserService.class);
+    AdminUserDirectoryService userDirectoryService =
+        clientService.getService(AdminUserDirectoryService.class);
     try {
       List<UserBean> users =
           new ArrayList<>(
-              userService.getInformationForUsers(settings.getSuspendedUsers()).values());
+              userDirectoryService.getInformationForUsers(settings.getSuspendedUsers()).values());
       users.sort(Format.USER_BEAN_COMPARATOR);
       fsb.addToRight(users);
     } catch (RuntimeApplicationException e) {
@@ -90,7 +91,8 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
     @Override
     public List<UserBean> search(String query) {
       try {
-        List<UserBean> users = clientService.getService(RemoteUserService.class).searchUsers(query);
+        List<UserBean> users =
+            clientService.getService(AdminUserDirectoryService.class).searchUsers(query);
         users.sort(Format.USER_BEAN_COMPARATOR);
         return users;
       } catch (RuntimeApplicationException e) {

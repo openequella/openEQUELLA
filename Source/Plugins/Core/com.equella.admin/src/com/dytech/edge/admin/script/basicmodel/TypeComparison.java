@@ -23,17 +23,18 @@ import com.dytech.edge.admin.script.ifmodel.Equality;
 import com.dytech.edge.admin.script.ifmodel.Equals;
 import com.dytech.edge.admin.script.ifmodel.IfModel;
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.util.UserBeanUtils;
-import com.tle.core.remoting.RemoteUserService;
 
 public class TypeComparison implements Comparison {
   protected UserMethodMethod op;
   protected String value;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   public TypeComparison() {
-    userService = Driver.instance().getClientService().getService(RemoteUserService.class);
+    userDirectoryService =
+        Driver.instance().getClientService().getService(AdminUserDirectoryService.class);
   }
 
   public TypeComparison(UserMethodMethod op, String value) {
@@ -79,7 +80,7 @@ public class TypeComparison implements Comparison {
         + " "
         + op.toEasyRead()
         + " '"
-        + UserBeanUtils.getRole(userService, value)
+        + UserBeanUtils.getRole(userDirectoryService, value)
         + "'";
   }
 }

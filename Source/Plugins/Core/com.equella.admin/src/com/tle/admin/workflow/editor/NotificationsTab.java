@@ -27,14 +27,15 @@ import static com.tle.common.security.SecurityConstants.getRecipientValue;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.helper.GroupBox;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.recipientselector.RecipientFilter;
 import com.tle.common.workflow.node.ScriptNode;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,28 +43,31 @@ import java.util.Set;
 import javax.swing.*;
 
 public class NotificationsTab extends JPanel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private GroupBox notifyOnCompletionGroupBox;
 
   private MultipleFinderControl notifyOnCompletionFinder;
   private MultipleFinderControl notifyOnErrorFinder;
   private static String keyPfx = "com.tle.admin.workflow.editor.scripteditor.nofificationstab.";
 
-  public NotificationsTab(ChangeDetector changeDetector, RemoteUserService userService) {
-    setupGui(userService);
+  public NotificationsTab(
+      ChangeDetector changeDetector, AdminUserDirectoryService userDirectoryService) {
+    setupGui(userDirectoryService);
     setupChangeDetector(changeDetector);
   }
 
-  private void setupGui(RemoteUserService userService) {
+  private void setupGui(AdminUserDirectoryService userDirectoryService) {
     notifyOnCompletionFinder =
-        new MultipleFinderControl(userService, RecipientFilter.USERS, RecipientFilter.GROUPS);
+        new MultipleFinderControl(
+            userDirectoryService, RecipientFilter.USERS, RecipientFilter.GROUPS);
     notifyOnCompletionGroupBox =
         GroupBox.withCheckBox(CurrentLocale.get(keyPfx + "completed.groupbox"), false);
     notifyOnCompletionGroupBox.getInnerPanel().setLayout(new GridLayout(1, 1));
     notifyOnCompletionGroupBox.add(notifyOnCompletionFinder);
 
     notifyOnErrorFinder =
-        new MultipleFinderControl(userService, RecipientFilter.USERS, RecipientFilter.GROUPS);
+        new MultipleFinderControl(
+            userDirectoryService, RecipientFilter.USERS, RecipientFilter.GROUPS);
 
     final int[] rows = {
       TableLayout.FILL, TableLayout.FILL,

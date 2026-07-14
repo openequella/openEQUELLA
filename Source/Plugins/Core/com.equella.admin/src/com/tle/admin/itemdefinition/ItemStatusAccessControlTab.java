@@ -21,6 +21,7 @@ package com.tle.admin.itemdefinition;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.gui.common.WorkAroundChucksStupidHacksAdapater;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.EntityPack;
@@ -30,7 +31,6 @@ import com.tle.common.security.ItemStatusTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -77,7 +77,7 @@ public class ItemStatusAccessControlTab extends AbstractItemdefTab implements Ch
     editor =
         new AccessEditor(
             clientService.getService(RemoteTLEAclManager.class),
-            clientService.getService(RemoteUserService.class));
+            clientService.getService(AdminUserDirectoryService.class));
 
     final int height1 = statuses.getPreferredSize().height;
     final int width1 = text.getPreferredSize().width;

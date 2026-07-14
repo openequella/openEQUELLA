@@ -34,6 +34,7 @@ import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -1128,8 +1129,10 @@ public class ExpressionSelectorSection
     for (SelectionExpressionTreeNode selection : selections) {
       String expressionString = selection.getExpression();
       if (!Check.isEmpty(expressionString)) {
+        UserServiceEntityResolverAdapter entityResolver =
+            new UserServiceEntityResolverAdapter(userService);
         String convertToInfix =
-            new ExpressionFormatter(userService).convertToInfix(expressionString);
+            new ExpressionFormatter(entityResolver).convertToInfix(expressionString);
         ExpressionSelection expression = new ExpressionSelection(convertToInfix);
         HtmlLinkState delete = new HtmlLinkState();
         delete.addClasses("unselect");

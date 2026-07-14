@@ -24,10 +24,10 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.RadioButtonChoiceList;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.taxonomy.Taxonomy;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.event.KeyListener;
@@ -36,7 +36,6 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 import org.java.plugin.registry.Extension;
 
-@SuppressWarnings("nls")
 public class DetailsTab extends BaseEntityTab<Taxonomy> implements AbstractDetailsTab<Taxonomy> {
   private JTextField uuid;
   private I18nTextField name;
@@ -51,7 +50,7 @@ public class DetailsTab extends BaseEntityTab<Taxonomy> implements AbstractDetai
 
     name = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextArea(BundleCache.getLanguages());
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     choices =
         new RadioButtonChoiceList<Taxonomy, Extension>() {

@@ -18,24 +18,24 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-@SuppressWarnings("nls")
 public class ExpressionTableCellRenderer extends DefaultTableCellRenderer {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private static final String INVALID_EXPRESSION =
       CurrentLocale.get("security.editor.invalidexpression");
 
   private ExpressionFormatter formatter;
 
-  public ExpressionTableCellRenderer(RemoteUserService userService) {
-    formatter = new ExpressionFormatter(userService);
+  public ExpressionTableCellRenderer(AdminUserDirectoryService userDirectoryService) {
+    formatter = new ExpressionFormatter(userDirectoryService);
   }
 
   @Override

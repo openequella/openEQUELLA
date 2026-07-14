@@ -20,9 +20,9 @@ package com.tle.common.recipientselector;
 
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -43,12 +43,12 @@ public class MultipleFinderDialog implements ActionListener {
   private JDialog dialog;
   private boolean returnResults;
 
-  public MultipleFinderDialog(RemoteUserService userService) {
-    setupGUI(userService);
+  public MultipleFinderDialog(AdminUserDirectoryService userDirectoryService) {
+    setupGUI(userDirectoryService);
   }
 
-  private void setupGUI(RemoteUserService userService) {
-    control = new MultipleFinderControl(userService);
+  private void setupGUI(AdminUserDirectoryService userDirectoryService) {
+    control = new MultipleFinderControl(userDirectoryService);
 
     ok = new JButton(CurrentLocale.get("com.tle.admin.ok"));
     cancel = new JButton(CurrentLocale.get("com.tle.admin.cancel"));

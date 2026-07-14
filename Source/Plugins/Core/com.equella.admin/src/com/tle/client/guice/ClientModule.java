@@ -43,6 +43,8 @@ import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEGroupServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
+import com.tle.admin.service.AdminUserDirectoryService;
+import com.tle.admin.service.AdminUserDirectoryServiceImpl;
 import com.tle.common.applet.client.ClientService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import io.github.openequella.graphql.ClientConfiguration;
@@ -75,6 +77,7 @@ public class ClientModule extends AbstractModule {
     bind(AdminSchemaService.class).to(AdminSchemaServiceImpl.class);
     bind(AdminTLEGroupService.class).to(AdminTLEGroupServiceImpl.class);
     bind(AdminTLEUserService.class).to(AdminTLEUserServiceImpl.class);
+    bind(AdminUserDirectoryService.class).to(AdminUserDirectoryServiceImpl.class);
   }
 
   @Provides

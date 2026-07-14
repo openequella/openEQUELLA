@@ -20,11 +20,12 @@ package com.tle.common.recipientselector;
 
 import com.tle.admin.gui.common.actions.AddAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.ExpressionTreeNode.Grouping;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -49,9 +50,9 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("nls")
 public class ExpressionBuilderFinder extends JPanel
     implements UserGroupRoleFinder, FinderListener, TreeSelectionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
   private final RecipientFilter[] filters;
 
   private EventListenerList eventListenerList;
@@ -61,9 +62,9 @@ public class ExpressionBuilderFinder extends JPanel
   private ExpressionBuilderModel model;
   private JTree tree;
 
-  public ExpressionBuilderFinder(RemoteUserService userService) {
+  public ExpressionBuilderFinder(AdminUserDirectoryService userDirectoryService) {
     this(
-        userService,
+        userDirectoryService,
         RecipientFilter.USERS,
         RecipientFilter.GROUPS,
         RecipientFilter.ROLES,
@@ -72,8 +73,9 @@ public class ExpressionBuilderFinder extends JPanel
         RecipientFilter.EXPRESSION);
   }
 
-  public ExpressionBuilderFinder(RemoteUserService userService, RecipientFilter... filters) {
-    this.userService = userService;
+  public ExpressionBuilderFinder(
+      AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
+    this.userDirectoryService = userDirectoryService;
     this.filters = filters;
 
     setupGUI();
@@ -136,7 +138,7 @@ public class ExpressionBuilderFinder extends JPanel
     JButton removeButton = new JButton(removeAction);
     JButton addGrouping = new JButton(addGroupingAction);
 
-    finder = new TabbedFinder(userService, filters);
+    finder = new TabbedFinder(userDirectoryService, filters);
     finder.setSingleSelectionOnly(false);
     finder.addFinderListener(this);
 
@@ -157,7 +159,7 @@ public class ExpressionBuilderFinder extends JPanel
     tree.setShowsRootHandles(true);
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
 
-    ExpressionTreeCellRenderer cellRenderer = new ExpressionTreeCellRenderer(userService);
+    ExpressionTreeCellRenderer cellRenderer = new ExpressionTreeCellRenderer(userDirectoryService);
 
     JComboBox<Grouping> editorCombo = new JComboBox<Grouping>();
     editorCombo.addItem(Grouping.MATCH_ANY);

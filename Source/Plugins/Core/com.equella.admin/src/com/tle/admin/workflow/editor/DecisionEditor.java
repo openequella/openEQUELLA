@@ -23,13 +23,14 @@ import com.dytech.edge.admin.script.workflowmodel.WorkflowModel;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.DecisionNode;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -37,13 +38,13 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 public class DecisionEditor extends NodeEditor {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final Driver driver;
 
   public DecisionEditor(final Driver driver) {
     super(
-        driver.getClientService().getService(RemoteUserService.class),
+        driver.getClientService().getService(AdminUserDirectoryService.class),
         driver.getClientService().getService(AdminSchemaService.class),
         "com.tle.admin.workflow.editor.decisioneditor.title"); //$NON-NLS-1$
     this.driver = driver;
@@ -55,7 +56,7 @@ public class DecisionEditor extends NodeEditor {
   }
 
   public class WorkflowItemPanel extends WorkflowNodePanel implements ActionListener {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
     private JLabel scriptingLabel;
     private JButton scriptingButton;
     private String scriptUUID;

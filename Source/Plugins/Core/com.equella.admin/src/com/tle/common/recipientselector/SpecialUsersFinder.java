@@ -28,6 +28,7 @@ import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.ButtonGroup;
@@ -38,7 +39,7 @@ import javax.swing.event.EventListenerList;
 
 @SuppressWarnings("nls")
 public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final RemoteUserService userService;
 

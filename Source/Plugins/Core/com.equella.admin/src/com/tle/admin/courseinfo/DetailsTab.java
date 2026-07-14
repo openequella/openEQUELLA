@@ -29,12 +29,12 @@ import com.tle.admin.gui.common.DateSelector;
 import com.tle.admin.gui.common.JNameValuePanel;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.core.remoting.RemoteCourseInfoService;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -86,7 +86,7 @@ public class DetailsTab extends BaseEntityTab<CourseInfo>
     name = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextArea(BundleCache.getLanguages());
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     // http://jira.pearsoncmg.com/jira/browse/EQ-1224
     code = new JSmartTextField(100);
