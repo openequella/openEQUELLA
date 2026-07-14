@@ -190,6 +190,17 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   @Override
+  public Response createFolder(String uuid, String path) {
+    stagingService.checkStagingPrivileges();
+    final String folderPath = StringUtils.stripToNull(path);
+    if (folderPath == null) {
+      throw new BadRequestException("A folder path is required.");
+    }
+    fileSystemService.mkdir(stagingService.getStagingFile(uuid), folderPath);
+    return Response.status(Status.CREATED).build();
+  }
+
+  @Override
   public Response headFile(String uuid, String filepath) {
     stagingService.checkStagingPrivileges();
     try {
