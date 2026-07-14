@@ -11,7 +11,7 @@ inConfig(Serial)(Defaults.testTasks)
 Global / excludeLintKeys += Serial / configuration
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.34"
+val http4sVersion = "0.23.36"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.11"
 
