@@ -134,7 +134,7 @@ const UnknownUserHandlingControl = ({
               value={selection}
               onChange={(event) => {
                 onChange(
-                  event.target.value as OEQ.LtiPlatform.UnknownUserHandling,
+                  event.target.value,
                   // if user regret and switch back to CREATE, still keep the default group.
                   event.target.value === "CREATE" ? defaultGroups : RS.empty,
                 );
