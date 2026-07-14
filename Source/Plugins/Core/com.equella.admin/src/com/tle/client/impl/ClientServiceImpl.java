@@ -101,11 +101,7 @@ public class ClientServiceImpl implements ClientService {
       if (t == null) {
         t =
             ClientProxyFactory.createSessionProxy(
-                this,
-                clazz,
-                "invoker/"
-                    + clazz.getName() // $NON-NLS-1$
-                    + ".service"); //$NON-NLS-1$
+                this, clazz, "invoker/" + clazz.getName() + ".service");
 
         if (t instanceof RemoteUserService) {
           t = (T) new CachingUserServiceImpl((RemoteUserService) t);

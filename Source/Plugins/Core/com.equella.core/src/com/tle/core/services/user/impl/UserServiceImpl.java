@@ -86,7 +86,6 @@ import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -341,28 +340,23 @@ public class UserServiceImpl
   }
 
   @Override
-  public UserBean getInformationForUser(String userid) {
-    return getCurrentPlugin().getInformationForUser(userid);
+  public UserBean getInformationForUser(String userId) {
+    return getCurrentPlugin().getInformationForUser(userId);
   }
 
   @Override
-  public Map<String, UserBean> getInformationForUsers(Collection<String> userids) {
-    return getCurrentPlugin().getInformationForUsers(userids);
+  public Map<String, UserBean> getInformationForUsers(Collection<String> userIds) {
+    return getCurrentPlugin().getInformationForUsers(userIds);
   }
 
   @Override
-  public List<GroupBean> getGroupsContainingUser(String userid) {
-    return getCurrentPlugin().getGroupsContainingUser(userid);
+  public List<GroupBean> getGroupsContainingUser(String userId) {
+    return getCurrentPlugin().getGroupsContainingUser(userId);
   }
 
   @Override
-  public List<String> getGroupIdsContainingUser(String userid) {
-    List<GroupBean> groupIdsContainingUser = getGroupsContainingUser(userid);
-    List<String> groupids = new ArrayList<String>();
-    for (GroupBean bean : groupIdsContainingUser) {
-      groupids.add(bean.getUniqueID());
-    }
-    return groupids;
+  public List<String> getGroupIdsContainingUser(String userId) {
+    return getCurrentPlugin().getGroupIdsContainingUser(userId);
   }
 
   @Override
@@ -741,8 +735,8 @@ public class UserServiceImpl
   }
 
   @Override
-  public List<RoleBean> getRolesForUser(String userid) {
-    return getCurrentPlugin().getRolesForUser(userid);
+  public List<RoleBean> getRolesForUser(String userId) {
+    return getCurrentPlugin().getRolesForUser(userId);
   }
 
   @Override
