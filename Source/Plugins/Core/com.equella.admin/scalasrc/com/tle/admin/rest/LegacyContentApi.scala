@@ -70,6 +70,6 @@ object LegacyContentApi {
     val request = basicRequest
       .get(cfg.apiUrl().addPath(API_PATH, "currentuser"))
       .response(asJson[CurrentUserDetails])
-    handleDecodedResult(request)(_.getMessage)
+    handleDecodedResult(request)
   }
 }

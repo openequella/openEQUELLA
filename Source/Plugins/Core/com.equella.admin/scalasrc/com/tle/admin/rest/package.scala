@@ -99,30 +99,26 @@ package object rest {
     s"[${request.method} - /${request.uri.path.mkString("/")}]"
 
   /** Handles the result of a REST API call whose response body is decoded into `T` (e.g. via
-    * circe's `asJson` or sttp's `asByteArray`), unwrapping the decoded body and converting a
-    * decoding failure into an `UnexpectedResponseError`.
+    * circe's `asJson`), converting a decoding failure — always exception-typed in sttp — into an
+    * `UnexpectedResponseError`.
     *
     * @param request
     *   the request to send
-    * @param describeError
-    *   renders the body-level error `E` as a message for logging and the returned error
     * @tparam E
-    *   the type of the body-level error produced by the response handler
+    *   the type of the decoding error produced by the response handler
     * @tparam T
     *   the type of the decoded response body
     * @return
     *   the decoded body, or the error that occurred
     */
-  def handleDecodedResult[E, T](
+  def handleDecodedResult[E <: Throwable, T](
       request: Request[Either[E, T], Any]
-  )(describeError: E => String)(implicit LOGGER: Logger): Either[RestError, T] =
+  )(implicit LOGGER: Logger): Either[RestError, T] =
     handleResult(extractAction(request), send(request)) { response =>
-      response.body match {
-        case Left(error) =>
-          val message = describeError(error)
-          LOGGER.error(s"Failed to decode response body: $message")
-          Left(UnexpectedResponseError(message))
-        case Right(value) => Right(value)
+      response.body.left.map { error =>
+        val message = error.getMessage
+        LOGGER.error(s"Failed to decode response body: $message")
+        UnexpectedResponseError(message)
       }
     }
 

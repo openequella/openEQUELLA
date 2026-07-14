@@ -21,7 +21,7 @@ package com.tle.admin.rest
 import io.circe.generic.auto._
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.circe.asJson
-import sttp.client3.{asByteArray, asString, basicRequest}
+import sttp.client3.{asByteArrayAlways, asString, basicRequest}
 import sttp.model.Uri
 
 /** A single entry in a staging area listing. Mirrors the JSON of
@@ -93,7 +93,7 @@ object StagingApi {
       baseUri.addParams(listingParams(p, folders = true, checksums = false))
     }
     val request = basicRequest.get(uri).response(asJson[StagingListing])
-    handleDecodedResult(request)(_.getMessage)
+    handleDecodedResult(request)
   }
 
   /** Uploads a file to a staging area, overwriting any existing file at the same path.
@@ -129,8 +129,10 @@ object StagingApi {
   ): Either[RestError, Array[Byte]] = {
     val request = basicRequest
       .get(fileUri(stagingUuid, filepath))
-      .response(asByteArray)
-    handleDecodedResult(request)(identity)
+      .response(asByteArrayAlways)
+    handleResult(extractAction(request), send(request)) { response =>
+      Right(response.body)
+    }
   }
 
   /** Deletes a file or folder (including its contents) from a staging area.
