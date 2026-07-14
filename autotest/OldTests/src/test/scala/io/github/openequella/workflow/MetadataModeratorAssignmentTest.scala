@@ -36,11 +36,11 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
-    verifyTaskAssignedToModerator(item, moderatorA)
+    assertAssignedToViaUi(item, moderatorA)
     replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
-    verifyNoTaskVisible(item, moderatorA)
-    verifyRestAssignee(item, moderatorB)
-    verifyModeratorCanModerateAndAcceptTask(item, moderatorB)
+    assertNoTaskVisible(item, moderatorA)
+    assertAssignedToViaRest(item, moderatorB)
+    assertModeratorCanModerateAndAcceptTask(item, moderatorB)
   }
 
   @Test
@@ -49,17 +49,19 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
     withAdmin {
+      val view = openModerationViewForCurrentUser(item.name)
       assertFalse(
-        openModerationViewForCurrentUser(item.name).isAssignedToMe,
+        view.isAssignedToMe,
         s"item ${item.name} should not be assigned to the admin before they manually assign it to themselves"
       )
-      openModerationViewForCurrentUser(item.name).assignToMe()
+      view.assignToMe()
       assertAssignedToMe(openModerationViewForCurrentUser(item.name))
     }
 
     replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
     withAdmin {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
+      val view = openModerationViewForCurrentUser(item.name)
+      assertAssignedToMe(view)
     }
   }
 
@@ -68,7 +70,7 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(ContributeItemFlow(multiModeratorCollection, moderatorA))
 
-    verifyTaskAssignedToModerator(item, moderatorA)
+    assertAssignedToViaUi(item, moderatorA)
 
     addModerator(AddModeratorFlow(item.name, moderatorB))
 
@@ -87,32 +89,32 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
 
-    verifyTaskAssignedToModerator(item, moderatorA)
+    assertAssignedToViaUi(item, moderatorA)
 
     withRestClient(contributor) { rest =>
       rest.editMetadata(item.id)(_.setNode(moderatorMetadataPath, requiredUuid(moderatorB)))
     }
 
-    verifyRestAssignee(item, moderatorB)
-    verifyNoTaskVisible(item, moderatorA)
-    verifyTaskAssignedToModerator(item, moderatorB)
+    assertAssignedToViaRest(item, moderatorB)
+    assertNoTaskVisible(item, moderatorA)
+    assertAssignedToViaUi(item, moderatorB)
   }
 
   /** Log in as `moderator` and assert the item's task is assigned to them. */
-  private def verifyTaskAssignedToModerator(item: ContributedItem, moderator: TestActor): Unit =
+  private def assertAssignedToViaUi(item: ContributedItem, moderator: TestActor): Unit =
     withLoggedInUser(moderator) {
       assertAssignedToMe(openModerationViewForCurrentUser(item.name))
     }
 
   /** Log in as `moderator` and assert that no moderation task for the item is visible to them. */
-  private def verifyNoTaskVisible(item: ContributedItem, moderator: TestActor): Unit =
+  private def assertNoTaskVisible(item: ContributedItem, moderator: TestActor): Unit =
     withLoggedInUser(moderator) {
       val taskList = new TaskListPage(context).load()
       assertNoTaskResults(taskList.exactQuery(item.name))
     }
 
   /** Assert, via the REST API, that the item's review task is assigned to `moderator`. */
-  private def verifyRestAssignee(item: ContributedItem, moderator: TestActor): Unit =
+  private def assertAssignedToViaRest(item: ContributedItem, moderator: TestActor): Unit =
     withRestClient(contributor) { rest =>
       assertEquals(
         rest.getTaskAssignee(item.id, reviewDecisionsTaskUuid),
@@ -123,7 +125,7 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   /** Log in as `moderator` and verify they can take ownership of the item's task, moderate it, and
     * that it leaves their task list once accepted.
     */
-  private def verifyModeratorCanModerateAndAcceptTask(
+  private def assertModeratorCanModerateAndAcceptTask(
       item: ContributedItem,
       moderator: TestActor
   ): Unit =
