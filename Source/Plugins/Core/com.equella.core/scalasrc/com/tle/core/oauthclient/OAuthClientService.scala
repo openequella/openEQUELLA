@@ -116,16 +116,16 @@ case class OAuthTokenResponse(
 )
 
 object OAuthTokenResponse {
-  implicit val dec = deriveDecoder[OAuthTokenResponse]
+  implicit val dec: Decoder[OAuthTokenResponse] = deriveDecoder[OAuthTokenResponse]
 }
 
 object OAuthTokenState {
-  implicit val encodeEnum    = Encoder.encodeEnumeration(OAuthTokenType)
-  implicit val decodeEnum    = Decoder.decodeEnumeration(OAuthTokenType)
-  implicit val encodeInstant = Encoder.encodeInstant
-  implicit val decodeInstant = Decoder.decodeInstant
-  implicit val enc           = deriveEncoder[OAuthTokenState]
-  implicit val dec           = deriveDecoder[OAuthTokenState]
+  implicit val encodeEnum: Encoder[OAuthTokenType.Value] = Encoder.encodeEnumeration(OAuthTokenType)
+  implicit val decodeEnum: Decoder[OAuthTokenType.Value] = Decoder.decodeEnumeration(OAuthTokenType)
+  implicit val encodeInstant: Encoder[Instant]           = Encoder.encodeInstant
+  implicit val decodeInstant: Decoder[Instant]           = Decoder.decodeInstant
+  implicit val enc: Encoder.AsObject[OAuthTokenState]    = deriveEncoder[OAuthTokenState]
+  implicit val dec: Decoder[OAuthTokenState]             = deriveDecoder[OAuthTokenState]
 
 }
 

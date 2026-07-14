@@ -626,10 +626,6 @@
     <parameter id="class" value="com.tle.core.remoting.RemoteItemService" />
     <parameter id="bean" value="bean:remoteItemService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
-    <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
-    <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
-  </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="collectionResource">
     <parameter id="class" value="com.tle.web.api.collection.interfaces.CollectionResource" />
     <parameter id="class" value="com.tle.web.api.collection.resource.DynaCollectionResource" />
@@ -1696,9 +1692,6 @@
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
-  </extension>
-  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="cloudProviderSettingPrivilegeTreeProvider">
-    <parameter id="provider" value="bean:com.tle.web.cloudprovider.CloudProviderSettingPrivilegeTreeProvider" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="move">
     <parameter id="id" value="move" />

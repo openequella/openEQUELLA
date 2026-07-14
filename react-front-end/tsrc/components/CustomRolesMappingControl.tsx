@@ -42,11 +42,10 @@ const { title: customRolesTitle, desc: customRolesDesc } =
   languageStrings.customRolesMappingControl;
 const { edit: editLabel } = languageStrings.common.action;
 
-export interface CustomRolesMappingControlProps
-  extends Omit<
-    SelectCustomRoleDialogProps,
-    "open" | "onClose" | "initialMappings"
-  > {
+export interface CustomRolesMappingControlProps extends Omit<
+  SelectCustomRoleDialogProps,
+  "open" | "onClose" | "initialMappings"
+> {
   /** Initial custom roles mappings value with IDs. */
   initialMappings: CustomRolesMappings;
   /** Custom title for the settings control. */

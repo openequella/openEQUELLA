@@ -23,7 +23,6 @@ export const ACL_CREATE_PORTLET = 'CREATE_PORTLET';
 export const ACL_DASHBOARD_PAGE = 'DASHBOARD_PAGE';
 export const ACL_EDIT_SYSTEM_SETTINGS = 'EDIT_SYSTEM_SETTINGS';
 export const ACL_HIERARCHY_PAGE = 'HIERARCHY_PAGE';
-export const ACL_MANAGE_CLOUD_PROVIDER = 'MANAGE_CLOUD_PROVIDER';
 export const ACL_MANAGE_WORKFLOW = 'MANAGE_WORKFLOW';
 export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
 export const ACL_SEARCH_PAGE = 'SEARCH_PAGE';
@@ -34,11 +33,7 @@ export const ACL_VIEW_MANAGEMENT_PAGE = 'VIEW_MANAGEMENT_PAGE';
  * The unique ID of each system setting.
  */
 export type SETTING =
-  | 'loginnoticeeditor'
-  | 'lti13platforms'
-  | 'searching'
-  | 'theme'
-  | 'oidc';
+  'loginnoticeeditor' | 'lti13platforms' | 'searching' | 'theme' | 'oidc';
 
 const ACL_PRIVILEGE_CHECK_PATH = '/acl/privilegecheck';
 

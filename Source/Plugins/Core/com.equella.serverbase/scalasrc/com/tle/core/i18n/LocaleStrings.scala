@@ -35,9 +35,11 @@ case class LocaleStrings(strings: Map[String, String]) {
 }
 
 object LocaleStrings {
-  val empty        = LocaleStrings(Map.empty)
-  implicit val enc = Encoder.encodeMap[String, String].contramap[LocaleStrings](_.strings)
-  implicit val dec = Decoder.decodeMap[String, String].map(LocaleStrings.apply)
+  val empty                                = LocaleStrings(Map.empty)
+  implicit val enc: Encoder[LocaleStrings] =
+    Encoder.encodeMap[String, String].contramap[LocaleStrings](_.strings)
+  implicit val dec: Decoder[LocaleStrings] =
+    Decoder.decodeMap[String, String].map(LocaleStrings.apply)
 
   def fromStrings(
       single: String,

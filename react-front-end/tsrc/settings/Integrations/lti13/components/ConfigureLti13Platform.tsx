@@ -131,7 +131,8 @@ export const defaultConfigurePlatformValue: ConfigurePlatformValue = {
 };
 
 export interface ConfigureLti13PlatformProps
-  extends Pick<
+  extends
+    Pick<
       UsableByControlProps,
       | "searchUserProvider"
       | "searchGroupProvider"

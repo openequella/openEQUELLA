@@ -55,7 +55,7 @@ case class AjaxFileEntry(
 )
 
 object AjaxFileEntry {
-  implicit val config                            = Configuration.default
+  implicit val config: Configuration             = Configuration.default
   implicit val feEncoder: Encoder[AjaxFileEntry] = deriveEncoder
 }
 
@@ -80,19 +80,19 @@ case class RemoveEntries(
 case class AttachmentDuplicateInfo(displayWarningMessage: Boolean, warningMessageWebId: String) {}
 
 object AttachmentDuplicateInfo {
-  implicit val config                                                       = Configuration.default
+  implicit val config: Configuration                                        = Configuration.default
   implicit val attachmentDuplicateEncoder: Encoder[AttachmentDuplicateInfo] = deriveEncoder
 }
 
 object AjaxUploadCommand {
-  implicit val config = Configuration.default
+  implicit val config: Configuration = Configuration.default
     .withDiscriminator("command")
     .copy(transformConstructorNames = _.toLowerCase)
   implicit val aucDecoder: Decoder[AjaxUploadCommand] = deriveDecoder
 }
 
 object AjaxUploadResponse {
-  implicit val config = Configuration.default
+  implicit val config: Configuration = Configuration.default
     .withDiscriminator("response")
     .copy(transformConstructorNames = _.toLowerCase)
   implicit val aucrEncoder: Encoder[AjaxUploadResponse] = deriveEncoder

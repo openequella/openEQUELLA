@@ -32,7 +32,7 @@ import {
 const isInlineFileUploaderProps = (
   props: InlineFileUploaderProps | UniversalFileUploaderProps,
 ): props is InlineFileUploaderProps =>
-  (props as InlineFileUploaderProps).reloadState !== undefined;
+  (props as InlineFileUploaderProps).dialog !== undefined;
 
 /**
  * This function is created primarily for rendering either InlineFileUploader or UniversalFileUploader from server.

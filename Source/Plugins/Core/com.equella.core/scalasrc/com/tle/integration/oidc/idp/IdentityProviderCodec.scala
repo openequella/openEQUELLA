@@ -29,8 +29,9 @@ import scala.util.Try
 /** Centralise all the required codecs for different types of IdentityProvider.
   */
 object IdentityProviderCodec {
-  private implicit val uriEncoder = Encoder.encodeString.contramap[URL](_.toString)
-  private implicit val uriDecoder = Decoder.decodeString.emapTry(s => Try(URI.create(s).toURL))
+  private implicit val uriEncoder: Encoder[URL] = Encoder.encodeString.contramap[URL](_.toString)
+  private implicit val uriDecoder: Decoder[URL] =
+    Decoder.decodeString.emapTry(s => Try(URI.create(s).toURL))
 
   private implicit val idpPlatformEncoder: Encoder[IdentityProviderPlatform.Value] =
     Encoder.encodeEnumeration(IdentityProviderPlatform)

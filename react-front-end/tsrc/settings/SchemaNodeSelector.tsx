@@ -21,7 +21,6 @@ import { Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import * as S from "fp-ts/string";
 import * as React from "react";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
 import { languageStrings } from "../util/langstrings";
@@ -148,16 +147,6 @@ export default function SchemaNodeSelector({
         expandedItems={expanded}
         onExpandedItemsChange={(_, paths) => setExpanded(paths)}
         onItemSelectionToggle={(_, nodePath) => {
-          // TODO: OEQ-2939 - Remove temporary workaround once the MUI X TreeView selection bug is fixed.
-          // Workaround after MUI v9 update bug: clicking the expand/collapse icon sometimes incorrectly
-          // triggers this callback with an array of expanded paths instead of the item's string ID.
-          if (!S.isString(nodePath)) {
-            console.warn(
-              "SchemaNodeSelector received non-string nodePath:",
-              nodePath,
-            );
-            return;
-          }
           setSelected(nodePath);
           setSelectedNode(nodePath);
         }}

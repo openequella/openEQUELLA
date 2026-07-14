@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 module.exports = {
-  preset: "ts-jest",
+  preset: "ts-jest/presets/js-with-babel",
   testEnvironment: "jsdom",
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   setupFilesAfterEnv: ["./jest.setup.ts"],
+  transformIgnorePatterns: [
+    // Using the following negative look-ahead, we're requesting that the transforms only apply to `query-string`.
+    // This was required because query-string only supports ESM from v8, and it is a dependency of
+    // '@openequella/rest-api-client' (oeq-ts-rest-api) which is consumed here as a local file dependency.
+    "node_modules/(?!query-string)/",
+  ],
   globals: {
     renderData: {
       baseResources: "p/r/2020.2.0/com.equella.core/",

@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.118"
+val TomcatVersion     = "9.0.119"
 val axis2Version      = "2.0.1"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
@@ -29,7 +29,7 @@ val jsoupVersion      = "1.22.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.1"
-val luceneVersion     = "10.4.0"
+val luceneVersion     = "10.5.0"
 val nettyVersion      = "4.2.15.Final"
 val rampartVersion    = "1.8.0"
 
@@ -74,12 +74,12 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "cglib"                          % "cglib"                         % "3.3.0",
-  "co.fs2"                        %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
-  "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
+  "cglib"                          % "cglib"       % "3.3.0",
+  "co.fs2"                        %% "fs2-io"      % fs2Version,
+  "com.softwaremill.sttp.client3" %% "core"        % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "fs2"         % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe"       % sttpVersion,
+  "com.flickr4java"                % "flickr4java" % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
@@ -108,12 +108,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "org.asynchttpclient" % "async-http-client"    % "2.16.0",
-  "com.rometools"       % "rome"                 % "2.1.0",
-  "io.swagger"          % "swagger-core"         % SwaggerVersion,
-  "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
-  "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
-  "io.swagger"         %% "swagger-scala-module" % "1.0.6",
+  "com.rometools" % "rome"                 % "2.1.0",
+  "io.swagger"    % "swagger-core"         % SwaggerVersion,
+  "io.swagger"    % "swagger-annotations"  % SwaggerVersion,
+  "io.swagger"    % "swagger-jaxrs"        % SwaggerVersion,
+  "io.swagger"   %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "7.1.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
@@ -203,33 +202,31 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.logging.log4j"),
     ExclusionRule(organization = "org.bouncycastle")
   ),
-  "org.apache.tomcat"                    % "tomcat-annotations-api"         % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-api"                     % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-catalina"                % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-catalina-ha"             % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-coyote"                  % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-jsp-api"                 % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-juli"                    % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-servlet-api"             % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-tribes"                  % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
-  "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.84",
-  "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
-  "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
-  "org.dspace"                           % "cql-java"                       % "1.0",
-  "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.freemarker"                       % "freemarker"                     % "2.3.34",
-  "com.github.equella.legacy"            % "hurl"                           % "1.1",
-  "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
-  "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.reactivestreams"                  % "reactive-streams"               % "1.0.4",
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.1.1",
-  "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
-  "org.jsoup"                            % "jsoup"                          % jsoupVersion,
+  "org.apache.tomcat"               % "tomcat-annotations-api"         % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-api"                     % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-catalina"                % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-catalina-ha"             % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-coyote"                  % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-jsp-api"                 % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-juli"                    % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-servlet-api"             % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-tribes"                  % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-util"                    % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-util-scan"               % TomcatVersion,
+  "org.apache.tomcat"               % "tomcat-ssi"                     % TomcatVersion,
+  "org.bouncycastle"                % "bcprov-jdk18on"                 % "1.84",
+  "org.ccil.cowan.tagsoup"          % "tagsoup"                        % "1.2.1",
+  "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
+  "org.dspace"                      % "cql-java"                       % "1.0",
+  "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
+  "org.freemarker"                  % "freemarker"                     % "2.3.34",
+  "com.github.equella.legacy"       % "hurl"                           % "1.1",
+  "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
+  "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
+  "org.reactivestreams"             % "reactive-streams"               % "1.0.4",
+  "org.jboss.spec.javax.ws.rs"      % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
+  "javax.json.bind"                 % "javax.json.bind-api"            % "1.0",
+  "org.jsoup"                       % "jsoup"                          % jsoupVersion,
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
@@ -271,15 +268,15 @@ libraryDependencies ++= {
   }
 }
 dependencyOverrides ++= Seq(
-  "javax.mail" % "mail"                % "1.4.7",
-  "io.netty"   % "netty-common"        % nettyVersion,
-  "io.netty"   % "netty-buffer"        % nettyVersion,
-  "io.netty"   % "netty-codec"         % nettyVersion,
-  "io.netty"   % "netty-handler"       % nettyVersion,
-  "io.netty"   % "netty-transport"     % nettyVersion,
-  "io.netty"   % "netty-codec-socks"   % nettyVersion,
-  "io.netty"   % "netty-handler-proxy" % nettyVersion,
-  "io.netty"   % "netty-codec-http"    % nettyVersion
+  "javax.mail" % "mail" % "1.4.7",
+  // Netty is pulled in transitively by Apache ZooKeeper (via Curator); these overrides pin it to a
+  // single consistent version. The former netty-codec / netty-codec-http / netty-codec-socks /
+  // netty-handler-proxy overrides were only needed by async-http-client and were removed along with
+  // it.
+  "io.netty" % "netty-common"    % nettyVersion,
+  "io.netty" % "netty-buffer"    % nettyVersion,
+  "io.netty" % "netty-handler"   % nettyVersion,
+  "io.netty" % "netty-transport" % nettyVersion
 )
 
 excludeDependencies ++= Seq(

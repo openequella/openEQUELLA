@@ -31,7 +31,6 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.URLUtils;
 import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.TextExtracterExtension;
-import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
@@ -208,13 +207,10 @@ public class TextExtracter {
             case CUSTOM:
               final CustomAttachment customAttach = (CustomAttachment) attach;
               String type = customAttach.getType();
-              if (type.equals(CloudProviderService.CloudAttachmentType())) {
-                for (String fname : CloudProviderService.filesToIndex(customAttach)) {
-                  indexSingleFile(item, sbuf, fname);
-                }
-              } else if (type.equals("scorm") && indexImsPackages) {
+              if (type.equals("scorm") && indexImsPackages) {
                 indexIms(attach, sbuf, item);
               }
+              break;
             case IMS:
               if (indexImsPackages) {
                 indexIms(attach, sbuf, item);

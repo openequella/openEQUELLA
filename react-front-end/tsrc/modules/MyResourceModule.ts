@@ -37,8 +37,10 @@ interface MyResourcesSubCategory extends OEQ.MyResource.MyResourcesSubCategory {
 /**
  * Holds the details for an individual category of 'My Resources' (e.g. Draft, Published, Archived, etc.).
  */
-export interface MyResourcesCategory
-  extends Omit<OEQ.MyResource.MyResourcesCategory, "links" | "subSearches"> {
+export interface MyResourcesCategory extends Omit<
+  OEQ.MyResource.MyResourcesCategory,
+  "links" | "subSearches"
+> {
   /** Contains the route for UI navigation. */
   to: string;
   /**

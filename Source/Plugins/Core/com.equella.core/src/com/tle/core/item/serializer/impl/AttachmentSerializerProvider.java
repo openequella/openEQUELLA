@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
-import com.tle.core.cloudproviders.CloudAttachmentSerializer;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
@@ -169,7 +168,6 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
   public synchronized Map<String, AttachmentSerializer> getAttachmentSerializers() {
     if (serializerMap == null) {
       serializerMap = tracker.getNewBeanMap();
-      serializerMap.put("custom/cloud", new CloudAttachmentSerializer());
     }
     return serializerMap;
   }

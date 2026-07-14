@@ -22,7 +22,7 @@ import cats.effect.IO
 import com.tle.legacy.LegacyGuice
 import sttp.capabilities.fs2.Fs2Streams
 import sttp.client3.SttpBackendOptions.{Proxy, ProxyType}
-import sttp.client3.asynchttpclient.fs2.AsyncHttpClientFs2Backend
+import sttp.client3.httpclient.fs2.HttpClientFs2Backend
 import sttp.client3.{Request, Response, SttpBackendOptions}
 
 package object httpclient {
@@ -30,10 +30,10 @@ package object httpclient {
   private val sttpBackend = {
     val proxy     = LegacyGuice.configService.getProxyDetails
     val sttpProxy = Option(proxy.getHost).map(h => Proxy(h, proxy.getPort, ProxyType.Http))
-    AsyncHttpClientFs2Backend.resource[IO](SttpBackendOptions.Default.copy(proxy = sttpProxy))
+    HttpClientFs2Backend.resource[IO](SttpBackendOptions.Default.copy(proxy = sttpProxy))
   }
 
-  /** Sends the given HTTP request using a `sttp` backend based on `AsyncHttpClientFs2Backend`.
+  /** Sends the given HTTP request using a `sttp` backend based on `HttpClientFs2Backend`.
     *
     * This method delegates to the configured backend to perform the request and return the
     * response. It uses `Fs2Streams[IO]` as the streaming capability, allowing streamed request or

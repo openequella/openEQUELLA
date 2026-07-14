@@ -47,14 +47,13 @@ const { usableBy, usableByDesc } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
 
-export interface UsableByControlProps
-  extends Pick<
-    ACLExpressionBuilderDialogProps,
-    | "searchUserProvider"
-    | "searchGroupProvider"
-    | "searchRoleProvider"
-    | "aclEntityResolversProvider"
-  > {
+export interface UsableByControlProps extends Pick<
+  ACLExpressionBuilderDialogProps,
+  | "searchUserProvider"
+  | "searchGroupProvider"
+  | "searchRoleProvider"
+  | "aclEntityResolversProvider"
+> {
   /**
    * Initial value of AClExpression.
    */

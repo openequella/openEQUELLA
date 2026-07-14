@@ -22,6 +22,7 @@ import com.dytech.common.io.UnicodeReader;
 import com.google.common.base.VerifyException;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
+import com.tle.common.xml.SecureXmlFactories;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,15 +82,7 @@ public class PropBagEx implements Serializable {
   static {
     factory = DocumentBuilderFactory.newInstance();
     factory.setValidating(false);
-
-    try {
-      factory.setFeature(
-          "http://apache.org/xml/features/nonvalidating/load-external-dtd", false); // $NON-NLS-1$
-    } catch (ParserConfigurationException e) {
-      // nothing
-    } catch (NoSuchMethodError nup) {
-      // java 1.4,doesn't like it
-    }
+    SecureXmlFactories.hardenAgainstXxe(factory);
     factory.setNamespaceAware(false);
   }
 
@@ -917,12 +910,13 @@ public class PropBagEx implements Serializable {
     DocumentBuilder builder = null;
     try {
       builder = getBuilder();
+      builder.setErrorHandler(SecureXmlFactories.STRICT_ERROR_HANDLER);
       Document doc = builder.parse(new InputSource(filterer));
 
       // Get the root element
       m_elRoot = doc.getDocumentElement();
     } catch (Exception ex) {
-      throw new RuntimeException("Error parsing XML", ex);
+      throw new XmlParseException("Error parsing XML", ex);
     } finally {
       releaseBuilder(builder);
     }

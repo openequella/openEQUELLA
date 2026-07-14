@@ -230,7 +230,7 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
       percentage = Double.valueOf(attributes.get(KEY_PERCENTAGE_REQUIREMENT));
     }
 
-    percentageField.setValue(new Double(percentage));
+    percentageField.setValue(Double.valueOf(percentage));
     restrictiveValidation.setSelected(
         Boolean.valueOf(attributes.get(KEY_HAS_RESTRICTIVE_VALIDATION)));
     useCitationAsName.setSelected(Boolean.valueOf(attributes.get(KEY_USE_CITATION_AS_NAME)));

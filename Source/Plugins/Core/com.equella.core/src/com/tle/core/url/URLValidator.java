@@ -15,37 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "babel-polyfill";
-import { Paper, TextField } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { createTheme } from "@mui/material/styles";
-import { deepOrange, deepPurple } from "@mui/material/colors";
 
-export const theme = createTheme({
-  palette: {
-    primary: deepOrange,
-    secondary: deepPurple,
-  },
-});
+package com.tle.core.url;
 
-export const StyledRoot = styled("div")({
-  height: "100vh",
-  display: "flex",
-  flexDirection: "column",
-});
-
-export const StyledPaper = styled(Paper)({
-  display: "flex",
-  flexDirection: "column",
-  flexGrow: 1,
-});
-
-export const StyledBody = styled("div")({
-  margin: theme.spacing(2),
-});
-
-export const StyledTextField = styled(TextField)({
-  marginLeft: theme.spacing(1),
-  marginRight: theme.spacing(1),
-  width: 300,
-});
+/**
+ * Decides whether a URL is well-formed enough to be health-checked. Production code uses {@link
+ * URLCheckerService#isURL(String)}; tests supply a permissive implementation so URLs pointing at an
+ * embedded test server on an ephemeral port (which the production pattern rejects) reach the HTTP
+ * logic.
+ */
+@FunctionalInterface
+interface URLValidator {
+  boolean isValid(String url);
+}

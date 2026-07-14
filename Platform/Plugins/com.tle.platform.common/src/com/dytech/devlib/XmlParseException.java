@@ -16,19 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.cloudproviders
+package com.dytech.devlib;
 
-import java.util
+import java.io.Serial;
 
-import com.tle.beans.cloudproviders._
-import com.tle.core.guice.Bind
-import com.tle.core.remoting.CloudProviderAdminService
-import scala.jdk.CollectionConverters._
+/**
+ * Thrown when {@link PropBagEx} fails to parse XML input - for example malformed XML, or XML that
+ * contains a DOCTYPE declaration (which is rejected to prevent XXE injection).
+ *
+ * <p>This almost always indicates bad caller-supplied input rather than an internal fault, so the
+ * REST layer maps it to a {@code 400 Bad Request}. It extends {@link RuntimeException} to preserve
+ * the previous throwing behaviour for existing callers.
+ */
+public class XmlParseException extends RuntimeException {
+  @Serial private static final long serialVersionUID = 1L;
 
-@Bind(classOf[CloudProviderAdminService])
-class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
-
-  override def listControls: util.List[CloudControlDefinition] = {
-    CloudProviderService.queryControls.asJava
+  public XmlParseException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

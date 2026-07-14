@@ -34,14 +34,13 @@ export interface UnknownUserHandlingData {
   groups: ReadonlySet<OEQ.Common.UuidString>;
 }
 
-export interface AccessControlSectionProps
-  extends Pick<
-    UsableByControlProps,
-    | "searchUserProvider"
-    | "searchGroupProvider"
-    | "searchRoleProvider"
-    | "aclEntityResolversProvider"
-  > {
+export interface AccessControlSectionProps extends Pick<
+  UsableByControlProps,
+  | "searchUserProvider"
+  | "searchGroupProvider"
+  | "searchRoleProvider"
+  | "aclEntityResolversProvider"
+> {
   /**
    * AclExpression string used to control who can use the platform.
    */

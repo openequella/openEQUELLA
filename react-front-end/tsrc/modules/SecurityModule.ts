@@ -129,12 +129,6 @@ export const isSearchPageACLGranted: RequiredPermissionCheck = hasRequiredAcl(
 );
 
 /**
- * Return a TaskEither to check whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
- */
-export const isManageCloudProviderACLGranted: RequiredPermissionCheck =
-  hasRequiredAcl(OEQ.Acl.ACL_MANAGE_CLOUD_PROVIDER);
-
-/**
  * Return a TaskEither to check whether ACL VIEW_HIERARCHY_TOPIC is granted to the current user for
  * the target topic.
  */
