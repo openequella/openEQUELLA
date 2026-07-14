@@ -532,9 +532,12 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
       s"Error deleting '$path' from staging area: $stagingID"
     )(identity)
 
-  override def createFolder(stagingID: String, path: String, name: String): Unit = implementMe {
-    _.createFolder(stagingID, path, name)
-  }
+  override def createFolder(stagingID: String, path: String, name: String): Unit =
+    handleRestEither(
+      // path + name preserves the caller's concatenation (path arrives with a trailing slash)
+      StagingApi.createFolder(stagingID, path + name),
+      s"Error creating folder '$name' in staging area: $stagingID"
+    )(identity)
 
   override def buildStagingTree(stagingID: String, path: String): FileEntry =
     handleRestEither(
