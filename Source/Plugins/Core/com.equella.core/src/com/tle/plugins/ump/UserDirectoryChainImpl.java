@@ -207,6 +207,11 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
         groupsContainingUserCache, userId, () -> fetchGroupsContainingUser(userId));
   }
 
+  @Override
+  public List<String> getGroupIdsContainingUser(String userId) {
+    return getGroupsContainingUser(userId).stream().map(GroupBean::getUniqueID).toList();
+  }
+
   private List<GroupBean> fetchGroupsContainingUser(String userId) {
     List<GroupBean> rv = null;
     for (UserDirectory ud : uds) {

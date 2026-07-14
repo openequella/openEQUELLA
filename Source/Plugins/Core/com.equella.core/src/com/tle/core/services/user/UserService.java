@@ -24,7 +24,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
-import com.tle.plugins.ump.UserDirectoryPagination;
+import com.tle.plugins.ump.UserDirectoryQueries;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
@@ -37,10 +37,8 @@ import javax.servlet.http.HttpServletResponse;
  * object; this must be passed back into the <code>login(UserState)</code> method if you actually
  * want to login a user. Alternatively, you can simply call any of the other <code>login*</code>
  * methods which do both of these steps in one go.
- *
- * @author Nicholas Read
  */
-public interface UserService extends RemoteUserService, UserDirectoryPagination {
+public interface UserService extends RemoteUserService, UserDirectoryQueries {
   UserState login(
       String username, String password, WebAuthenticationDetails details, boolean forceSession);
 
