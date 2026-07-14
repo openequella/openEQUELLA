@@ -87,9 +87,9 @@ class StagingFileTreeSpec extends AnyFunSpec with Matchers {
       images.isFolder shouldBe true
       childNames(images) shouldBe List("empty", "banner.jpg")
 
-      val empty = child(images, "empty")
-      empty.isFolder shouldBe true
-      empty.getFiles.asScala shouldBe Symbol("empty")
+      val emptyFolder = child(images, "empty")
+      emptyFolder.isFolder shouldBe true
+      emptyFolder.getFiles.asScala shouldBe empty
     }
 
     it("does not duplicate a folder that is both explicit and implied by a file path") {
@@ -106,7 +106,7 @@ class StagingFileTreeSpec extends AnyFunSpec with Matchers {
 
       root.isFolder shouldBe true
       root.getName shouldBe RootName
-      root.getFiles.asScala shouldBe Symbol("empty")
+      root.getFiles.asScala shouldBe empty
     }
   }
 }
