@@ -175,6 +175,14 @@ object TestHelper {
   def assertNotFoundError(response: Either[List[ApiError], _]): Unit =
     checkApiError(response) shouldBe a[NotFoundError]
 
+  /** Assert that an API response failed because the request was invalid (e.g. malformed content).
+    *
+    * @param response
+    *   the API response to check
+    */
+  def assertBadRequestError(response: Either[List[ApiError], _]): Unit =
+    checkApiError(response) shouldBe a[BadRequestError]
+
   /** Run the given action with a client configuration that is logged in with different credentials
     * to the given client configuration. This is useful for testing access control and multi-user
     * scenarios.

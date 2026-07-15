@@ -50,4 +50,11 @@ object Mutations {
       innerSelection: SelectionBuilder[InternalUserMutations, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
     _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
+
+  /** Mutations for user management plugin configuration
+    */
+  def userDirectoryConfig[A](
+      innerSelection: SelectionBuilder[UserDirectoryConfigMutations, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
+    _root_.caliban.client.SelectionBuilder.Field("userDirectoryConfig", Obj(innerSelection))
 }

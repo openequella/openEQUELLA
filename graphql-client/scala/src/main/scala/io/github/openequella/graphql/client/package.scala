@@ -77,6 +77,8 @@ package object client {
   type TargetListEntry
   type User
   type UserConnection
+  type UserDirectoryConfigMutations
+  type UserDirectoryConfigQueries
   type UserDirectoryQueries
   type UserEdge
   type UserWithId
