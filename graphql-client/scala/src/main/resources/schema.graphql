@@ -852,6 +852,8 @@ type Mutations {
   internalGroups: InternalGroupMutations!
   "Operations for managing internal users"
   internalUsers: InternalUserMutations!
+  "Mutations for user management plugin configuration"
+  userDirectoryConfig: UserDirectoryConfigMutations!
 }
 
 "A simple name/value pair."
@@ -908,6 +910,8 @@ type Queries {
   internalGroups: InternalGroupQueries!
   "Queries for internal users"
   internalUsers: InternalUserQueries!
+  "Queries for user management plugin configuration"
+  userDirectoryConfig: UserDirectoryConfigQueries!
   "Queries for the user directory - users, groups, and roles from all configured user management plugins"
   userDirectory: UserDirectoryQueries!
 }
@@ -982,6 +986,18 @@ type User {
 type UserConnection {
   pageInfo: PageInfo!
   edges: [UserEdge!]!
+}
+
+type UserDirectoryConfigMutations {
+  "Persist a UserManagementSettings configuration supplied as JSON"
+  setPluginConfig("The fully qualified settings class name to persist" settingsClass: String!, "The JSON representation of the plugin configuration" configJson: String!): Unit
+}
+
+type UserDirectoryConfigQueries {
+  "List the shared secret IDs used by user management plugins"
+  sharedSecretIds: [String!]!
+  "Retrieve a UserManagementSettings configuration as a JSON string"
+  pluginConfig("The fully qualified settings class name to load" settingsClass: String!): String
 }
 
 "Queries for the user directory, which aggregates users, groups, and roles from all configured user management plugins."

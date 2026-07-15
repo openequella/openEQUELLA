@@ -1,7 +1,7 @@
 name := "graphql-client"
 
 ThisBuild / scalaVersion     := "2.13.18"
-ThisBuild / version          := "0.12.0-SNAPSHOT"
+ThisBuild / version          := "0.13.0-SNAPSHOT"
 ThisBuild / organization     := "io.github.openequella"
 ThisBuild / organizationName := "openEQUELLA GraphQL Client"
 
@@ -16,7 +16,8 @@ libraryDependencies ++= Seq(
   "org.typelevel"         %% "cats-core"      % "2.13.0",
   // Add Scala Test
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-  "org.scalatest" %% "scalatest"       % "3.2.20" % Test
+  "org.scalatest" %% "scalatest"       % "3.2.20" % Test,
+  "com.lihaoyi"   %% "upickle"         % "4.4.3"  % Test
 )
 
 scalacOptions ++= Seq(

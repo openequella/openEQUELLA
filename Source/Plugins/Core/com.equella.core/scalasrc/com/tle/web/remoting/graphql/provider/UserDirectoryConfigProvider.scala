@@ -47,6 +47,38 @@ class UserDirectoryConfigProvider @Inject() (
   private def resolveSettingsClass(settingsClassName: String): Class[_ <: UserManagementSettings] =
     Class.forName(settingsClassName).asSubclass(classOf[UserManagementSettings])
 
+  // As above, but reported as a NotFoundError if the class cannot be resolved.
+  private def resolvePluginConfigClass(
+      settingsClassName: String
+  ): Either[ProviderError, Class[_ <: UserManagementSettings]] =
+    ProviderError
+      .Try("Failed to resolve user management settings class:") {
+        resolveSettingsClass(settingsClassName)
+      }
+      .left
+      .map(_ =>
+        ProviderError(
+          s"User management settings class not found: $settingsClassName",
+          ErrorCode.NOT_FOUND
+        )
+      )
+
+  // Parses configJson into configClass and persists it. Errors are reported as a generic
+  // BAD_REQUEST to avoid leaking internal implementation details (class names, field names,
+  // or Jackson parser state) to the client.
+  private def saveConfig(
+      configClass: Class[_ <: UserManagementSettings],
+      configJson: String,
+      errorMessagePrefix: String
+  ): Either[ProviderError, Unit] =
+    ProviderError
+      .Try(errorMessagePrefix + ": ") {
+        val config = objectMapper.readValue(configJson, configClass)
+        userService.setPluginConfig(config)
+      }
+      .left
+      .map(_ => ProviderError(errorMessagePrefix, ErrorCode.BAD_REQUEST))
+
   // Get the plugin config for the given settings class and serializes it to JSON.
   private def getPluginConfig(settingsClassName: String): Either[ProviderError, String] =
     Option(userService.getPluginConfig(settingsClassName))
@@ -103,7 +135,9 @@ class UserDirectoryConfigProvider @Inject() (
     * @param configJson
     *   The configuration as a JSON string to be converted to the settings object
     * @return
-    *   Either a successful result, or a ProviderError if parsing or saving fails
+    *   Either a successful result, or a ProviderError. A `NotFoundError` is returned if
+    *   `settingsClassName` does not exist (or is not a known settings class); otherwise a
+    *   `BadRequestError` is returned if parsing or saving fails.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def setPluginConfig(
@@ -113,18 +147,9 @@ class UserDirectoryConfigProvider @Inject() (
     LOGGER.debug("Saving user management plugin config for settings class: {}", settingsClassName)
     val errorMessagePrefix = s"Failed to save user management plugin config for $settingsClassName"
 
-    ProviderError
-      .Try(errorMessagePrefix + ": ") {
-        val configClass = resolveSettingsClass(settingsClassName)
-        val config      =
-          objectMapper.readValue(configJson, configClass)
-        userService.setPluginConfig(config)
-      }
-      .left
-      .map { _ =>
-        // Return generic error to client to avoid leaking internal implementation details
-        // such as class names, field names, or Jackson parser state.
-        ProviderError(errorMessagePrefix, ErrorCode.BAD_REQUEST)
-      }
+    for {
+      configClass <- resolvePluginConfigClass(settingsClassName)
+      _           <- saveConfig(configClass, configJson, errorMessagePrefix)
+    } yield ()
   }
 }
