@@ -18,6 +18,7 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.{BaseEntity, BaseEntityLabel}
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.RemoteAbstractEntityService
@@ -298,6 +299,10 @@ class AdminEntityServiceSpec extends AnyFunSpec with Matchers {
   // A test subclass that can access protected methods
   private class TestService extends AdminEntityService[BaseEntity] {
     override def entityDescription: String = "test entity"
+
+    // Not exercised by these tests — the GraphQL helpers under test never touch the REST config.
+    override protected implicit def restCfg: RestConfiguration =
+      throw new NotImplementedError("Test implementation only")
 
     override def implementMe[T](f: RemoteAbstractEntityService[BaseEntity] => T): T =
       throw new NotImplementedError("Test implementation only")

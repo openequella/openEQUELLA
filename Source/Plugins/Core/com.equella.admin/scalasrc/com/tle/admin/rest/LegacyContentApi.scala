@@ -70,15 +70,6 @@ object LegacyContentApi {
     val request = basicRequest
       .get(cfg.apiUrl().addPath(API_PATH, "currentuser"))
       .response(asJson[CurrentUserDetails])
-    handleResult(extractAction(request), send(request)) { response =>
-      response.body match {
-        case Left(error) =>
-          LOGGER.error(s"Failed to decode current user details: ${error.getMessage}")
-          Left(UnexpectedResponseError(error.getMessage))
-        case Right(userDetails) =>
-          LOGGER.debug(s"Retrieved current user details: ${userDetails.username}")
-          Right(userDetails)
-      }
-    }
+    handleDecodedResult(request)
   }
 }

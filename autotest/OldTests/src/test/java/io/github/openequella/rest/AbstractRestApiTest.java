@@ -28,10 +28,6 @@ public class AbstractRestApiTest {
   protected final ObjectMapper mapper = new ObjectMapper();
   protected final AuthHelper authHelper = new AuthHelper(getTestConfig().getInstitutionUrl());
 
-  public String getAuthApiEndpoint() {
-    return getTestConfig().getInstitutionUrl() + "api/auth";
-  }
-
   protected TestConfig getTestConfig() {
     if (testConfig == null) {
       testConfig = new TestConfig(AbstractRestApiTest.class);

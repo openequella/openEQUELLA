@@ -19,7 +19,8 @@ case class StagingFile(
     size: Long,
     etag: String,
     contentType: String,
-    links: Map[String, String]
+    links: Map[String, String],
+    folder: Option[Boolean]
 )
 case class StagingArea(
     uuid: String,
@@ -80,9 +81,7 @@ class StagingApiTest extends AbstractRestApiTest {
 
   @Test(description = "Create an empty staging area")
   def createStagingTest(): Unit = withStaging { stagingUuid =>
-    val response = StagingApi.getStaging(stagingUuid)
-    assertEquals(response.status, HttpStatus.SC_OK)
-    response.body.foreach(staging =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach(staging =>
       assertTrue(staging.files.isEmpty, "New staging area should be empty")
     )
   }
@@ -92,30 +91,23 @@ class StagingApiTest extends AbstractRestApiTest {
     val file              = getTestFile(TEST_FILENAME)
     val encodedTargetPath = "folder/" + URLUtils.urlEncode(TEST_FILENAME, false)
 
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, encodedTargetPath, file).status,
-      HttpStatus.SC_OK
-    )
+    assertResponseOk(StagingApi.uploadFile(stagingUuid, encodedTargetPath, file))
 
-    val response = StagingApi.getStaging(stagingUuid)
-    assertEquals(response.status, HttpStatus.SC_OK)
-    val uploadedFile = findFileInStaging(response, s"folder/$TEST_FILENAME")
+    val staging      = assertResponseOk(StagingApi.getStaging(stagingUuid))
+    val uploadedFile = findFileInStaging(staging, s"folder/$TEST_FILENAME")
     assertTrue(uploadedFile.isDefined, "Uploaded file is missing")
     assertEquals(uploadedFile.get.size, file.length())
   }
 
   @Test(description = "Upload and automatically unzip a package")
   def uploadAndUnzipTest(): Unit = withStaging { stagingUuid =>
-    assertEquals(
+    assertResponseOk(
       StagingApi
         .uploadFile(stagingUuid, PACKAGE_FILENAME, getTestFile(PACKAGE_FILENAME), Some("unzipped"))
-        .status,
-      HttpStatus.SC_OK
     )
 
-    val response = StagingApi.getStaging(stagingUuid)
-    assertEquals(response.status, HttpStatus.SC_OK)
-    assertTrue(findFileInStaging(response, "unzipped/ConditionsOfUse.html").isDefined)
+    val staging = assertResponseOk(StagingApi.getStaging(stagingUuid))
+    assertTrue(findFileInStaging(staging, "unzipped/ConditionsOfUse.html").isDefined)
   }
 
   @Test(description =
@@ -125,12 +117,12 @@ class StagingApiTest extends AbstractRestApiTest {
     val file     = getTestFile(AVATAR_FILENAME)
     val filename = "conditional-test.png"
 
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, filename, file).status,
-      HttpStatus.SC_OK,
+    assertResponseOk(
+      StagingApi.uploadFile(stagingUuid, filename, file),
       "Initial file upload should succeed"
     )
-    val currentEtag = findFileInStaging(StagingApi.getStaging(stagingUuid), filename).get.etag
+    val currentEtag =
+      findFileInStaging(assertResponseOk(StagingApi.getStaging(stagingUuid)), filename).get.etag
 
     val testingScenarios = List(
       ("Wildcard (*) rejection", Some("*"), HttpStatus.SC_PRECONDITION_FAILED),
@@ -156,35 +148,109 @@ class StagingApiTest extends AbstractRestApiTest {
     softAssert.assertAll()
   }
 
+  /** Runs `testCode` against a staging area pre-populated with a nested file
+    * (`scoped/inner/one.png`) and a top-level file (`toplevel.png`) — the fixture shared by the
+    * listing query param tests.
+    */
+  private def withPopulatedStaging(testCode: String => Unit): Unit = withStaging { stagingUuid =>
+    val file = getTestFile(AVATAR_FILENAME)
+    assertResponseOk(StagingApi.uploadFile(stagingUuid, "scoped/inner/one.png", file))
+    assertResponseOk(StagingApi.uploadFile(stagingUuid, "toplevel.png", file))
+    testCode(stagingUuid)
+  }
+
+  @Test(description =
+    "The default-params listing response is unchanged by the query param additions: files only," +
+      " named by full path, with etags and no folder flags"
+  )
+  def defaultListingUnchangedTest(): Unit = withPopulatedStaging { stagingUuid =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach { staging =>
+      assertEquals(
+        staging.files.map(_.name).sorted,
+        List("scoped/inner/one.png", "toplevel.png"),
+        "Default listing should contain only files, named by full path"
+      )
+      assertTrue(
+        staging.files.forall(f => f.etag != null && f.folder.isEmpty),
+        "Default listing should have etags and no folder flags"
+      )
+    }
+  }
+
+  @Test(description =
+    "A listing scoped with the path param has names relative to the scoped folder and excludes" +
+      " entries outside it"
+  )
+  def scopedListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    // A trailing slash (as sent by the Admin Console) is tolerated
+    List("scoped", "scoped/").foreach { scope =>
+      assertResponseOk(StagingApi.getStaging(stagingUuid, path = Some(scope))).foreach(staging =>
+        assertEquals(
+          staging.files.map(_.name),
+          List("inner/one.png"),
+          s"Scoped listing (path=$scope) should be relative and exclude outside entries"
+        )
+      )
+    }
+  }
+
+  @Test(description = "A listing with folders=true includes folder entries, flagged as folders")
+  def folderListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid, folders = Some(true))).foreach { staging =>
+      val (folderEntries, fileEntries) = staging.files.partition(_.folder.contains(true))
+      assertEquals(
+        folderEntries.map(_.name).sorted,
+        List("scoped", "scoped/inner"),
+        "Folder entries should be listed when folders=true"
+      )
+      assertEquals(
+        fileEntries.map(_.name).sorted,
+        List("scoped/inner/one.png", "toplevel.png"),
+        "File entries should be unaffected by folders=true"
+      )
+    }
+  }
+
+  @Test(description = "A listing with checksums=false skips etag computation")
+  def checksumSkipListingTest(): Unit = withPopulatedStaging { stagingUuid =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid, checksums = Some(false))).foreach(staging =>
+      assertTrue(
+        staging.files.forall(_.etag == null),
+        "No etags should be computed when checksums=false"
+      )
+    )
+  }
+
+  @Test(description = "Scoped listing of a non-existent folder returns an empty listing")
+  def scopedListingMissingPathTest(): Unit = withStaging { stagingUuid =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid, path = Some("does-not-exist"))).foreach(
+      staging => assertTrue(staging.files.isEmpty, "Missing folder should list as empty, not error")
+    )
+  }
+
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
-    assertEquals(
-      StagingApi
-        .uploadFile(stagingUuid, TEST_TXT_FILENAME, getTestFile(AVATAR_FILENAME))
-        .status,
-      HttpStatus.SC_OK
+    assertResponseOk(
+      StagingApi.uploadFile(stagingUuid, TEST_TXT_FILENAME, getTestFile(AVATAR_FILENAME))
     )
     assertEquals(
       StagingApi.deleteFile(stagingUuid, TEST_TXT_FILENAME).status,
       HttpStatus.SC_NO_CONTENT
     )
 
-    val response = StagingApi.getStaging(stagingUuid)
-    assertEquals(response.status, HttpStatus.SC_OK)
-    response.body.foreach(staging => assertTrue(staging.files.isEmpty))
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach(staging =>
+      assertTrue(staging.files.isEmpty)
+    )
   }
 
   @Test(description = "Check file metadata using HEAD request")
   def headFileTest(): Unit = withStaging { stagingUuid =>
     val file = getTestFile(AVATAR_FILENAME)
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, AVATAR_FILENAME, file).status,
-      HttpStatus.SC_OK
-    )
+    assertResponseOk(StagingApi.uploadFile(stagingUuid, AVATAR_FILENAME, file))
 
-    val response = StagingApi.headFile(stagingUuid, AVATAR_FILENAME)
-    assertEquals(response.status, HttpStatus.SC_OK)
-    response.body.foreach(contentLength => assertEquals(contentLength.toLong, file.length()))
+    assertResponseOk(StagingApi.headFile(stagingUuid, AVATAR_FILENAME)).foreach(contentLength =>
+      assertEquals(contentLength.toLong, file.length())
+    )
   }
 
   @Test(description = "Upload a file in multiple parts and stitch them together")
@@ -200,32 +266,28 @@ class StagingApiTest extends AbstractRestApiTest {
 
     val uploadedParts = textChunks.zipWithIndex.map { case (chunk, index) =>
       val partNumber = index + 1
-      val response   =
-        StagingApi.uploadMultipartText(stagingUuid, uploadId, partNumber, chunk)
+      val part       =
+        assertResponseOk(StagingApi.uploadMultipartText(stagingUuid, uploadId, partNumber, chunk))
 
-      assertEquals(response.status, HttpStatus.SC_OK)
-      assertTrue(response.body.isDefined, s"Missing part $partNumber")
-      response.body.get
+      assertTrue(part.isDefined, s"Missing part $partNumber")
+      part.get
     }
 
-    val compResponse =
-      StagingApi.completeMultipart(stagingUuid, filename, uploadId, uploadedParts: _*)
-    assertEquals(compResponse.status, HttpStatus.SC_OK)
+    val location =
+      assertResponseOk(
+        StagingApi.completeMultipart(stagingUuid, filename, uploadId, uploadedParts: _*)
+      )
     assertTrue(
-      compResponse.body.exists(_.endsWith(filename)),
+      location.exists(_.endsWith(filename)),
       s"Location header should point to '$filename'"
     )
 
-    val getResponse = StagingApi.getStaging(stagingUuid)
-    assertEquals(getResponse.status, HttpStatus.SC_OK)
     assertTrue(
-      findFileInStaging(getResponse, filename).isDefined,
+      findFileInStaging(assertResponseOk(StagingApi.getStaging(stagingUuid)), filename).isDefined,
       "Multipart-uploaded file is missing"
     )
 
-    val fileResponse = StagingApi.getFileContent(stagingUuid, filename)
-    assertEquals(fileResponse.status, HttpStatus.SC_OK)
-    fileResponse.body.foreach(content =>
+    assertResponseOk(StagingApi.getFileContent(stagingUuid, filename)).foreach(content =>
       assertEquals(content, expectedText, "Assembled file content should match the uploaded parts")
     )
   }
@@ -271,10 +333,7 @@ class StagingApiTest extends AbstractRestApiTest {
     assertEquals(response.status, HttpStatus.SC_CREATED)
 
     val stagingUuid = response.body.get
-    val getResponse = StagingApi.getStaging(stagingUuid)
-    assertEquals(getResponse.status, HttpStatus.SC_OK)
-
-    getResponse.body.foreach { staging =>
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach { staging =>
       assertFalse(staging.files.isEmpty, "Files should have been copied from the item")
       assertTrue(
         staging.files.exists(_.name == AVATAR_FILENAME),
@@ -296,11 +355,17 @@ class StagingApiTest extends AbstractRestApiTest {
     login()
   }
 
+  /** Asserts the response completed with 200 OK and returns its body for further assertions. */
+  private def assertResponseOk[B](response: ApiResponse[B], message: String = null): B = {
+    assertEquals(response.status, HttpStatus.SC_OK, message)
+    response.body
+  }
+
   private def findFileInStaging(
-      response: ApiResponse[Option[StagingArea]],
+      staging: Option[StagingArea],
       exactFilePath: String
   ): Option[StagingFile] =
-    response.body.flatMap(_.files.find(_.name == exactFilePath))
+    staging.flatMap(_.files.find(_.name == exactFilePath))
 
   private def getTestFile(filename: String): File =
     new File(AbstractPage.getPathFromUrl(Attachments.get(filename)))
@@ -325,10 +390,24 @@ class StagingApiTest extends AbstractRestApiTest {
     def createStaging(): ApiResponse[Option[String]] =
       execute(new PostMethod(endpoint))(m => getHeader(m, HEADER_EPS_STAGING_ID).get)
 
-    def getStaging(stagingUuid: String): ApiResponse[Option[StagingArea]] =
-      execute(new GetMethod(endpoint + stagingUuid)) { m =>
+    def getStaging(
+        stagingUuid: String,
+        path: Option[String] = None,
+        folders: Option[Boolean] = None,
+        checksums: Option[Boolean] = None
+    ): ApiResponse[Option[StagingArea]] = {
+      val method = new GetMethod(endpoint + stagingUuid)
+      val params = Seq(
+        path.map(p => new NameValuePair("path", p)),
+        folders.map(f => new NameValuePair("folders", f.toString)),
+        checksums.map(c => new NameValuePair("checksums", c.toString))
+      ).flatten.toArray
+      if (params.nonEmpty) method.setQueryString(params)
+
+      execute(method) { m =>
         scalaMapper.readValue(m.getResponseBodyAsStream, classOf[StagingArea])
       }
+    }
 
     def uploadFile(
         stagingUuid: String,

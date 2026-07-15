@@ -26,6 +26,7 @@ import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.{
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
 import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getOptionalEntityOrNotFound}
+import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
 import io.github.openequella.graphql.ClientConfiguration
@@ -39,7 +40,8 @@ import scala.jdk.CollectionConverters._
 
 @Singleton
 class AdminSchemaServiceImpl @Inject() (implicit
-    val cfg: ClientConfiguration
+    val cfg: ClientConfiguration,
+    val restCfg: RestConfiguration
 ) extends AdminEntityService[Schema]
     with AdminSchemaService {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminSchemaServiceImpl])
