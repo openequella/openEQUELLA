@@ -886,33 +886,33 @@ export const buildSearchPageNavigationConfig = (
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "item-search" for a positive check.
- * @param items - The data to be checked, expected to come from a search operation.
+ * @param _items - The data to be checked, expected to come from a search operation.
  */
 export const isListItems = (
   from: string,
-  items: unknown,
-): items is OEQ.Search.SearchResultItem[] => from === "item-search";
+  _items: unknown,
+): _items is OEQ.Search.SearchResultItem[] => from === "item-search";
 
 /**
  * Type guard for gallery-search results.
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "gallery-search" for a positive check.
- * @param items - The data to be checked, expected to come from a search operation.
+ * @param _items - The data to be checked, expected to come from a search operation.
  */
 export const isGalleryItems = (
   from: string,
-  items: unknown,
-): items is GallerySearchResultItem[] => from === "gallery-search";
+  _items: unknown,
+): _items is GallerySearchResultItem[] => from === "gallery-search";
 
 /**
  * Type guard for favourite-search results.
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "favourite-search" for a positive check.
- * @param searches - The data to be checked, expected to come from a search operation.
+ * @param _searches - The data to be checked, expected to come from a search operation.
  */
 export const isFavouriteSearches = (
   from: string,
-  searches: unknown,
-): searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";
+  _searches: unknown,
+): _searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";
