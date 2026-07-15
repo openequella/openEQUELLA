@@ -39,7 +39,7 @@
     "build-storybook": "storybook build",
     "build": "npm-run-all compile:* build:*",
     "clean": "rm -rf target/ node_modules/ .parcel-cache/",
-    "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
+    "compile:langbundle-tool": "cross-env-shell tsc --ignoreConfig --types \"node\" --target es2020 --module commonjs --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
     "dev": "npm run build && cross-env-shell parcel watch --public-url=. --target mainappdev ${npm_package_config_parcelEntryFiles}",
     "explain:patches": "echo 'This project uses patch-package to apply critical modifications to dependencies. See the patches/README.md file for a detailed explanation.'",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
@@ -140,6 +140,6 @@
     "rewire": "9.0.1",
     "storybook": "9.1.20",
     "ts-jest": "29.4.11",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }
