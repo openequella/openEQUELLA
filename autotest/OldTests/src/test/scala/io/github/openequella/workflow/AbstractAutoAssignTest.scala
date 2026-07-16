@@ -97,15 +97,6 @@ case class TestActor(
     fullName: Option[String] = None
 )
 
-/** Collection and metadata moderator used when contributing a new moderated item. */
-case class ContributeItemFlow(collection: String, moderator: TestActor)
-
-/** Inputs for changing a metadata-selected moderator on an existing item. */
-case class ReplaceModeratorFlow(itemName: String, from: TestActor, to: TestActor)
-
-/** Inputs for adding a metadata-selected moderator without removing the existing one. */
-case class AddModeratorFlow(itemName: String, add: TestActor)
-
 /** A contributed item: its (full) name and its ID for use with the REST API. */
 case class ContributedItem(name: String, id: ItemId)
 
@@ -156,47 +147,47 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
     finally client.logout()
   }
 
-  /** Contribute (and submit for moderation) a new item as the contributor, selecting
-    * `flow.moderator` in the metadata moderator control. Returns the contributed item's name and
-    * ID.
+  /** Contribute (and submit for moderation) a new item to `collection` as the contributor,
+    * selecting `moderator` in the metadata moderator control. Returns the contributed item's name
+    * and ID.
     */
-  protected def contribute(flow: ContributeItemFlow): ContributedItem = {
-    val moderatorQuery = requiredQuery(flow.moderator)
+  protected def contribute(collection: String, moderator: TestActor): ContributedItem = {
+    val moderatorQuery = requiredQuery(moderator)
 
     withLoggedInUser(contributor) {
-      val wizard   = new ContributePage(context).load().openWizard(flow.collection)
+      val wizard   = new ContributePage(context).load().openWizard(collection)
       val itemName = context.getFullName("item")
       setItemName(wizard, itemName)
-      moderatorControl(wizard).queryAndSelect(moderatorQuery, flow.moderator.username)
+      moderatorControl(wizard).queryAndSelect(moderatorQuery, moderator.username)
       val summary = wizard.save().submit()
       ContributedItem(itemName, summary.getItemId)
     }
   }
 
-  /** Edit the item as the contributor, removing `flow.from` and selecting `flow.to` in the metadata
-    * moderator control (i.e. swap the metadata-selected moderator).
+  /** Edit the item as the contributor, removing `from` and selecting `to` in the metadata moderator
+    * control (i.e. swap the metadata-selected moderator).
     */
-  protected def replaceModerator(flow: ReplaceModeratorFlow): Unit = {
-    val newModeratorQuery = requiredQuery(flow.to)
+  protected def replaceModerator(itemName: String, from: TestActor, to: TestActor): Unit = {
+    val newModeratorQuery = requiredQuery(to)
 
     withLoggedInUser(contributor) {
-      val wizard        = openItemWizardForEdit(flow.itemName)
+      val wizard        = openItemWizardForEdit(itemName)
       val moderatorList = moderatorControl(wizard)
-      moderatorList.removeUser(flow.from.username)
-      moderatorList.queryAndSelect(newModeratorQuery, flow.to.username)
+      moderatorList.removeUser(from.username)
+      moderatorList.queryAndSelect(newModeratorQuery, to.username)
       wizard.saveNoConfirm()
     }
   }
 
-  /** Edit the item as the contributor, adding `flow.add` to the metadata moderator control without
+  /** Edit the item as the contributor, adding `moderator` to the metadata moderator control without
     * removing the existing moderator.
     */
-  protected def addModerator(flow: AddModeratorFlow): Unit = {
-    val newModeratorQuery = requiredQuery(flow.add)
+  protected def addModerator(itemName: String, moderator: TestActor): Unit = {
+    val newModeratorQuery = requiredQuery(moderator)
 
     withLoggedInUser(contributor) {
-      val wizard = openItemWizardForEdit(flow.itemName)
-      moderatorControl(wizard).queryAndSelect(newModeratorQuery, flow.add.username)
+      val wizard = openItemWizardForEdit(itemName)
+      moderatorControl(wizard).queryAndSelect(newModeratorQuery, moderator.username)
       wizard.saveNoConfirm()
     }
   }

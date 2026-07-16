@@ -34,10 +34,10 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   @Test
   def testReassignsWhenModeratorChanges(): Unit = {
     val item =
-      contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
+      contribute(singleModeratorCollection, moderatorA)
 
     assertAssignedToViaUi(item, moderatorA)
-    replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
+    replaceModerator(item.name, moderatorA, moderatorB)
     assertNoTaskVisible(item, moderatorA)
     assertAssignedToViaRest(item, moderatorB)
     assertModeratorCanModerateAndAcceptTask(item, moderatorB)
@@ -46,7 +46,7 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   @Test
   def testKeepsSystemAdminManualAssignee(): Unit = {
     val item =
-      contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
+      contribute(singleModeratorCollection, moderatorA)
 
     withAdmin {
       val view = openModerationViewForCurrentUser(item.name)
@@ -58,7 +58,7 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
       assertAssignedToMe(openModerationViewForCurrentUser(item.name))
     }
 
-    replaceModerator(ReplaceModeratorFlow(item.name, moderatorA, moderatorB))
+    replaceModerator(item.name, moderatorA, moderatorB)
     withAdmin {
       val view = openModerationViewForCurrentUser(item.name)
       assertAssignedToMe(view)
@@ -68,11 +68,11 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   @Test
   def testKeepsAssigneeWhenModeratorAdded(): Unit = {
     val item =
-      contribute(ContributeItemFlow(multiModeratorCollection, moderatorA))
+      contribute(multiModeratorCollection, moderatorA)
 
     assertAssignedToViaUi(item, moderatorA)
 
-    addModerator(AddModeratorFlow(item.name, moderatorB))
+    addModerator(item.name, moderatorB)
 
     withLoggedInUser(moderatorB) {
       val view = openModerationViewForCurrentUser(item.name)
@@ -87,7 +87,7 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   @Test
   def testReassignsAfterRestEdit(): Unit = {
     val item =
-      contribute(ContributeItemFlow(singleModeratorCollection, moderatorA))
+      contribute(singleModeratorCollection, moderatorA)
 
     assertAssignedToViaUi(item, moderatorA)
 

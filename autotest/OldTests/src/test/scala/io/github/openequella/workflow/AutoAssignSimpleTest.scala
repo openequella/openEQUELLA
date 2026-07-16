@@ -28,7 +28,7 @@ class AutoAssignSimpleTest extends AbstractAutoAssignTest {
 
   @Test
   def testAutoAssign(): Unit = {
-    val item = contribute(ContributeItemFlow(autoAssignByMetadataCollection, moderatorA))
+    val item = contribute(autoAssignByMetadataCollection, moderatorA)
 
     withLoggedInUser(moderatorA) {
       assertAssignedToMe(openModerationViewForCurrentUser(item.name))
