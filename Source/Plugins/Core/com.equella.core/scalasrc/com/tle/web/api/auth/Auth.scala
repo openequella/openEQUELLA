@@ -67,7 +67,10 @@ object Auth {
     def parse(value: String): Option[WebOrigin] =
       Try(URI.create(value)).toOption.flatMap(from)
 
-    /** The URI's explicit port, or the default port for its scheme. */
+    /** The URI's explicit port, or the default port for its scheme. Only http/https defaults are
+      * needed: institution URLs are always web URLs, and the scheme equality in `WebOrigin`
+      * comparison rejects any other combination before the port could matter.
+      */
     private def effectivePort(uri: URI): Int =
       uri.getPort match {
         case -1 => if ("https".equalsIgnoreCase(uri.getScheme)) 443 else 80
@@ -118,7 +121,7 @@ class Auth @Inject() (
     auditLogService: AuditLogService,
     institutionService: InstitutionService
 ) {
-  val RESOURCE_HELPER: PluginResourceHelper =
+  private val resourceHelper: PluginResourceHelper =
     ResourcesService.getResourceHelper(classOf[Auth])
 
   /** Provide simple username / password login as per a legacy oEQ form based authentication but for
@@ -198,7 +201,7 @@ class Auth @Inject() (
       wad: WebAuthenticationDetails
   ): Response = {
     auditLogService.logUserFailedAuthentication(username, wad)
-    val message = CurrentLocale.get(RESOURCE_HELPER.key(failure.messageKey))
+    val message = CurrentLocale.get(resourceHelper.key(failure.messageKey))
     Response.status(failure.status).entity(message).build()
   }
 }

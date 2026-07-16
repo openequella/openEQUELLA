@@ -28,7 +28,8 @@ import sttp.model.{StatusCode, Uri}
 import java.net.URL
 
 /** JSON request body for `POST api/auth/login`. Mirrors the server-side
-  * `com.tle.web.api.auth.LoginRequest`.
+  * `com.tle.web.api.auth.LoginRequest`, redefined here to avoid a dependency on the core module
+  * (which would pull server classes into the Admin Console jar).
   */
 private final case class LoginRequest(username: String, password: String)
 
