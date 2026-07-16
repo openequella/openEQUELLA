@@ -164,12 +164,15 @@ cmd_login() {
   local password="${2:-${DEFAULT_PASSWORD}}"
   local institution_url
   institution_url="$(get_institution_url)"
-  local login_url="${institution_url}api/auth/login?username=${username}&password=${password}"
+  local login_url="${institution_url}api/auth/login"
 
   echo "Logging in as '${username}' at ${institution_url}..."
 
   local http_code
-  http_code="$(curl -s -o /dev/null -w '%{http_code}' -c "${COOKIE_FILE}" -X POST "${login_url}")"
+  http_code="$(curl -s -o /dev/null -w '%{http_code}' -c "${COOKIE_FILE}" -X POST \
+    -H 'Content-Type: application/json' \
+    -d "{\"username\":\"${username}\",\"password\":\"${password}\"}" \
+    "${login_url}")"
 
   if [[ "${http_code}" == "200" ]]; then
     local jsessionid
