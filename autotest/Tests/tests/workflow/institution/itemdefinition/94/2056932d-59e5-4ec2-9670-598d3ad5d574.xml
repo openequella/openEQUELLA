@@ -1,19 +1,19 @@
 <com.tle.beans.entity.itemdef.ItemDefinition>
-  <id>929330</id>
-  <uuid>c2f6fba9-1d80-4a74-b245-c0960f78fdd2</uuid>
+  <id>128057</id>
+  <uuid>2056932d-59e5-4ec2-9670-598d3ad5d574</uuid>
   <owner>TLE_ADMINISTRATOR</owner>
-  <dateModified class="sql-timestamp">2026-06-15 00:00:00.0</dateModified>
-  <dateCreated class="sql-timestamp">2026-06-15 00:00:00.0</dateCreated>
+  <dateModified class="sql-timestamp">2026-07-09 03:10:40.969</dateModified>
+  <dateCreated class="sql-timestamp">2026-07-09 03:09:37.27</dateCreated>
   <name>
-    <id>929331</id>
+    <id>128058</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>929332</id>
+          <id>128059</id>
           <locale>en</locale>
           <priority>1</priority>
-          <text>Single Moderator Selection By Metadata Collection</text>
+          <text>Multiple Moderators Selection By Metadata Collection</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>
@@ -27,8 +27,9 @@
   <workflow entityclass="com.tle.common.workflow.Workflow" uuid="a7d34f56-1d3f-4c52-9e59-95c3d8b7b5a1"/>
   <reviewperiod>-2147483648</reviewperiod>
   <slow>
-    <id>929333</id>
+    <id>128060</id>
     <itemMetadataRules/>
+    <dynamicMetadataRules/>
     <wizard>
       <pages>
         <com.dytech.edge.wizard.beans.DefaultWizardPage>
@@ -131,7 +132,7 @@
                       <id>0</id>
                       <locale>en</locale>
                       <priority>1</priority>
-                      <text>Moderator</text>
+                      <text>Moderators</text>
                       <bundle reference="../../../.."/>
                     </com.tle.beans.entity.LanguageString>
                   </entry>
@@ -148,17 +149,15 @@
               <attributes>
                 <entry>
                   <string>IsRestrictedGroups</string>
-                  <boolean>true</boolean>
-                </entry>
-                <entry>
-                  <string>IsSelectMultiple</string>
                   <boolean>false</boolean>
                 </entry>
                 <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
                   <string>RestrictToGroups</string>
-                  <set>
-                    <string>6b10a2f5-38c1-ced8-e8e6-85173fa33cb0</string>
-                  </set>
+                  <set/>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -206,9 +205,9 @@
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
-                  <java.util.Collections_-SingletonSet>
-                    <element class="string">fileHandler</element>
-                  </java.util.Collections_-SingletonSet>
+                  <singleton-set>
+                    <string>fileHandler</string>
+                  </singleton-set>
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
@@ -220,6 +219,12 @@
       <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
       <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
     </wizard>
+    <searchDetails>
+      <attDisplay>STRUCTURED</attDisplay>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
     <metadataMapping>
       <imsMapping class="list"/>
       <htmlMapping class="list"/>
@@ -228,16 +233,61 @@
     <itemSummarySections>
       <configList>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>4ff66916-86dc-47c6-bd9b-a8f80e2c3e9d</uuid>
           <value>basicSection</value>
-          <title>Basic Information</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_US</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_US</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>14e627c5-5ac0-4de2-9e71-af8176b85be4</uuid>
           <value>attachmentsSection</value>
-          <title>Attachments</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_US</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_US</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
         <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>4fbe2a27-d261-4953-a3da-e51ace6e573d</uuid>
           <value>commentsSection</value>
-          <title>Comments</title>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_US</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_US</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
         </com.tle.beans.entity.itemdef.SummarySectionsConfig>
       </configList>
       <hideOwner>false</hideOwner>
