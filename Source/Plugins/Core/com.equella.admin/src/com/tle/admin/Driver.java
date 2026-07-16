@@ -46,7 +46,7 @@ import org.java.plugin.JpfException;
  */
 public final class Driver {
   private static final Log LOGGER = LogFactory.getLog(Driver.class);
-  private static final String COLON = ":"; // $NON-NLS-1$
+  private static final String COLON = ":";
 
   private static Driver driver = null;
 
@@ -124,10 +124,10 @@ public final class Driver {
   public static void displayError(Component parent, String messageGroup, Throwable throwable) {
     PropBagEx xml = Messages.getInstance().getError(messageGroup);
     if (xml == null) {
-      xml = Messages.getInstance().getError("unknown"); // $NON-NLS-1$
+      xml = Messages.getInstance().getError("unknown");
     }
-    String title = xml.getNode("title"); // $NON-NLS-1$
-    String message = xml.getNode("message"); // $NON-NLS-1$
+    String title = xml.getNode("title");
+    String message = xml.getNode("message");
     String thrownMsg = throwable.getMessage();
     if (!Check.isEmpty(thrownMsg)) {
       // Most likely thrown message is prefixed with a ':' separated chain
@@ -136,9 +136,9 @@ public final class Driver {
       if (thrownMsg.contains(COLON)) {
         thrownMsg = thrownMsg.substring(thrownMsg.lastIndexOf(COLON) + 1);
       }
-      message += "\n\n" + thrownMsg; // $NON-NLS-1$
+      message += "\n\n" + thrownMsg;
     }
-    message = message.replaceAll("\\\\n", "\n"); // $NON-NLS-1$ //$NON-NLS-2$
+    message = message.replaceAll("\\\\n", "\n");
     displayErrorRaw(parent, title, message, throwable);
   }
 
@@ -154,7 +154,7 @@ public final class Driver {
       ed = new ExceptionDialog((Frame) parent, title, message, version, throwable);
     }
 
-    ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title")); // $NON-NLS-1$
+    ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title"));
     ed.setVisible(true);
   }
 
