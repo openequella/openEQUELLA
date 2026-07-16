@@ -232,19 +232,26 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
   protected def openModerationViewForCurrentUser(itemName: String): ModerationView =
     searchExactTask(itemName).moderate(itemName)
 
-  /** Assert the task shown in moderation view is assigned to the current user. */
-  protected def assertAssignedToMe(view: ModerationView): Unit =
-    assertTrue(view.isAssignedToMe, "Expected task to be assigned to the current user")
+  /** Open the moderation view for `itemName` from the current user's task list and assign the task
+    * to them.
+    */
+  protected def assignToMe(itemName: String): Unit =
+    openModerationViewForCurrentUser(itemName).assignToMe()
 
   /** Open the moderation view for `itemName` from the current user's task list and assert the task
     * is assigned to them.
     */
   protected def assertAssignedToMe(itemName: String): Unit =
-    assertAssignedToMe(openModerationViewForCurrentUser(itemName))
+    assertTrue(
+      openModerationViewForCurrentUser(itemName).isAssignedToMe,
+      s"Expected task for item $itemName to be assigned to the current user"
+    )
 
-  /** Assert the task shown in moderation view is not assigned to the current user. */
-  protected def assertNotAssignedToMe(view: ModerationView, reason: String): Unit =
-    assertFalse(view.isAssignedToMe, reason)
+  /** Open the moderation view for `itemName` from the current user's task list and assert the task
+    * is not assigned to them.
+    */
+  protected def assertNotAssignedToMe(itemName: String, reason: String): Unit =
+    assertFalse(openModerationViewForCurrentUser(itemName).isAssignedToMe, reason)
 
   /** Assert the task-list search returned no matching moderation tasks. */
   protected def assertNoTaskResults(results: ModerateListSearchResults): Unit =
