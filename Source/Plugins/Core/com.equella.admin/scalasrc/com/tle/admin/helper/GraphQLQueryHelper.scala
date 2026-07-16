@@ -21,6 +21,7 @@ package com.tle.admin.helper
 import com.tle.admin.service.ClientRequestException
 import com.tle.common.beans.exception.NotFoundException
 import io.github.openequella.graphql.api.{
+  AccessDeniedError,
   ApiError,
   ForwardPagination,
   NotFoundError,
@@ -155,6 +156,19 @@ object GraphQLQueryHelper {
 
   private def isNotFound(errors: List[ApiError]): Boolean =
     errors.forall(_.isInstanceOf[NotFoundError])
+
+  /** Checks whether the given exception is a [[ClientRequestException]] reporting an access denied
+    * (missing privilege) failure.
+    *
+    * @param ex
+    *   the exception to check
+    * @return
+    *   `true` if the exception carries an [[AccessDeniedError]]
+    */
+  def isAccessDenied(ex: Exception): Boolean = ex match {
+    case e: ClientRequestException => e.getApiErrorOfType(classOf[AccessDeniedError]).isDefined
+    case _                         => false
+  }
 
   /** Get an entity by its identifier and throwing a NotFoundException if it does not exist. This is
     * an alternative to `getOptionalEntity` that is useful when providing implementations to match

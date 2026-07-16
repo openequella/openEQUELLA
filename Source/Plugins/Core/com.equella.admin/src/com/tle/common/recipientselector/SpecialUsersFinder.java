@@ -18,8 +18,11 @@
 
 package com.tle.common.recipientselector;
 
+import static com.tle.admin.helper.GraphQLQueryHelper.isAccessDenied;
+
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.Driver;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
@@ -33,11 +36,11 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.EventListenerList;
 
-@SuppressWarnings("nls")
 public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
   @Serial private static final long serialVersionUID = 1L;
 
@@ -138,6 +141,9 @@ public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
             boolean enable = sharedSecretId.isSelected();
             boolean empty = sharedSecretIds.getItemCount() == 0;
 
+            final String LIST_SHARED_SECRETS_ERROR_KEY_PREFIX =
+                "com.tle.admin.recipients.specialusersfinder.listSharedSecretIdsError.";
+
             if (enable && empty) {
               GlassSwingWorker<List<String>> worker =
                   new GlassSwingWorker<List<String>>() {
@@ -150,6 +156,25 @@ public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
                     public void finished() {
                       AppletGuiUtils.addItemsToJCombo(sharedSecretIds, get());
                       sharedSecretIds.setEnabled(true);
+                    }
+
+                    @Override
+                    public void exception() {
+                      Exception ex = getException();
+                      if (isAccessDenied(ex)) {
+                        JOptionPane.showMessageDialog(
+                            SpecialUsersFinder.this,
+                            CurrentLocale.get(
+                                LIST_SHARED_SECRETS_ERROR_KEY_PREFIX + "accessDenied"),
+                            CurrentLocale.get(LIST_SHARED_SECRETS_ERROR_KEY_PREFIX + "title"),
+                            JOptionPane.WARNING_MESSAGE);
+                      } else {
+                        Driver.displayError(
+                            SpecialUsersFinder.this,
+                            LIST_SHARED_SECRETS_ERROR_KEY_PREFIX + "title",
+                            LIST_SHARED_SECRETS_ERROR_KEY_PREFIX + "message",
+                            ex);
+                      }
                     }
                   };
               worker.setComponent(SpecialUsersFinder.this);
