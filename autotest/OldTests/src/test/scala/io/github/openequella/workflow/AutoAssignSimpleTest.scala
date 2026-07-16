@@ -31,7 +31,7 @@ class AutoAssignSimpleTest extends AbstractAutoAssignTest {
     val item = contribute(autoAssignByMetadataCollection, moderatorA)
 
     withLoggedInUser(moderatorA) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
+      assertAssignedToMe(item.name)
     }
   }
 }

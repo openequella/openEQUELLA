@@ -236,6 +236,16 @@ abstract class AbstractAutoAssignTest extends AbstractCleanupTest {
   protected def assertAssignedToMe(view: ModerationView): Unit =
     assertTrue(view.isAssignedToMe, "Expected task to be assigned to the current user")
 
+  /** Open the moderation view for `itemName` from the current user's task list and assert the task
+    * is assigned to them.
+    */
+  protected def assertAssignedToMe(itemName: String): Unit =
+    assertAssignedToMe(openModerationViewForCurrentUser(itemName))
+
+  /** Assert the task shown in moderation view is not assigned to the current user. */
+  protected def assertNotAssignedToMe(view: ModerationView, reason: String): Unit =
+    assertFalse(view.isAssignedToMe, reason)
+
   /** Assert the task-list search returned no matching moderation tasks. */
   protected def assertNoTaskResults(results: ModerateListSearchResults): Unit =
     assertFalse(results.isResultsAvailable, "Expected no matching moderation tasks")

@@ -19,7 +19,8 @@
 package io.github.openequella.workflow
 
 import com.tle.webtests.framework.TestInstitution
-import com.tle.webtests.pageobject.tasklist.TaskListPage
+import com.tle.webtests.pageobject.searching.ModerateListSearchResults
+import com.tle.webtests.pageobject.tasklist.ModerationView
 import org.testng.Assert.{assertEquals, assertFalse}
 import org.testng.annotations.Test
 
@@ -36,11 +37,17 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(singleModeratorCollection, moderatorA)
 
-    assertAssignedToViaUi(item, moderatorA)
+    withLoggedInUser(moderatorA) {
+      assertAssignedToMe(item.name)
+    }
+
     replaceModerator(item.name, moderatorA, moderatorB)
-    assertNoTaskVisible(item, moderatorA)
+
+    withLoggedInUser(moderatorA) {
+      assertTaskNotPresent(item)
+    }
     assertAssignedToViaRest(item, moderatorB)
-    assertModeratorCanModerateAndAcceptTask(item, moderatorB)
+    assertModeratorCanAcceptTask(item, moderatorB)
   }
 
   @Test
@@ -50,18 +57,18 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
 
     withAdmin {
       val view = openModerationViewForCurrentUser(item.name)
-      assertFalse(
-        view.isAssignedToMe,
+      assertNotAssignedToMe(
+        view,
         s"item ${item.name} should not be assigned to the admin before they manually assign it to themselves"
       )
       view.assignToMe()
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
+      assertAssignedToMe(item.name)
     }
 
     replaceModerator(item.name, moderatorA, moderatorB)
+
     withAdmin {
-      val view = openModerationViewForCurrentUser(item.name)
-      assertAssignedToMe(view)
+      assertAssignedToMe(item.name)
     }
   }
 
@@ -70,14 +77,16 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(multiModeratorCollection, moderatorA)
 
-    assertAssignedToViaUi(item, moderatorA)
+    withLoggedInUser(moderatorA) {
+      assertAssignedToMe(item.name)
+    }
 
     addModerator(item.name, moderatorB)
 
     withLoggedInUser(moderatorB) {
       val view = openModerationViewForCurrentUser(item.name)
-      assertFalse(
-        view.isAssignedToMe,
+      assertNotAssignedToMe(
+        view,
         s"item ${item.name} should stay with ${moderatorA.username} after adding ${moderatorB.username}"
       )
       assertEquals(view.getAssignedTo, moderatorA.fullName.get)
@@ -89,29 +98,22 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
     val item =
       contribute(singleModeratorCollection, moderatorA)
 
-    assertAssignedToViaUi(item, moderatorA)
+    withLoggedInUser(moderatorA) {
+      assertAssignedToMe(item.name)
+    }
 
     withRestClient(contributor) { rest =>
       rest.editMetadata(item.id)(_.setNode(moderatorMetadataPath, requiredUuid(moderatorB)))
     }
 
     assertAssignedToViaRest(item, moderatorB)
-    assertNoTaskVisible(item, moderatorA)
-    assertAssignedToViaUi(item, moderatorB)
+    withLoggedInUser(moderatorA) {
+      assertTaskNotPresent(item)
+    }
+    withLoggedInUser(moderatorB) {
+      assertAssignedToMe(item.name)
+    }
   }
-
-  /** Log in as `moderator` and assert the item's task is assigned to them. */
-  private def assertAssignedToViaUi(item: ContributedItem, moderator: TestActor): Unit =
-    withLoggedInUser(moderator) {
-      assertAssignedToMe(openModerationViewForCurrentUser(item.name))
-    }
-
-  /** Log in as `moderator` and assert that no moderation task for the item is visible to them. */
-  private def assertNoTaskVisible(item: ContributedItem, moderator: TestActor): Unit =
-    withLoggedInUser(moderator) {
-      val taskList = new TaskListPage(context).load()
-      assertNoTaskResults(taskList.exactQuery(item.name))
-    }
 
   /** Assert, via the REST API, that the item's review task is assigned to `moderator`. */
   private def assertAssignedToViaRest(item: ContributedItem, moderator: TestActor): Unit =
@@ -125,24 +127,42 @@ class MetadataModeratorAssignmentTest extends AbstractAutoAssignTest {
   /** Log in as `moderator` and verify they can take ownership of the item's task, moderate it, and
     * that it leaves their task list once accepted.
     */
-  private def assertModeratorCanModerateAndAcceptTask(
-      item: ContributedItem,
-      moderator: TestActor
-  ): Unit =
+  private def assertModeratorCanAcceptTask(item: ContributedItem, moderator: TestActor): Unit =
     withLoggedInUser(moderator) {
       val results = searchExactTask(item.name)
-      assertEquals(
-        results.getResultForTitle(item.name).getDetailText(ASSIGNED_TO_LABEL),
-        ME_LABEL
-      )
+      assertTaskAssignedToCurrentUser(results, item)
 
       val view = results.moderate(item.name)
-      assertAssignedToMe(view)
-      assertFalse(
-        view.moderationDisabled(),
-        s"${moderator.username} should be able to moderate item ${item.name}"
-      )
+      assertTaskCanBeModerated(view, item, moderator)
+
       view.accept()
-      assertNoTaskResults(searchExactTask(item.name))
+      assertTaskNotPresent(item)
     }
+
+  /** Assert the task-list search result for `item` shows it assigned to the current user. */
+  private def assertTaskAssignedToCurrentUser(
+      results: ModerateListSearchResults,
+      item: ContributedItem
+  ): Unit =
+    assertEquals(
+      results.getResultForTitle(item.name).getDetailText(ASSIGNED_TO_LABEL),
+      ME_LABEL
+    )
+
+  /** Assert `moderator` can moderate `item`'s task in the given moderation `view`. */
+  private def assertTaskCanBeModerated(
+      view: ModerationView,
+      item: ContributedItem,
+      moderator: TestActor
+  ): Unit = {
+    assertAssignedToMe(view)
+    assertFalse(
+      view.moderationDisabled(),
+      s"${moderator.username} should be able to moderate item ${item.name}"
+    )
+  }
+
+  /** Assert no moderation task remains for `item`. */
+  private def assertTaskNotPresent(item: ContributedItem): Unit =
+    assertNoTaskResults(searchExactTask(item.name))
 }
