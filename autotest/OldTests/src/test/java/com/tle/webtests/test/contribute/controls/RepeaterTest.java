@@ -68,8 +68,7 @@ public class RepeaterTest extends AbstractWizardControlsTest {
 
   @Test(dependsOnMethods = "contribute")
   public void validateItem() throws Exception {
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     PropBagEx cXml = itemXml.getSubtree("item/controls");
     assertEquals(cXml, "repeater[0]/editbox", "First");
     assertEquals(cXml, "repeater[1]/editbox", "DefaultValue");

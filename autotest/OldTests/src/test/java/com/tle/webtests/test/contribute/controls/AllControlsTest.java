@@ -161,8 +161,7 @@ public class AllControlsTest extends AbstractWizardControlsTest {
 
   @Test(dependsOnMethods = "contribute")
   public void validateItem() throws Exception {
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     PropBagEx cXml = itemXml.getSubtree("item/controls");
     assertEquals(cXml, "editbox", "EditBox");
     assertEquals(cXml, "listbox", "1");

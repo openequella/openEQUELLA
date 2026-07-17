@@ -15,10 +15,15 @@ import com.tle.webtests.pageobject.wizard.DRMUsageWizardPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.WizardUrlPage;
 import com.tle.webtests.pageobject.wizard.controls.AbstractWizardControlsTest;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
@@ -35,6 +40,11 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
 
   @Override
   protected void prepareBrowserSession() {
+    logon();
+  }
+
+  @BeforeClass
+  public void setUp() {
     logon();
   }
 
@@ -63,14 +73,13 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     accessPage.setAcceptanceTerms(TERM_MSG);
     SummaryPage viewing = wizardPage.save().publish();
     ItemId itemId = viewing.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     checkOdrl(itemXml);
     wizardPage = new WizardUrlPage(context, itemId).edit();
     wizardPage.next();
     wizardPage.next();
     wizardPage.saveNoConfirm();
-    itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    itemXml = getItemXml(itemId);
     checkOdrl(itemXml);
   }
 
@@ -86,14 +95,13 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     wizardPage.next();
     SummaryPage viewing = wizardPage.save().publish();
     ItemId itemId = viewing.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     checkOdrlCustom(itemXml, true);
     wizardPage = new WizardUrlPage(context, itemId).edit();
     wizardPage.next();
     wizardPage.next();
     wizardPage.saveNoConfirm();
-    itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    itemXml = getItemXml(itemId);
     checkOdrlCustom(itemXml, true);
   }
 
@@ -157,10 +165,8 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     Assert.assertEquals(searchPage.results().getResult(1).getTitle(), fullitemname);
 
     // Check item xml
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     assertEquals(itemXml, "/item/rights/offer/party/context/name", "Auto Test [AutoTest]");
-    soap.logout();
   }
 
   @Test
@@ -178,14 +184,13 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     rightsPage.setCustomReuse(false, "annotate", "aggregate");
     SummaryPage viewing = wizardPage.save().publish();
     ItemId itemId = viewing.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     checkOdrlCustom(itemXml, false);
     wizardPage = new WizardUrlPage(context, itemId).edit();
     wizardPage.next();
     rightsPage.setWhat("basic");
     wizardPage.saveNoConfirm();
-    itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    itemXml = getItemXml(itemId);
     checkOdrlCustom(itemXml, true);
   }
 
@@ -220,13 +225,12 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     rightsPage.addOther("Jolse", "jolse.maginnis@equella.com");
     SummaryPage viewing = wizardPage.save().publish();
     ItemId itemId = viewing.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     checkOdrlNone(itemXml);
     wizardPage = new WizardUrlPage(context, itemId).edit();
     wizardPage.next();
     wizardPage.saveNoConfirm();
-    itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    itemXml = getItemXml(itemId);
     checkOdrlNone(itemXml);
   }
 
@@ -324,5 +328,28 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     if (uuid != null) {
       assertEquals(context, "uid", "tle:" + uuid);
     }
+  }
+
+  /**
+   * Since the metadata returned from the standard Item GET API does not include DRM data, a
+   * different approach where the metadata including DRM is retrieved from the Item <XML> endpoint
+   * is implemented in this test suite.
+   */
+  @Override
+  protected PropBagEx getItemXml(ItemId itemId) throws IOException {
+    String token = getToken();
+
+    URI itemXmlUri =
+        URI.create(
+            context.getBaseUrl()
+                + "items/"
+                + itemId.getUuid()
+                + "/"
+                + itemId.getVersion()
+                + "/%3CXML%3E");
+    HttpResponse response = execute(new HttpGet(itemXmlUri), false, token);
+
+    Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
+    return new PropBagEx(response.getEntity().getContent());
   }
 }

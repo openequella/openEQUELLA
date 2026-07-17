@@ -73,8 +73,7 @@ public class GroupsAndDisabling extends AbstractWizardControlsTest {
 
   @Test(dependsOnMethods = "contribute")
   public void validateItem() throws Exception {
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     assertEquals(itemXml, "item/same/checkboxes", Arrays.asList("1", "2", "5", "6"));
     PropBagEx cXml = itemXml.getSubtree("item/controls");
     assertEquals(cXml, "group", Arrays.asList("group1"));

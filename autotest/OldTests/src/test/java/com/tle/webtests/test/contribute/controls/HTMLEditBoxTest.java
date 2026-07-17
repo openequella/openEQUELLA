@@ -75,10 +75,8 @@ public class HTMLEditBoxTest extends AbstractWizardControlsTest {
 
     // Check XML
     ItemId itemId = summary.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     assertTrue(checkItemXml(itemXml, CONTENT, HTML));
-    soap.logout();
 
     // Edit item and check content is present and equal
     wizard = summary.edit();
@@ -102,6 +100,7 @@ public class HTMLEditBoxTest extends AbstractWizardControlsTest {
   @Test
   public void itemXmlHtmlTest() throws Exception {
     // Load contribution wizard
+    logon();
     ContributePage contribute = new ContributePage(context).load();
     WizardPageTab wizard = contribute.openWizard("HTML Edit Box");
 
@@ -119,12 +118,10 @@ public class HTMLEditBoxTest extends AbstractWizardControlsTest {
 
     // Check HTML in XML and ensure no <body></body> tags
     ItemId itemId = summary.getItemId();
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     String htmlNode = itemXml.getNode("item/controls/html/htmleditbox");
     assertFalse(htmlNode.contains("<body>") || htmlNode.contains("</body>"));
     htmlNode = itemXml.getNode("item/controls/html/htmleditboxondemand");
     assertFalse(htmlNode.contains("<body>") || htmlNode.contains("</body>"));
-    soap.logout();
   }
 }
