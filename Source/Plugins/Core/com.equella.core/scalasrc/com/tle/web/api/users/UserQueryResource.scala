@@ -157,11 +157,4 @@ class UserQueryResource {
       case _                             => Iterable()
     }
   }
-
-  @GET
-  @Path("userinfobackup")
-  def getUserInfoBackup(@QueryParam("uniqueId") uniqueId: String) = {
-    val userService = LegacyGuice.userService
-    userService.findUserInfoBackup(uniqueId)
-  }
 }
