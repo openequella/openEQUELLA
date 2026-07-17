@@ -188,14 +188,22 @@ class AuthTest extends AnyFunSpec with Matchers {
     }
 
     it("applies default ports when the Origin omits them") {
-      // Same host as the institution, but https on both sides: the Origin omits the port while
-      // the institution URL carries an explicit :443 — the two must still be considered equal.
-      val host = institution.getHost
-      Auth.isTrustedOrigin(
-        Some(s"https://$host"),
-        None,
-        URI.create(s"https://$host:443/inst/")
-      ) shouldBe true
+      // The Origin omits the port while the institution URL carries the scheme's default explicitly —
+      // the two must still be considered equal on both http (:80) and https (:443).
+      val host  = institution.getHost
+      val cases = Table(
+        ("scheme", "defaultPort"),
+        ("https", 443),
+        ("http", 80)
+      )
+
+      forAll(cases) { (scheme, defaultPort) =>
+        Auth.isTrustedOrigin(
+          Some(s"$scheme://$host"),
+          None,
+          URI.create(s"$scheme://$host:$defaultPort/inst/")
+        ) shouldBe true
+      }
     }
   }
 }
