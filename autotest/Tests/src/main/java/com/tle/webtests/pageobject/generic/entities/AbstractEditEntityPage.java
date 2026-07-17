@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.generic.entities;
 
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
-import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
 import java.util.Objects;
@@ -102,7 +101,7 @@ public abstract class AbstractEditEntityPage<
     getSaveButton().click();
     By errorBy = By.className("ctrlinvalidmessage");
     return ExpectWaiter.waiter(
-            ExpectedConditions2.refreshed(
+            ExpectedConditions.refreshed(
                 ExpectedConditions.and(
                     ExpectedConditions.visibilityOfElementLocated(errorBy),
                     ExpectedConditions.textToBePresentInElementLocated(errorBy, expectedError))),

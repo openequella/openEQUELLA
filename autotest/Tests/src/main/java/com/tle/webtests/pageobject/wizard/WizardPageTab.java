@@ -11,7 +11,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -134,52 +133,26 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
   /**
    * Retrieves the current active page index from the wizard page list.
    *
-   * <p>This method identifies which page in the wizard navigation is currently active by locating
-   * the list item with the "active" class and parsing its ID attribute. The implementation handles
-   * transient DOM staleness that may occur during wizard page transitions.
-   *
-   * @return the zero-based index of the currently active wizard page
-   * @throws RuntimeException if the active page element cannot be found or its index cannot be
-   *     determined (e.g., if the wizard page list is not present or has an unexpected structure)
-   */
-  public int getCurrentPageIndex() {
-    return retrieveActivePageIndex()
-        .orElseThrow(
-            () ->
-                new RuntimeException("Failed to retrieve active page index from wizard page list"));
-  }
-
-  /**
-   * Retrieves the active page index from the wizard page list, handling transient staleness during
-   * DOM updates.
-   *
-   * <p>This method uses a waiter to retry the entire operation (finding the element AND reading its
-   * attributes) since both the element lookup and getAttribute() can trigger stale element
-   * exceptions.
+   * <p>Identifies which page in the wizard navigation is active by locating the list item with the
+   * "active" class and parsing its ID attribute. The waiter retries the whole lookup (find element
+   * AND read its id) to ride out transient DOM staleness during wizard page transitions.
    *
    * <p>Expected ID format: "pages_N" where N is the page index number.
    *
-   * @return an Optional containing the parsed page index if successful, or empty if retrieval timed
-   *     out
+   * @return the zero-based index of the currently active wizard page
+   * @throws org.openqa.selenium.TimeoutException if the active page index cannot be determined
+   *     within the wait timeout
    */
-  private Optional<Integer> retrieveActivePageIndex() {
-    return Optional.ofNullable(
-        waiter.until(
-            driver -> {
-              try {
-                WebElement activePageElement =
-                    pageList.findElement(By.xpath("li[@class='active']"));
-                return parsePageId(activePageElement.getAttribute("id"));
-              } catch (StaleElementReferenceException | NoSuchElementException e) {
-                return null; // Waiter will retry
-              } catch (WebDriverException e) {
-                // Handle Chrome-specific stale node error
-                if (ExpectedConditions2.isChromeStaleNodeException(e)) {
-                  return null; // Waiter will retry
-                }
-                throw e;
-              }
-            }));
+  public int getCurrentPageIndex() {
+    return waiter.until(
+        driver -> {
+          try {
+            WebElement activePageElement = pageList.findElement(By.xpath("li[@class='active']"));
+            return parsePageId(activePageElement.getAttribute("id"));
+          } catch (StaleElementReferenceException | NoSuchElementException e) {
+            return null; // Waiter will retry
+          }
+        });
   }
 
   /**
