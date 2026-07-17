@@ -25,6 +25,7 @@ import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.{
 }
 import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.toItemDefinition
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
+import com.tle.admin.helper.GraphQLQueryHelper.executeOrThrow
 import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
@@ -104,15 +105,11 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
 
   override def add(pack: EntityPack[ItemDefinition], lockAfterwards: Boolean): BaseEntityLabel = {
     val details: CollectionDefinitionEditView = pack convert fromEntityPack
-    val addResult                             =
+
+    executeOrThrow("adding new collection")(
       if (lockAfterwards) CollectionDefinitionApi.addAndLock(details)
       else CollectionDefinitionApi.add(details)
-
-    addResult match {
-      case Right(ref)   => ref convert toBaseEntityLabel
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error adding new collection.", errors)
-    }
+    ) convert toBaseEntityLabel
   }
 
   override def clone(id: Long): BaseEntityLabel =
@@ -122,12 +119,9 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     startEditWith(CollectionDefinitionApi.startEdit)(_ convert toEntityPack)(id)
 
   override def startCreate(): EntityPack[ItemDefinition] =
-    CollectionDefinitionApi.startCreate() match {
-      case Right(startCreateView) =>
-        startCreateView convert EntitySkeletonViewConverter.toEntityPack(new ItemDefinition)
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error starting creation of new collection.", errors)
-    }
+    executeOrThrow("starting creation of new collection")(
+      CollectionDefinitionApi.startCreate()
+    ) convert EntitySkeletonViewConverter.toEntityPack(new ItemDefinition)
 
   override def stopEdit(pack: EntityPack[ItemDefinition], unlock: Boolean): ItemDefinition =
     stopEditWith(CollectionDefinitionApi.stopEdit, CollectionDefinitionApi.stopEditAndUnlock)(

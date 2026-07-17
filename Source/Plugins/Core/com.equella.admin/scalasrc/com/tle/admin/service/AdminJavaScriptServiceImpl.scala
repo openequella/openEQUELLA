@@ -19,7 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.NameValueViewConverter.toNameValue
-import com.tle.admin.helper.GraphQLQueryHelper.getOptionalEntity
+import com.tle.admin.helper.GraphQLQueryHelper.{executeOrThrow, getOptionalEntity}
 import com.tle.common.NameValue
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.JavaScriptApi
@@ -37,11 +37,9 @@ class AdminJavaScriptServiceImpl @Inject() (implicit
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminJavaScriptServiceImpl])
 
   override def listLibraries: java.util.List[NameValue] =
-    JavaScriptApi.listLibraries match {
-      case Right(libraries) => libraries.map(toNameValue).asJava
-      case Left(errors)     =>
-        throw new ClientRequestException("Error listing JavaScript libraries.", errors)
-    }
+    executeOrThrow("listing JavaScript libraries")(JavaScriptApi.listLibraries)
+      .map(toNameValue)
+      .asJava
 
   override def modulesByLibraryId(
       libraryId: String

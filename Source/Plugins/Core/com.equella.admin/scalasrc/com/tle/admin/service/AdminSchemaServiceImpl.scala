@@ -25,7 +25,11 @@ import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.{
 }
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
-import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getOptionalEntityOrNotFound}
+import com.tle.admin.helper.GraphQLQueryHelper.{
+  executeOrThrow,
+  getAllUnpaginated,
+  getOptionalEntityOrNotFound
+}
 import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
@@ -55,14 +59,9 @@ class AdminSchemaServiceImpl @Inject() (implicit
     getAllUnpaginated("Schema uses", id, MetadataSchemaApi.getUses).map(toBaseEntityLabel).asJava
 
   override def hasReferencingClasses(id: Long): Boolean =
-    MetadataSchemaApi.hasReferences(id) match {
-      case Right(hasRefs) => hasRefs
-      case Left(errors)   =>
-        throw new ClientRequestException(
-          s"Error checking references for schema with ID: $id",
-          errors
-        )
-    }
+    executeOrThrow(s"checking references for schema with ID: $id")(
+      MetadataSchemaApi.hasReferences(id)
+    )
 
   override def getImportSchemaTypes(id: Long): util.List[String] =
     new util.ArrayList[
@@ -96,12 +95,9 @@ class AdminSchemaServiceImpl @Inject() (implicit
     startEditWith(MetadataSchemaApi.startEdit)(_ convert toEntityPack)(id)
 
   override def startCreate(): EntityPack[Schema] =
-    MetadataSchemaApi.startCreate() match {
-      case Right(startCreateView) =>
-        startCreateView convert EntitySkeletonViewConverter.toEntityPack(new Schema)
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error starting creation of new schema.", errors)
-    }
+    executeOrThrow("starting creation of new schema")(
+      MetadataSchemaApi.startCreate()
+    ) convert EntitySkeletonViewConverter.toEntityPack(new Schema)
 
   override def cancelEdit(id: Long, force: Boolean): Unit =
     cancelEditWith(MetadataSchemaApi.cancelEdit, MetadataSchemaApi.cancelEditForced)(id, force)
@@ -119,15 +115,11 @@ class AdminSchemaServiceImpl @Inject() (implicit
 
   override def add(pack: EntityPack[Schema], lockAfterwards: Boolean): BaseEntityLabel = {
     val details: MetadataSchemaEditView = pack convert fromEntityPack
-    val addResult                       =
+
+    executeOrThrow("adding new schema")(
       if (lockAfterwards) MetadataSchemaApi.addAndLock(details)
       else MetadataSchemaApi.add(details)
-
-    addResult match {
-      case Right(ref)   => ref convert toBaseEntityLabel
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error adding new schema.", errors)
-    }
+    ) convert toBaseEntityLabel
   }
 
   override def clone(id: Long): BaseEntityLabel =

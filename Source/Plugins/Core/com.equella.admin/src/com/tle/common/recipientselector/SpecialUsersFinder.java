@@ -23,11 +23,11 @@ import static com.tle.admin.helper.GraphQLQueryHelper.isAccessDenied;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +44,7 @@ import javax.swing.event.EventListenerList;
 public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
   @Serial private static final long serialVersionUID = 1L;
 
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryConfigService userDirectoryConfigService;
 
   private EventListenerList eventListenerList;
   private JRadioButton everyone;
@@ -54,8 +54,9 @@ public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
   private JRadioButton sharedSecretId;
   private JComboBox sharedSecretIds;
 
-  public SpecialUsersFinder(RemoteUserService userService, boolean hasOwner) {
-    this.userService = userService;
+  public SpecialUsersFinder(
+      AdminUserDirectoryConfigService userDirectoryConfigService, boolean hasOwner) {
+    this.userDirectoryConfigService = userDirectoryConfigService;
 
     setupGUI(hasOwner);
   }
@@ -146,10 +147,10 @@ public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
 
             if (enable && empty) {
               GlassSwingWorker<List<String>> worker =
-                  new GlassSwingWorker<List<String>>() {
+                  new GlassSwingWorker<>() {
                     @Override
-                    public List<String> construct() throws Exception {
-                      return userService.getTokenSecretIds();
+                    public List<String> construct() {
+                      return userDirectoryConfigService.listSharedSecretIds();
                     }
 
                     @Override

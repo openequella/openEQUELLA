@@ -18,7 +18,7 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getOptionalEntity}
+import com.tle.admin.helper.GraphQLQueryHelper.{executeOrThrow, getAll, getOptionalEntity}
 import com.tle.beans.user.GroupTreeNode
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.{InternalGroupApi, InternalGroupView}
@@ -40,46 +40,28 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEGroupServiceImpl])
 
   override def add(parentID: String, name: String): String = {
-    LOGGER.debug("Adding internal group: {}", name)
-    InternalGroupApi.createGroup(name, Option(parentID)) match {
-      case Right(InternalGroupView(uniqueId, _, newGroupName, _, _, _)) =>
-        LOGGER.debug(s"Internal group [{}] added with UUID {}", newGroupName, uniqueId)
-        uniqueId
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error adding internal group: $name", errors)
-    }
+    val created = executeOrThrow(s"adding internal group: $name")(
+      InternalGroupApi.createGroup(name, Option(parentID))
+    )
+    LOGGER.debug("Internal group [{}] added with UUID {}", created.name, created.uniqueId)
+    created.uniqueId
   }
 
-  override def edit(group: BasicGroupDetails): String = {
-    val uuid = group.getUuid
-    LOGGER.debug("Editing internal group: {}", uuid)
-    InternalGroupApi.updateGroup(
-      uniqueId = uuid,
-      name = Option(group.getName),
-      description = group.getDescription.toScala,
-      users = Some(group.getUsers.asScala.toList)
-    ) match {
-      case Right(InternalGroupView(uniqueId, _, newGroupName, _, _, _)) =>
-        LOGGER.debug(s"Internal group '{}' [{}] updated", newGroupName, uniqueId)
-        uniqueId
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error editing internal group: $uuid", errors)
-    }
-  }
+  override def edit(group: BasicGroupDetails): String =
+    executeOrThrow(s"editing internal group: ${group.getUuid}")(
+      InternalGroupApi.updateGroup(
+        uniqueId = group.getUuid,
+        name = Option(group.getName),
+        description = group.getDescription.toScala,
+        users = Some(group.getUsers.asScala.toList)
+      )
+    ).uniqueId
 
-  override def delete(groupID: String, deleteChildren: Boolean): Unit = {
-    LOGGER.debug("Deleting internal group: {}", groupID)
-    val deleteResult =
+  override def delete(groupID: String, deleteChildren: Boolean): Unit =
+    executeOrThrow(s"deleting internal group: $groupID")(
       if (deleteChildren) InternalGroupApi.deleteGroup(groupID)
       else InternalGroupApi.deleteGroupOnly(groupID)
-
-    deleteResult match {
-      case Right(_) =>
-        LOGGER.debug("Internal group [{}] deleted", groupID)
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error deleting internal group: $groupID", errors)
-    }
-  }
+    )
 
   override def get(id: String): Optional[BasicGroupDetails] =
     getGroup(id).map(toBasicGroupDetails).toJava
