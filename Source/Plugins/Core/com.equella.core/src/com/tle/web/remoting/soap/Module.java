@@ -35,7 +35,7 @@ public class Module extends AbstractModule {
   public static class SoapOptionalConfigModule extends OptionalConfigModule {
     @Override
     protected void configure() {
-      bindBoolean(SOAPAPI_ENABLED, false);
+      bindBoolean(SOAP_API_ENABLED_KEY, false);
     }
   }
 }
