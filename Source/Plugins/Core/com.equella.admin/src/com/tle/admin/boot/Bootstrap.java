@@ -19,9 +19,7 @@
 package com.tle.admin.boot;
 
 import com.dytech.common.net.Proxy;
-import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
-import com.tle.admin.service.AdminConsolePluginService;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.Check;
@@ -100,11 +98,7 @@ public final class Bootstrap {
       final URL endpointUrl = new URL(endpointParam);
       if (login(endpointUrl)) {
         final ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
-        final PluginServiceImpl pluginService =
-            new PluginServiceImpl(
-                endpointUrl,
-                Version.load().getCommit(),
-                clientService.getService(AdminConsolePluginService.class));
+        final PluginServiceImpl pluginService = clientService.getService(PluginServiceImpl.class);
         pluginService.registerPlugins();
 
         final HarnessInterface client =

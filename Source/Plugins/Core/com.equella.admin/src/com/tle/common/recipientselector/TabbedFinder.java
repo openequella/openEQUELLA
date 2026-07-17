@@ -19,9 +19,9 @@
 package com.tle.common.recipientselector;
 
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,9 @@ public class TabbedFinder extends JTabbedPane implements UserGroupRoleFinder, Fi
       addFinder(
           CurrentLocale.get("com.tle.admin.recipients.tabbedfinder.other"),
           new SpecialUsersFinder(
-              Driver.instance().getClientService().getService(RemoteUserService.class),
+              Driver.instance()
+                  .getClientService()
+                  .getService(AdminUserDirectoryConfigService.class),
               !fs.contains(RecipientFilter.NO_OWNER)));
     }
 

@@ -19,6 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.PluginDetailsViewConverter
+import com.tle.admin.helper.GraphQLQueryHelper.executeOrThrow
 import com.tle.beans.plugin.PluginDetails
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.AdminConsolePluginApi
@@ -32,13 +33,11 @@ import scala.jdk.CollectionConverters._
 class AdminConsolePluginServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminConsolePluginService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminConsolePluginServiceImpl])
+  private implicit val LOGGER: Logger =
+    LoggerFactory.getLogger(classOf[AdminConsolePluginServiceImpl])
 
-  override def listPlugins(): util.List[PluginDetails] = AdminConsolePluginApi.listPlugins match {
-    case Right(pluginViews) =>
-      LOGGER.debug(s"Successfully listed admin console plugins. Count: ${pluginViews.size}")
-      pluginViews.map(PluginDetailsViewConverter.toPluginDetails).asJava
-    case Left(errors) =>
-      throw new ClientRequestException("Error listing admin console plugins.", errors)
-  }
+  override def listPlugins(): util.List[PluginDetails] =
+    executeOrThrow("listing admin console plugins")(
+      AdminConsolePluginApi.listPlugins
+    ).map(PluginDetailsViewConverter.toPluginDetails).asJava
 }

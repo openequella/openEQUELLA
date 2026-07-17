@@ -18,7 +18,7 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getOptionalEntity}
+import com.tle.admin.helper.GraphQLQueryHelper.{executeOrThrow, getAll, getOptionalEntity}
 import com.tle.beans.user.TLEUser
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api._
@@ -55,23 +55,17 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     view.fold[Optional[TLEUser]](Optional.empty())(u => Optional.of(u))
 
   override def add(user: TLEUser): String = {
-    LOGGER.debug("Adding internal user: " + user.getUsername)
-    InternalUserApi.createUser(
-      user.getUsername,
-      Option(user.getEmailAddress),
-      user.getFirstName,
-      user.getLastName,
-      user.getPassword
-    ) match {
-      case Right(newUser) =>
-        LOGGER.debug(s"Internal user [${newUser.username}] added with UUID: ${newUser.uniqueId}")
-        newUser.uniqueId
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error adding internal user [${user.getUsername}]",
-          errors
-        )
-    }
+    val created = executeOrThrow(s"adding internal user: ${user.getUsername}")(
+      InternalUserApi.createUser(
+        user.getUsername,
+        Option(user.getEmailAddress),
+        user.getFirstName,
+        user.getLastName,
+        user.getPassword
+      )
+    )
+    LOGGER.debug("Internal user [{}] added with UUID: {}", created.username, created.uniqueId)
+    created.uniqueId
   }
 
   override def get(uniqueId: String): Optional[TLEUser] =
@@ -87,14 +81,8 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     * @throws ClientRequestException
     *   if there are any errors deleting the user
     */
-  override def delete(uuid: String): Unit = {
-    LOGGER.debug("Deleting internal user with UUID: " + uuid)
-    InternalUserApi.deleteUser(uuid) match {
-      case Right(_)     => LOGGER.debug(s"Internal user [$uuid] deleted")
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error deleting internal user [$uuid]", errors)
-    }
-  }
+  override def delete(uuid: String): Unit =
+    executeOrThrow(s"deleting internal user: $uuid")(InternalUserApi.deleteUser(uuid))
 
   /** Given an existing user's TLEUser entity which has been modified, update the user in the
     * database.
@@ -104,24 +92,17 @@ class AdminTLEUserServiceImpl @Inject() (implicit
     * @return
     *   The UUID of the updated user
     */
-  override def edit(user: TLEUser): String = {
-    val uuid = user.getUuid
-    LOGGER.debug("Editing internal user: {}", uuid)
-    InternalUserApi.updateUser(
-      uuid,
-      Option(user.getUsername),
-      Option(user.getEmailAddress),
-      Option(user.getFirstName),
-      Option(user.getLastName),
-      Option(user.getPassword)
-    ) match {
-      case Right(updatedUser) =>
-        LOGGER.debug("Internal user {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
-        updatedUser.uniqueId
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error updating internal user [$uuid]", errors)
-    }
-  }
+  override def edit(user: TLEUser): String =
+    executeOrThrow(s"updating internal user: ${user.getUuid}")(
+      InternalUserApi.updateUser(
+        user.getUuid,
+        Option(user.getUsername),
+        Option(user.getEmailAddress),
+        Option(user.getFirstName),
+        Option(user.getLastName),
+        Option(user.getPassword)
+      )
+    ).uniqueId
 
   override def searchUsers(query: String): java.util.List[TLEUser] = {
     LOGGER.debug("Searching for internal users with query: {}", query)

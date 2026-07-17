@@ -18,8 +18,10 @@
 
 package com.tle.client.guice;
 
+import com.dytech.edge.common.Version;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.tle.admin.PluginServiceImpl;
 import com.tle.admin.helper.ClientConfigurationHelper;
 import com.tle.admin.helper.RestConfigurationHelper;
 import com.tle.admin.rest.RestConfiguration;
@@ -43,6 +45,8 @@ import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEGroupServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
+import com.tle.admin.service.AdminUserDirectoryConfigServiceImpl;
 import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.service.AdminUserDirectoryServiceImpl;
 import com.tle.common.applet.client.ClientService;
@@ -77,6 +81,7 @@ public class ClientModule extends AbstractModule {
     bind(AdminSchemaService.class).to(AdminSchemaServiceImpl.class);
     bind(AdminTLEGroupService.class).to(AdminTLEGroupServiceImpl.class);
     bind(AdminTLEUserService.class).to(AdminTLEUserServiceImpl.class);
+    bind(AdminUserDirectoryConfigService.class).to(AdminUserDirectoryConfigServiceImpl.class);
     bind(AdminUserDirectoryService.class).to(AdminUserDirectoryServiceImpl.class);
   }
 
@@ -84,6 +89,17 @@ public class ClientModule extends AbstractModule {
   @Singleton
   ClientConfiguration provideClientConfiguration() {
     return ClientConfigurationHelper.create(serverUrl);
+  }
+
+  /**
+   * Provides the plugin service used to access Admin Console plugins. Note that plugins must still
+   * be registered (via {@link PluginServiceImpl#registerPlugins()}) before beans can be resolved -
+   * this is done during client start-up.
+   */
+  @Provides
+  @Singleton
+  PluginServiceImpl providePluginService(AdminConsolePluginService adminConsolePluginService) {
+    return new PluginServiceImpl(serverUrl, Version.load().getCommit(), adminConsolePluginService);
   }
 
   @Provides

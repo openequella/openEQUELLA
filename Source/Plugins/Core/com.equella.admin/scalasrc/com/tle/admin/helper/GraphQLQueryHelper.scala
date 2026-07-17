@@ -39,6 +39,36 @@ object GraphQLQueryHelper {
     */
   var PAGE_SIZE = 100
 
+  /** Executes a GraphQL operation, logging before and after the call and throwing an exception if
+    * there are errors.
+    *
+    * @param operation
+    *   a short description of the operation (e.g. "getting shared secret IDs") - used for logging
+    *   and building the error message
+    * @param result
+    *   the GraphQL call to execute (evaluated after the starting log message)
+    * @param logger
+    *   the logger to use for logging
+    * @tparam A
+    *   the type of the successful result
+    * @return
+    *   the unwrapped value if the operation succeeds
+    * @throws ClientRequestException
+    *   if the operation fails - i.e. if the result is a `Left`
+    */
+  def executeOrThrow[A](
+      operation: String
+  )(result: => Either[List[ApiError], A])(implicit logger: Logger): A = {
+    logger.debug("Executing {}", operation)
+    result match {
+      case Right(value) =>
+        logger.debug("Successfully completed {}", operation)
+        value
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error $operation", errors)
+    }
+  }
+
   /** Get an optional entity by its identifier, logging the result and throwing an exception if
     * there are errors.
     *
