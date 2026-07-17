@@ -19,10 +19,11 @@
 package com.tle.admin.baseentity;
 
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.filesystem.FileEntry;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -41,8 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -50,8 +50,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings({"nls", "serial"})
 public class EntityStagingFileViewer extends JPanel {
+  private static final StringLookup strings = Lookup.lookup;
+
   private final RemoteAbstractEntityService<?> service;
   private final String stagingID;
 
@@ -87,20 +88,13 @@ public class EntityStagingFileViewer extends JPanel {
     fileTree.setRootVisible(false);
     fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     fileTree.addTreeSelectionListener(
-        new TreeSelectionListener() {
-          @Override
-          public void valueChanged(TreeSelectionEvent e) {
-            DefaultMutableTreeNode node =
-                (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-            if (node == null) {
-              btnEnable(true, false, true, false);
-            } else {
-              if (!node.getAllowsChildren()) {
-                btnEnable(true, true, true, true);
-              } else {
-                btnEnable(true, false, true, true);
-              }
-            }
+        e -> {
+          DefaultMutableTreeNode node =
+              (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+          if (node == null) {
+            btnEnable(true, false, true, false);
+          } else {
+            btnEnable(true, !node.getAllowsChildren(), true, true);
           }
         });
 
@@ -356,7 +350,7 @@ public class EntityStagingFileViewer extends JPanel {
   }
 
   private class CustomTreeModel extends DefaultTreeModel {
-    private static final long serialVersionUID = -4340059723136834119L;
+    @Serial private static final long serialVersionUID = -4340059723136834119L;
 
     public CustomTreeModel(TreeNode root) {
       super(root);
@@ -386,6 +380,6 @@ public class EntityStagingFileViewer extends JPanel {
   }
 
   private static String s(String keyPart) {
-    return CurrentLocale.get("com.tle.admin.tools.stagingfileviewer." + keyPart);
+    return strings.text("stagingfileviewer." + keyPart);
   }
 }
