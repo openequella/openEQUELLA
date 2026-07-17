@@ -46,11 +46,10 @@ class StagingApiTest extends AbstractRestApiTest {
     makeClientRequest(authHelper.buildLoginMethod("AutoTest_StagingLowPriv", "``````"))
 
   private def withStaging(testCode: String => Unit): Unit = {
-    val response = StagingApi.createStaging()
-    assertEquals(response.status, HttpStatus.SC_CREATED, "Staging creation failed")
-    assertTrue(response.body.isDefined, "Missing staging UUID in response body")
+    val stagingUuid = assertResponseCreated(StagingApi.createStaging(), "Staging creation failed")
+    assertTrue(stagingUuid.isDefined, "Missing staging UUID in response body")
 
-    val uuid = response.body.get
+    val uuid = stagingUuid.get
     try testCode(uuid)
     finally StagingApi.deleteStaging(uuid)
   }
@@ -61,18 +60,13 @@ class StagingApiTest extends AbstractRestApiTest {
     logout()
     assertFalse(hasAuthenticatedSession, "Session should be guest after logout")
 
-    assertEquals(StagingApi.createStaging().status, HttpStatus.SC_FORBIDDEN)
-    assertEquals(StagingApi.getStaging(stagingUuid).status, HttpStatus.SC_FORBIDDEN)
-    assertEquals(
-      StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file).status,
-      HttpStatus.SC_FORBIDDEN
-    )
-    assertEquals(StagingApi.headFile(stagingUuid, AVATAR_FILENAME).status, HttpStatus.SC_FORBIDDEN)
-    assertEquals(
-      StagingApi.deleteFile(stagingUuid, AVATAR_FILENAME).status,
-      HttpStatus.SC_FORBIDDEN
-    )
-    assertEquals(StagingApi.deleteStaging(stagingUuid), HttpStatus.SC_FORBIDDEN)
+    assertResponseForbidden(StagingApi.createStaging())
+    assertResponseForbidden(StagingApi.getStaging(stagingUuid))
+    assertResponseForbidden(StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file))
+    assertResponseForbidden(StagingApi.headFile(stagingUuid, AVATAR_FILENAME))
+    assertResponseForbidden(StagingApi.deleteFile(stagingUuid, AVATAR_FILENAME))
+    assertResponseForbidden(StagingApi.createFolder(stagingUuid, Some("guest-folder")))
+    assertResponseForbidden(StagingApi.deleteStaging(stagingUuid))
 
     // Restore the authenticated session so subsequent tests don't run as guest
     login()
@@ -228,6 +222,67 @@ class StagingApiTest extends AbstractRestApiTest {
     )
   }
 
+  @Test(description =
+    "A created empty folder is visible in a folders=true listing but absent from the default" +
+      " (files-only) listing"
+  )
+  def createFolderTest(): Unit = withStaging { stagingUuid =>
+    assertResponseCreated(StagingApi.createFolder(stagingUuid, Some("empty-folder")))
+
+    assertEquals(folderNames(stagingUuid), List("empty-folder"), "Created folder should be listed")
+
+    assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach(staging =>
+      assertTrue(
+        staging.files.isEmpty,
+        "Default (files-only) listing should not include the empty folder"
+      )
+    )
+  }
+
+  @Test(description = "Creating a nested folder path creates the missing parent folders")
+  def createNestedFolderTest(): Unit = withStaging { stagingUuid =>
+    assertResponseCreated(StagingApi.createFolder(stagingUuid, Some("a/b/c")))
+
+    assertEquals(
+      folderNames(stagingUuid),
+      List("a", "a/b", "a/b/c"),
+      "Parent folders should be created alongside the leaf folder"
+    )
+  }
+
+  @Test(description = "Creating a folder that already exists is idempotent")
+  def createFolderIdempotentTest(): Unit = withStaging { stagingUuid =>
+    assertResponseCreated(StagingApi.createFolder(stagingUuid, Some("dupe")))
+    assertResponseCreated(
+      StagingApi.createFolder(stagingUuid, Some("dupe")),
+      "Re-creating an existing folder should still succeed"
+    )
+  }
+
+  @Test(description = "Creating a folder without a path is a bad request")
+  def createFolderNoPathTest(): Unit = withStaging { stagingUuid =>
+    assertResponseBadRequest(StagingApi.createFolder(stagingUuid, path = None))
+  }
+
+  @DataProvider(name = "specialFolderNames")
+  def specialFolderNames(): Array[Array[AnyRef]] = Array(
+    Array("folder with spaces"),
+    Array("unicode-хцч-文件夹"),
+    // Text that merely looks URL-encoded must survive literally (no double decoding)
+    Array("percent%20and+plus"),
+    Array("query&meta=chars"),
+    Array("dots.dashes-under_scores")
+  )
+
+  @Test(
+    description = "Folder names with special characters survive the create/list round trip",
+    dataProvider = "specialFolderNames"
+  )
+  def createSpecialNameFolderTest(folderName: String): Unit = withStaging { stagingUuid =>
+    assertResponseCreated(StagingApi.createFolder(stagingUuid, Some(folderName)))
+    assertEquals(folderNames(stagingUuid), List(folderName), "Folder name should survive verbatim")
+  }
+
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
     assertResponseOk(
@@ -259,10 +314,9 @@ class StagingApiTest extends AbstractRestApiTest {
     val expectedText = "First half of the file. Second half of the file."
     val textChunks   = expectedText.grouped(5).toList
 
-    val startResponse = StagingApi.startMultipart(stagingUuid)
-    assertEquals(startResponse.status, HttpStatus.SC_CREATED)
-    assertTrue(startResponse.body.isDefined, "Missing uploadId")
-    val uploadId = startResponse.body.get
+    val startBody = assertResponseCreated(StagingApi.startMultipart(stagingUuid))
+    assertTrue(startBody.isDefined, "Missing uploadId")
+    val uploadId = startBody.get
 
     val uploadedParts = textChunks.zipWithIndex.map { case (chunk, index) =>
       val partNumber = index + 1
@@ -304,10 +358,10 @@ class StagingApiTest extends AbstractRestApiTest {
     StagingApi.uploadMultipartText(stagingUuid, uploadId, 1, chunkContent)
 
     // Attempt to complete it using an incorrect ETag
-    val badPart  = UploadedPart(1, incorrectEtag)
-    val response = StagingApi.completeMultipart(stagingUuid, TEST_TXT_FILENAME, uploadId, badPart)
-
-    assertEquals(response.status, HttpStatus.SC_BAD_REQUEST)
+    val badPart = UploadedPart(1, incorrectEtag)
+    assertResponseBadRequest(
+      StagingApi.completeMultipart(stagingUuid, TEST_TXT_FILENAME, uploadId, badPart)
+    )
   }
 
   @DataProvider(name = "badCopyData")
@@ -322,17 +376,12 @@ class StagingApiTest extends AbstractRestApiTest {
     description = "Attempt to copy an item with missing or invalid parameters",
     dataProvider = "badCopyData"
   )
-  def copyFromItemBadParamsTest(uuid: String, version: String): Unit = {
-    val response = StagingApi.copyFromItem(uuid, version)
-    assertEquals(response.status, HttpStatus.SC_BAD_REQUEST)
-  }
+  def copyFromItemBadParamsTest(uuid: String, version: String): Unit =
+    assertResponseBadRequest(StagingApi.copyFromItem(uuid, version))
 
   @Test(description = "Copy files from an existing item into a new staging area")
   def copyFromItemTest(): Unit = {
-    val response = StagingApi.copyFromItem(ITEM_UUID, "1")
-    assertEquals(response.status, HttpStatus.SC_CREATED)
-
-    val stagingUuid = response.body.get
+    val stagingUuid = assertResponseCreated(StagingApi.copyFromItem(ITEM_UUID, "1")).get
     assertResponseOk(StagingApi.getStaging(stagingUuid)).foreach { staging =>
       assertFalse(staging.files.isEmpty, "Files should have been copied from the item")
       assertTrue(
@@ -348,8 +397,7 @@ class StagingApiTest extends AbstractRestApiTest {
   @Test(description = "Low-privilege user is denied access to copy item files")
   def lowPrivilegeCopyFromItemTest(): Unit = {
     loginAsLowPrivilegeUser()
-    val response = StagingApi.copyFromItem(ITEM_UUID, "1")
-    assertEquals(response.status, HttpStatus.SC_FORBIDDEN)
+    assertResponseForbidden(StagingApi.copyFromItem(ITEM_UUID, "1"))
 
     // Ensure to log in back as normal user
     login()
@@ -361,11 +409,34 @@ class StagingApiTest extends AbstractRestApiTest {
     response.body
   }
 
+  /** Asserts the response completed with 201 Created and returns its body for further assertions.
+    */
+  private def assertResponseCreated[B](response: ApiResponse[B], message: String = null): B = {
+    assertEquals(response.status, HttpStatus.SC_CREATED, message)
+    response.body
+  }
+
+  /** Asserts the request was denied with 403 Forbidden. */
+  private def assertResponseForbidden(response: ApiResponse[_], message: String = null): Unit =
+    assertEquals(response.status, HttpStatus.SC_FORBIDDEN, message)
+
+  /** Asserts the request was rejected with 400 Bad Request. */
+  private def assertResponseBadRequest(response: ApiResponse[_], message: String = null): Unit =
+    assertEquals(response.status, HttpStatus.SC_BAD_REQUEST, message)
+
   private def findFileInStaging(
       staging: Option[StagingArea],
       exactFilePath: String
   ): Option[StagingFile] =
     staging.flatMap(_.files.find(_.name == exactFilePath))
+
+  /** The sorted names of the folder entries in a `folders=true` listing of the staging area. */
+  private def folderNames(stagingUuid: String): List[String] =
+    assertResponseOk(StagingApi.getStaging(stagingUuid, folders = Some(true))).toList
+      .flatMap(_.files)
+      .filter(_.folder.contains(true))
+      .map(_.name)
+      .sorted
 
   private def getTestFile(filename: String): File =
     new File(AbstractPage.getPathFromUrl(Attachments.get(filename)))
@@ -430,8 +501,14 @@ class StagingApiTest extends AbstractRestApiTest {
     def deleteFile(stagingUuid: String, filePath: String): ApiResponse[Option[Unit]] =
       execute(new DeleteMethod(stagingUrl(stagingUuid, filePath)))(_ => ())
 
-    def deleteStaging(stagingUuid: String): Int =
-      makeClientRequest(new DeleteMethod(stagingUrl(stagingUuid)))
+    def createFolder(stagingUuid: String, path: Option[String]): ApiResponse[Option[Unit]] = {
+      val method = new PostMethod(stagingUrl(stagingUuid, "folder"))
+      path.foreach(p => method.setQueryString(Array(new NameValuePair("path", p))))
+      execute(method)(_ => ())
+    }
+
+    def deleteStaging(stagingUuid: String): ApiResponse[Option[Unit]] =
+      execute(new DeleteMethod(stagingUrl(stagingUuid)))(_ => ())
 
     def headFile(stagingUuid: String, filePath: String): ApiResponse[Option[String]] =
       execute(new HeadMethod(stagingUrl(stagingUuid, filePath)))(m =>

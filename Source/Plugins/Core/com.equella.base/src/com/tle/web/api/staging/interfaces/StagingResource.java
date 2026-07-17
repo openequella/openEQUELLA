@@ -62,7 +62,8 @@ public interface StagingResource {
       @ApiParam(
               value =
                   "Folder to scope the listing to. When given, returned file names are relative"
-                      + " to this folder. Defaults to the whole staging area.",
+                      + " to this folder. A non-existent folder yields an empty listing. Defaults"
+                      + " to the whole staging area.",
               required = false)
           @QueryParam("path")
           String path,
@@ -73,6 +74,18 @@ public interface StagingResource {
           @QueryParam("checksums")
           @DefaultValue("true")
           boolean checksums);
+
+  @POST
+  @Path("/{uuid}/folder")
+  @ApiOperation(
+      value = "Create a folder (and any missing parent folders) within specified staging area")
+  Response createFolder(
+      @PathParam("uuid") String uuid,
+      @ApiParam(
+              value = "Path of the folder to create, relative to the staging area root.",
+              required = true)
+          @QueryParam("path")
+          String path);
 
   @HEAD
   @Path("/{uuid}/{filepath:(.*)}")
