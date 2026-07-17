@@ -77,7 +77,8 @@ public interface StagingResource {
 
   @POST
   @Path("/{uuid}/folder")
-  @ApiOperation(value = "Create a folder (and any missing parent folders) within a file area")
+  @ApiOperation(
+      value = "Create a folder (and any missing parent folders) within specified staging area")
   Response createFolder(
       @PathParam("uuid") String uuid,
       @ApiParam(
