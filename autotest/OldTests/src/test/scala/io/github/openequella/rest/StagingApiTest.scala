@@ -264,6 +264,25 @@ class StagingApiTest extends AbstractRestApiTest {
     assertResponseBadRequest(StagingApi.createFolder(stagingUuid, path = None))
   }
 
+  @DataProvider(name = "specialFolderNames")
+  def specialFolderNames(): Array[Array[AnyRef]] = Array(
+    Array("folder with spaces"),
+    Array("unicode-хцч-文件夹"),
+    // Text that merely looks URL-encoded must survive literally (no double decoding)
+    Array("percent%20and+plus"),
+    Array("query&meta=chars"),
+    Array("dots.dashes-under_scores")
+  )
+
+  @Test(
+    description = "Folder names with special characters survive the create/list round trip",
+    dataProvider = "specialFolderNames"
+  )
+  def createSpecialNameFolderTest(folderName: String): Unit = withStaging { stagingUuid =>
+    assertResponseCreated(StagingApi.createFolder(stagingUuid, Some(folderName)))
+    assertEquals(folderNames(stagingUuid), List(folderName), "Folder name should survive verbatim")
+  }
+
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
     assertResponseOk(
