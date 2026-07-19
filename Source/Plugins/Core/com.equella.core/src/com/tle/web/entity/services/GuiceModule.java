@@ -27,7 +27,6 @@ import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.schema.service.SchemaService;
 import com.tle.core.security.PrivilegeTreeService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.user.UserService;
 import com.tle.core.workflow.service.WorkflowService;
 
 public class GuiceModule extends AbstractModule {
@@ -39,12 +38,6 @@ public class GuiceModule extends AbstractModule {
   @Provides
   @Named("remoteSchemaService")
   Object provideSchemaService(SchemaService remote) {
-    return remote;
-  }
-
-  @Provides
-  @Named("remoteUserService")
-  Object provideUserService(UserService remote) {
     return remote;
   }
 

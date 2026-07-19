@@ -28,7 +28,6 @@ import com.tle.admin.service.AdminLoginService;
 import com.tle.client.guice.ClientModule;
 import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.common.applet.client.ClientService;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -93,7 +92,6 @@ public class ClientServiceImpl implements ClientService {
     return getInvokerService(clazz);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> T getInvokerService(Class<T> clazz) {
     synchronized (services) {
@@ -102,10 +100,6 @@ public class ClientServiceImpl implements ClientService {
         t =
             ClientProxyFactory.createSessionProxy(
                 this, clazz, "invoker/" + clazz.getName() + ".service");
-
-        if (t instanceof RemoteUserService) {
-          t = (T) new CachingUserServiceImpl((RemoteUserService) t);
-        }
         services.put(clazz, t);
       }
 
