@@ -19,13 +19,11 @@
 package com.tle.client.harness;
 
 import com.dytech.common.net.Proxy;
-import com.dytech.edge.common.Version;
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.PluginServiceImpl;
 import com.tle.admin.rest.AuthApi;
-import com.tle.admin.service.AdminConsolePluginService;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.BlindSSLSocketFactory;
@@ -345,11 +343,7 @@ public class ClientLauncher extends JFrame
 
             ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
 
-            PluginServiceImpl pluginService =
-                new PluginServiceImpl(
-                    endpointUrl,
-                    Version.load().getCommit(),
-                    clientService.getService(AdminConsolePluginService.class));
+            PluginServiceImpl pluginService = clientService.getService(PluginServiceImpl.class);
             pluginService.registerPlugins();
             HarnessInterface client =
                 (HarnessInterface)

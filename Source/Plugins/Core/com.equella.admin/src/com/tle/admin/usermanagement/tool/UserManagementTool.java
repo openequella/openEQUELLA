@@ -23,6 +23,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.PluginServiceImpl;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.admin.plugin.PluginDialog;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.admin.usermanagement.AbstractUMPlugin;
 import com.tle.admin.usermanagement.UMPConfig;
 import com.tle.admin.usermanagement.UMWConfig;
@@ -32,7 +33,6 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class UserManagementTool extends AdminToolSelect {
   protected static final Log LOGGER = LogFactory.getLog(UserManagementTool.class);
   private Collection<UMWConfig> wrappers;
   private String toolName;
-  private RemoteUserService userService;
+  private AdminUserDirectoryConfigService userDirectoryConfigService;
 
   public UserManagementTool() {
     super();
@@ -59,38 +59,35 @@ public class UserManagementTool extends AdminToolSelect {
 
     ClientService clientService = driver.getClientService();
     PluginServiceImpl pluginService = driver.getPluginService();
-    userService = clientService.getService(RemoteUserService.class);
+    userDirectoryConfigService = clientService.getService(AdminUserDirectoryConfigService.class);
 
     PluginTracker tracker =
         new PluginTracker(
             pluginService,
             "com.tle.admin.usermanagement.tool",
             "configUI",
-            null, //$NON-NLS-1$ //$NON-NLS-2$
-            new ExtensionParamComparator("displayorder")); // $NON-NLS-1$
+            null,
+            new ExtensionParamComparator("displayorder"));
     Collection<Extension> extensions = tracker.getExtensions();
     for (Extension extension : extensions) {
-      String settingsClass = extension.getParameter("settingsClass").valueAsString(); // $NON-NLS-1$
+      String settingsClassName = extension.getParameter("settingsClass").valueAsString();
 
-      Parameter param = extension.getParameter("class"); // $NON-NLS-1$
+      Parameter param = extension.getParameter("class");
       String className = param != null ? param.valueAsString() : null;
-      param = extension.getParameter("width"); // $NON-NLS-1$
+      param = extension.getParameter("width");
       int width = param != null ? param.valueAsNumber().intValue() : 0;
-      param = extension.getParameter("height"); // $NON-NLS-1$
+      param = extension.getParameter("height");
       int height = param != null ? param.valueAsNumber().intValue() : 0;
-      String name =
-          CurrentLocale.get(extension.getParameter("name").valueAsString()); // $NON-NLS-1$
+      String name = CurrentLocale.get(extension.getParameter("name").valueAsString());
 
-      UMWConfig umw = new UMWConfig(className, settingsClass, name, width, height, extension);
+      UMWConfig umw = new UMWConfig(className, settingsClassName, name, width, height, extension);
       wrappers.add(umw);
 
       pluginService.ensureActivated(extension.getDeclaringPluginDescriptor());
-      UserManagementSettings xml = userService.getPluginConfig(settingsClass);
-      if (xml != null) {
-        umw.setEnabled(xml.isEnabled());
-      } else {
-        umw.setVisible(false);
-      }
+      userDirectoryConfigService
+          .loadSettings(umw)
+          .ifPresentOrElse(
+              settings -> umw.setEnabled(settings.isEnabled()), () -> umw.setVisible(false));
     }
 
     super.setup(grantedPrivileges, toolName);
@@ -131,7 +128,6 @@ public class UserManagementTool extends AdminToolSelect {
             return createDialog(parentFrame, toolName, plugin, umplugin);
           }
 
-          @SuppressWarnings("unchecked")
           @Override
           public void finished() {
             Object o = get();
@@ -165,7 +161,8 @@ public class UserManagementTool extends AdminToolSelect {
 
   public PluginDialog<UserManagementSettings, UMPConfig> createDialog(
       Frame frame, String title, UMPConfig setting, GeneralPlugin<UserManagementSettings> gplugin) {
-    AbstractUMPlugin plugin = new AbstractUMPlugin(frame, title, setting, gplugin, userService);
+    AbstractUMPlugin plugin =
+        new AbstractUMPlugin(frame, title, setting, gplugin, userDirectoryConfigService);
     plugin.setup();
     return plugin;
   }

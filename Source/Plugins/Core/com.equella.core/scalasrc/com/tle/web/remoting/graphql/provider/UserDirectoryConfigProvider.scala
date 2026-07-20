@@ -18,13 +18,12 @@
 
 package com.tle.web.remoting.graphql.provider
 
-import com.tle.beans.ump.UserManagementSettings
+import com.tle.beans.ump.{UserManagementSettings, UserManagementSettingsSerialization}
 import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.services.user.UserService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 
 import javax.inject.{Inject, Singleton}
@@ -39,8 +38,7 @@ import scala.jdk.CollectionConverters._
 class UserDirectoryConfigProvider @Inject() (
     userService: UserService
 ) {
-  private val LOGGER       = LoggerFactory.getLogger(classOf[UserDirectoryConfigProvider])
-  private val objectMapper = new ObjectMapper()
+  private val LOGGER = LoggerFactory.getLogger(classOf[UserDirectoryConfigProvider])
 
   // Dynamically resolves a settings class by name and narrows its type to a subclass of
   // UserManagementSettings, allowing Jackson to deserialize JSON into the correct concrete type.
@@ -73,7 +71,7 @@ class UserDirectoryConfigProvider @Inject() (
   ): Either[ProviderError, Unit] =
     ProviderError
       .Try(errorMessagePrefix + ": ") {
-        val config = objectMapper.readValue(configJson, configClass)
+        val config = UserManagementSettingsSerialization.fromJson(configJson, configClass)
         userService.setPluginConfig(config)
       }
       .left
@@ -82,7 +80,7 @@ class UserDirectoryConfigProvider @Inject() (
   // Get the plugin config for the given settings class and serializes it to JSON.
   private def getPluginConfig(settingsClassName: String): Either[ProviderError, String] =
     Option(userService.getPluginConfig(settingsClassName))
-      .map(config => objectMapper.writeValueAsString(config))
+      .map(UserManagementSettingsSerialization.toJson)
       .toRight(
         ProviderError(
           s"User management plugin config not found for $settingsClassName",

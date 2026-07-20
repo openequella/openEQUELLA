@@ -152,4 +152,22 @@ object StagingApi {
       Right(())
     }
   }
+
+  /** Creates a folder (and any missing parent folders) in a staging area.
+    *
+    * @param stagingUuid
+    *   the UUID of the staging area to create the folder in
+    * @param folderPath
+    *   the path (relative to the staging area root) of the folder to create
+    */
+  def createFolder(stagingUuid: String, folderPath: String)(implicit
+      cfg: RestConfiguration
+  ): Either[RestError, Unit] = {
+    val request = basicRequest
+      .post(stagingUri(stagingUuid).addPath("folder").addParams("path" -> folderPath))
+      .response(asString)
+    handleResult(extractAction(request), send(request)) { _ =>
+      Right(())
+    }
+  }
 }

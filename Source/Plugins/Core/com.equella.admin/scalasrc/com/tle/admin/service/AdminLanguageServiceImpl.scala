@@ -19,6 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.LanguageViewConverter.toLanguage
+import com.tle.admin.helper.GraphQLQueryHelper.executeOrThrow
 import com.tle.beans.Language
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.LanguageApi
@@ -33,29 +34,18 @@ import java.lang
 class AdminLanguageServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminLanguageService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminLanguageServiceImpl])
+  private implicit val LOGGER: Logger =
+    LoggerFactory.getLogger(classOf[AdminLanguageServiceImpl])
 
   override def getNames(
       bundleIds: util.Collection[lang.Long]
   ): util.Map[lang.Long, String] = {
     val scalaIds = bundleIds.asScala.map(_.longValue()).toList
-    LanguageApi.namesByBundleIds(scalaIds) match {
-      case Right(bundleNames) =>
-        LOGGER.debug(s"Successfully resolved language bundle names for IDs: [$scalaIds]")
-        bundleNames.map(view => Long.box(view.id) -> view.string).toMap.asJava
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error resolving language bundle names with IDs: [$scalaIds].",
-          errors
-        )
-    }
+    executeOrThrow(s"resolving language bundle names with IDs: [$scalaIds]")(
+      LanguageApi.namesByBundleIds(scalaIds)
+    ).map(view => Long.box(view.id) -> view.string).toMap.asJava
   }
 
-  override def getLanguages: util.List[Language] = LanguageApi.listLanguages match {
-    case Right(languages) =>
-      LOGGER.debug(s"Successfully listed languages. Count: ${languages.size}")
-      languages.map(toLanguage).asJava
-    case Left(errors) =>
-      throw new ClientRequestException("Error listing languages.", errors)
-  }
+  override def getLanguages: util.List[Language] =
+    executeOrThrow("listing languages")(LanguageApi.listLanguages).map(toLanguage).asJava
 }
