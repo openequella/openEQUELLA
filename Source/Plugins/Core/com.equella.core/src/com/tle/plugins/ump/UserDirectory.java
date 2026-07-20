@@ -105,9 +105,6 @@ public interface UserDirectory {
    */
   VerifyTokenResult verifyUserStateForToken(UserState userState, String token);
 
-  /** Keeps the 'session' alive for the given token. */
-  void keepAlive();
-
   /** Logout the 'session' for the given token. */
   void logout(UserState state);
 

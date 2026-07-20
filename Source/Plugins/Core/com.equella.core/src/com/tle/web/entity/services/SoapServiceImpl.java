@@ -180,9 +180,13 @@ public class SoapServiceImpl implements SoapService50 {
     userService.logoutToGuest(getDetails(), false);
   }
 
+  /**
+   * Intentionally a no-op: as with {@code HeartbeatServlet}, simply receiving the request is enough
+   * to keep the caller's session alive.
+   */
   @Override
   public void keepAlive() {
-    userService.keepAlive();
+    // Nothing to do
   }
 
   @Override

@@ -49,12 +49,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface UserService extends UserDirectoryQueries {
   /**
-   * Notify each configured UserDirectory plugin that the current session is still active, giving
-   * plugins a chance to keep any external connections or sessions alive.
-   */
-  void keepAlive();
-
-  /**
    * Get the IDs of all shared secrets configured in the current user management chain.
    *
    * @return The shared secret IDs aggregated across all configured plugins

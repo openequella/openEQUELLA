@@ -71,8 +71,6 @@ public interface UserDirectoryChain extends UserDirectoryQueries {
 
   void initSystemUserState(ModifiableUserState state);
 
-  void keepAlive();
-
   void logout(UserState state);
 
   boolean verifyUserStateForToken(UserState userState, String token);
