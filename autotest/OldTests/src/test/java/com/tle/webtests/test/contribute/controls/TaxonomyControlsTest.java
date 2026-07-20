@@ -1,5 +1,6 @@
 package com.tle.webtests.test.contribute.controls;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -25,7 +26,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
@@ -44,18 +44,18 @@ public class TaxonomyControlsTest extends AbstractWizardControlsTest {
 
     AutoCompleteTermControl autoComplete = wizardPage.autoTermControl(3);
     autoComplete.selectNothing();
-    Assert.assertEquals(autoComplete.getSelections().getSelectionCount(), 0);
+    assertEquals(autoComplete.getSelections().getSelectionCount(), 0);
     autoComplete.selectExistingTerm("Animal", wizardPage);
-    Assert.assertEquals(autoComplete.getSelections().getSelections(), Lists.newArrayList("Animal"));
+    assertEquals(autoComplete.getSelections().getSelections(), Lists.newArrayList("Animal"));
 
     PopupTermControl popup = wizardPage.popupTermControl(4);
     wizardPage = popup.openDialog().finish(wizardPage);
-    Assert.assertEquals(popup.getSelections().getSelectionCount(), 0);
+    assertEquals(popup.getSelections().getSelectionCount(), 0);
 
     popup = wizardPage.popupTermControl(4);
     WaitingPageObject<StringSelectedStuff> selectWaiter = popup.selectWaiter("Animal");
     popup.openDialog().selectTerm("Animal").finish(selectWaiter);
-    Assert.assertEquals(popup.getSelections().getSelections(), Lists.newArrayList("Animal"));
+    assertEquals(popup.getSelections().getSelections(), Lists.newArrayList("Animal"));
     wizardPage.cancel(new ContributePage(context));
   }
 
@@ -119,9 +119,9 @@ public class TaxonomyControlsTest extends AbstractWizardControlsTest {
     autoTermControl.selectExistingTerm("Last", wizardPage);
 
     String term1Text = autoTermControl.getAddedTermByIndex(1);
-    Assert.assertEquals(term1Text, term1);
+    assertEquals(term1Text, term1);
     String term2Text = autoTermControl.getAddedTermByIndex(2);
-    Assert.assertEquals(term2Text, "Last");
+    assertEquals(term2Text, "Last");
 
     autoTermControl.addNewTerm(term2);
     itemId = wizardPage.save().publish().getItemId();
@@ -174,13 +174,13 @@ public class TaxonomyControlsTest extends AbstractWizardControlsTest {
     popupTermControl = second.popupTermControl(2);
     popupTermControl.openDialog().selectTerm(term2).finish(popupTermControl.selectWaiter(term2));
 
-    Assert.assertEquals(
+    assertEquals(
         first.autoTermControl(1).getSelections().getSelections(), Lists.newArrayList(term1));
-    Assert.assertEquals(
+    assertEquals(
         first.popupTermControl(2).getSelections().getSelections(), Lists.newArrayList(term1));
-    Assert.assertEquals(
+    assertEquals(
         second.autoTermControl(1).getSelections().getSelections(), Lists.newArrayList(term2));
-    Assert.assertEquals(
+    assertEquals(
         second.popupTermControl(2).getSelections().getSelections(), Lists.newArrayList(term2));
 
     SubWizardPage third = repeater.add(4, 3);
@@ -190,13 +190,13 @@ public class TaxonomyControlsTest extends AbstractWizardControlsTest {
 
     repeater.remove(1);
 
-    Assert.assertEquals(
+    assertEquals(
         first.autoTermControl(1).getSelections().getSelections(), Lists.newArrayList(term1));
-    Assert.assertEquals(
+    assertEquals(
         first.popupTermControl(2).getSelections().getSelections(), Lists.newArrayList(term1));
-    Assert.assertEquals(
+    assertEquals(
         third.autoTermControl(1).getSelections().getSelections(), Lists.newArrayList(term3));
-    Assert.assertEquals(
+    assertEquals(
         third.popupTermControl(2).getSelections().getSelections(), Lists.newArrayList(term3));
 
     wizardPage.cancel(new ContributePage(context));
