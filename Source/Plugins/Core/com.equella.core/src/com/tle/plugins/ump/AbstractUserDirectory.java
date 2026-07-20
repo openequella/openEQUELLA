@@ -109,11 +109,6 @@ public abstract class AbstractUserDirectory implements UserDirectory {
   }
 
   @Override
-  public void keepAlive() {
-    // Nothing to do
-  }
-
-  @Override
   public void logout(UserState state) {
     // Nothing to do
   }

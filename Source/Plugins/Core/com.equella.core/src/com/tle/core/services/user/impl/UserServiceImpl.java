@@ -490,11 +490,6 @@ public class UserServiceImpl
   }
 
   @Override
-  public void keepAlive() {
-    getCurrentPlugin().keepAlive();
-  }
-
-  @Override
   public void logoutToGuest(WebAuthenticationDetails details, boolean forceSession) {
     login(authenticateAsGuest(details), forceSession);
   }
@@ -505,12 +500,12 @@ public class UserServiceImpl
 
     // The header is spelt incorrectly on purpose.
     // See -> http://en.wikipedia.org/wiki/Referer
-    String referrer = request.getHeader("Referer"); // $NON-NLS-1$
+    String referrer = request.getHeader("Referer");
 
     String ipAddress = null;
     // Get any proxy forwarded addresses
     if (useXForwardedFor) {
-      String forwardedFor = request.getHeader("X-Forwarded-For"); // $NON-NLS-1$
+      String forwardedFor = request.getHeader("X-Forwarded-For");
       if (forwardedFor != null) {
         Matcher m = FORWARD_FOR_PATTERN.matcher(forwardedFor);
         if (m.matches() && m.groupCount() == 1) {

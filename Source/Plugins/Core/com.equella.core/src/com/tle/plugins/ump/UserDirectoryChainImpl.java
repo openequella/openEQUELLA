@@ -541,13 +541,6 @@ public class UserDirectoryChainImpl implements UserDirectoryChain {
   }
 
   @Override
-  public void keepAlive() {
-    for (UserDirectory ud : uds) {
-      ud.keepAlive();
-    }
-  }
-
-  @Override
   public void logout(UserState state) {
     for (UserDirectory ud : uds) {
       ud.logout(state);
