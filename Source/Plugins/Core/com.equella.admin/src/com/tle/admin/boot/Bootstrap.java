@@ -20,19 +20,15 @@ package com.tle.admin.boot;
 
 import com.dytech.common.net.Proxy;
 import com.tle.admin.PluginServiceImpl;
+import com.tle.admin.rest.AuthApi;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.Check;
-import com.tle.core.remoting.SessionLogin;
 import com.tle.exceptions.BadCredentialsException;
-import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.URL;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +38,6 @@ public final class Bootstrap {
       Pattern.compile("^([a-z][a-z])?(?:_([A-Z][A-Z])?(?:_(\\w+))?)?$");
 
   public static final String PROPERTY_PREFIX = "jnlp.";
-  public static final String TOKEN_PARAMETER = PROPERTY_PREFIX + "SESSION";
   public static final String ENDPOINT_PARAMETER = PROPERTY_PREFIX + "ENDPOINT";
   public static final String LOCALE_PARAMETER = PROPERTY_PREFIX + "LOCALE";
   public static final String SERVER_NAME_PARAMETER = "SERVER_NAME";
@@ -117,59 +112,48 @@ public final class Bootstrap {
 
   private boolean login(URL endpointUrl) {
     try {
+      // Must be installed before the first REST call: the shared REST/GraphQL backends capture
+      // the default CookieHandler, and the login response's JSESSIONID lands in it.
       CookieHandler.setDefault(new CookieManager());
-      String tokenParam = System.getProperty(TOKEN_PARAMETER);
-      if (tokenParam != null) {
-        String token =
-            new String(Base64.getDecoder().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
-        Map<String, String> params = new HashMap<>();
-        params.put("token", token);
-        SessionLogin.postLogin(endpointUrl, params);
-        return true;
-      } else {
-        // bring up username/password modal
-        String username = System.getProperty(USERNAME_PARAMETER);
-        String password = System.getProperty(PASSWORD_PARAMETER);
 
-        LoginDialog loginDialog = new LoginDialog();
-        try {
-          if (username != null && password != null) {
+      // bring up username/password modal
+      String username = System.getProperty(USERNAME_PARAMETER);
+      String password = System.getProperty(PASSWORD_PARAMETER);
+
+      LoginDialog loginDialog = new LoginDialog();
+      try {
+        if (username != null && password != null) {
+          if (tryLogin(endpointUrl, username, password)) {
+            return true;
+          }
+        }
+
+        while (true) {
+          loginDialog.setUsername(username);
+          loginDialog.setVisible(true);
+          if (loginDialog.getResult() == LoginDialog.RESULT_OK) {
+            username = loginDialog.getUsername();
+            password = loginDialog.getPassword();
             if (tryLogin(endpointUrl, username, password)) {
               return true;
-            }
-          }
-
-          while (true) {
-            loginDialog.setUsername(username);
-            loginDialog.setVisible(true);
-            if (loginDialog.getResult() == LoginDialog.RESULT_OK) {
-              username = loginDialog.getUsername();
-              password = loginDialog.getPassword();
-              if (tryLogin(endpointUrl, username, password)) {
-                return true;
-              } else {
-                loginDialog.setErrorMessage("Your credentials are invalid.");
-              }
             } else {
-              return false;
+              loginDialog.setErrorMessage("Your credentials are invalid.");
             }
+          } else {
+            return false;
           }
-        } finally {
-          loginDialog.dispose();
         }
+      } finally {
+        loginDialog.dispose();
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
 
-  private static boolean tryLogin(URL endpointUrl, String username, String password)
-      throws IOException {
+  private static boolean tryLogin(URL endpointUrl, String username, String password) {
     try {
-      Map<String, String> params = new HashMap<>();
-      params.put("username", username);
-      params.put("password", password);
-      SessionLogin.postLogin(endpointUrl, params);
+      AuthApi.login(endpointUrl, username, password);
       return true;
     } catch (BadCredentialsException e) {
       return false;

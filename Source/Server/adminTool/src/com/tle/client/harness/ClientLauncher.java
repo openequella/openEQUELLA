@@ -23,10 +23,10 @@ import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.PluginServiceImpl;
+import com.tle.admin.rest.AuthApi;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.BlindSSLSocketFactory;
-import com.tle.core.remoting.SessionLogin;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -49,9 +49,7 @@ import java.net.CookieManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -341,10 +339,7 @@ public class ClientLauncher extends JFrame
             // Initialise server session
             CookieHandler.setDefault(new CookieManager());
 
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("username", server.getUsername());
-            params.put("password", server.getPassword());
-            SessionLogin.postLogin(endpointUrl, params);
+            AuthApi.login(endpointUrl, server.getUsername(), server.getPassword());
 
             ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
 

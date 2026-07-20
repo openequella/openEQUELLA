@@ -23,6 +23,7 @@ import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.tle.beans.item.ItemEditingException;
@@ -115,6 +116,9 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable> {
         return new WebApplicationException(t, Status.BAD_REQUEST);
       }
       webAppException = new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR);
+    } else if (t instanceof JsonParseException) {
+      // Syntactically malformed JSON in the request body is a client error.
+      webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
     } else if (t instanceof UnrecognizedPropertyException) {
       webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
     } else if (t instanceof MismatchedInputException) {

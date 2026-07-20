@@ -27,8 +27,8 @@ import sttp.client4.{Backend, Request, asString, basicRequest}
 import sttp.model.{MediaType, StatusCode, Uri}
 import sttp.shared.Identity
 
-import java.net.{CookieHandler, CookieManager}
 import java.net.http.{HttpClient => JHttpClient}
+import java.net.{CookieHandler, CookieManager}
 
 /** Configuration for the GraphQL client.
   *
@@ -97,11 +97,9 @@ object Client {
       cfg: ClientConfiguration
   ): Either[(StatusCode, String), Unit] = {
     val request = basicRequest
-      .post(
-        cfg.institutionUrl
-          .addPath(LOGIN_PATH)
-          .addParams("username" -> username, "password" -> password)
-      )
+      .post(cfg.institutionUrl.addPath(LOGIN_PATH))
+      .body(ujson.write(ujson.Obj("username" -> username, "password" -> password)))
+      .contentType(MediaType.ApplicationJson)
       .response(asString)
 
     request.send(cfg.backend) match {

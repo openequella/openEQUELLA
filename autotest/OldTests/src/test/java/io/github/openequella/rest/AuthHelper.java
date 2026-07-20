@@ -1,15 +1,20 @@
 package io.github.openequella.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.UnsupportedEncodingException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 /**
  * Helper class to assist in interacting the with {@code api/auth} endpoint, primarily through the
  * building of {@code HttpMethod} instances.
  */
 public class AuthHelper {
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+
   private String institutionUrl;
 
   public AuthHelper(String institutionUrl) {
@@ -26,13 +31,16 @@ public class AuthHelper {
     return new PutMethod(logoutEndpoint);
   }
 
-  protected HttpMethod buildLoginMethod(String username, String password) {
+  protected HttpMethod buildLoginMethod(String username, String password)
+      throws UnsupportedEncodingException {
     final String loginEndpoint = getAuthApiEndpoint() + "/login";
-    final NameValuePair[] queryVals = {
-      new NameValuePair("username", username), new NameValuePair("password", password)
-    };
-    final HttpMethod method = new PostMethod(loginEndpoint);
-    method.setQueryString(queryVals);
+    // Credentials are sent as a JSON body as required by api/auth/login.
+    final ObjectNode credentials = MAPPER.createObjectNode();
+    credentials.put("username", username);
+    credentials.put("password", password);
+    final PostMethod method = new PostMethod(loginEndpoint);
+    method.setRequestEntity(
+        new StringRequestEntity(credentials.toString(), "application/json", "UTF-8"));
     return method;
   }
 }

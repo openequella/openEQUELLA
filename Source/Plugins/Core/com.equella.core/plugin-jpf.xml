@@ -4837,10 +4837,6 @@
     <parameter id="bean" value="bean:com.tle.web.core.filter.SystemUserStateHook" />
     <parameter id="order" value="100" />
   </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="sessionServlet">
-    <parameter id="bean" value="bean:com.tle.web.core.servlet.SessionServlet" />
-    <parameter id="url-pattern" value="/session" />
-  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6_1">
     <parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
   </extension>
