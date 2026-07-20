@@ -166,7 +166,8 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
 
     // Check item xml
     PropBagEx itemXml = getItemXml(itemId);
-    assertEquals(itemXml, "/item/rights/offer/party/context/name", "Auto Test [AutoTest]");
+    assertWizardControlValueEquals(
+        itemXml, "/item/rights/offer/party/context/name", "Auto Test [AutoTest]");
   }
 
   @Test
@@ -287,20 +288,20 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
         "aggregate");
 
     assertTrue(permissionXml.nodeExists("requirement/attribution"));
-    assertEquals(permissionXml, "requirement/accept/context/remark", TERM_MSG);
+    assertWizardControlValueEquals(permissionXml, "requirement/accept/context/remark", TERM_MSG);
     PropBagEx constraintXml = permissionXml.getSubtree("container/constraint");
-    assertEquals(constraintXml, "purpose/@type", "sectors:educational");
+    assertWizardControlValueEquals(constraintXml, "purpose/@type", "sectors:educational");
     assertUser(constraintXml.getSubtree("individual"), null, null, AUTOTEST_USERID, false);
-    assertEquals(constraintXml, "count", "10");
+    assertWizardControlValueEquals(constraintXml, "count", "10");
     assertNetwork(constraintXml.getSubtree("network"), "localhost", "127.0.0.1", "127.0.0.1");
-    assertEquals(constraintXml, "datetime/start", "1970-01-01T00:00:00");
-    assertEquals(constraintXml, "datetime/end", "2020-04-08T00:00:00");
+    assertWizardControlValueEquals(constraintXml, "datetime/start", "1970-01-01T00:00:00");
+    assertWizardControlValueEquals(constraintXml, "datetime/end", "2020-04-08T00:00:00");
   }
 
   private void assertNetwork(PropBagEx networkXml, String name, String min, String max) {
-    assertEquals(networkXml, "@name", name);
-    assertEquals(networkXml, "range/min", min);
-    assertEquals(networkXml, "range/max", max);
+    assertWizardControlValueEquals(networkXml, "@name", name);
+    assertWizardControlValueEquals(networkXml, "range/min", min);
+    assertWizardControlValueEquals(networkXml, "range/max", max);
   }
 
   private void assertPermissions(PropBagEx permissionXml, String... permissions) {
@@ -320,13 +321,13 @@ public class WizardDRMTest extends AbstractWizardControlsTest {
     PropBagEx context = party.getSubtree("context");
     Assert.assertEquals(context.isNodeTrue("@owner"), owner);
     if (name != null) {
-      assertEquals(context, "name", name);
+      assertWizardControlValueEquals(context, "name", name);
     }
     if (email != null) {
-      assertEquals(context, "remark", email);
+      assertWizardControlValueEquals(context, "remark", email);
     }
     if (uuid != null) {
-      assertEquals(context, "uid", "tle:" + uuid);
+      assertWizardControlValueEquals(context, "uid", "tle:" + uuid);
     }
   }
 

@@ -28,7 +28,7 @@ public abstract class AbstractWizardControlsTest extends AbstractItemApiTest {
     assertNotNull(node);
   }
 
-  protected void assertEquals(PropBagEx xml, String path, Object expected) {
+  protected void assertWizardControlValueEquals(PropBagEx xml, String path, Object expected) {
     Object actual = expected instanceof Collection ? xml.getNodeList(path) : xml.getNode(path);
     if (!actual.equals(expected)) {
       throw new AssertionError(

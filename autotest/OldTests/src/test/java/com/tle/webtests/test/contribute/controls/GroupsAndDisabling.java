@@ -74,15 +74,16 @@ public class GroupsAndDisabling extends AbstractWizardControlsTest {
   @Test(dependsOnMethods = "contribute")
   public void validateItem() throws Exception {
     PropBagEx itemXml = getItemXml(itemId);
-    assertEquals(itemXml, "item/same/checkboxes", Arrays.asList("1", "2", "5", "6"));
+    assertWizardControlValueEquals(
+        itemXml, "item/same/checkboxes", Arrays.asList("1", "2", "5", "6"));
     PropBagEx cXml = itemXml.getSubtree("item/controls");
-    assertEquals(cXml, "group", Arrays.asList("group1"));
-    assertEquals(cXml, "editbox", "Edit");
+    assertWizardControlValueEquals(cXml, "group", Arrays.asList("group1"));
+    assertWizardControlValueEquals(cXml, "editbox", "Edit");
     assertFalse(cXml.nodeExists("checkboxes"));
     assertFalse(cXml.nodeExists("listbox"));
     PropBagEx kXml = itemXml.getSubtree("item/keep");
-    assertEquals(kXml, "editbox", "Keep");
-    assertEquals(kXml, "checkboxes", Arrays.asList("1"));
+    assertWizardControlValueEquals(kXml, "editbox", "Keep");
+    assertWizardControlValueEquals(kXml, "checkboxes", Arrays.asList("1"));
     PropBagEx lXml = itemXml.getSubtree("item/lose");
     assertFalse(lXml.nodeExists("editbox"));
     assertFalse(lXml.nodeExists("checkboxes"));

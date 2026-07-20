@@ -163,12 +163,12 @@ public class AllControlsTest extends AbstractWizardControlsTest {
   public void validateItem() throws Exception {
     PropBagEx itemXml = getItemXml(itemId);
     PropBagEx cXml = itemXml.getSubtree("item/controls");
-    assertEquals(cXml, "editbox", "EditBox");
-    assertEquals(cXml, "listbox", "1");
-    assertEquals(cXml, "shufflelist", Arrays.asList("ShuffleList"));
-    assertEquals(cXml, "shufflebox", Arrays.asList("1", "2"));
-    assertEquals(cXml, "checkboxes", Arrays.asList("2"));
-    assertEquals(cXml, "radiogroup", Arrays.asList("1"));
+    assertWizardControlValueEquals(cXml, "editbox", "EditBox");
+    assertWizardControlValueEquals(cXml, "listbox", "1");
+    assertWizardControlValueEquals(cXml, "shufflelist", Arrays.asList("ShuffleList"));
+    assertWizardControlValueEquals(cXml, "shufflebox", Arrays.asList("1", "2"));
+    assertWizardControlValueEquals(cXml, "checkboxes", Arrays.asList("2"));
+    assertWizardControlValueEquals(cXml, "radiogroup", Arrays.asList("1"));
     Calendar today = Calendar.getInstance(USERS_TIMEZONE);
     String todayStr =
         String.format(
@@ -177,28 +177,30 @@ public class AllControlsTest extends AbstractWizardControlsTest {
             today.get(Calendar.MONTH) + 1,
             today.get(Calendar.DAY_OF_MONTH));
 
-    assertEquals(cXml, "calendar/today", todayStr);
-    assertEquals(cXml, "calendar/birthday", "1980-04-22");
-    assertEquals(cXml, "calendar/nodefault", todayStr);
-    assertEquals(cXml, "calendar/range", Arrays.asList("1970-01-01", todayStr));
+    assertWizardControlValueEquals(cXml, "calendar/today", todayStr);
+    assertWizardControlValueEquals(cXml, "calendar/birthday", "1980-04-22");
+    assertWizardControlValueEquals(cXml, "calendar/nodefault", todayStr);
+    assertWizardControlValueEquals(cXml, "calendar/range", Arrays.asList("1970-01-01", todayStr));
 
-    assertEquals(
+    assertWizardControlValueEquals(
         cXml,
         "userselector/allusers",
         Arrays.asList(
             "6285301a-4e6e-e925-aa17-7d6435678f46", "0dc35aad-cc0f-f470-ceac-810b36f3fd56"));
-    assertEquals(cXml, "userselector/group", Arrays.asList("6285301a-4e6e-e925-aa17-7d6435678f46"));
+    assertWizardControlValueEquals(
+        cXml, "userselector/group", Arrays.asList("6285301a-4e6e-e925-aa17-7d6435678f46"));
 
-    assertEquals(
+    assertWizardControlValueEquals(
         cXml,
         "emailselector/multiple",
         Arrays.asList("jolse.maginnis@equella.com", "select1@test.com"));
-    assertEquals(cXml, "emailselector/single", Arrays.asList("aaron.holland@equella.com"));
+    assertWizardControlValueEquals(
+        cXml, "emailselector/single", Arrays.asList("aaron.holland@equella.com"));
 
-    assertEquals(cXml, "shufflegroup[0]/editbox", "ShuffleEditBox");
-    assertEquals(cXml, "shufflegroup[1]/editbox", "ShuffleEditBox3");
-    assertEquals(cXml, "shufflegroup[0]/listbox", "1");
-    assertEquals(cXml, "shufflegroup[1]/listbox", "2");
+    assertWizardControlValueEquals(cXml, "shufflegroup[0]/editbox", "ShuffleEditBox");
+    assertWizardControlValueEquals(cXml, "shufflegroup[1]/editbox", "ShuffleEditBox3");
+    assertWizardControlValueEquals(cXml, "shufflegroup[0]/listbox", "1");
+    assertWizardControlValueEquals(cXml, "shufflegroup[1]/listbox", "2");
     PropBagEx multiXml = cXml.getSubtree("multilanguage");
     XPath xpath = XPathFactory.newInstance().newXPath();
     Element multiElem = multiXml.getRootElement();
