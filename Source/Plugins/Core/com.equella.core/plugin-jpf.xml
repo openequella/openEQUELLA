@@ -192,6 +192,7 @@
     <parameter id="class" value="com.tle.web.resources.ResourcesModule" />
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
+    <parameter id="class" value="com.tle.core.scripting.guice.SystemScriptModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SelectOrAddSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />

@@ -66,3 +66,7 @@ conversionService.disableConversion = true
 
 # Zip extraction charset. If omitted, defaults to UTF-8.
 #filestore.zipExtractCharset = ISO_8859_1
+
+# Comma separated list of absolute paths to executables that scripts are permitted to run via
+# system.execute()/system.executeInBackground(). Empty (the default) denies all executables.
+#system.execute.allowedExecutables =
