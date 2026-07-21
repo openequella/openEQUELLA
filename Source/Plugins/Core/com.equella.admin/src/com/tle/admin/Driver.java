@@ -27,12 +27,14 @@ import com.tle.admin.controls.repository.ControlRepository;
 import com.tle.admin.service.AdminConsolePluginService;
 import com.tle.admin.service.AdminKeepAliveService;
 import com.tle.admin.service.AdminLoginService;
+import com.tle.annotation.Nullable;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+import java.util.Optional;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
@@ -142,20 +144,34 @@ public final class Driver {
     displayErrorRaw(parent, title, message, throwable);
   }
 
+  /**
+   * Displays an error dialog reporting {@code throwable}, with the given title and message shown
+   * verbatim (unlike {@link #displayError}, which resolves them as locale keys).
+   *
+   * @param parent the component to anchor the dialog to; may be {@code null} if no suitable
+   *     component is available (or it hasn't been added to a window yet), in which case the dialog
+   *     falls back to whichever window currently has focus, so it isn't shown ownerless behind the
+   *     rest of the application
+   * @param title the dialog title, displayed verbatim
+   * @param message the error message, displayed verbatim
+   * @param throwable the exception being reported, shown in the dialog's "Details" tab
+   */
   public static void displayErrorRaw(
-      Component parent, String title, String message, Throwable throwable) {
+      @Nullable Component parent, String title, String message, Throwable throwable) {
     String version = instance().getVersion().getFull();
-    ExceptionDialog ed;
+    Window owner = resolveOwnerWindow(parent);
 
-    parent = SwingUtilities.getWindowAncestor(parent);
-    if (parent instanceof Dialog) {
-      ed = new ExceptionDialog((Dialog) parent, title, message, version, throwable);
-    } else {
-      ed = new ExceptionDialog((Frame) parent, title, message, version, throwable);
-    }
-
+    ExceptionDialog ed = new ExceptionDialog(owner, title, message, version, throwable);
     ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title"));
     ed.setVisible(true);
+  }
+
+  // No parent to anchor to (or it isn't showing yet) - fall back to whichever window
+  // currently has focus, so the dialog doesn't open ownerless behind the app.
+  private static Window resolveOwnerWindow(@Nullable Component parent) {
+    return Optional.ofNullable(parent)
+        .map(SwingUtilities::getWindowAncestor)
+        .orElseGet(() -> KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow());
   }
 
   public static void displayInformation(Component parent, String message) {
