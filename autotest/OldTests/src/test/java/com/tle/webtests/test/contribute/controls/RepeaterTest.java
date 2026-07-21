@@ -68,14 +68,13 @@ public class RepeaterTest extends AbstractWizardControlsTest {
 
   @Test(dependsOnMethods = "contribute")
   public void validateItem() throws Exception {
-    soap.login("AutoTest", "automated");
-    PropBagEx itemXml = new PropBagEx(soap.getItem(itemId.getUuid(), itemId.getVersion(), null));
+    PropBagEx itemXml = getItemXml(itemId);
     PropBagEx cXml = itemXml.getSubtree("item/controls");
-    assertEquals(cXml, "repeater[0]/editbox", "First");
-    assertEquals(cXml, "repeater[1]/editbox", "DefaultValue");
-    assertEquals(cXml, "repeater[0]/listbox", "2");
-    assertEquals(cXml, "repeater[1]/listbox", "1");
-    assertEquals(cXml, "repeater[0]/subrepeater[0]/editbox", "SubRepeater");
-    assertEquals(cXml, "repeater[1]/subrepeater[0]/editbox", "SubRepeater2");
+    assertWizardControlValueEquals(cXml, "repeater[0]/editbox", "First");
+    assertWizardControlValueEquals(cXml, "repeater[1]/editbox", "DefaultValue");
+    assertWizardControlValueEquals(cXml, "repeater[0]/listbox", "2");
+    assertWizardControlValueEquals(cXml, "repeater[1]/listbox", "1");
+    assertWizardControlValueEquals(cXml, "repeater[0]/subrepeater[0]/editbox", "SubRepeater");
+    assertWizardControlValueEquals(cXml, "repeater[1]/subrepeater[0]/editbox", "SubRepeater2");
   }
 }

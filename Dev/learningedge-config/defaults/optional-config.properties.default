@@ -66,3 +66,12 @@ conversionService.disableConversion = true
 
 # Zip extraction charset. If omitted, defaults to UTF-8.
 #filestore.zipExtractCharset = ISO_8859_1
+
+###################################################################################################
+# SOAP API (Deprecated)
+###################################################################################################
+# The legacy SOAP API is deprecated and will be removed in a future release.
+# Only the Harvester SOAP service (/services/SoapHarvesterService) remains available
+# by default. Set to true only if you still rely on the legacy SOAP API and have not
+# yet migrated to the REST API.
+#soapapi.enabled = false

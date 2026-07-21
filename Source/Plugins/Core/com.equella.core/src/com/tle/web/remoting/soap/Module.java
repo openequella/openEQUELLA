@@ -19,12 +19,23 @@
 package com.tle.web.remoting.soap;
 
 import com.google.inject.AbstractModule;
+import com.tle.core.config.guice.OptionalConfigModule;
 import javax.xml.ws.WebServiceContext;
 import org.apache.cxf.jaxws.context.WebServiceContextImpl;
 
 public class Module extends AbstractModule {
+  public static final String SOAP_API_ENABLED_KEY = "soapapi.enabled";
+
   @Override
   protected void configure() {
     bind(WebServiceContext.class).to(WebServiceContextImpl.class);
+    install(new SoapOptionalConfigModule());
+  }
+
+  public static class SoapOptionalConfigModule extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindBoolean(SOAP_API_ENABLED_KEY, false);
+    }
   }
 }
