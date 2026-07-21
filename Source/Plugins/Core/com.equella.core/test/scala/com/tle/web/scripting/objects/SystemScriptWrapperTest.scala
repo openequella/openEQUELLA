@@ -20,16 +20,18 @@ package com.tle.web.scripting.objects
 
 import com.tle.common.util.ExecUtils
 import com.tle.common.util.ExecUtils.ExecResult
+import com.tle.core.services.FileSystemService
 import com.tle.exceptions.AccessDeniedException
-import org.mockito.Mockito.{mockStatic, when}
+import org.mockito.Mockito.{mock, mockStatic, when}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class SystemScriptWrapperTest extends AnyFunSpec with Matchers {
+
+  private val mockFileSystemService: FileSystemService = mock(classOf[FileSystemService])
+
   private def wrapperWithAllowlist(allowedExecutablesConfig: String): SystemScriptWrapper = {
-    val wrapper = new SystemScriptWrapper
-    wrapper.setAllowedExecutablesConfig(allowedExecutablesConfig)
-    wrapper
+    new SystemScriptWrapper(mockFileSystemService, allowedExecutablesConfig)
   }
 
   describe("SystemScriptWrapper.setAllowedExecutablesConfig") {

@@ -22,10 +22,12 @@ import com.tle.core.config.guice.OptionalConfigModule;
 
 public class SystemScriptModule extends OptionalConfigModule {
 
+  public static final String ALLOWED_EXECUTABLES_KEY = "system.execute.allowedExecutables";
+
   @Override
   protected void configure() {
     // Empty by default: no executables are permitted until their absolute
     // path are added to the allow-list.
-    bindProp("system.execute.allowedExecutables", "");
+    bindProp(ALLOWED_EXECUTABLES_KEY, "");
   }
 }

@@ -25,6 +25,7 @@ import com.tle.common.scripting.types.FileHandleScriptType;
 import com.tle.common.util.ExecUtils;
 import com.tle.common.util.ExecUtils.ExecResult;
 import com.tle.core.guice.Bind;
+import com.tle.core.scripting.guice.SystemScriptModule;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.scripting.objects.FileScriptingObjectImpl.FileHandleScriptTypeImpl;
@@ -32,7 +33,6 @@ import com.tle.web.scripting.types.AttachmentScriptTypeImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,19 +48,16 @@ import org.slf4j.LoggerFactory;
 public class SystemScriptWrapper implements SystemScriptObject {
   private static final Logger LOGGER = LoggerFactory.getLogger(SystemScriptWrapper.class);
 
-  @Inject private FileSystemService fileSystem;
+  private final FileSystemService fileSystem;
 
-  private Set<String> allowedExecutables = Collections.emptySet();
+  private final Set<String> allowedExecutables;
 
   @Inject
-  public void setAllowedExecutablesConfig(
-      @Named("system.execute.allowedExecutables") String allowedExecutablesConfig) {
-    allowedExecutables =
-        Arrays.stream(allowedExecutablesConfig.split(","))
-            .filter(path -> !path.isBlank())
-            .map(this::getCanonicalPath)
-            .flatMap(Optional::stream)
-            .collect(Collectors.toUnmodifiableSet());
+  public SystemScriptWrapper(
+      FileSystemService fileSystem,
+      @Named(SystemScriptModule.ALLOWED_EXECUTABLES_KEY) String allowedExecutablesConfig) {
+    this.allowedExecutables = parseAllowedExecutables(allowedExecutablesConfig);
+    this.fileSystem = fileSystem;
   }
 
   @Override
@@ -117,8 +114,10 @@ public class SystemScriptWrapper implements SystemScriptObject {
   }
 
   /**
-   * Return an Optional of the canonical path of the supplied file path, or an empty Optional if the
-   * path is unresolvable.
+   * Resolves a file path to its canonical form.
+   *
+   * @param path the file path to resolve
+   * @return an Optional containing the canonical path, or empty if unresolvable
    */
   private Optional<String> getCanonicalPath(String path) {
     try {
@@ -129,10 +128,20 @@ public class SystemScriptWrapper implements SystemScriptObject {
     }
   }
 
+  private Set<String> parseAllowedExecutables(String config) {
+    return Arrays.stream(config.split(","))
+        .map(String::trim)
+        .filter(path -> !path.isBlank())
+        .map(this::getCanonicalPath)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toUnmodifiableSet());
+  }
+
   /**
-   * Only executables an operator has explicitly allow-listed via the
-   * system.execute.allowedExecutables optional-config property may be run. Empty by default, so
-   * system.execute is disabled until an operator opts in.
+   * Validates that the given program path is on the allow-list.
+   *
+   * @param programPath the absolute path to the executable to validate
+   * @throws AccessDeniedException if the path is not allow-listed or cannot be resolved
    */
   private void checkAllowed(String programPath) {
     boolean allowed = getCanonicalPath(programPath).map(allowedExecutables::contains).orElse(false);
