@@ -1748,9 +1748,6 @@
     <parameter id="mimetype" value="application/pdf" />
     <parameter id="generator" value="bean:com.tle.pdf.thumbnail.PdfThumbnailGenerator" />
   </extension>
-  <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="InstitutionRestService">
-    <parameter id="class" value="com.tle.web.api.institution.interfaces.InstitutionResource" />
-  </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="other">
     <parameter id="class" value="com.tle.web.api.institution.EquellaRoleResource" />
   </extension>
