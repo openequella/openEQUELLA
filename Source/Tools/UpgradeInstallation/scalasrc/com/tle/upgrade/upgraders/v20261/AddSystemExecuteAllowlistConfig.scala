@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.upgrade.upgraders.systemexecute
+package com.tle.upgrade.upgraders.v20261
 
 import com.dytech.edge.common.Constants
 import com.google.common.collect.Lists
