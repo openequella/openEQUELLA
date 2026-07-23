@@ -34,6 +34,9 @@ object TestHelper {
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
   val INSTITUTION_REST: String               = "rest"
 
+  /** An entity ID guaranteed not to exist, for exercising not-found behaviour. */
+  val INVALID_ENTITY_ID: Long = -1L
+
   /** Load the test server port from configuration with CLI -D override support.
     *
     * Precedence order:

@@ -21,6 +21,7 @@ package io.github.openequella.graphql.api
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.test.TestHelper.{
+  INVALID_ENTITY_ID,
   assertAccessDeniedError,
   checkApiError,
   loginToRestInstitution
@@ -108,7 +109,7 @@ class MetadataSchemaApiQueriesTest
 
     it("returns an empty list for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling getUses with the invalid schema ID")
       val result = MetadataSchemaApi.getUses(invalidSchemaId)
@@ -137,7 +138,7 @@ class MetadataSchemaApiQueriesTest
 
     it("returns NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling hasReferences with the invalid schema ID")
       val result = MetadataSchemaApi.hasReferences(invalidSchemaId)
@@ -167,7 +168,7 @@ class MetadataSchemaApiQueriesTest
 
     it("returns an empty list for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling getImportTypes with the invalid schema ID")
       val result = MetadataSchemaApi.getImportTypes(invalidSchemaId)
@@ -211,7 +212,7 @@ class MetadataSchemaApiQueriesTest
 
     it("returns None for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling getById with the invalid schema ID")
       val result = MetadataSchemaApi.getById(invalidSchemaId)

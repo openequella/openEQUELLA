@@ -19,7 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.test.TestHelper.assertAccessDeniedError
+import io.github.openequella.graphql.test.TestHelper.{INVALID_ENTITY_ID, assertAccessDeniedError}
 import io.github.openequella.graphql.test.ZipTestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -153,7 +153,7 @@ trait ExportTestBehaviours {
 
     it(s"returns None for an invalid ${config.entityName} ID") {
       Given(s"an invalid ${config.entityName} ID")
-      val result = config.exportFn(-1L)
+      val result = config.exportFn(INVALID_ENTITY_ID)
 
       Then("returns None")
       result shouldBe Right(None)

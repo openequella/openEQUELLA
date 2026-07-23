@@ -20,6 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.test.TestHelper.{
+  INVALID_ENTITY_ID,
   assertAccessDeniedError,
   loginToRestInstitution
 }
@@ -60,7 +61,7 @@ class BaseEntityApiTest
 
     it("returns None for an unknown base entity") {
       Given("an invalid base entity ID")
-      val invalidId = -1L
+      val invalidId = INVALID_ENTITY_ID
 
       When("calling getNameById with the invalid ID")
       val result = BaseEntityApi.getNameById(invalidId)
