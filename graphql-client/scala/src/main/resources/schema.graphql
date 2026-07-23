@@ -504,6 +504,10 @@ type CollectionQueries {
   export("ID of the collection to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the collection ID for a given UUID"
   idForUuid(value: String!): Long
+  "Get a collection by ID"
+  byId("ID of the collection" id: Long!): CollectionDefinition
+  "Get a collection by UUID"
+  byUuid("UUID of the collection" uuid: String!): CollectionDefinition
 }
 
 "Configuration for how a collection's items are displayed in search results."

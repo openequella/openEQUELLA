@@ -70,6 +70,50 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     query(q)
   }
 
+  /** Retrieves a collection by its ID.
+    *
+    * @param id
+    *   The ID of the collection.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or an Option containing the CollectionDefinitionView if found,
+    *   None if not found.
+    * @see
+    *   [[getByUuid]] to retrieve by UUID instead.
+    */
+  def getById(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[CollectionDefinitionView]] = {
+    val q = CollectionQueries.byId(id) {
+      CollectionDefinitionView.selector
+    }
+
+    query(q)
+  }
+
+  /** Retrieves a collection by its UUID.
+    *
+    * @param uuid
+    *   The UUID of the collection.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or an Option containing the CollectionDefinitionView if found,
+    *   None if not found.
+    * @see
+    *   [[getById]] to retrieve by ID instead.
+    */
+  def getByUuid(uuid: String)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[CollectionDefinitionView]] = {
+    val q = CollectionQueries.byUuid(uuid) {
+      CollectionDefinitionView.selector
+    }
+
+    query(q)
+  }
+
   /** Retrieves the ID of a collection by its UUID.
     *
     * @param uuid

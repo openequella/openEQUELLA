@@ -50,4 +50,22 @@ object CollectionQueries {
   ): SelectionBuilder[CollectionQueries, scala.Option[Long]] =
     _root_.caliban.client.SelectionBuilder
       .Field("idForUuid", OptionOf(Scalar()), arguments = List(Argument("value", value, "String!")))
+
+  /** Get a collection by ID
+    */
+  def byId[A](id: Long)(innerSelection: SelectionBuilder[CollectionDefinition, A])(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[CollectionQueries, scala.Option[A]] = _root_.caliban.client.SelectionBuilder
+    .Field("byId", OptionOf(Obj(innerSelection)), arguments = List(Argument("id", id, "Long!")))
+
+  /** Get a collection by UUID
+    */
+  def byUuid[A](uuid: String)(
+      innerSelection: SelectionBuilder[CollectionDefinition, A]
+  )(implicit encoder0: ArgEncoder[String]): SelectionBuilder[CollectionQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "byUuid",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("uuid", uuid, "String!"))
+    )
 }
