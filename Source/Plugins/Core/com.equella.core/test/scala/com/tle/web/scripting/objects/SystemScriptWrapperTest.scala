@@ -26,6 +26,9 @@ import org.mockito.Mockito.{mock, mockStatic, when}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+/** Since the result of java.io.File#getCanonicalPath() is OS dependent, and we only use Linux
+  * runners in GitLab CI pipelines, this test only covers Linux use cases.
+  */
 class SystemScriptWrapperTest extends AnyFunSpec with Matchers {
 
   private val mockFileSystemService: FileSystemService = mock(classOf[FileSystemService])
@@ -56,7 +59,7 @@ class SystemScriptWrapperTest extends AnyFunSpec with Matchers {
     it("rejects an executable that is not on the allow-list") {
       val wrapper = wrapperWithAllowlist("/bin/sh")
       assertThrows[AccessDeniedException] {
-        wrapper.execute("/bin/rm", Array[AnyRef]("-rf", "/"))
+        wrapper.execute("/bin/pwd", Array[AnyRef]("."))
       }
     }
 
@@ -83,7 +86,7 @@ class SystemScriptWrapperTest extends AnyFunSpec with Matchers {
     it("rejects an executable that is not on the allow-list before spawning a thread") {
       val wrapper = wrapperWithAllowlist("/bin/sh")
       assertThrows[AccessDeniedException] {
-        wrapper.executeInBackground("/bin/rm", Array[AnyRef]("-rf", "/"))
+        wrapper.executeInBackground("/bin/pwd", Array[AnyRef]("."))
       }
     }
 
