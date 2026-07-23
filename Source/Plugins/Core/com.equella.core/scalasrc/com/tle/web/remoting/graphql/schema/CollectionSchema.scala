@@ -49,7 +49,9 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
     collection = CollectionQueryOps(
       list = () => collectionProvider.listCollections(),
       export = args => collectionProvider.exportCollection(args.id, args.withSecurity),
-      idForUuid = uuid => collectionProvider.collectionIdForUuid(uuid)
+      idForUuid = uuid => collectionProvider.collectionIdForUuid(uuid),
+      byId = args => collectionProvider.collectionById(args.id),
+      byUuid = args => collectionProvider.collectionByUuid(args.uuid)
     )
   )
 
@@ -79,7 +81,11 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       @GQLDescription("Export a collection, returning a base64 encoded zip file")
       export: CollectionExportArgs => Option[String],
       @GQLDescription("Get the collection ID for a given UUID")
-      idForUuid: String => Option[Long]
+      idForUuid: String => Option[Long],
+      @GQLDescription("Get a collection by ID")
+      byId: CollectionByIdArgs => Option[CollectionDefinition],
+      @GQLDescription("Get a collection by UUID")
+      byUuid: CollectionByUuidArgs => Option[CollectionDefinition]
   )
 
   case class CollectionExportArgs(
@@ -87,6 +93,16 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       id: Long,
       @GQLDescription("Whether to include security information in the export")
       withSecurity: Boolean
+  )
+
+  case class CollectionByIdArgs(
+      @GQLDescription("ID of the collection")
+      id: Long
+  )
+
+  case class CollectionByUuidArgs(
+      @GQLDescription("UUID of the collection")
+      uuid: String
   )
 
   case class Mutations(

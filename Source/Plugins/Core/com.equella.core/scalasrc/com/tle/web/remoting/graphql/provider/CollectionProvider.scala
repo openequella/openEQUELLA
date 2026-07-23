@@ -224,6 +224,36 @@ class CollectionProvider @Inject() (
     idForUuid(uuid, itemDefinitionService.identifyByUuid)
   }
 
+  /** Get a collection by ID.
+    *
+    * @param id
+    *   the ID of the collection.
+    * @return
+    *   the collection, if found.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def collectionById(id: Long): Option[CollectionDefinition] = {
+    LOGGER.debug(s"Getting collection by ID: $id")
+    noneIfNotFound {
+      itemDefinitionService.get(id)
+    }.map(CollectionDefinition(_, xmlService))
+  }
+
+  /** Get a collection by UUID.
+    *
+    * @param uuid
+    *   the UUID of the collection.
+    * @return
+    *   the collection, if found.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def collectionByUuid(uuid: String): Option[CollectionDefinition] = {
+    LOGGER.debug(s"Getting collection by UUID: $uuid")
+    noneIfNotFound {
+      itemDefinitionService.getByUuid(uuid)
+    }.map(CollectionDefinition(_, xmlService))
+  }
+
   /** Clone a collection, creating a copy with a new ID.
     *
     * @param id
