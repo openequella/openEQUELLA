@@ -136,6 +136,67 @@ class CollectionDefinitionApiQueriesTest
     }
   }
 
+  describe("listCategories") {
+    it("returns the distinct sorted wizard categories across all collections") {
+      Given("the wizard categories of all collections")
+      val expectedCategories = CollectionDefinitionApi
+        .listCollections()
+        .value
+        .flatMap(collection =>
+          CollectionDefinitionApi.getById(collection.id).value.value.wizardCategory
+        )
+        .distinct
+        .sorted
+
+      When("calling listCategories")
+      val result = CollectionDefinitionApi.listCategories()
+
+      Then("returns the distinct sorted wizard categories")
+      result.isRight shouldBe true
+      result.value shouldBe expectedCategories
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(CollectionDefinitionApi.listCategories()(_))
+    }
+  }
+
+  describe("listForSchema") {
+    it("returns the collections which use the specified schema") {
+      Given("a schema ID sourced from a collection which has one")
+      val (collection, schemaId) = CollectionDefinitionApi
+        .listCollections()
+        .value
+        .iterator
+        .map(c => (c, CollectionDefinitionApi.getById(c.id).value.value.schemaId))
+        .collectFirst { case (c, Some(id)) => (c, id) }
+        .value
+
+      When("calling listForSchema with the schema ID")
+      val result = CollectionDefinitionApi.listForSchema(schemaId)
+
+      Then("returns a list of collections including the source collection")
+      result.isRight shouldBe true
+      result.value.map(_.uuid) should contain(collection.uuid)
+    }
+
+    it("returns an empty list for an invalid schema ID") {
+      Given("an invalid schema ID")
+      val invalidSchemaId = INVALID_ENTITY_ID
+
+      When("calling listForSchema with the invalid schema ID")
+      val result = CollectionDefinitionApi.listForSchema(invalidSchemaId)
+
+      Then("returns an empty list")
+      result.isRight shouldBe true
+      result.value shouldBe empty
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(CollectionDefinitionApi.listForSchema(1)(_))
+    }
+  }
+
   describe("getByUuid") {
     it("retrieves a collection by its UUID") {
       Given("a valid collection UUID")
