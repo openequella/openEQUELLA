@@ -25,35 +25,50 @@ import com.tle.common.scripting.types.FileHandleScriptType;
 import com.tle.common.util.ExecUtils;
 import com.tle.common.util.ExecUtils.ExecResult;
 import com.tle.core.guice.Bind;
+import com.tle.core.scripting.guice.SystemScriptModule;
 import com.tle.core.services.FileSystemService;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.scripting.objects.FileScriptingObjectImpl.FileHandleScriptTypeImpl;
 import com.tle.web.scripting.types.AttachmentScriptTypeImpl;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind(SystemScriptObject.class)
 @Singleton
 public class SystemScriptWrapper implements SystemScriptObject {
-  @Inject private FileSystemService fileSystem;
+  private static final Logger LOGGER = LoggerFactory.getLogger(SystemScriptWrapper.class);
 
-  // @Override
-  // public BinaryDataScriptType executeWithBinaryResult(String programPath,
-  // String[] parameters)
-  // {
-  // final ExecResult res = ExecUtils.exec(getCommand(programPath,
-  // parameters));
-  //
-  // return null;
-  // }
+  private final FileSystemService fileSystem;
+
+  private final Set<String> allowedExecutables;
+
+  @Inject
+  public SystemScriptWrapper(
+      FileSystemService fileSystem,
+      @Named(SystemScriptModule.ALLOWED_EXECUTABLES_KEY) String allowedExecutablesConfig) {
+    this.allowedExecutables = parseAllowedExecutables(allowedExecutablesConfig);
+    this.fileSystem = fileSystem;
+  }
 
   @Override
   public ExecutionResultScriptType execute(String programPath, Object[] parameters) {
+    checkAllowed(programPath);
     return new ExecutionResultTypeImpl(ExecUtils.exec(getCommand(programPath, parameters)));
   }
 
   @Override
   public void executeInBackground(String programPath, Object[] parameters) {
+    checkAllowed(programPath);
     final String[] cmd = getCommand(programPath, parameters);
     new Thread("SystemScriptWrapper execution thread") {
       @Override
@@ -61,6 +76,10 @@ public class SystemScriptWrapper implements SystemScriptObject {
         ExecUtils.exec(cmd);
       }
     }.start();
+  }
+
+  protected Set<String> getAllowedExecutables() {
+    return allowedExecutables;
   }
 
   private String[] getCommand(String programPath, Object[] parameters) {
@@ -92,6 +111,48 @@ public class SystemScriptWrapper implements SystemScriptObject {
       cmd[i + 1] = strParam;
     }
     return cmd;
+  }
+
+  /**
+   * Resolves a file path to its canonical form.
+   *
+   * @param path the file path to resolve
+   * @return an Optional containing the canonical path, or empty if unresolvable
+   */
+  private Optional<String> getCanonicalPath(String path) {
+    try {
+      return Optional.of(new File(path).getCanonicalPath());
+    } catch (IOException | SecurityException e) {
+      LOGGER.warn("Ignoring unresolvable path '{}': {}", path, e.getMessage());
+      return Optional.empty();
+    }
+  }
+
+  private Set<String> parseAllowedExecutables(String config) {
+    return Arrays.stream(config.split(","))
+        .map(String::trim)
+        .filter(path -> !path.isBlank())
+        .map(this::getCanonicalPath)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toUnmodifiableSet());
+  }
+
+  /**
+   * Validates that the given program path is on the allow-list.
+   *
+   * @param programPath the absolute path to the executable to validate
+   * @throws AccessDeniedException if the path is not allow-listed or cannot be resolved
+   */
+  private void checkAllowed(String programPath) {
+    boolean allowed = getCanonicalPath(programPath).map(allowedExecutables::contains).orElse(false);
+    if (!allowed) {
+      LOGGER.warn(
+          "Rejected system.execute of '{}': not on the system.execute.allowedExecutables"
+              + " allow-list",
+          programPath);
+      throw new AccessDeniedException(
+          "system.execute is not permitted to run '" + programPath + "'");
+    }
   }
 
   public static class ExecutionResultTypeImpl implements ExecutionResultScriptType {

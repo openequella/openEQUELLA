@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Alert, ListItem, ListItemText } from "@mui/material";
-import { AlertColor } from "@mui/material/Alert/Alert";
+import { AlertColor } from "@mui/material/Alert";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";

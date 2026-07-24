@@ -114,22 +114,21 @@ export type TemplateUpdate = (
  * No extra meta tags
  */
 export function templateDefaults(title: string): TemplateUpdate {
-  return (tp) =>
-    ({
-      ...tp,
-      title,
-      backRoute: undefined,
-      menuExtra: undefined,
-      titleExtra: undefined,
-      tabs: undefined,
-      fixedViewPort: undefined,
-      footer: undefined,
-      hideAppBar: undefined,
-      fullscreenMode: undefined,
-      menuMode: undefined,
-      disableNotifications: undefined,
-      metaTags: undefined,
-    }) as TemplateProps;
+  return (tp) => ({
+    ...tp,
+    title,
+    backRoute: undefined,
+    menuExtra: undefined,
+    titleExtra: undefined,
+    tabs: undefined,
+    fixedViewPort: undefined,
+    footer: undefined,
+    hideAppBar: undefined,
+    fullscreenMode: undefined,
+    menuMode: undefined,
+    disableNotifications: undefined,
+    metaTags: undefined,
+  });
 }
 
 export function templateError(errorResponse: ErrorResponse): TemplateUpdate {

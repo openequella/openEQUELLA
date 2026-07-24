@@ -388,7 +388,7 @@ export const DateRangeSelector = ({
         onFocus={() => setShowCalenderIcon(true)}
         onBlur={(event) => {
           const { relatedTarget } = event;
-          if (!event.currentTarget.contains(relatedTarget as Node)) {
+          if (!event.currentTarget.contains(relatedTarget)) {
             setShowCalenderIcon(false);
           }
         }}

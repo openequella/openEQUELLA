@@ -6,9 +6,7 @@ import static org.testng.Assert.assertTrue;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
 import com.google.common.io.Closeables;
-import com.tle.webtests.framework.SoapHelper;
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.framework.soap.SoapService50;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -18,7 +16,6 @@ import com.tle.webtests.pageobject.searching.SearchSettingsPage.Order;
 import com.tle.webtests.pageobject.searching.ShareSearchQuerySection;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.auth.Credentials;
@@ -27,14 +24,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 @TestInstitution("flakey")
 public class SearchSettingsTest extends AbstractCleanupAutoTest {
-  private SoapService50 soapService;
-  private SoapHelper soapHelper;
 
   @Override
   protected boolean isCleanupItems() {
@@ -160,9 +154,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     final String searchTerm = "Relevance";
     final String authString = "auth=basic";
 
-    // Login
-    soapService.login("AutoTest", "automated");
-
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
     searchPage.search(searchTerm);
@@ -175,8 +166,8 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Check results
     Credentials basicCreds = new UsernamePasswordCredentials("AutoTest", "automated");
-    assertTrue(checkRssResponse(getResponse(soapService, rssUrl, null), true));
-    assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, null), true));
+    assertTrue(checkRssResponse(getResponse(rssUrl, null), true));
+    assertTrue(checkAtomResponse(getResponse(atomUrl, null), true));
 
     // Enable authenticated results
     SearchSettingsPage ssp = new SettingsPage(context).load().clickSearchSetting();
@@ -192,8 +183,8 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(atomUrl.contains(authString));
 
     // Check results
-    assertTrue(checkRssResponse(getResponse(soapService, rssUrl, basicCreds), false));
-    assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, basicCreds), false));
+    assertTrue(checkRssResponse(getResponse(rssUrl, basicCreds), false));
+    assertTrue(checkAtomResponse(getResponse(atomUrl, basicCreds), false));
   }
 
   private boolean checkRssResponse(PropBagEx response, boolean single) {
@@ -230,8 +221,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     }
   }
 
-  private PropBagEx getResponse(SoapService50 soapService, String uri, Credentials creds)
-      throws Exception {
+  private PropBagEx getResponse(String uri, Credentials creds) throws Exception {
     HttpGet get = new HttpGet(uri);
     if (creds != null) {
       get.addHeader(BasicScheme.authenticate(creds, "US-ASCII", false));
@@ -244,17 +234,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     } finally {
       Closeables.closeQuietly(in);
     }
-  }
-
-  @BeforeClass
-  public void setupSoapService() throws MalformedURLException {
-    soapHelper = new SoapHelper(context);
-    soapService =
-        soapHelper.createSoap(
-            SoapService50.class,
-            "services/SoapService50",
-            "http://soap.remoting.web.tle.com",
-            null);
   }
 
   @Override

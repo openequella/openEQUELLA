@@ -82,6 +82,7 @@ import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
@@ -887,6 +888,7 @@ public abstract class AbstractEntityServiceImpl<
   }
 
   @Override
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   public EntityPack<T> importEntity(byte[] xml) {
     ByteArrayInputStream in = new ByteArrayInputStream(xml);
     StagingFile staging = stagingService.createStagingArea();

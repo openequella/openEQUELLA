@@ -71,3 +71,25 @@ conversionService.disableConversion = true
 graphql.schema = false
 # Enable the /graphql/ui endpoint - which provides a GraphiQL interface for the GraphQL API
 graphql.ui = false
+
+###################################################################################################
+# SOAP API (Deprecated)
+###################################################################################################
+# The legacy SOAP API is deprecated and will be removed in a future release.
+# Only the Harvester SOAP service (/services/SoapHarvesterService) remains available
+# by default. Set to true only if you still rely on the legacy SOAP API and have not
+# yet migrated to the REST API.
+#soapapi.enabled = false
+
+# Comma separated list of absolute paths to executables that scripts are permitted to run via
+# system.execute()/system.executeInBackground(). Empty (the default) denies all executables.
+#
+# WARNING: Only add executables here that cannot themselves be instructed to run further,
+# arbitrary commands. Shell interpreters and general-purpose scripting/command languages
+# (e.g. bash, sh, cmd.exe, powershell.exe, python, perl, ruby, awk, find) accept caller-supplied
+# code or commands as arguments. Allow-listing any of these effectively grants execution of
+# ANY command, completely defeating this control, regardless of what the calling script was
+# intended to do. Only add a fixed, single-purpose executable if you are certain it cannot be
+# used to invoke other programs or interpret arbitrary input as commands.
+#
+#system.execute.allowedExecutables =

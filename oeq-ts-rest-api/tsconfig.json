@@ -3,10 +3,10 @@
   "compilerOptions": {
     "module": "ES6",
     "lib": [
-      "ES2017",
-      "dom"
+      "ES2020",
+      "DOM"
     ],
-    "target": "ES6",
+    "target": "ES2020",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
@@ -16,11 +16,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "baseUrl": "./",
-    "paths": {
-      "*": ["src/*", "node_modules/*"]
-    },
+    "moduleResolution": "bundler",
+    "types": ["node", "jest"],
     "jsx": "react",
   }
 }

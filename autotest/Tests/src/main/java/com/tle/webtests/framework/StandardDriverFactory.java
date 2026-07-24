@@ -153,7 +153,11 @@ public class StandardDriverFactory {
       capabilities.setCapability(CapabilityType.PROXY, proxy);
     }
     capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-    RemoteWebDriver rdriver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
+    // Use a driver that normalises Chrome's "-32000 Node with given id does not belong to the
+    // document" inspector error into a standard StaleElementReferenceException (see
+    // StaleNodeTranslatingRemoteWebDriver and Selenium issue #15401).
+    RemoteWebDriver rdriver =
+        new StaleNodeTranslatingRemoteWebDriver(getChromeService().getUrl(), capabilities);
     if (chromeHeadless) {
       enableHeadlessDownloads(rdriver, downDir);
     }

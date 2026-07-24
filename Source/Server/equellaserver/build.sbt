@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.119"
+val TomcatVersion     = "9.0.120"
 val axis2Version      = "2.0.1"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
@@ -30,7 +30,7 @@ val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.1"
 val luceneVersion     = "10.5.0"
-val nettyVersion      = "4.2.15.Final"
+val nettyVersion      = "4.2.16.Final"
 val rampartVersion    = "1.8.0"
 
 libraryDependencies ++= Seq(
@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
-  "com.auth0" % "java-jwt" % "4.5.2",
+  "com.auth0" % "java-jwt" % "4.6.0",
   "com.auth0" % "jwks-rsa" % "0.24.1"
 )
 
@@ -214,7 +214,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"               % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"               % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"               % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                % "bcprov-jdk18on"                 % "1.84",
+  "org.bouncycastle"                % "bcprov-jdk18on"                 % "1.85",
   "org.ccil.cowan.tagsoup"          % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                      % "cql-java"                       % "1.0",

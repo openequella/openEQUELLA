@@ -9,7 +9,7 @@
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@mui/material": "9.1.2",
+    "@mui/material": "9.2.0",
     "axios": "1.18.1",
     "babel-polyfill": "6.26.0",
     "buffer": "6.0.3",
@@ -25,6 +25,6 @@
     "@types/react-dom": "19.2.3",
     "mkdirp": "3.0.1",
     "parcel": "2.16.4",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }

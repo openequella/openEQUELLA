@@ -1,29 +1,24 @@
 {
   "compilerOptions": {
-    "outDir": "target/ts",
     "module": "CommonJS",
     "esModuleInterop": true,
-    "target": "es5",
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "types": ["node", "jquery", "jest"],
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
     "jsx": "react",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "noErrorTruncation": true,
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "baseUrl": ".",
     "paths": {
-      "~*": ["./entrypoint/*", "./tsrc/*"],
-      "fp-ts/*": ["node_modules/fp-ts/*"], // This helps TSC resolve fp-ts correctly.
-      "html-validate/jest": [
-        "node_modules/html-validate/dist/types/jest.d.ts"
-      ] // TS "node" resolution doesn't follow html-validate subpath exports for typings.
+      "~*": ["./entrypoint/*", "./tsrc/*"]
     }
   },
   "include": [

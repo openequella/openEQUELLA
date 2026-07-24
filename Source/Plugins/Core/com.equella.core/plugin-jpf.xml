@@ -191,6 +191,7 @@
     <parameter id="class" value="com.tle.web.resources.ResourcesModule" />
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
+    <parameter id="class" value="com.tle.core.scripting.guice.SystemScriptModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SelectOrAddSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
@@ -1638,11 +1639,6 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
     <parameter id="date" value="2018-06-01" />
   </extension>
-  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewEntityTable">
-    <parameter id="id" value="NewEntityTable" />
-    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20191.NewEntityTable" />
-    <parameter id="date" value="2019-02-05" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="addIndexes">
     <parameter id="id" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes" />
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.EnsureForeignKeyIndexes" />
@@ -1731,9 +1727,6 @@
   <extension plugin-id="com.tle.core.workflow.thumbnail" point-id="thumbnailGenerator" id="pdfThumbnailGenerator">
     <parameter id="mimetype" value="application/pdf" />
     <parameter id="generator" value="bean:com.tle.pdf.thumbnail.PdfThumbnailGenerator" />
-  </extension>
-  <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="InstitutionRestService">
-    <parameter id="class" value="com.tle.web.api.institution.interfaces.InstitutionResource" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="other">
     <parameter id="class" value="com.tle.web.api.institution.EquellaRoleResource" />
@@ -4829,10 +4822,6 @@
     <parameter id="bean" value="bean:com.tle.web.core.filter.TokenUserStateHook" />
     <parameter id="order" value="1000" />
   </extension>
-  <extension plugin-id="com.tle.web.core" point-id="userStateHook" id="systemUserStateHook">
-    <parameter id="bean" value="bean:com.tle.web.core.filter.SystemUserStateHook" />
-    <parameter id="order" value="100" />
-  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6_1">
     <parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
   </extension>
@@ -5977,9 +5966,6 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountAttachment">
     <parameter id="class" value="com.tle.beans.viewcount.ViewcountAttachment" />
   </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
-    <parameter id="class" value="com.tle.beans.newentity.Entity" />
-  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="WebKeySet">
     <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
   </extension>
@@ -6106,6 +6092,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
     <parameter id="date" value="2025-07-11"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="DropNewEntityTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="date" value="2026-07-10"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

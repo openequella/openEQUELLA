@@ -116,7 +116,7 @@ export const PortletQuickSearch = ({
         pipe(
           TO.tryCatch(() => search(query)),
           TO.match(
-            () => ({ state: "no results" }) as SearchState,
+            (): SearchState => ({ state: "no results" }),
             processSearchResult,
           ),
           T.map(setResult),
