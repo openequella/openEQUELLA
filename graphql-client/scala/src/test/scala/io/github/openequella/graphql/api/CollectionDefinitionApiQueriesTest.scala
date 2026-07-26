@@ -20,6 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.test.TestHelper.{
+  INVALID_ENTITY_ID,
   assertAccessDeniedError,
   loginToRestInstitution
 }
@@ -101,5 +102,69 @@ class CollectionDefinitionApiQueriesTest
         unauthExportFn = cfg => CollectionDefinitionApi.exportCollection(1)(cfg)
       )
     )
+  }
+
+  describe("getById") {
+    it("retrieves a collection by its ID") {
+      Given("a valid collection ID")
+      val collection = CollectionDefinitionApi.listCollections().value.head
+
+      When("calling getById with the collection ID")
+      val result = CollectionDefinitionApi.getById(collection.id)
+
+      Then("returns the collection")
+      result.isRight shouldBe true
+      val fetchedCollection = result.value.value
+      fetchedCollection.details.id shouldBe collection.id
+      fetchedCollection.details.uuid shouldBe collection.uuid
+    }
+
+    it("returns None for an invalid collection ID") {
+      Given("an invalid collection ID")
+      val invalidCollectionId = INVALID_ENTITY_ID
+
+      When("calling getById with the invalid collection ID")
+      val result = CollectionDefinitionApi.getById(invalidCollectionId)
+
+      Then("returns None")
+      result.isRight shouldBe true
+      result.value shouldBe None
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(CollectionDefinitionApi.getById(1)(_))
+    }
+  }
+
+  describe("getByUuid") {
+    it("retrieves a collection by its UUID") {
+      Given("a valid collection UUID")
+      val collection = CollectionDefinitionApi.listCollections().value.head
+
+      When("calling getByUuid with the collection UUID")
+      val result = CollectionDefinitionApi.getByUuid(collection.uuid)
+
+      Then("returns the collection")
+      result.isRight shouldBe true
+      val fetchedCollection = result.value.value
+      fetchedCollection.details.id shouldBe collection.id
+      fetchedCollection.details.uuid shouldBe collection.uuid
+    }
+
+    it("returns None for an invalid collection UUID") {
+      Given("an invalid collection UUID")
+      val invalidUuid = "invalid-uuid"
+
+      When("calling getByUuid with the invalid UUID")
+      val result = CollectionDefinitionApi.getByUuid(invalidUuid)
+
+      Then("returns None")
+      result.isRight shouldBe true
+      result.value shouldBe None
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(CollectionDefinitionApi.getByUuid("some-uuid")(_))
+    }
   }
 }

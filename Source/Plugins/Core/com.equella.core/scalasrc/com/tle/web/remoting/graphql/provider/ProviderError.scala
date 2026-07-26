@@ -31,7 +31,14 @@ import scala.util.{Failure, Success}
   * @param cause
   *   a string error code (ideally from `ErrorCodes`)
   */
-case class ProviderError(message: String, cause: String)
+case class ProviderError(message: String, cause: String) {
+
+  /** Convert this `ProviderError` into an `ExecutionError`, where the message is the same and the
+    * `extensions` contain the cause of the error.
+    */
+  def toExecutionError: ExecutionError =
+    ExecutionError(msg = message, extensions = Some(Errors.buildCauseObjectValue(cause)))
+}
 
 object ProviderError {
   private val LOGGER = LoggerFactory.getLogger(classOf[ProviderError])
@@ -57,17 +64,6 @@ object ProviderError {
     */
   def apply(message: String, cause: ErrorCode.Code): ProviderError =
     ProviderError(message, cause.toString)
-
-  /** Extractor for a `ProviderError` into an `ExecutionError`, where the message is the same and
-    * the `extensions` contain the cause of the error.
-    */
-  def unapply(providerError: ProviderError): Option[ExecutionError] = {
-    val extensions = Some(Errors.buildCauseObjectValue(providerError.cause))
-
-    val result = Some(ExecutionError(msg = providerError.message, extensions = extensions))
-
-    result
-  }
 
   /** Wraps a block of code that may throw an exception into an `Either` that can be used in a
     * GraphQL request. Simplifies the error handling in Providers.

@@ -44,10 +44,7 @@ package object schema {
     *   a `ResultWithErrors[T]` that can be used in a GraphQL requests
     */
   implicit def errorHandler[T](eitherResult: Either[ProviderError, T]): ResultWithErrors[T] =
-    eitherResult match {
-      case Left(ProviderError(executionError: ExecutionError)) => ZIO.fail(executionError)
-      case Right(data)                                         => ZIO.succeed(data)
-    }
+    eitherResult.fold(providerError => ZIO.fail(providerError.toExecutionError), ZIO.succeed(_))
 
   /** Convert a `Pagination` object into an offset and limit pair for use in a database query, such
     * that the result will match [GraphQL Cursor Connections Specification - 4.4 Pagination

@@ -27,6 +27,7 @@ import io.github.openequella.graphql.api.views.{
   MetadataSchemaView
 }
 import io.github.openequella.graphql.test.TestHelper.{
+  INVALID_ENTITY_ID,
   CREDENTIALS_ADMIN,
   assertAccessDeniedError,
   checkApiError,
@@ -67,7 +68,7 @@ class MetadataSchemaApiMutationsTest
 
     it("returns a NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling startEdit with the invalid schema ID")
       val result = MetadataSchemaApi.startEdit(invalidSchemaId)
@@ -120,7 +121,7 @@ class MetadataSchemaApiMutationsTest
 
     it("returns a NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling cancelEdit with the invalid schema ID")
       val result = MetadataSchemaApi.cancelEdit(invalidSchemaId)
@@ -253,7 +254,7 @@ class MetadataSchemaApiMutationsTest
 
     it("returns a NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       And("a valid MetadataSchemaEditView")
       val skeleton = MetadataSchemaApi.startCreate().value
@@ -308,7 +309,7 @@ class MetadataSchemaApiMutationsTest
 
     it("returns a NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling delete with the invalid schema ID")
       val result = MetadataSchemaApi.delete(invalidSchemaId)
@@ -366,7 +367,7 @@ class MetadataSchemaApiMutationsTest
 
     it("returns a NotFoundError for an invalid schema ID") {
       Given("an invalid schema ID")
-      val invalidSchemaId = -1L
+      val invalidSchemaId = INVALID_ENTITY_ID
 
       When("calling clone with the invalid schema ID")
       val result = MetadataSchemaApi.clone(invalidSchemaId)

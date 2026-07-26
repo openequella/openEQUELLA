@@ -27,6 +27,7 @@ import io.github.openequella.graphql.api.views.{
   EntitySkeletonView
 }
 import io.github.openequella.graphql.test.TestHelper.{
+  INVALID_ENTITY_ID,
   CREDENTIALS_ADMIN,
   assertAccessDeniedError,
   asUnauthenticatedUser,
@@ -73,7 +74,7 @@ class CollectionDefinitionApiMutationsTest
 
     it("returns a NotFoundError for an invalid collection ID") {
       Given("an invalid collection ID")
-      val invalidCollectionId = -1L
+      val invalidCollectionId = INVALID_ENTITY_ID
 
       When("calling startEdit with the invalid collection ID")
       val result = CollectionDefinitionApi.startEdit(invalidCollectionId)
@@ -231,7 +232,7 @@ class CollectionDefinitionApiMutationsTest
 
     it("returns a NotFoundError for an invalid collection ID") {
       Given("an invalid collection ID")
-      val invalidId = -1L
+      val invalidId = INVALID_ENTITY_ID
 
       When("calling clone with the invalid collection ID")
       val result = CollectionDefinitionApi.clone(invalidId)
@@ -263,7 +264,7 @@ class CollectionDefinitionApiMutationsTest
 
     it("returns a NotFoundError for an invalid collection ID") {
       Given("an invalid collection ID")
-      val invalidId = -1L
+      val invalidId = INVALID_ENTITY_ID
 
       When("calling delete with the invalid collection ID")
       val result = CollectionDefinitionApi.delete(invalidId)
@@ -323,7 +324,7 @@ class CollectionDefinitionApiMutationsTest
 
     it("returns a NotFoundError for an invalid collection ID") {
       Given("an invalid collection ID")
-      val invalidCollectionId = -1L
+      val invalidCollectionId = INVALID_ENTITY_ID
 
       And("a valid CollectionDefinitionEditView")
       val skeleton = CollectionDefinitionApi.startCreate().value
@@ -384,7 +385,7 @@ class CollectionDefinitionApiMutationsTest
 
     it("returns a NotFoundError for an invalid collection ID") {
       Given("an invalid collection ID")
-      val invalidCollectionId = -1L
+      val invalidCollectionId = INVALID_ENTITY_ID
 
       When("calling cancelEdit with the invalid collection ID")
       val result = CollectionDefinitionApi.cancelEdit(invalidCollectionId)
