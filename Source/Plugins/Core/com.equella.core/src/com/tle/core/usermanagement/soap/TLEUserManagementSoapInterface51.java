@@ -47,7 +47,7 @@ public interface TLEUserManagementSoapInterface51 extends TLEUserManagementSoapI
   /**
    * Finds all the internal EQUELLA groups that match the search string
    *
-   * @param
+   * @param searchString The string query to search for
    * @return XML of format: <div class="block">
    *     <pre>
    * &lt;groups&gt;

@@ -38,7 +38,7 @@ public interface ToolsService {
    * Note that the response sent back by this method will include a new cookie. Your client MUST
    * have cookies enabled. This method will throw an exception if Authentication fails.
    *
-   * @see SoapInterfaceV1.login(String, String)
+   * @see SoapInterfaceV1#login(String, String)
    * @param username The username
    * @param password The password
    * @return A session id that can be used in subsequent method calls for diagnostic purposes.<br>

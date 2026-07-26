@@ -1407,7 +1407,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /**
    * Create a list of term arrays of no larger than 1024 (Default {@link
-   * BooleanQuery.maxClauseCount()} for boolean queries)
+   * BooleanQuery#maxClauseCount()} for boolean queries)
    */
   public Term[] expand(IndexReader ir, String field, String prefix) throws IOException {
     if (prefix.isEmpty()) {

@@ -137,7 +137,7 @@ When writing or modifying code:
 
 | Language              | Tool               | Files                   | Configuration                |
 |-----------------------|--------------------|-------------------------|------------------------------|
-| Scala                 | ScalaFmt           | `*.scala`, `*.sbt`      | `.scalafmt.conf` (v3.10.3)   |
+| Scala                 | ScalaFmt           | `*.scala`, `*.sbt`      | `.scalafmt.conf` (v3.11.4)   |
 | Java                  | Google Java Format | `*.java`                | Run via `google-java-format` |
 | TypeScript/JavaScript | ESLint + Prettier  | `*.ts`, `*.tsx`, `*.js` | `eslint.config.mjs`          |
 | CSS/SCSS              | Prettier           | `*.css`, `*.scss`       | Prettier defaults            |

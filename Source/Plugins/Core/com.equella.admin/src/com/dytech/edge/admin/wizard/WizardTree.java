@@ -249,14 +249,14 @@ public class WizardTree extends JPanel
   }
 
   /**
-   * @see javax.swing.JTree.addTreeSelectionListener(TreeSelectionListener)
+   * @see javax.swing.JTree#addTreeSelectionListener(TreeSelectionListener)
    */
   public void addTreeSelectionListener(TreeSelectionListener listener) {
     tree.addTreeSelectionListener(listener);
   }
 
   /**
-   * @see javax.swing.JTree.removeTreeSelectionListener(TreeSelectionListener)
+   * @see javax.swing.JTree#removeTreeSelectionListener(TreeSelectionListener)
    */
   public void removeTreeSelectionListener(TreeSelectionListener listener) {
     tree.removeTreeSelectionListener(listener);

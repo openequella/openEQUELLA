@@ -26,9 +26,7 @@ public class OAuthClientEditorTest extends AbstractCleanupTest {
 
   String savedSecret;
 
-  /**
-   * @see Redmine: #7227
-   */
+  /** See Redmine: #7227 */
   // Most of the REST tests do this indirectly, but let's give it a good
   // thrash here
   @Test

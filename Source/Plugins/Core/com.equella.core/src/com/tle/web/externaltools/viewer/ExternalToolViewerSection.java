@@ -686,7 +686,7 @@ public class ExternalToolViewerSection
   }
 
   /**
-   * Copy a Map<String, String> to a Map<String, String[]>
+   * Copy a {@code Map<String, String>} to a {@code Map<String, String[]>}
    *
    * @param formParams
    * @return Map of identical contents except single string values are an array of a single string
