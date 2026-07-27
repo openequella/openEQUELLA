@@ -11,6 +11,9 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 /**
  * Helper class to assist in interacting the with {@code api/auth} endpoint, primarily through the
  * building of {@code HttpMethod} instances.
+ *
+ * <p>This class is designed for reuse across multiple test client implementations that require
+ * session-based authentication against the REST API.
  */
 public class AuthHelper {
   private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -20,7 +23,6 @@ public class AuthHelper {
   public AuthHelper(String institutionUrl) {
     this.institutionUrl = institutionUrl;
   }
-  ;
 
   public String getAuthApiEndpoint() {
     return institutionUrl + "api/auth";
