@@ -257,7 +257,7 @@ class CollectionProvider @Inject() (
   /** List the wizard categories in use across all collections in the institution.
     *
     * @return
-    *   a sorted list of distinct wizard category names.
+    *   a list of distinct wizard category names, sorted case-insensitively (natural order).
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def listCategories(): List[String] = {
