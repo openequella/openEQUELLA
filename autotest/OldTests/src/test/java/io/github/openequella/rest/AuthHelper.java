@@ -26,12 +26,12 @@ public class AuthHelper {
     return institutionUrl + "api/auth";
   }
 
-  protected HttpMethod buildLogoutMethod() {
+  public HttpMethod buildLogoutMethod() {
     final String logoutEndpoint = getAuthApiEndpoint() + "/logout";
     return new PutMethod(logoutEndpoint);
   }
 
-  protected HttpMethod buildLoginMethod(String username, String password)
+  public HttpMethod buildLoginMethod(String username, String password)
       throws UnsupportedEncodingException {
     final String loginEndpoint = getAuthApiEndpoint() + "/login";
     // Credentials are sent as a JSON body as required by api/auth/login.
