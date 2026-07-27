@@ -254,6 +254,30 @@ class CollectionProvider @Inject() (
     }.map(CollectionDefinition(_, xmlService))
   }
 
+  /** List the wizard categories in use across all collections in the institution.
+    *
+    * @return
+    *   a list of distinct wizard category names, sorted case-insensitively (natural order).
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def listCategories(): List[String] = {
+    LOGGER.debug("Listing all wizard categories")
+    itemDefinitionService.enumerateCategories().asScala.toList
+  }
+
+  /** List the collections which use the specified schema.
+    *
+    * @param schemaId
+    *   the ID of the schema.
+    * @return
+    *   a list of `BaseEntityReference` objects representing the collections using the schema.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def listCollectionsForSchema(schemaId: Long): List[BaseEntityReference] = {
+    LOGGER.debug(s"Listing collections for schema with id $schemaId")
+    itemDefinitionService.listAllForSchema(schemaId).asScala.map(BaseEntityReference(_)).toList
+  }
+
   /** Clone a collection, creating a copy with a new ID.
     *
     * @param id

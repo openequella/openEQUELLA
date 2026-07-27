@@ -37,6 +37,9 @@ object TestHelper {
   /** An entity ID guaranteed not to exist, for exercising not-found behaviour. */
   val INVALID_ENTITY_ID: Long = -1L
 
+  /** An entity UUID guaranteed not to match any entity, for exercising not-found behaviour. */
+  val INVALID_ENTITY_UUID: String = "invalid-uuid"
+
   /** Load the test server port from configuration with CLI -D override support.
     *
     * Precedence order:

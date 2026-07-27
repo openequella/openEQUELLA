@@ -508,6 +508,10 @@ type CollectionQueries {
   byId("ID of the collection" id: Long!): CollectionDefinition
   "Get a collection by UUID"
   byUuid("UUID of the collection" uuid: String!): CollectionDefinition
+  "List the wizard categories in use across all collections"
+  categories: [String!]!
+  "List the collections which use the specified schema"
+  listForSchema("ID of the schema" schemaId: Long!): [BaseEntityReference!]!
 }
 
 "Configuration for how a collection's items are displayed in search results."

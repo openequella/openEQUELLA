@@ -68,4 +68,19 @@ object CollectionQueries {
       OptionOf(Obj(innerSelection)),
       arguments = List(Argument("uuid", uuid, "String!"))
     )
+
+  /** List the wizard categories in use across all collections
+    */
+  def categories: SelectionBuilder[CollectionQueries, List[String]] =
+    _root_.caliban.client.SelectionBuilder.Field("categories", ListOf(Scalar()))
+
+  /** List the collections which use the specified schema
+    */
+  def listForSchema[A](schemaId: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(
+      implicit encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[CollectionQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
+    "listForSchema",
+    ListOf(Obj(innerSelection)),
+    arguments = List(Argument("schemaId", schemaId, "Long!"))
+  )
 }

@@ -51,7 +51,9 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       export = args => collectionProvider.exportCollection(args.id, args.withSecurity),
       idForUuid = uuid => collectionProvider.collectionIdForUuid(uuid),
       byId = args => collectionProvider.collectionById(args.id),
-      byUuid = args => collectionProvider.collectionByUuid(args.uuid)
+      byUuid = args => collectionProvider.collectionByUuid(args.uuid),
+      categories = () => collectionProvider.listCategories(),
+      listForSchema = args => collectionProvider.listCollectionsForSchema(args.schemaId)
     )
   )
 
@@ -85,7 +87,11 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       @GQLDescription("Get a collection by ID")
       byId: CollectionByIdArgs => Option[CollectionDefinition],
       @GQLDescription("Get a collection by UUID")
-      byUuid: CollectionByUuidArgs => Option[CollectionDefinition]
+      byUuid: CollectionByUuidArgs => Option[CollectionDefinition],
+      @GQLDescription("List the wizard categories in use across all collections")
+      categories: () => List[String],
+      @GQLDescription("List the collections which use the specified schema")
+      listForSchema: CollectionsForSchemaArgs => List[BaseEntityReference]
   )
 
   case class CollectionExportArgs(
@@ -103,6 +109,11 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
   case class CollectionByUuidArgs(
       @GQLDescription("UUID of the collection")
       uuid: String
+  )
+
+  case class CollectionsForSchemaArgs(
+      @GQLDescription("ID of the schema")
+      schemaId: Long
   )
 
   case class Mutations(

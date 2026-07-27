@@ -22,6 +22,7 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
+  INVALID_ENTITY_UUID,
   assertAccessDeniedError,
   checkApiError,
   loginToRestInstitution
@@ -78,7 +79,7 @@ class MetadataSchemaApiQueriesTest
 
     it("returns None for an invalid schema UUID") {
       Given("an invalid schema UUID")
-      val invalidUuid = "invalid-uuid"
+      val invalidUuid = INVALID_ENTITY_UUID
 
       When("calling getIdByUuid with the invalid UUID")
       val result = MetadataSchemaApi.getIdByUuid(invalidUuid)

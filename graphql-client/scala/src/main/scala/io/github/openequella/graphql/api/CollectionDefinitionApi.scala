@@ -132,6 +132,44 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     query(q)
   }
 
+  /** Lists the wizard categories in use across all collections.
+    *
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of distinct wizard category names, sorted
+    *   case-insensitively (natural order). If no categories are in use, an empty list is returned.
+    */
+  def listCategories()(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[String]] = {
+    val q = CollectionQueries.categories
+
+    query(q)
+  }
+
+  /** Lists the collections which use the specified schema.
+    *
+    * @param schemaId
+    *   The ID of the schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of BaseEntityReferenceView representing the collections
+    *   using the schema. If no collections use the schema, an empty list is returned.
+    * @see
+    *   [[listCollections]] to list all collections regardless of schema.
+    */
+  def listForSchema(schemaId: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
+    val q = CollectionQueries.listForSchema(schemaId) {
+      BaseEntityReferenceView.selector
+    }
+
+    query(q)
+  }
+
   /** Start editing a collection by its ID.
     *
     * @param id
