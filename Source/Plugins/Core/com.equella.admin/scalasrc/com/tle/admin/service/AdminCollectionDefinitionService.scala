@@ -31,8 +31,28 @@ trait AdminCollectionDefinitionService extends RemoteAbstractEntityService[ItemD
 
   def getSchemaIdForCollectionUuid(value: String): Long
 
+  /** Packages a wizard control's XML definition as a `.wzc` zip file for saving locally. A purely
+    * local operation — no server communication is involved.
+    *
+    * @param controlXml
+    *   the XML definition of the control (treated as opaque).
+    * @return
+    *   the bytes of the `.wzc` zip file.
+    * @see
+    *   [[importControl]] for the inverse operation.
+    */
   def exportControl(controlXml: String): Array[Byte]
 
+  /** Extracts a wizard control's XML definition from a `.wzc` zip file. A purely local operation —
+    * no server communication is involved.
+    *
+    * @param zipFileData
+    *   the bytes of a `.wzc` zip file.
+    * @return
+    *   the XML definition of the control stored in the zip.
+    * @see
+    *   [[exportControl]] for the inverse operation.
+    */
   def importControl(zipFileData: Array[Byte]): String
 }
 

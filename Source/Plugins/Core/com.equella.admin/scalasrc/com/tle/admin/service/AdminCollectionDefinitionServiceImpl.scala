@@ -18,6 +18,7 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.controls.ExportedControlZip
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
 import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.{
   fromEntityPack,
@@ -64,13 +65,11 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     _.getSchemaIdForCollectionUuid(value)
   }
 
-  override def exportControl(controlXml: String): Array[Byte] = withDelegate {
-    _.exportControl(controlXml)
-  }
+  override def exportControl(controlXml: String): Array[Byte] =
+    ExportedControlZip.zip(controlXml)
 
-  override def importControl(zipFileData: Array[Byte]): String = withDelegate {
-    _.importControl(zipFileData)
-  }
+  override def importControl(zipFileData: Array[Byte]): String =
+    ExportedControlZip.unzip(zipFileData)
 
   override def listAll(): util.List[BaseEntityLabel] =
     listAllFrom(CollectionDefinitionApi.listCollections())
