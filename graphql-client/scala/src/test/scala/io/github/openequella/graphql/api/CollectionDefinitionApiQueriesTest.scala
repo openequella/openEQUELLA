@@ -21,6 +21,7 @@ package io.github.openequella.graphql.api
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
+  INVALID_ENTITY_UUID,
   assertAccessDeniedError,
   loginToRestInstitution
 }
@@ -76,7 +77,7 @@ class CollectionDefinitionApiQueriesTest
 
     it("returns None for an invalid collection UUID") {
       Given("an invalid collection UUID")
-      val invalidUuid = "invalid-uuid"
+      val invalidUuid = INVALID_ENTITY_UUID
 
       When("calling getIdByUuid with the invalid UUID")
       val result = CollectionDefinitionApi.getIdByUuid(invalidUuid)
@@ -214,7 +215,7 @@ class CollectionDefinitionApiQueriesTest
 
     it("returns None for an invalid collection UUID") {
       Given("an invalid collection UUID")
-      val invalidUuid = "invalid-uuid"
+      val invalidUuid = INVALID_ENTITY_UUID
 
       When("calling getByUuid with the invalid UUID")
       val result = CollectionDefinitionApi.getByUuid(invalidUuid)
