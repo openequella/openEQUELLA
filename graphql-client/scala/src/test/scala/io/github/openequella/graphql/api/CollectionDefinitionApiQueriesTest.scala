@@ -19,6 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.views.CollectionDefinitionView
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   INVALID_ENTITY_UUID,
@@ -45,6 +46,16 @@ class CollectionDefinitionApiQueriesTest
     with OptionValues
     with TableDrivenPropertyChecks {
   private implicit val cfg: ClientConfiguration = loginToRestInstitution()
+
+  /** Fetch the full definition of every collection in the institution. Collections which vanish
+    * between the listing and the fetch (mutation suites running in parallel create and delete their
+    * own collections) are skipped rather than failing the calling test.
+    */
+  private def listAllCollectionDefinitions(): List[CollectionDefinitionView] =
+    CollectionDefinitionApi
+      .listCollections()
+      .value
+      .flatMap(ref => CollectionDefinitionApi.getById(ref.id).value)
 
   describe("listCollections") {
     it("returns all collections") {
@@ -139,22 +150,22 @@ class CollectionDefinitionApiQueriesTest
 
   describe("listCategories") {
     it("returns the distinct sorted wizard categories across all collections") {
-      Given("the wizard categories of all collections")
-      val expectedCategories = CollectionDefinitionApi
-        .listCollections()
-        .value
-        .flatMap(collection =>
-          CollectionDefinitionApi.getById(collection.id).value.value.wizardCategory
-        )
-        .distinct
-        .sorted
+      Given("the wizard categories in use across all collections")
+      val categoriesInUse = listAllCollectionDefinitions().flatMap(_.wizardCategory).distinct
+      // Guard against a vacuous empty-vs-empty pass should the institution data ever lose its
+      // wizard categories.
+      categoriesInUse should not be empty
 
       When("calling listCategories")
       val result = CollectionDefinitionApi.listCategories()
 
-      Then("returns the distinct sorted wizard categories")
+      Then("returns exactly those categories, without duplicates")
       result.isRight shouldBe true
-      result.value shouldBe expectedCategories
+      result.value should contain theSameElementsAs categoriesInUse
+
+      And("sorted case-insensitively")
+      val normalised = result.value.map(_.toLowerCase)
+      normalised shouldBe normalised.sorted
     }
 
     it("denies access when not authenticated") {
@@ -165,20 +176,15 @@ class CollectionDefinitionApiQueriesTest
   describe("listForSchema") {
     it("returns the collections which use the specified schema") {
       Given("a schema ID sourced from a collection which has one")
-      val (collection, schemaId) = CollectionDefinitionApi
-        .listCollections()
-        .value
-        .iterator
-        .map(c => (c, CollectionDefinitionApi.getById(c.id).value.value.schemaId))
-        .collectFirst { case (c, Some(id)) => (c, id) }
-        .value
+      val collection = listAllCollectionDefinitions().find(_.schemaId.isDefined).value
+      val schemaId   = collection.schemaId.value
 
       When("calling listForSchema with the schema ID")
       val result = CollectionDefinitionApi.listForSchema(schemaId)
 
       Then("returns a list of collections including the source collection")
       result.isRight shouldBe true
-      result.value.map(_.uuid) should contain(collection.uuid)
+      result.value.map(_.uuid) should contain(collection.details.uuid)
     }
 
     it("returns an empty list for an invalid schema ID") {

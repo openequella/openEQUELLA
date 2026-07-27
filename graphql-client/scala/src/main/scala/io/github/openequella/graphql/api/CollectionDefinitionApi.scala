@@ -137,8 +137,8 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of ApiError or a sorted list of distinct wizard category names. If no
-    *   categories are in use, an empty list is returned.
+    *   Either a list of ApiError or a list of distinct wizard category names, sorted
+    *   case-insensitively (natural order). If no categories are in use, an empty list is returned.
     */
   def listCategories()(implicit
       cfg: ClientConfiguration
