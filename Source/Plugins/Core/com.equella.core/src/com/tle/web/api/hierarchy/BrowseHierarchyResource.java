@@ -97,9 +97,9 @@ public class BrowseHierarchyResource {
   /**
    * Similar to the <server_url>/api/hierarchy<br>
    *
-   * @see com.tle.web.api.hierarchy.EditHierarchyResource#listTopLevel<br>
-   *     except the former returns links for edit mode without resolving virtual placeholders,
-   *     whereas here the nodes are expanded, and links point to display/browse mode
+   * @see com.tle.web.api.hierarchy.EditHierarchyResource#listTopLevel except the former returns
+   *     links for edit mode without resolving virtual placeholders, whereas here the nodes are
+   *     expanded, and links point to display/browse mode
    */
   @GET
   @Path("/")
@@ -413,8 +413,9 @@ public class BrowseHierarchyResource {
   }
 
   /**
-   * @param
-   * @return
+   * @param items The items to build beans for
+   * @param infos The detail keys to include in each bean
+   * @return The list of item beans
    */
   protected List<ItemBean> itemBeansFromItemList(List<Item> items, List<String> infos) {
     List<ItemBean> returnResults = Lists.newArrayList();

@@ -828,8 +828,8 @@ public class HibernateMigrationHelper {
    * Examples of using this method:
    *
    * <ul>
-   *   <li>Changing the data type of a column with existing data in Oracle</>
-   *   <li>Dropping a constraint for a column however the constraint name is unknown</>
+   *   <li>Changing the data type of a column with existing data in Oracle
+   *   <li>Dropping a constraint for a column however the constraint name is unknown
    * </ul>
    *
    * @param tableName The name of the table.

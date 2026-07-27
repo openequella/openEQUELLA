@@ -52,7 +52,7 @@ public class ResultHolder {
   /**
    * Get the result. Will block until a result has been set.
    *
-   * @return The result as an <code>Object</cdoe>.
+   * @return The result as an <code>Object</code>.
    */
   public synchronized Object getResult() {
     while (noResult) {

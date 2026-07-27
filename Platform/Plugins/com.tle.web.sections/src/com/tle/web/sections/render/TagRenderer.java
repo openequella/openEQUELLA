@@ -180,7 +180,7 @@ public class TagRenderer extends AbstractWrappedElementId
    *   <li>{@link #writeStart(SectionWriter, Map)}
    *   <li>{@link #writeMiddle(SectionWriter)}
    *   <li>{@link #writeEnd(SectionWriter)}
-   * </ul>
+   * </ol>
    */
   @Override
   public void realRender(SectionWriter writer) throws IOException {

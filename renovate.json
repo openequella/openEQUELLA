@@ -10,7 +10,44 @@
   "prHourlyLimit": 2,
   "semanticCommits": "enabled",
   "ignorePaths": [".github/**", "docker/docker-build/**"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^package\\.json$"],
+      "matchStrings": [
+        "coursier bootstrap com\\.puppycrawl\\.tools:checkstyle:(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "com.puppycrawl.tools:checkstyle",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^package\\.json$"],
+      "matchStrings": [
+        "coursier bootstrap com\\.google\\.googlejavaformat:google-java-format:(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "com.google.googlejavaformat:google-java-format",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^package\\.json$"],
+      "matchStrings": [
+        "coursier bootstrap org\\.scalameta::scalafmt-cli:(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "org.scalameta:scalafmt-cli_3",
+      "datasourceTemplate": "maven"
+    }
+  ],
   "packageRules": [
+    {
+      "groupName": "Coursier-bootstrapped dev tools",
+      "matchDepNames": [
+        "com.puppycrawl.tools:checkstyle",
+        "com.google.googlejavaformat:google-java-format",
+        "org.scalameta:scalafmt-cli_3"
+      ]
+    },
     {
       "description": "Wait 7 days before proposing any update to ensure stability",
       "minimumReleaseAge": "7 days",
