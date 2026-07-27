@@ -20,7 +20,6 @@ package com.tle.core.collection.service.impl;
 
 import static com.tle.beans.entity.LanguageBundle.initBundle;
 
-import com.google.common.io.CharStreams;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -32,7 +31,6 @@ import com.tle.common.Format;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
-import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.ItemStatusTarget;
@@ -54,14 +52,6 @@ import com.tle.core.schema.event.listener.SchemaReferencesListener;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.ValidationHelper;
-import com.tle.core.util.archive.ArchiveType;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +74,6 @@ public class ItemDefinitionServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, ItemDefinition, ItemDefinitionService>
     implements ItemDefinitionService, SchemaReferences, SchemaReferencesListener {
   private static final String[] BLANKS = {"name"}; // $NON-NLS-1$
-  private static final String CONTROL_XML = "_control.xml"; // $NON-NLS-1$
 
   private final ItemDefinitionDao itemDefinitionDao;
 
@@ -349,38 +338,6 @@ public class ItemDefinitionServiceImpl
   @Override
   protected void processClone(EntityPack<ItemDefinition> pack) {
     pack.getEntity().getSlow().setId(0);
-  }
-
-  @Override
-  public byte[] exportControl(String controlXml) {
-    StagingFile file = stagingService.createStagingArea();
-    try {
-      fileSystemService.write(file, CONTROL_XML, new StringReader(controlXml), false);
-
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      fileSystemService.zipFile(file, out, ArchiveType.ZIP);
-      return out.toByteArray();
-    } catch (IOException io) {
-      throw new RuntimeException(io);
-    } finally {
-      stagingService.removeStagingArea(file, true);
-    }
-  }
-
-  @Override
-  public String importControl(byte[] zipFileData) throws IOException {
-    StagingFile staging = stagingService.createStagingArea();
-    try {
-      fileSystemService.unzipFile(staging, new ByteArrayInputStream(zipFileData), ArchiveType.ZIP);
-      Reader reader = new InputStreamReader(fileSystemService.read(staging, CONTROL_XML));
-      StringWriter writer = new StringWriter();
-      CharStreams.copy(reader, writer);
-      return writer.toString();
-    } catch (IOException io) {
-      throw new RuntimeException(io);
-    } finally {
-      stagingService.removeStagingArea(staging, true);
-    }
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
