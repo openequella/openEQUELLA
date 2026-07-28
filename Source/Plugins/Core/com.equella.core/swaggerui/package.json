@@ -11,7 +11,7 @@
     "swagger-ui": "5.32.8"
   },
   "devDependencies": {
-    "webpack": "5.108.3",
+    "webpack": "5.108.4",
     "webpack-cli": "7.2.1"
   }
 }
