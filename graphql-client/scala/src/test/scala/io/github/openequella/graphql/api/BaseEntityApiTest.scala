@@ -19,9 +19,11 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.views.BaseEntitySecurityView
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   assertAccessDeniedError,
+  assertNotFoundError,
   loginToRestInstitution
 }
 import org.scalatest.funspec.AnyFunSpec
@@ -36,6 +38,16 @@ class BaseEntityApiTest
     with OptionValues {
 
   private implicit val cfg: ClientConfiguration = loginToRestInstitution()
+
+  /** Any ID will do when the call is expected to be rejected before the entity is looked up. */
+  private val AnyEntityId = 1L
+
+  private val NoCollectionWithEntries =
+    "No collection in this institution has any access control entries"
+  private val NoWorkflowWithSubEntityLists =
+    "No workflow in this institution has any sub-entity access control lists"
+  private val NoSchemaResolved =
+    "Every metadata schema in this institution vanished before its security could be retrieved"
 
   describe("getNameById") {
     it("retrieves name for a known base entity by ID") {
@@ -71,8 +83,70 @@ class BaseEntityApiTest
     }
 
     it("denies access when not authenticated") {
-      val AnyEntityId = 1L
       assertAccessDeniedError(BaseEntityApi.getNameById(AnyEntityId)(_))
+    }
+  }
+
+  describe("getSecurityById") {
+    it("retrieves the access control entries of an entity which has them") {
+      Given("the collections of this institution")
+      val collections = collectionIds
+
+      When("retrieving the security details of each")
+      val (id, security) = securityOfFirst(collections)(_.targetList.nonEmpty)
+        .getOrElse(fail(NoCollectionWithEntries))
+
+      Then(s"the entries of collection $id are returned")
+      security.targetList.foreach { entry =>
+        entry.privilege.trim should not be empty
+        entry.who.trim should not be empty
+      }
+    }
+
+    it("retrieves the sub-entity access control lists of an entity which has them") {
+      Given("the workflows of this institution, reached via the collections which use them")
+      // Also demonstrates that the query is entity type agnostic - workflows have no API of their
+      // own in this client, yet their ACLs are still reachable.
+      val workflows = workflowIds
+
+      When("retrieving the security details of each")
+      val (id, security) = securityOfFirst(workflows)(_.otherTargetLists.exists(_.entries.nonEmpty))
+        .getOrElse(fail(NoWorkflowWithSubEntityLists))
+
+      Then(s"the sub-entity lists of workflow $id are returned, keyed by workflow task")
+      security.otherTargetLists.filter(_.entries.nonEmpty).foreach { otl =>
+        otl.taskId.value.trim should not be empty
+        otl.entries.foreach(_.privilege.trim should not be empty)
+      }
+    }
+
+    it("succeeds with empty lists for an entity which has no access control entries") {
+      Given("the metadata schemas of this institution, which carry no ACLs of their own")
+      val schemas = MetadataSchemaApi.listSchemas().value.map(_.id)
+      schemas should not be empty
+
+      When("retrieving the security details of the first one still present")
+      val (id, security) = securityOfFirst(schemas)(_ => true)
+        .getOrElse(fail(NoSchemaResolved))
+
+      Then(s"schema $id succeeds with empty lists rather than failing")
+      // The distinction that matters: 'no access control entries' must never look like 'not found'.
+      security shouldBe BaseEntitySecurityView(List.empty, List.empty)
+    }
+
+    it("returns a not found error for an unknown base entity") {
+      Given("an invalid base entity ID")
+      val invalidId = INVALID_ENTITY_ID
+
+      When("calling getSecurityById with the invalid ID")
+      val result = BaseEntityApi.getSecurityById(invalidId)
+
+      Then("a not found error is returned - not an empty success")
+      assertNotFoundError(result)
+    }
+
+    it("denies access when not authenticated") {
+      assertAccessDeniedError(BaseEntityApi.getSecurityById(AnyEntityId)(_))
     }
   }
 
@@ -81,4 +155,34 @@ class BaseEntityApiTest
     entities should not be empty
     entities.head.id
   }
+
+  private def collectionIds: List[Long] = CollectionDefinitionApi.listCollections().value.map(_.id)
+
+  /** The IDs of the workflows in use by this institution's collections. */
+  private def workflowIds: List[Long] =
+    collectionIds
+      .flatMap(id => CollectionDefinitionApi.getById(id).toOption.flatten)
+      .flatMap(_.workflowId)
+      .distinct
+
+  /** The security details of the entity, or None if it has vanished - mutation suites run
+    * concurrently, so entities listed a moment ago may already be deleted. Any other error is a
+    * real failure and is reported as such rather than being mistaken for "no match".
+    */
+  private def securityIfPresent(id: Long): Option[BaseEntitySecurityView] =
+    BaseEntityApi.getSecurityById(id) match {
+      case Right(security)                                              => Some(security)
+      case Left(errors) if errors.exists(_.isInstanceOf[NotFoundError]) => None
+      case Left(errors) => fail(s"Retrieving the security details of entity $id failed: $errors")
+    }
+
+  /** The first of `ids` whose security details satisfy `predicate`, paired with its ID. Lazy, so it
+    * stops calling the server once a match is found.
+    */
+  private def securityOfFirst(
+      ids: List[Long]
+  )(predicate: BaseEntitySecurityView => Boolean): Option[(Long, BaseEntitySecurityView)] =
+    ids.view
+      .flatMap(id => securityIfPresent(id).map(id -> _))
+      .collectFirst { case (id, security) if predicate(security) => (id, security) }
 }
