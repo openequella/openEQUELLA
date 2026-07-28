@@ -35,8 +35,14 @@ import javax.inject.Singleton;
 @Bind(BaseEntityService.class)
 @Singleton
 public class BaseEntityServiceImpl implements BaseEntityService {
-  @Inject private BaseEntityDao dao;
-  @Inject private EntityRegistry entityRegistry;
+  private final BaseEntityDao dao;
+  private final EntityRegistry entityRegistry;
+
+  @Inject
+  public BaseEntityServiceImpl(BaseEntityDao dao, EntityRegistry entityRegistry) {
+    this.dao = dao;
+    this.entityRegistry = entityRegistry;
+  }
 
   @Override
   public LanguageBundle getNameForId(long id) {
