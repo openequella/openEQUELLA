@@ -18,9 +18,12 @@
 
 package com.tle.core.entity.service;
 
+import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.EntityPack;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public interface BaseEntityService {
@@ -31,6 +34,25 @@ public interface BaseEntityService {
    * @param id the identity of the entity.
    */
   LanguageBundle getNameForId(long id);
+
+  /**
+   * Retrieve the read-only pack - the entity plus its access control lists - for any base entity,
+   * regardless of its type.
+   *
+   * <p>This is the entity type agnostic counterpart of {@link
+   * com.tle.core.remoting.RemoteAbstractEntityService#getReadOnlyPack(long)}. The concrete entity
+   * service is resolved from the entity's runtime class via the {@link
+   * com.tle.core.entity.registry.EntityRegistry} and the call is delegated to it, so the ACL check
+   * for the relevant {@code EDIT_<TYPE>} privilege, and any type specific sub-entity target lists,
+   * are those of that service.
+   *
+   * @param id the identity of the entity
+   * @return the pack, or empty if there is no entity with that ID in the current institution
+   * @throws UnsupportedOperationException if the entity exists but its type has no registered
+   *     entity service, and hence its access control lists cannot be determined
+   * @throws com.tle.exceptions.AccessDeniedException if the current user may not edit the entity
+   */
+  Optional<EntityPack<BaseEntity>> getReadOnlyPack(long id);
 
   List<Long> getIdsFromUuids(Set<String> uuids);
 

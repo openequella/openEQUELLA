@@ -18,6 +18,7 @@
 
 package com.tle.core.entity.dao.impl;
 
+import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.entity.dao.BaseEntityDao;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Singleton;
 import org.hibernate.HibernateException;
@@ -39,6 +41,16 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 @Bind(BaseEntityDao.class)
 @Singleton
 public class BaseEntityDaoImpl extends AbstractHibernateDao implements BaseEntityDao {
+  @Override
+  public Optional<BaseEntity> getEntityInCurrentInstitution(final long id) {
+    return findUnique(
+        BaseEntity.class,
+        (builder, entity) ->
+            builder.and(
+                builder.equal(entity.get("id"), id),
+                CurrentInstitution.equalityPredicate(builder, entity)));
+  }
+
   @Override
   public LanguageBundle getEntityNameForId(final long id) {
     return (LanguageBundle)

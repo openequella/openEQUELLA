@@ -24,7 +24,7 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.BaseEntityProvider
-import com.tle.web.remoting.graphql.schema.types.LanguageBundle
+import com.tle.web.remoting.graphql.schema.types.{BaseEntitySecurity, LanguageBundle}
 
 import javax.inject.{Inject, Singleton}
 
@@ -45,10 +45,21 @@ class BaseEntitySchema @Inject() (baseEntityProvider: BaseEntityProvider) extend
       id: Long
   )
 
+  case class SecurityByIdArgs(
+      @GQLDescription("The unique ID of the base entity whose security details are to be retrieved")
+      id: Long
+  )
+
   @GQLName("BaseEntityQueries")
   case class BaseEntityQueryOps(
       @GQLDescription("Retrieve the name of the base entity by its unique ID")
-      nameById: NameByIdArgs => Option[LanguageBundle]
+      nameById: NameByIdArgs => Option[LanguageBundle],
+      @GQLDescription(
+        "Retrieve the access control details (ACLs) of the base entity by its unique ID. Entity " +
+          "type agnostic - the owning entity service is resolved from the ID. An entity with no " +
+          "access control entries returns empty lists; an unknown ID is an error."
+      )
+      securityById: SecurityByIdArgs => ResultWithErrors[BaseEntitySecurity]
   )
 
   case class Queries(
@@ -58,7 +69,8 @@ class BaseEntitySchema @Inject() (baseEntityProvider: BaseEntityProvider) extend
 
   private val queries = Queries(
     baseEntities = BaseEntityQueryOps(
-      nameById = args => baseEntityProvider.nameById(args.id)
+      nameById = args => baseEntityProvider.nameById(args.id),
+      securityById = args => baseEntityProvider.securityById(args.id)
     )
   )
 }
