@@ -40,7 +40,7 @@ import com.tle.core.services.FileSystemService;
 import com.tle.core.workflow.dao.TaskHistoryDao;
 import com.tle.core.workflow.dao.WorkflowDao;
 import com.tle.core.workflow.migrate.TaskHistoryMigrator;
-import com.tle.core.xml.service.impl.XmlServiceImpl;
+import com.tle.core.xstream.ExtXStream;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -103,7 +103,7 @@ public class TaskHistoryConverter implements ItemExtrasConverter {
   private synchronized XStream getXStream() {
     if (xstream == null) {
       xstream =
-          new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+          new ExtXStream(getClass().getClassLoader()) {
             @Override
             protected MapperWrapper wrapMapper(MapperWrapper next) {
               return new HibernateMapper(next);

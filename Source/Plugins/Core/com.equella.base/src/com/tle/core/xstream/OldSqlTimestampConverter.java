@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.xml.service.impl;
+package com.tle.core.xstream;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import java.sql.Timestamp;
