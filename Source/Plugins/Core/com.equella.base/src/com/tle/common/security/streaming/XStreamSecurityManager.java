@@ -34,8 +34,21 @@ public final class XStreamSecurityManager {
         });
   }
 
-  // Helper method to have ALL XStream instances be covered by
-  // the oEQ policy(ies) in this manager.
+  /**
+   * A stock XStream carrying the oEQ type policy, for XML that begins and ends inside one process —
+   * ad-hoc conversions, clipboard and file export from the Admin Console, and the like.
+   *
+   * <p>Prefer {@code com.tle.core.xstream.ExtXStream} for anything persisted or sent over a wire.
+   * Entity blobs, institution export/import and the opaque blobs in the GraphQL API are in a legacy
+   * format that only {@code ExtXStream} can read and write, and mixing the two is how every
+   * collection with a single-locale language bundle stopped opening in the Admin Console.
+   *
+   * <p>Some persisted strings do still round-trip through this factory — the summary display
+   * configuration read and written by {@code BasicConfig}, {@code DisplayNodesConfig} and {@code
+   * ItemSummaryTemplateTab}, and read back by {@code ItemSummaryApi}. Those are safe because both
+   * ends use this factory and the payloads are plain string maps with no language bundles in them,
+   * not because the format is interchangeable. Anything richer belongs on {@code ExtXStream}.
+   */
   public static XStream newXStream() {
     XStream xs = new XStream();
     applyPolicy(xs);

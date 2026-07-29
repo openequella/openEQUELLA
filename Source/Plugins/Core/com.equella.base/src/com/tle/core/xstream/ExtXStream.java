@@ -19,7 +19,7 @@
 package com.tle.core.xstream;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.ClassLoaderReference;
+import com.thoughtworks.xstream.core.ClassLoaderReference;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import com.thoughtworks.xstream.security.WildcardTypePermission;
@@ -52,15 +52,27 @@ public class ExtXStream extends XStream {
     super(
         null,
         new XppDriver(),
-        loader != null ? loader : new ClassLoaderReference(new CompositeClassLoader()));
+        new ClassLoaderReference(loader != null ? loader : new CompositeClassLoader()));
     autodetectAnnotations(true);
-    registerConverter(new OldSingletonMapConverter(getMapper(), getReflectionProvider()));
+    registerConverter(new OldSingletonMapConverter(getMapper()));
     registerConverter(new OldSqlTimestampConverter());
     XStreamSecurityManager.applyPolicy(this);
     addPermission(DRM_PAGE_PERMISSION);
   }
 
+  /**
+   * Deliberately keeps the deprecated XStream 1.1 mapper: it is what maps {@code Outer-Inner} back
+   * to {@code Outer$Inner} and unescapes {@code _DOLLAR_} and {@code __} in field names when
+   * reading. Our oldest institution data was written with that encoding, and dropping the mapper
+   * would not fail loudly — it would fail as an unresolvable class on exactly the data least likely
+   * to be tested.
+   *
+   * <p>XStream deprecated the hook in 1.4.8 without offering a replacement. If a future version
+   * removes it, the fallback is to vendor {@code XStream11XmlFriendlyMapper} and its abstract base
+   * (about forty lines) rather than to lose the compatibility.
+   */
   @Override
+  @SuppressWarnings("deprecation")
   protected boolean useXStream11XmlFriendlyMapper() {
     return true;
   }
