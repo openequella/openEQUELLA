@@ -109,7 +109,7 @@ public class AssociationCountQueryBuilder<T> {
     criteriaQuery.select(criteriaBuilder.count(root.join(associationAttribute)));
     criteriaQuery.where(
         criteriaBuilder.equal(targetEntity.get(idAttribute), id),
-        criteriaBuilder.equal(targetEntity.get("institution"), CurrentInstitution.get()));
+        CurrentInstitution.equalityPredicate(criteriaBuilder, targetEntity));
 
     return entityManager.createQuery(criteriaQuery);
   }

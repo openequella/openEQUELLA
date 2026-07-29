@@ -29,4 +29,17 @@ object BaseEntityQueries {
       encoder0: ArgEncoder[Long]
   ): SelectionBuilder[BaseEntityQueries, scala.Option[A]] = _root_.caliban.client.SelectionBuilder
     .Field("nameById", OptionOf(Obj(innerSelection)), arguments = List(Argument("id", id, "Long!")))
+
+  /** Retrieve the access control details (ACLs) of the base entity by its unique ID. Entity type
+    * agnostic - the owning entity service is resolved from the ID. An entity with no access control
+    * entries returns empty lists; an unknown ID is an error.
+    */
+  def securityById[A](id: Long)(
+      innerSelection: SelectionBuilder[BaseEntitySecurity, A]
+  )(implicit encoder0: ArgEncoder[Long]): SelectionBuilder[BaseEntityQueries, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "securityById",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("id", id, "Long!"))
+    )
 }

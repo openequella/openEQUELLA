@@ -22,6 +22,7 @@ package object client {
   type AdminConsolePluginQueries
   type BaseEntityQueries
   type BaseEntityReference
+  type BaseEntitySecurity
   type Citation
   type CollectionDefinition
   type CollectionDisplayNode
