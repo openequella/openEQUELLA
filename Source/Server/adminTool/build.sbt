@@ -36,4 +36,10 @@ libraryDependencies ++= Seq(
 
 (run / fork) := true
 
+// Brings `sbt adminTool/run` into line with the IntelliJ run configuration and, more importantly,
+// with the shipped launcher: admin-console-package's ClientLauncher passes this same flag when it
+// starts the console. Required because DRM pages serialise a TreeSet via Java custom serialization,
+// whose XStream emulation reflects into java.util.
+(run / javaOptions) += "--add-opens=java.base/java.util=ALL-UNNAMED"
+
 (Compile / run / mainClass) := Some("com.tle.client.harness.ClientLauncher")
