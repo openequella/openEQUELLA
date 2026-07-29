@@ -1,0 +1,56 @@
+<list>
+  <com.dytech.edge.wizard.beans.DefaultWizardPage>
+    <title>
+      <id>0</id>
+      <strings class="singleton-map">
+        <k class="string">en</k>
+        <v class="com.tle.beans.entity.LanguageString">
+          <id>0</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Page 1</text>
+          <bundle reference="../../.."/>
+        </v>
+      </strings>
+    </title>
+    <controls>
+      <com.dytech.edge.wizard.beans.control.Html>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>0</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Raw HTML</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <description>
+          <id>0</id>
+          <strings class="singleton-map">
+            <k class="string">en</k>
+            <v class="com.tle.beans.entity.LanguageString">
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>&lt;hr&gt;</text>
+              <bundle reference="../../.."/>
+            </v>
+          </strings>
+        </description>
+        <targetnodes/>
+        <items/>
+      </com.dytech.edge.wizard.beans.control.Html>
+    </controls>
+  </com.dytech.edge.wizard.beans.DefaultWizardPage>
+</list>
