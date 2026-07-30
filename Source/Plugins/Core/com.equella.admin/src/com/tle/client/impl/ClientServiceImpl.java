@@ -47,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
     this.serverUrl = serverUrl;
 
     LOGGER.debug("Starting up Guice");
-    this.injector = Guice.createInjector(new ClientModule(serverUrl, this));
+    this.injector = Guice.createInjector(new ClientModule(serverUrl));
   }
 
   @Override

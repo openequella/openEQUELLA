@@ -49,19 +49,15 @@ import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.admin.service.AdminUserDirectoryConfigServiceImpl;
 import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.service.AdminUserDirectoryServiceImpl;
-import com.tle.common.applet.client.ClientService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import io.github.openequella.graphql.ClientConfiguration;
 import java.net.URL;
 import javax.inject.Singleton;
 
 public class ClientModule extends AbstractModule {
   final URL serverUrl;
-  final ClientService clientService;
 
-  public ClientModule(URL serverUrl, ClientService clientService) {
+  public ClientModule(URL serverUrl) {
     this.serverUrl = serverUrl;
-    this.clientService = clientService;
   }
 
   @Override
@@ -106,17 +102,5 @@ public class ClientModule extends AbstractModule {
   @Singleton
   RestConfiguration provideRestConfiguration() {
     return RestConfigurationHelper.create(serverUrl);
-  }
-
-  /**
-   * A temporary provider while we are transitioning to the new GraphQL library. Once
-   * AdminCollectionDefinitionService no longer delegates to RemoteItemDefinitionService, this
-   * provider can be removed. (At the same time, RemoteItemDefinitionService can be removed from the
-   * codebase.)
-   */
-  @Provides
-  @Singleton
-  RemoteItemDefinitionService provideRemoteItemDefinitionService() {
-    return clientService.getInvokerService(RemoteItemDefinitionService.class);
   }
 }
