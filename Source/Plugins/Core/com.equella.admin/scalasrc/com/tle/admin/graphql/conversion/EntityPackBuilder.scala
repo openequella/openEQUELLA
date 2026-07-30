@@ -23,6 +23,8 @@ import com.tle.common.EntityPack
 import com.tle.common.security.TargetList
 import io.github.openequella.graphql.api.views.{OtherTargetListView, TargetListEntryView}
 
+import scala.util.chaining.scalaUtilChainingOps
+
 /** Builder for EntityPack, to help with the conversion of GraphQL views to EntityPacks. Because the
   * GraphQL views are not a hierarchy of classes, we can't have a single converter that takes a view
   * and produces an EntityPack. Instead, we have to have a builder that can be used by the various
@@ -31,6 +33,13 @@ import io.github.openequella.graphql.api.views.{OtherTargetListView, TargetListE
 object EntityPackBuilder {
   def forStagedEntity[T <: BaseEntity](entity: T, stagingId: String): EntityPackBuilder[T] =
     new EntityPackBuilder(new EntityPack[T](entity, stagingId))
+
+  /** For a read-only pack: nothing is being edited, so there is no staging area and hence no
+    * staging ID - matching
+    * `com.tle.core.entity.service.impl.AbstractEntityServiceImpl#getReadOnlyPack`.
+    */
+  def forEntity[T <: BaseEntity](entity: T): EntityPackBuilder[T] =
+    new EntityPackBuilder(new EntityPack[T].tap(_.setEntity(entity)))
 }
 
 class EntityPackBuilder[T <: BaseEntity] private (private val entityPack: EntityPack[T]) {
