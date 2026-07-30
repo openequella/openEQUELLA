@@ -19,6 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
+import com.tle.admin.graphql.conversion.EntityPackBuilder
 import com.tle.admin.rest.{
   splitPath,
   RestConfiguration,
@@ -32,8 +33,9 @@ import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.remoting.RemoteAbstractEntityService
-import io.github.openequella.graphql.api.ApiError
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.{ApiError, BaseEntityApi}
+import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, BaseEntitySecurityView}
 
 import sttp.model.StatusCode
 
@@ -61,6 +63,11 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     * such as `"collection"` or `"schema"`.
     */
   def entityDescription: String = "entity"
+
+  /** Configuration for the GraphQL client, used by the entity type agnostic operations implemented
+    * in this class. Satisfied by subclasses via an injected constructor parameter.
+    */
+  protected implicit def cfg: ClientConfiguration
 
   /** Configuration for the REST API client, used by the staging file operations implemented in this
     * class. Satisfied by subclasses via an injected constructor parameter.
@@ -327,6 +334,44 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
   )(converter: V => EntityPack[E])(zip: Array[Byte]): EntityPack[E] =
     handleEither(importer(zip), s"Error importing $entityDescription from zip file") { converter }
 
+  /** Assembles the read-only entity pack: the entity from this service's own type specific `get`,
+    * plus the access control details from the given fetcher. Mirrors
+    * `com.tle.core.entity.service.impl.AbstractEntityServiceImpl#getReadOnlyPack`, which likewise
+    * sets neither a staging ID nor a version - nothing is being edited.
+    *
+    * @param securityFetcher
+    *   API function that accepts an entity ID and returns its access control details
+    * @param id
+    *   the ID of the entity to build a read-only pack for
+    * @return
+    *   an `EntityPack` holding the entity and its access control details
+    * @throws NotFoundException
+    *   if there is no such entity
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  protected def readOnlyPackWith(
+      securityFetcher: Long => GraphQLClientResult[BaseEntitySecurityView]
+  )(id: Long): EntityPack[E] = {
+    // Fetched first so that a missing entity is reported as the NotFoundException the legacy
+    // remoting contract promised, rather than as an access control lookup failure.
+    val entity = get(id)
+
+    handleEither(
+      securityFetcher(id),
+      s"Error getting the access control details of $entityDescription with ID: $id"
+    ) { security =>
+      EntityPackBuilder
+        .forEntity(entity)
+        .withTargetList(security.targetList)
+        // Unconditional, unlike MetadataSchemaEditViewConverter.toEntityPack: for an entity type
+        // with no sub-entity lists this leaves otherTargetLists unset, which is exactly what the
+        // legacy fillTargetLists does when it finds none.
+        .withOtherTargetList(security.otherTargetLists)
+        .build()
+    }
+  }
+
   /** Starts editing an entity using a GraphQL start-edit function.
     *
     * @param starter
@@ -459,9 +504,12 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     _.enumerateEnabled()
   }
 
-  override def getReadOnlyPack(id: Long): EntityPack[E] = implementMe {
-    _.getReadOnlyPack(id)
-  }
+  /** Implemented once here for every entity type: the entity comes from this service's own type
+    * specific `get`, and the access control half from the entity type agnostic
+    * `baseEntities.securityById` query.
+    */
+  override def getReadOnlyPack(id: Long): EntityPack[E] =
+    readOnlyPackWith(BaseEntityApi.getSecurityById)(id)
 
   override def startEdit(id: Long): EntityPack[E] = implementMe {
     _.startEdit(id)

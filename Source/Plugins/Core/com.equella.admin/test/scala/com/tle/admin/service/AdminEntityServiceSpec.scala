@@ -20,16 +20,26 @@ package com.tle.admin.service
 
 import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.{BaseEntity, BaseEntityLabel}
+import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
+import com.tle.common.security.WorkflowTaskTarget
 import com.tle.core.remoting.RemoteAbstractEntityService
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  BaseEntitySecurityView,
+  OtherTargetListView,
+  TargetListEntryView
+}
 import io.github.openequella.graphql.api.{ApiError, GraphQlError}
+import io.github.openequella.graphql.client.OtherTargetListType
 import org.mockito.Mockito.{mock, verify, verifyNoInteractions, when}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import java.util
 import scala.jdk.CollectionConverters._
+import scala.util.chaining.scalaUtilChainingOps
 
 // Mockable wrapper base classes for Mockito — defined at package level (not as inner classes) so
 // that Mockito 5's InlineMockMaker can instrument them without the byte-buddy agent.
@@ -40,16 +50,18 @@ private[service] abstract class MockableExportFn {
 private[service] abstract class MockableUnitFn {
   def apply(id: Long): Either[List[ApiError], Unit]
 }
+private[service] abstract class MockableSecurityFn {
+  def apply(id: Long): Either[List[ApiError], BaseEntitySecurityView]
+}
 
-/** Tests for the GraphQL error-handling helpers in AdminEntityService.
-  *
-  * These tests cover the public helper methods that wrap GraphQL API calls:
+/** Tests for the helpers in AdminEntityService which wrap GraphQL API calls:
   *   - listAllFrom
   *   - idByUuid
   *   - exportWith
   *   - cancelEditWith
   *   - deleteWith
   *   - cloneWith
+  *   - readOnlyPackWith
   *
   * The private helpers (handleEither, handleEitherUnit) are tested implicitly through their use by
   * the public helpers.
@@ -57,9 +69,10 @@ private[service] abstract class MockableUnitFn {
 class AdminEntityServiceSpec extends AnyFunSpec with Matchers {
 
   // Function type aliases to avoid repeating verbose signatures
-  private type ExportFn = Long => Either[List[ApiError], Option[Array[Byte]]]
-  private type UnitFn   = Long => Either[List[ApiError], Unit]
-  private type CloneFn  = Long => Either[List[ApiError], BaseEntityReferenceView]
+  private type ExportFn   = Long => Either[List[ApiError], Option[Array[Byte]]]
+  private type UnitFn     = Long => Either[List[ApiError], Unit]
+  private type CloneFn    = Long => Either[List[ApiError], BaseEntityReferenceView]
+  private type SecurityFn = Long => Either[List[ApiError], BaseEntitySecurityView]
 
   // Shared numeric constants used as test entity IDs
   private val TestEntityId   = 100L
@@ -296,13 +309,112 @@ class AdminEntityServiceSpec extends AnyFunSpec with Matchers {
     }
   }
 
-  // A test subclass that can access protected methods
-  private class TestService extends AdminEntityService[BaseEntity] {
+  describe("readOnlyPackWith") {
+    val SchemaPrivilege   = "EDIT_SCHEMA"
+    val ModeratePrivilege = "MODERATE_ITEM"
+    val TestWho           = "U:test-user"
+    val TestTaskId        = "workflow-task-1"
+    val NoPostfix         = ""
+
+    def aclEntry(privilege: String): TargetListEntryView =
+      TargetListEntryView(
+        granted = true,
+        overridden = false,
+        privilege = privilege,
+        who = TestWho,
+        postfix = NoPostfix
+      )
+
+    /** A sub-entity list of the one shape which needs no owning collection for its key. */
+    def workflowTaskList(privilege: String): OtherTargetListView =
+      OtherTargetListView(
+        targetType = OtherTargetListType.WORKFLOW_TASK,
+        itemStatus = None,
+        metadataRuleId = None,
+        taskId = Some(TestTaskId),
+        entries = List(aclEntry(privilege))
+      )
+
+    def anEntity: BaseEntity = new BaseEntity().tap(_.setId(TestEntityId))
+
+    def serviceFor(entity: BaseEntity): TestService = new TestService(_ => entity)
+
+    def packOf(entity: BaseEntity, security: BaseEntitySecurityView): EntityPack[BaseEntity] =
+      serviceFor(entity).testReadOnlyPackWith(_ => Right(security), TestEntityId)
+
+    it("assembles the pack from the entity and its access control entries") {
+      val entity   = anEntity
+      val security = BaseEntitySecurityView(List(aclEntry(SchemaPrivilege)), List.empty)
+
+      val pack = packOf(entity, security)
+
+      pack.getEntity should be theSameInstanceAs entity
+      pack.getTargetList.getEntries.asScala.map(e =>
+        (e.getPrivilege, e.getWho)
+      ) should contain theSameElementsAs List((SchemaPrivilege, TestWho))
+    }
+
+    it("leaves the staging ID unset, as nothing is being edited") {
+      packOf(anEntity, BaseEntitySecurityView(List.empty, List.empty)).getStagingID should be(null)
+    }
+
+    it("leaves the sub-entity lists unset when the entity has none") {
+      val pack = packOf(anEntity, BaseEntitySecurityView(List.empty, List.empty))
+
+      // Matching the legacy fillTargetLists, which only sets the map when it finds entries.
+      pack.getOtherTargetLists should be(null)
+    }
+
+    it("converts the sub-entity lists when the entity has them") {
+      val security =
+        BaseEntitySecurityView(List.empty, List(workflowTaskList(ModeratePrivilege)))
+
+      val pack = packOf(anEntity, security)
+
+      pack.getOtherTargetLists.asScala.keys.map {
+        case task: WorkflowTaskTarget => task.getTaskId
+        case other                    => fail(s"Unexpected target list key: $other")
+      } should contain theSameElementsAs List(TestTaskId)
+    }
+
+    it("does not look up the access control details when the entity is not found") {
+      val securityFetcher = mock(classOf[MockableSecurityFn])
+      val service         = new TestService(_ => throw new NotFoundException("No such entity"))
+
+      intercept[NotFoundException] {
+        service.testReadOnlyPackWith(securityFetcher.apply, TestEntityId)
+      }
+
+      verifyNoInteractions(securityFetcher)
+    }
+
+    it("throws ClientRequestException when the access control lookup fails") {
+      val securityFetcher: SecurityFn = _ => Left(List(GraphQlError("Security lookup failed")))
+
+      intercept[ClientRequestException] {
+        serviceFor(anEntity).testReadOnlyPackWith(securityFetcher, TestEntityId)
+      }
+    }
+  }
+
+  // A test subclass that can access protected methods.
+  //
+  // `getEntity` stands in for the type specific `get` a real subclass provides; it defaults to
+  // throwing so that the helpers which never call it are unaffected.
+  private class TestService(
+      getEntity: Long => BaseEntity = _ => throw new NotImplementedError("Test implementation only")
+  ) extends AdminEntityService[BaseEntity] {
     override def entityDescription: String = "test entity"
 
-    // Not exercised by these tests — the GraphQL helpers under test never touch the REST config.
+    // Neither config is exercised by these tests — the helpers under test are handed their API
+    // functions, so they never construct a client of their own.
+    override protected implicit def cfg: ClientConfiguration =
+      throw new NotImplementedError("Test implementation only")
+
     override protected implicit def restCfg: RestConfiguration =
       throw new NotImplementedError("Test implementation only")
+
+    override def get(id: Long): BaseEntity = getEntity(id)
 
     override def implementMe[T](f: RemoteAbstractEntityService[BaseEntity] => T): T =
       throw new NotImplementedError("Test implementation only")
@@ -344,6 +456,12 @@ class AdminEntityServiceSpec extends AnyFunSpec with Matchers {
         id: Long
     ): BaseEntityLabel =
       cloneWith(cloner)(id)
+
+    def testReadOnlyPackWith(
+        securityFetcher: SecurityFn,
+        id: Long
+    ): EntityPack[BaseEntity] =
+      readOnlyPackWith(securityFetcher)(id)
   }
 
 }
