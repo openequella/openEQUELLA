@@ -26,12 +26,15 @@ import com.tle.admin.graphql.conversion.CollectionDefinitionEditViewConverter.{
 }
 import com.tle.admin.graphql.conversion.CollectionDefinitionViewConverter.toItemDefinition
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
-import com.tle.admin.helper.GraphQLQueryHelper.executeOrThrow
+import com.tle.admin.helper.GraphQLQueryHelper.{
+  executeOrThrow,
+  getAllUnpaginated,
+  getOptionalEntityOrNotFound
+}
 import com.tle.admin.rest.RestConfiguration
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.EntityPack
-import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteItemDefinitionService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.CollectionDefinitionApi
 import io.github.openequella.graphql.api.views.CollectionDefinitionEditView
@@ -39,10 +42,10 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
 @Singleton
-class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDefinitionService)(
-    implicit
+class AdminCollectionDefinitionServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration,
     val restCfg: RestConfiguration
 ) extends AdminEntityService[ItemDefinition]
@@ -52,18 +55,40 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
 
   override def entityDescription: String = "collection"
 
-  override def enumerateCategories: util.Set[String] = withDelegate {
-    _.enumerateCategories()
-  }
+  override def get(id: Long): ItemDefinition =
+    getOptionalEntityOrNotFound(
+      "Collection [by id]",
+      id,
+      CollectionDefinitionApi.getById
+    ) convert toItemDefinition
+
+  override def getByUuid(uuid: String): ItemDefinition =
+    getOptionalEntityOrNotFound(
+      "Collection [by uuid]",
+      uuid,
+      CollectionDefinitionApi.getByUuid
+    ) convert toItemDefinition
+
+  // The server already returns these sorted and de-duplicated, so no further ordering is applied.
+  override def enumerateCategories: util.List[String] =
+    executeOrThrow("listing collection wizard categories")(
+      CollectionDefinitionApi.listCategories()
+    ).asJava
 
   override def listUsableItemDefinitionsForSchema(schemaID: Long): util.List[BaseEntityLabel] =
-    withDelegate {
-      _.listUsableItemDefinitionsForSchema(schemaID)
-    }
+    getAllUnpaginated("collections for schema", schemaID, CollectionDefinitionApi.listForSchema)
+      .map(toBaseEntityLabel)
+      .asJava
 
-  override def getSchemaIdForCollectionUuid(value: String): Long = withDelegate {
-    _.getSchemaIdForCollectionUuid(value)
-  }
+  // Flattening the schema ID out of the collection means a missing collection and a collection with
+  // no schema are indistinguishable, and both raise NotFoundException. The legacy implementation
+  // threw an NPE in both cases, so no caller could have told them apart either.
+  override def getSchemaIdForCollectionUuid(value: String): Long =
+    getOptionalEntityOrNotFound(
+      "Collection schema ID [by collection uuid]",
+      value,
+      (uuid: String) => CollectionDefinitionApi.getByUuid(uuid).map(_.flatMap(_.schemaId))
+    )
 
   override def exportControl(controlXml: String): Array[Byte] =
     ExportedControlZip.zip(controlXml)
@@ -128,27 +153,4 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     )(_ convert toItemDefinition)(pack, unlock)
 
   override def isStartCreateSupported: Boolean = true
-
-  override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
-    logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")
-    f(delegate)
-  }
-
-  private def withDelegate[T](f: RemoteItemDefinitionService => T): T = {
-    logNotImplemented("RemoteItemDefinitionService")
-    f(delegate)
-  }
-
-  private def logNotImplemented(forInterface: String): Unit = {
-    LOGGER.warn(
-      "Missing implementation of [{}] for {}, will try delegate.",
-      getCallerMethodName,
-      forInterface,
-      new NotImplementedError()
-    )
-  }
-
-  private def getCallerMethodName: String = {
-    Thread.currentThread().getStackTrace()(4).getMethodName
-  }
 }
