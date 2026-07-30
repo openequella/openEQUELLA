@@ -103,12 +103,12 @@ import org.apache.commons.logging.LogFactory;
  * <pre>{@code
  * public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition> {
  *   public ItemDefinitionTool() {
- *     super(ItemDefinition.class, RemoteItemDefinitionService.ENTITY_TYPE);
+ *     super(ItemDefinition.class, AdminCollectionDefinitionService.ENTITY_TYPE());
  *   }
  *
  *   @Override
  *   protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client) {
- *     return client.getService(RemoteItemDefinitionService.class);
+ *     return client.getService(AdminCollectionDefinitionService.class);
  *   }
  *
  *   @Override
@@ -163,7 +163,7 @@ import org.apache.commons.logging.LogFactory;
  *   <li>Custom UI or validation → Implement in the {@link BaseEntityEditor} subclass (e.g., {@code
  *       ItemEditor})
  *   <li>Server-side business logic → Implement in the service layer (e.g., {@code
- *       RemoteItemDefinitionService})
+ *       AdminCollectionDefinitionService} and the GraphQL query behind it)
  *   <li>List display changes → Override methods in {@link AdminToolList} or {@link
  *       AdminToolListClone}
  * </ul>

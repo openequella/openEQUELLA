@@ -607,10 +607,6 @@
     <parameter id="class" value="com.tle.common.security.remoting.RemoteTLEAclManager" />
     <parameter id="bean" value="bean:remoteAclService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="collectionInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteItemDefinitionService" />
-    <parameter id="bean" value="bean:remoteItemdefinitionService" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="powerSearchInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemotePowerSearchService" />
     <parameter id="bean" value="bean:remotePowerSearchService" />

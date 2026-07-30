@@ -21,7 +21,6 @@ package com.tle.web.entity.services;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.schema.service.SchemaService;
@@ -44,12 +43,6 @@ public class GuiceModule extends AbstractModule {
   @Provides
   @Named("remoteWorkflowService")
   Object provideWorkflowService(WorkflowService remote) {
-    return remote;
-  }
-
-  @Provides
-  @Named("remoteItemdefinitionService")
-  Object provideItemdefinitionService(ItemDefinitionService remote) {
     return remote;
   }
 

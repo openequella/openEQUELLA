@@ -46,7 +46,6 @@ import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.SchemaReferences;
 import com.tle.core.schema.event.listener.SchemaReferencesListener;
 import com.tle.core.security.impl.SecureEntity;
@@ -68,7 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Bind(ItemDefinitionService.class)
 @Singleton
-@SecureEntity(RemoteItemDefinitionService.ENTITY_TYPE)
+@SecureEntity(ItemDefinitionService.ENTITY_TYPE)
 @SuppressWarnings("nls")
 public class ItemDefinitionServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, ItemDefinition, ItemDefinitionService>
@@ -181,16 +180,6 @@ public class ItemDefinitionServiceImpl
 
   /*
    * (non-Javadoc)
-   * @see com.tle.core.services.entity.ItemDefinitionService#
-   * listUsableItemDefinitionsForSchema(java.lang.String)
-   */
-  @Override
-  public List<BaseEntityLabel> listUsableItemDefinitionsForSchema(long schemaID) {
-    return listAllForSchema(schemaID);
-  }
-
-  /*
-   * (non-Javadoc)
    * @see
    * com.tle.core.services.ItemDefinitionService#enumerateForWorkflow(com.
    * dytech.edge.user.UserState, long)
@@ -275,7 +264,7 @@ public class ItemDefinitionServiceImpl
   protected void beforeAdd(EntityPack<ItemDefinition> pack, boolean lockAfterwards) {
     ItemDefinition collection = pack.getEntity();
     if (fileSystemService.isAdvancedFilestore()) {
-      collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
+      collection.setAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
     }
     for (CollectionSaveExtension ext : saveExtensions.getBeanList()) {
       ext.collectionSaved(null, collection);

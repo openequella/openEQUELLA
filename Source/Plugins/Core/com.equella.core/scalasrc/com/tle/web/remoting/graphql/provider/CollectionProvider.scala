@@ -24,7 +24,6 @@ import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
-import com.tle.core.remoting.RemoteItemDefinitionService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
 import com.tle.core.xml.service.XmlService
 import com.tle.web.remoting.graphql.schema.conversion.CollectionDefinitionConverter
@@ -56,7 +55,7 @@ import scala.jdk.CollectionConverters._
   */
 @Bind
 @Singleton
-@SecureEntity(RemoteItemDefinitionService.ENTITY_TYPE)
+@SecureEntity(ItemDefinitionService.ENTITY_TYPE)
 class CollectionProvider @Inject() (
     itemDefinitionService: ItemDefinitionService,
     stagingService: StagingService,

@@ -24,9 +24,9 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.collection.dao.ItemDefinitionDao;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Singleton;
@@ -60,7 +60,7 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
   @Override
   public List<BaseEntityLabel> listAllForSchema(final long schemaID) {
     return listAll(
-        RemoteItemDefinitionService.ENTITY_TYPE,
+        ItemDefinitionService.ENTITY_TYPE,
         new ListCallback() {
           @Override
           public String getAdditionalWhere() {
