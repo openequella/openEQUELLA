@@ -15,16 +15,14 @@ import equellatests.sections.wizard.{
   PackageAttachmentEditPage,
   WizardPageTab
 }
-import io.circe.generic.auto._
-import io.circe.generic.semiauto._
 import org.openqa.selenium.support.ui.ExpectedConditions
+import testng.annotation.NewUIOnly
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop}
 
-object WizardFileUploadsProperties
-    extends StatefulProperties("Wizard file uploads")
-    with SimpleTestCase {
+@NewUIOnly
+class WizardFileUploadsTest extends PropertyBasedBrowserTest with StatefulTest with SimpleTestCase {
   type State   = FileUploadState
   type Command = FileUploadCommand
 
@@ -235,9 +233,6 @@ object WizardFileUploadsProperties
 
   case object SaveItem extends FileUploadCommand
 
-  val testCaseDecoder = deriveDecoder[FileUploadCommand]
-  val testCaseEncoder = deriveEncoder[FileUploadCommand]
-
   type AttachmentEditGen =
     (Attachment, FileUniversalControl, Seq[Attachment]) => Option[Gen[AttachmentEdit]]
 
@@ -338,7 +333,7 @@ object WizardFileUploadsProperties
     remaining.filter(ed => controls.exists(c => c.existsAnyFile(c.matchesEdit(ed))))
   }
 
-  statefulProp("edit details") {
+  statefulTest("edit details") {
     val finishedSet =
       wizards.map(w => possibleEdits(EditTypes.values)(ctrlsForWizard(w))).reduce(_ ++ _)
     val finishedFailures =

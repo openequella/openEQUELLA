@@ -12,14 +12,14 @@ import equellatests.restapi._
 import equellatests.restapi.RStatus.RStatus
 import equellatests.sections.search._
 import equellatests.sections.wizard.EditBoxControl
-import io.circe.generic.auto._
-import io.circe.generic.semiauto._
+import testng.annotation.NewUIOnly
 import org.scalacheck.Prop._
 import org.scalacheck.{Arbitrary, Gen, Prop}
 
 import scala.collection.mutable
 
-object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with LogonTestCase {
+@NewUIOnly
+class BulkWorkflowTest extends PropertyBasedBrowserTest with StatefulTest with LogonTestCase {
 
   case class BrowserWithNameMapping(name2id: mutable.Map[String, ItemId] = mutable.Map.empty)(
       var page: BrowserPage
@@ -81,9 +81,6 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   case object VerifyItems extends BulkCommand
 
-  val testCaseDecoder = deriveDecoder
-  val testCaseEncoder = deriveEncoder
-
   def makeCommands(requiredScenarios: BulkOpTypes.ValueSet): Gen[Seq[BulkCommand]] =
     for {
       numItems <- Gen.choose(1, 5)
@@ -110,7 +107,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   val initialState = BulkState()
 
-  statefulProp("all ops work") {
+  statefulTest("all ops work") {
     makeCommands(BulkOpTypes.values)
   }
 

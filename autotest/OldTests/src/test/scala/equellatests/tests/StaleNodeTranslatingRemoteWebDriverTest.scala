@@ -2,8 +2,7 @@ package equellatests.tests
 
 import com.tle.webtests.framework.StaleNodeTranslatingRemoteWebDriver
 import org.openqa.selenium.{StaleElementReferenceException, WebDriverException}
-import org.scalacheck.Prop.propBoolean
-import org.scalacheck.Properties
+import org.scalatest.funsuite.AnyFunSuite
 
 /** Deterministic unit checks for [[StaleNodeTranslatingRemoteWebDriver]]'s translation decision.
   * Chrome/ChromeDriver's "-32000" inspector error ("Node with given id does not belong to the
@@ -13,27 +12,28 @@ import org.scalacheck.Properties
   *
   * These exercise the pure `translate` decision; the correct interception layer (that this fires
   * for real command errors, including after `Augmenter.augment`) is verified separately with a live
-  * browser.
+  * browser. Fixed inputs rather than generated ones, so these are plain assertions; and being
+  * browserless and UI-agnostic, this is the one suite here that carries no `@NewUIOnly` tag.
   */
-object StaleNodeTranslatingRemoteWebDriverProperties
-    extends Properties("StaleNodeTranslatingRemoteWebDriver") {
+class StaleNodeTranslatingRemoteWebDriverTest extends AnyFunSuite {
 
   private val chromeStaleMessage =
     "unknown error: unhandled inspector error: " +
       """{"code":-32000,"message":"Node with given id does not belong to the document"}"""
 
-  property("chrome -32000 error is translated to StaleElementReferenceException") =
-    StaleNodeTranslatingRemoteWebDriver
-      .translate(new WebDriverException(chromeStaleMessage))
-      .isInstanceOf[StaleElementReferenceException]
-
-  property("unrelated WebDriverException is returned unchanged") = {
-    val original = new WebDriverException("some other error")
-    StaleNodeTranslatingRemoteWebDriver.translate(original) eq original
+  test("chrome -32000 error is translated to StaleElementReferenceException") {
+    val translated =
+      StaleNodeTranslatingRemoteWebDriver.translate(new WebDriverException(chromeStaleMessage))
+    assert(translated.isInstanceOf[StaleElementReferenceException])
   }
 
-  property("classic StaleElementReferenceException is returned unchanged") = {
+  test("unrelated WebDriverException is returned unchanged") {
+    val original = new WebDriverException("some other error")
+    assert(StaleNodeTranslatingRemoteWebDriver.translate(original) eq original)
+  }
+
+  test("classic StaleElementReferenceException is returned unchanged") {
     val original = new StaleElementReferenceException("already stale")
-    StaleNodeTranslatingRemoteWebDriver.translate(original) eq original
+    assert(StaleNodeTranslatingRemoteWebDriver.translate(original) eq original)
   }
 }

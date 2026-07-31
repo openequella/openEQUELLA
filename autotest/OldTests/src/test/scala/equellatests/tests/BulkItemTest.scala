@@ -7,20 +7,17 @@ import equellatests.instgen.workflow
 import equellatests.pages.search.ManageResourcesPage
 import equellatests.restapi._
 import equellatests.sections.search.{BulkOpConfirm, BulkOperationDialog, ResetToTaskConfigPage}
-import equellatests.{SimpleSeleniumBrowser, SimpleTestCase, StatefulProperties}
-import io.circe.generic.semiauto._
-import io.circe.generic.auto._
-import io.circe.{Decoder, Encoder}
+import equellatests.{PropertyBasedBrowserTest, SimpleSeleniumBrowser, SimpleTestCase, StatefulTest}
+import testng.annotation.NewUIOnly
 import org.scalacheck.{Arbitrary, Gen, Prop}
 import org.scalacheck.Prop._
 
-object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleTestCase {
+@NewUIOnly
+class BulkItemTest extends PropertyBasedBrowserTest with StatefulTest with SimpleTestCase {
 
   object BulkItemOp extends Enumeration {
     type BulkItemOp = Value
     val removeWorkflow, resetToTask = Value
-    implicit val encJson            = Encoder.encodeEnumeration(BulkItemOp)
-    implicit val decJson            = Decoder.decodeEnumeration(BulkItemOp)
   }
 
   sealed trait BulkOp {
@@ -39,9 +36,6 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
 
   override type Command = RunBulkOp
   override type State   = BulkItemState
-
-  override implicit val testCaseDecoder: Decoder[RunBulkOp] = deriveDecoder
-  override implicit val testCaseEncoder: Encoder[RunBulkOp] = deriveEncoder
 
   override def initialState: BulkItemState = BulkItemState()
 
@@ -129,7 +123,7 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
 
   override def logon: TestLogon = workflow.adminLogon
 
-  statefulProp("run bulk ops") {
+  statefulTest("run bulk ops") {
     generateCommands { s =>
       val remainingOps = BulkItemOp.values -- s.ops
       if (remainingOps.isEmpty) List()

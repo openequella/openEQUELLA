@@ -9,11 +9,12 @@ import equellatests.pages.moderate.{ManageTasksPage, TaskListPage}
 import equellatests.pages.{HomePage, RemoteReposPage, ReportsPage}
 import equellatests.pages.search._
 import equellatests.pages.wizard.ContributePage
-import equellatests.{LogonTestCase, SimpleTestCase, StatefulProperties}
-import io.circe.{Decoder, Encoder}
-import org.scalacheck.{Gen, Prop}
+import equellatests.{PropertyBasedBrowserTest, SimpleTestCase, StatefulTest}
+import org.scalacheck.Prop
+import testng.annotation.NewUIOnly
 
-object SanityTestProperties extends StatefulProperties("Sanity test") with SimpleTestCase {
+@NewUIOnly
+class SanityTest extends PropertyBasedBrowserTest with StatefulTest with SimpleTestCase {
 
 //    /access/browseby.do
 //    /cloud/viewitem.do
@@ -31,21 +32,12 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   override type Command = Pages.Value
   override type State   = SanityState
 
-  override implicit val testCaseDecoder: Decoder[SanityTestProperties.Pages.Value] =
-    Decoder.decodeEnumeration(Pages)
-  override implicit val testCaseEncoder: Encoder[SanityTestProperties.Pages.Value] =
-    Encoder.encodeEnumeration(Pages)
-
   override def initialState: SanityState = SanityState()
 
-  override def runCommand(c: SanityTestProperties.Command, s: SanityState): SanityState =
+  override def runCommand(c: Command, s: SanityState): SanityState =
     s.copy(s.completedPages + c)
 
-  override def runCommandInBrowser(
-      c: SanityTestProperties.Command,
-      s: SanityState,
-      b: SanityTestProperties.Browser
-  ): Prop = b.verify {
+  override def runCommandInBrowser(c: Command, s: SanityState, b: Browser): Prop = b.verify {
     val lp: PageContext => LoadablePage = c match {
       case Home              => HomePage
       case Contribute        => ContributePage
@@ -68,7 +60,7 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
 
   override def logon: TestLogon = autoTestLogon
 
-  statefulProp("go to pages") {
+  statefulTest("go to pages") {
     generateCommands {
       case s if s.completedPages == Pages.values => List()
       case s                                     =>
