@@ -121,15 +121,20 @@ tests {
 ```
 This will set the TestNG suite to be the same as is run on the AWS CodeBuild server.
 
-The tests are seperated into two projects, one which is ScalaCheck property
-tests (`Tests`) and the other are TestNG based (`OldTests`):
+All the tests live in the `OldTests` project and run from a single task. It contains both the
+TestNG suites and, under `equellatests`, property-based suites that use ScalaCheck generators driven
+by ScalaTest. The `Tests` project is now just the shared Selenium framework and page-object library
+that `OldTests` depends on, and has no tests of its own.
 
 ```bash
-sbt Tests/test OldTests/test
+sbt OldTests/test
 ```
 
-The sbt output gives you the results of the ScalaCheck tests and you can read the HTML TestNG report at:
-`OldTests/target/testng/index.html`
+The sbt output gives you the results of the ScalaTest suites and you can read the HTML TestNG report
+at: `OldTests/target/testng/index.html`
+
+The property-based suites are annotated `@NewUIOnly`, so — exactly as for the TestNG tests carrying
+that annotation — they are skipped unless the `OLD_TEST_NEWUI` environment variable is `true`.
 
 You can expect the autotests to run for at least 30-45 minutes, depending on your hardware. It is recommended to not interact with the computer while this is running, as various browser windows will pop up and should not be touched.
 If  you don't wish to see the windows popping up, headless mode is available when using either Firefox or Chrome as your browser. To enable this uncomment the corresponding flag in `config/resources/application.conf`

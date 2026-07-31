@@ -256,22 +256,21 @@ jobs:
           ./sbt "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
-      - name: Run Scalacheck tests
-        # We only need to run these once, so we focus on the New UI
-        if: matrix.newui
-        run: |
-          ./sbt "project autotest" Tests/test Tests/Serial/test dumpCoverage
-
-      - name: Save Scalacheck results
-        if: matrix.newui && failure()
-        uses: actions/upload-artifact@v4.4.0
-        with:
-          name: ScalacheckReports-${{ env.MATRIX_ID }}
-          path: autotest/Tests/target/test-reports
-
-      - name: Run TestNG tests
+      # Runs both the TestNG suites and the ScalaTest property-based suites, which now live in the
+      # same project. The latter are tagged @NewUIOnly and so are skipped on the Old UI leg, via
+      # OLD_TEST_NEWUI (see OldTests/build.sbt) — the same variable TestNG filtering already uses.
+      - name: Run tests
         run: |
           ./sbt "project autotest" OldTests/test dumpCoverage
+
+      # Screenshots and failed-property artifacts are written under Tests/target regardless of which
+      # project runs the tests, because TestConfig derives its base folder from its own location.
+      - name: Save property-based test results
+        if: failure()
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: PropertyTestReports-${{ env.MATRIX_ID }}
+          path: autotest/Tests/target/test-reports
 
       - name: Save TestNG Reports
         if: failure()
