@@ -336,6 +336,25 @@ excludeDependencies ++= Seq(
   "log4j" % "log4j"
 )
 
+/** JPMS packages the server needs reflective access to on Java 17+. Installed instances get these
+  * from the v20252 UpdateAddOpens upgrader (see
+  * Source/Tools/UpgradeInstallation/.../UpdateAddOpens.scala); the dev server has to set them here
+  * or XStream fails on institution import/delete with InaccessibleObjectException. Keep the two
+  * lists in step.
+  */
+val devServerAddOpens = Vector(
+  "java.base/java.io",
+  "java.base/java.lang.ref",
+  "java.base/java.lang",
+  "java.base/java.util.concurrent",
+  "java.base/java.util",
+  "java.desktop/javax.swing.tree",
+  "java.naming/com.sun.jndi.ldap",
+  "java.naming/javax.naming.directory",
+  "java.naming/javax.naming.ldap",
+  "java.naming/javax.naming"
+).map(pkg => s"--add-opens=$pkg=ALL-UNNAMED")
+
 run := {
   val cp = (Runtime / fullClasspath).value
   val o  = ForkOptions().withRunJVMOptions(
@@ -344,7 +363,7 @@ run := {
       Path.makeString(cp.files),
       "-Dequella.devmode=true",
       "-Dequella.autotest=true"
-    )
+    ) ++ devServerAddOpens
   )
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
