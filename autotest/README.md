@@ -121,20 +121,34 @@ tests {
 ```
 This will set the TestNG suite to be the same as is run on the AWS CodeBuild server.
 
-All the tests live in the `OldTests` project and run from a single task. It contains both the
-TestNG suites and, under `equellatests`, property-based suites that use ScalaCheck generators driven
-by ScalaTest. The `Tests` project is now just the shared Selenium framework and page-object library
-that `OldTests` depends on, and has no tests of its own.
+All the tests live in the `OldTests` project. The `Tests` project is now just the shared Selenium
+framework and page-object library that `OldTests` depends on, and has no tests of its own.
+
+`OldTests` holds two kinds of end-to-end test, split into one sbt configuration per test framework:
 
 ```bash
-sbt OldTests/test
+sbt OldTests/test            # the TestNG suites
+sbt OldTests/ScalaTest/test  # the ScalaTest suites
 ```
 
-The sbt output gives you the results of the ScalaTest suites and you can read the HTML TestNG report
-at: `OldTests/target/testng/index.html`
+ScalaTest is where new tests should go; the suites under `equellatests` are the current ones, using
+ScalaCheck generators driven by ScalaTest. They are kept in a separate configuration because CI shards
+the TestNG suites across several parallel jobs, and anything sharing the `Test` configuration would be
+re-run by every shard. The split is by framework rather than by package, so a new ScalaTest suite is
+picked up wherever it lives.
 
-The property-based suites are annotated `@NewUIOnly`, so — exactly as for the TestNG tests carrying
-that annotation — they are skipped unless the `OLD_TEST_NEWUI` environment variable is `true`.
+Note that `testOnly` has to name the configuration too:
+
+```bash
+sbt "OldTests/ScalaTest/testOnly equellatests.tests.SanityTest"
+```
+
+You can read the HTML TestNG report at `OldTests/target/testng/index.html`. The ScalaTest suites also
+write JUnit XML to `OldTests/target/scalatest-junitreports/`, which is what CI publishes as its test
+report.
+
+The ScalaTest suites are annotated `@NewUIOnly`, so — exactly as for the TestNG tests carrying that
+annotation — they are skipped unless the `OLD_TEST_NEWUI` environment variable is `true`.
 
 You can expect the autotests to run for at least 30-45 minutes, depending on your hardware. It is recommended to not interact with the computer while this is running, as various browser windows will pop up and should not be touched.
 If  you don't wish to see the windows popping up, headless mode is available when using either Firefox or Chrome as your browser. To enable this uncomment the corresponding flag in `config/resources/application.conf`
