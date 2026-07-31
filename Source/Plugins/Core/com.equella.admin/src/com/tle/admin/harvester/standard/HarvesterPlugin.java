@@ -26,7 +26,6 @@ import com.tle.admin.i18n.Lookup;
 import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.Schema;
-import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.EntityPack;
 import com.tle.common.NameValue;
 import com.tle.common.harvester.HarvesterProfile;
@@ -94,15 +93,15 @@ public abstract class HarvesterPlugin<T extends HarvesterProfileSettings> {
   protected PropBagEx getSchemaDefinition(JComboBox<NameValue> collections) {
     String collection =
         ((NameValue) Objects.requireNonNull(collections.getSelectedItem())).getValue();
-    ItemDefinition itemDef =
+    long schemaId =
         driver
             .getClientService()
             .getService(AdminCollectionDefinitionService.class)
-            .getByUuid(collection);
+            .getSchemaIdForCollectionUuid(collection);
 
     AdminSchemaService schemaService =
         driver.getClientService().getService(AdminSchemaService.class);
-    Schema schema = schemaService.get(itemDef.getSchema().getId());
+    Schema schema = schemaService.get(schemaId);
 
     return schema.getDefinitionNonThreadSafe();
   }

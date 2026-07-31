@@ -34,7 +34,6 @@ import com.tle.common.workflow.Workflow;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 import com.tle.web.api.collection.impl.CollectionEditorImpl.CollectionEditorFactory;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
@@ -176,8 +175,7 @@ public class CollectionBeanSerializer
       bean.setWorkflow(new BaseEntityReference(workflow.getUuid()));
     }
 
-    final String filestoreId =
-        entity.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+    final String filestoreId = entity.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
     bean.setFilestoreId(
         filestoreId == null ? RemoteFileSystemService.DEFAULT_FILESTORE_ID : filestoreId);
   }

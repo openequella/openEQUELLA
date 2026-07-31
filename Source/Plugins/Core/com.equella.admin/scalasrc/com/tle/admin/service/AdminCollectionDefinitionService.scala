@@ -25,7 +25,7 @@ import com.tle.core.remoting.RemoteAbstractEntityService
 import java.util
 
 trait AdminCollectionDefinitionService extends RemoteAbstractEntityService[ItemDefinition] {
-  def enumerateCategories: util.Set[String]
+  def enumerateCategories: util.List[String]
 
   def listUsableItemDefinitionsForSchema(schemaID: Long): util.List[BaseEntityLabel]
 
