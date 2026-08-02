@@ -46,8 +46,9 @@ export const generateFromError = (error: Error): ErrorResponse => {
   };
 };
 
-export const isAxiosError = (error: unknown): error is AxiosError =>
-  (error as AxiosError).isAxiosError;
+export const isAxiosError = <T = unknown>(
+  error: unknown,
+): error is AxiosError<T> => (error as AxiosError<T>).isAxiosError;
 
 // For handling standard errors - permissions, 404s, etc.
 export function fromAxiosError(error: AxiosError): ErrorResponse {
