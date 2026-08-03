@@ -16,22 +16,18 @@
  * limitations under the License.
  */
 
-package com.tle.core.xml.service.impl;
+package com.tle.core.xstream;
 
-import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
-import com.thoughtworks.xstream.mapper.Mapper;
-import java.util.Collections;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import java.sql.Timestamp;
 
-public class OldSingletonMapConverter extends ReflectionConverter {
-
-  private static final Class MAP = Collections.singletonMap(Boolean.TRUE, null).getClass();
-
-  public OldSingletonMapConverter(Mapper mapper, ReflectionProvider provider) {
-    super(mapper, provider);
-  }
+public class OldSqlTimestampConverter extends AbstractSingleValueConverter {
 
   public boolean canConvert(Class type) {
-    return MAP == type;
+    return type.equals(Timestamp.class);
+  }
+
+  public Object fromString(String str) {
+    return Timestamp.valueOf(str);
   }
 }

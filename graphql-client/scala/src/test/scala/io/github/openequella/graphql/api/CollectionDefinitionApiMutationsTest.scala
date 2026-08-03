@@ -150,6 +150,25 @@ class CollectionDefinitionApiMutationsTest
       val newCollectionDetails = buildNewCollectionDetails(skeleton)
       assertAccessDeniedError(CollectionDefinitionApi.add(newCollectionDetails)(_))
     }
+
+    it("round trips wizard pages written in the legacy singleton-map format") {
+      Given("a collection whose wizard pages hold a language bundle as an immutable singleton map")
+      withTestCollection(
+        name = LEGACY_WIZARD_COLLECTION_NAME,
+        wizard = Some(legacyWizard)
+      ) { reference =>
+        When("reading the collection back")
+        val wizard = CollectionDefinitionApi.getById(reference.id).value.value.wizard.value
+
+        Then("the pages blob is returned in the same legacy format it was sent in")
+        val pages = wizard.pages.value
+        pages should include(LEGACY_SINGLETON_MAP_ELEMENT)
+        pages should include(LEGACY_CONTROL_TEXT)
+
+        And("the rest of the wizard survived the round trip")
+        wizard.name.value shouldBe LEGACY_WIZARD_NAME
+      }
+    }
   }
 
   describe("importCollection") {

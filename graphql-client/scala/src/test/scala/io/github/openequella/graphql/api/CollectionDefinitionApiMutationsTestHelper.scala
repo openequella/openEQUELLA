@@ -25,6 +25,60 @@ import io.github.openequella.graphql.test.BaseEntityApiTestHelper
 /** Helper object for CollectionDefinitionApi tests containing collection utilities. */
 object CollectionDefinitionApiMutationsTestHelper {
 
+  val LEGACY_WIZARD_COLLECTION_NAME = "Legacy Wizard Collection"
+  val LEGACY_WIZARD_NAME            = "Legacy wizard"
+
+  /** The element that marks a language bundle held as an immutable `Collections.singletonMap`. */
+  val LEGACY_SINGLETON_MAP_ELEMENT = """<strings class="singleton-map">"""
+
+  /** The Raw HTML control's text, as it appears XML-escaped inside the pages blob. */
+  val LEGACY_CONTROL_TEXT = "&lt;hr&gt;"
+
+  /** A wizard whose pages blob is in the format oEQ has always persisted.
+    *
+    * The `singleton-map` bundle with `k`/`v` children is what a Raw HTML control set to a
+    * predefined element produces, and what older collections hold. It is not the shape a stock
+    * XStream instance writes, so this fixture guards the server's ability to keep reading
+    * real-world data.
+    */
+  def legacyWizard: CollectionWizardView =
+    CollectionWizardView(
+      name = Some(LEGACY_WIZARD_NAME),
+      redraftScript = None,
+      saveScript = None,
+      allowNonSequentialNavigation = false,
+      showPageTitlesNextPrev = false,
+      additionalCssClass = None,
+      pages = Some(legacyPagesXml),
+      fixedMetadata = None
+    )
+
+  private def legacyPagesXml: String =
+    """<list>
+      |  <com.dytech.edge.wizard.beans.DefaultWizardPage>
+      |    <controls>
+      |      <com.dytech.edge.wizard.beans.control.Html>
+      |        <include>true</include>
+      |        <description>
+      |          <id>0</id>
+      |          <strings class="singleton-map">
+      |            <k class="string">en</k>
+      |            <v class="com.tle.beans.entity.LanguageString">
+      |              <id>0</id>
+      |              <locale>en</locale>
+      |              <priority>1</priority>
+      |              <text>&lt;hr&gt;</text>
+      |              <bundle reference="../../.."/>
+      |            </v>
+      |          </strings>
+      |        </description>
+      |        <targetnodes/>
+      |        <items/>
+      |      </com.dytech.edge.wizard.beans.control.Html>
+      |    </controls>
+      |  </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      |</list>""".stripMargin
+
   /** Checks if a collection is locked for editing by attempting to start an edit session with a
     * different user. A collection is considered locked if another user cannot start an edit session
     * on it. If the current user created the lock, then they can still start an edit session, so we
@@ -66,6 +120,8 @@ object CollectionDefinitionApiMutationsTestHelper {
     *   The name to use for the collection. Defaults to "Test Collection".
     * @param description
     *   Optional description for the collection. Defaults to "A test collection".
+    * @param wizard
+    *   Optional contribution wizard, including its opaque serialised XML blobs.
     * @return
     *   A fully populated CollectionDefinitionEditView ready to be passed to
     *   `CollectionDefinitionApi.add()`.
@@ -73,7 +129,8 @@ object CollectionDefinitionApiMutationsTestHelper {
   def buildNewCollectionDetails(
       skeleton: EntitySkeletonView,
       name: String = "Test Collection",
-      description: Option[String] = Some("A test collection")
+      description: Option[String] = Some("A test collection"),
+      wizard: Option[CollectionWizardView] = None
   ): CollectionDefinitionEditView = {
     val collectionView = CollectionDefinitionView(
       details = BaseEntityApiTestHelper.buildNewEntityDetails(skeleton, name, description),
@@ -83,7 +140,7 @@ object CollectionDefinitionApiMutationsTestHelper {
       reviewPeriod = None,
       scormPackagingTransformation = None,
       denyDirectContribution = false,
-      wizard = None,
+      wizard = wizard,
       searchDetails = None,
       metadataMapping = None,
       itemMetadataRules = List.empty,
@@ -111,6 +168,8 @@ object CollectionDefinitionApiMutationsTestHelper {
     *   The name for the test collection. Defaults to "Test Collection".
     * @param description
     *   Optional description. Defaults to Some("A test collection").
+    * @param wizard
+    *   Optional contribution wizard, including its opaque serialised XML blobs.
     * @param test
     *   The test body, receiving the newly created collection reference.
     * @param cfg
@@ -118,9 +177,10 @@ object CollectionDefinitionApiMutationsTestHelper {
     */
   def withTestCollection(
       name: String = "Test Collection",
-      description: Option[String] = Some("A test collection")
+      description: Option[String] = Some("A test collection"),
+      wizard: Option[CollectionWizardView] = None
   )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
-    withTestCollectionUsing(CollectionDefinitionApi.add)(name, description)(test)
+    withTestCollectionUsing(CollectionDefinitionApi.add)(name, description, wizard)(test)
 
   /** Loan-pattern helper that creates a locked test collection, runs the test body, and guarantees
     * cleanup.
@@ -142,17 +202,20 @@ object CollectionDefinitionApiMutationsTestHelper {
       name: String = "Test Collection",
       description: Option[String] = Some("A test collection")
   )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
-    withTestCollectionUsing(CollectionDefinitionApi.addAndLock)(name, description)(test)
+    withTestCollectionUsing(CollectionDefinitionApi.addAndLock)(name, description, wizard = None)(
+      test
+    )
 
   private def withTestCollectionUsing(
       addFn: CollectionDefinitionEditView => Either[List[ApiError], BaseEntityReferenceView]
   )(
       name: String,
-      description: Option[String]
+      description: Option[String],
+      wizard: Option[CollectionWizardView]
   )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
     BaseEntityApiTestHelper.withTestEntity(
       CollectionDefinitionApi.startCreate _,
-      buildNewCollectionDetails(_, name = name, description = description),
+      buildNewCollectionDetails(_, name = name, description = description, wizard = wizard),
       addFn,
       CollectionDefinitionApi.cancelEditForced,
       CollectionDefinitionApi.delete

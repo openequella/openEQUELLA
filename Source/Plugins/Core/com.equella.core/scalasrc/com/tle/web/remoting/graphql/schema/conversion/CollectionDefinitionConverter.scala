@@ -78,6 +78,9 @@ object CollectionDefinitionConverter {
     to
   }
 
+  /** `XmlService` is the only supported reader of the opaque page blobs — see [[CollectionWizard]]
+    * for why they are opaque and what it costs.
+    */
   private def toWizard(from: CollectionWizard, xmlService: XmlService): Wizard = {
     val to = new Wizard()
 

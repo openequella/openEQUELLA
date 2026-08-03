@@ -19,12 +19,26 @@
 package com.tle.admin.graphql.conversion
 
 import com.tle.beans.entity.itemdef.Wizard
-import com.tle.common.security.streaming.XStreamSecurityManager
+import com.tle.core.xstream.ExtXStream
 import io.github.openequella.graphql.api.views.CollectionWizardView
 
 import scala.util.chaining.scalaUtilChainingOps
 
 object CollectionWizardViewConverter {
+
+  /** The server writes these blobs with [[ExtXStream]], so we have to read them with it too — a
+    * stock XStream instance cannot read oEQ's legacy singleton-map language bundles.
+    *
+    * A fresh instance per conversion, deliberately: `ExtXStream` enables annotation auto-detection,
+    * which reconfigures the instance as it encounters annotated types mid-stream. XStream documents
+    * that as a concurrency hazard, and these conversions run on Swing worker threads with several
+    * entity editors potentially open at once. Construction is trivial next to the network round
+    * trip that fetched the blob.
+    *
+    * The server-side `CollectionWizard` type documents why the blobs are opaque in the first place.
+    */
+  private def xstream = new ExtXStream(null)
+
   def toWizard(view: CollectionWizardView): Wizard = new Wizard().tap { w =>
     w.setName(view.name.orNull)
     w.setRedraftScript(view.redraftScript.orNull)
@@ -49,8 +63,8 @@ object CollectionWizardViewConverter {
     )
 
   private def deserialiseXml[T](xml: String): T =
-    XStreamSecurityManager.newXStream().fromXML(xml).asInstanceOf[T]
+    xstream.fromXML(xml).asInstanceOf[T]
 
   private def serialiseXml(obj: Any): String =
-    XStreamSecurityManager.newXStream().toXML(obj)
+    xstream.toXML(obj)
 }
