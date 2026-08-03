@@ -21,6 +21,7 @@ package com.tle.core.entity.dao.impl;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.entity.dao.AbstractEntityDao;
@@ -134,16 +135,12 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
 
   @Override
   public List<T> getByIds(Collection<Long> ids) {
+    // An empty "in" clause is not valid SQL on every dialect, so never build one.
     if (ids == null || ids.isEmpty()) {
       return Collections.emptyList();
     }
 
-    List<T> entityList =
-        (List<T>)
-            getHibernateTemplate()
-                .findByNamedParam(
-                    "from " + getPersistentClass().getName() + " where id in (:keys)", "keys", ids);
-    return entityList;
+    return findAllByCriteria(Restrictions.in("id", ids), CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -258,23 +255,21 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
 
   @Override
   public String getUuidForId(final long id) {
-    return (String)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    StringBuilder hql = new StringBuilder("SELECT uuid FROM ");
-                    hql.append(getPersistentClass().getName());
-                    hql.append(" WHERE id = :id");
-
-                    Query query = session.createQuery(hql.toString());
-                    query.setCacheable(true);
-                    query.setReadOnly(true);
-                    query.setParameter("id", id); // $NON-NLS-1$
-                    return query.list().get(0);
-                  }
-                });
+    return withSession(
+            session ->
+                session
+                    .createQuery(
+                        "SELECT be.uuid FROM "
+                            + getPersistentClass().getName()
+                            + " be WHERE be.institution = :institution AND be.id = :id",
+                        String.class)
+                    .setParameter("institution", CurrentInstitution.get())
+                    .setParameter("id", id)
+                    .uniqueResultOptional())
+        .orElseThrow(
+            () ->
+                new NotFoundException(
+                    "Couldn't find entity '" + id + "' : " + getPersistentClass().getName()));
   }
 
   @Override

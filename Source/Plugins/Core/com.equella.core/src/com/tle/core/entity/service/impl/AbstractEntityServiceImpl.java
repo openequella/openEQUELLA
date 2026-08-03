@@ -169,9 +169,28 @@ public abstract class AbstractEntityServiceImpl<
     return "EDIT_" + privilegeType;
   }
 
+  /**
+   * Retrieve the entity of the current institution with the given ID.
+   *
+   * <p>Institution filtered, as every by-id lookup on an institution owned entity must be. Entity
+   * IDs are globally unique, so an ID originating from another institution would otherwise resolve
+   * here - and the {@code @SecureOnCall} / {@code @SecureOnReturn} checks downstream do not catch
+   * that, because an institution wide grant (e.g. EDIT_COLLECTION at "All collections") is held
+   * against the target "*", which matches an entity of any institution. Contrast {@link
+   * #getByUuid(String)} below, which has always been filtered - UUIDs are unique only per
+   * institution, so there the filter was needed for correctness and not merely for security.
+   *
+   * <p>Filtering within the query keeps the guard atomic with the lookup, and avoids having to
+   * initialise the entity's lazy institution in order to compare it afterwards. With no current
+   * institution the filter matches nothing, so this fails closed.
+   *
+   * @param id the identity of the entity
+   * @return the entity - never null
+   * @throws NotFoundException if the current institution has no entity with that ID
+   */
   @Override
   public T get(long id) {
-    T entity = entityDao.findById(id);
+    T entity = entityDao.findByCriteria(Restrictions.eq("id", id), getInstitutionCriterion());
     if (entity == null) {
       throw new NotFoundException("Couldn't find entity '" + id + "' : " + getClass().getName());
     } else {

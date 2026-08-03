@@ -45,12 +45,11 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
 
   @Override
   public List<String> getImportSchemaTypes(long id) {
-    return (List<String>)
-        getHibernateTemplate()
-            .find(
-                "select distinct t.type from Schema s inner join s.impTransforms as t where s.id ="
-                    + " ?0 order by t.type",
-                id);
+    return querySchemasOfCurrentInstitution(
+        "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.impTransforms AS t"
+            + " WHERE s.institution = :institution AND s.id = :id ORDER BY t.type",
+        String.class,
+        query -> query.setParameter("id", id));
   }
 
   @Override
