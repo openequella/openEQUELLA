@@ -34,7 +34,6 @@ import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.IdCloneable;
-import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.LanguageBundle;
@@ -786,8 +785,7 @@ public abstract class AbstractEntityServiceImpl<
   }
 
   protected Criterion getInstitutionCriterion() {
-    Institution institution = CurrentInstitution.get();
-    return Restrictions.eq("institution", institution);
+    return CurrentInstitution.equalityCriteria();
   }
 
   @Override
@@ -808,22 +806,12 @@ public abstract class AbstractEntityServiceImpl<
       throw new ModifyingSystemTypeException();
     }
 
-    List<ValidationError> errors = new ArrayList<ValidationError>();
+    List<ValidationError> errors = new ArrayList<>();
 
     // Ask the full implementation to do any checking
     doValidationBean(bean, errors);
 
-    // Only one uuid per institution
-    Criterion c4 = Restrictions.eq("uuid", bean.getUuid());
-    Criterion c5 = Restrictions.eq("institution", CurrentInstitution.get());
-    Criterion c6 = Restrictions.ne("id", bean.getId());
-
-    if (entityDao.countByCriteria(c4, c5, c6) > 0) {
-      errors.add(
-          new ValidationError(
-              "uuid",
-              CurrentLocale.get("com.tle.core.services.entity.generic.validation.unique.uuid")));
-    }
+    validateUuidIsUniqueInInstitution(bean.getUuid(), bean.getId(), errors);
 
     if (!errors.isEmpty()) {
       throw new InvalidDataException(errors);
@@ -837,25 +825,39 @@ public abstract class AbstractEntityServiceImpl<
       ensureNonSystem(entity);
     }
 
-    List<ValidationError> errors = new ArrayList<ValidationError>();
+    List<ValidationError> errors = new ArrayList<>();
 
     // Ask the full implementation to do any checking
     doValidation(session, entity, errors);
 
-    // Only one uuid per institution
-    Criterion c4 = Restrictions.eq("uuid", entity.getUuid());
-    Criterion c5 = Restrictions.eq("institution", CurrentInstitution.get());
-    Criterion c6 = Restrictions.ne("id", entity.getId());
+    validateUuidIsUniqueInInstitution(entity.getUuid(), entity.getId(), errors);
 
-    if (entityDao.countByCriteria(c4, c5, c6) > 0) {
+    if (!errors.isEmpty()) {
+      throw new InvalidDataException(errors);
+    }
+  }
+
+  /**
+   * Records a validation error if another entity of the current institution already uses this UUID.
+   * They are unique per institution rather than globally - see the {@code institution_id, uuid}
+   * unique constraint on {@link BaseEntity}.
+   *
+   * @param uuid the UUID being validated
+   * @param id the identity of the entity it belongs to, excluded from the search so that an entity
+   *     being edited does not clash with itself
+   * @param errors the list to record any error in
+   */
+  private void validateUuidIsUniqueInInstitution(
+      String uuid, long id, List<ValidationError> errors) {
+    long othersWithThisUuid =
+        entityDao.countByCriteria(
+            Restrictions.eq("uuid", uuid), getInstitutionCriterion(), Restrictions.ne("id", id));
+
+    if (othersWithThisUuid > 0) {
       errors.add(
           new ValidationError(
               "uuid",
               CurrentLocale.get("com.tle.core.services.entity.generic.validation.unique.uuid")));
-    }
-
-    if (!errors.isEmpty()) {
-      throw new InvalidDataException(errors);
     }
   }
 

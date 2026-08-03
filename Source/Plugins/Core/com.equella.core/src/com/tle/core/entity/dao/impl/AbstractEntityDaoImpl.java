@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +54,12 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
     return listAll(resolveVirtualTo, callback, false);
   }
 
+  /**
+   * NOTE: this and {@link #countAll(EnumerateOptions)} keep the untyped callback style, because
+   * {@code ListCallback.processQuery} takes the legacy {@code org.hibernate.Query} and {@code
+   * createEnumerateQuery} returns one. A typed {@code Query<R>} is a supertype of that, so it
+   * cannot be handed to either without retyping both in {@code GenericInstitionalDaoImpl}.
+   */
   protected List<BaseEntityLabel> listAll(
       String resolveVirtualTo, final ListCallback callback, final boolean includeSystem) {
     List<BaseEntityLabel> labels =
@@ -145,43 +152,30 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
       return Collections.emptyList();
     }
 
-    List<T> entityList =
-        (List<T>)
-            getHibernateTemplate()
-                .findByNamedParam(
-                    "from "
-                        + getPersistentClass().getName()
-                        + " where institution = :institution and uuid in (:keys)",
-                    new String[] {"institution", "keys"},
-                    new Object[] {CurrentInstitution.get(), ids});
-    return entityList;
+    return findAllByCriteria(Restrictions.in("uuid", ids), CurrentInstitution.equalityCriteria());
   }
 
   @Override
   public T getByUuid(String uuid) {
-    List<T> results =
-        (List<T>)
-            getHibernateTemplate()
-                .find(
-                    "FROM "
-                        + getPersistentClass().getName()
-                        + " WHERE institution = ?0 AND uuid = ?1",
-                    new Object[] {CurrentInstitution.get(), uuid});
-    return results.isEmpty() ? null : results.get(0);
+    // At most one match: BaseEntity is uniquely constrained on (institution, uuid).
+    return findByCriteria(Restrictions.eq("uuid", uuid), CurrentInstitution.equalityCriteria());
   }
 
   @Override
   public Set<String> getReferencedUsers() {
-    List<String> entityList =
-        (List<String>)
-            getHibernateTemplate()
-                .findByNamedParam(
-                    "select distinct owner from "
-                        + getPersistentClass().getName()
-                        + " where institution = :institution",
-                    "institution",
-                    CurrentInstitution.get());
-    return new HashSet<String>(entityList);
+    List<String> owners =
+        withSession(
+            session ->
+                session
+                    .createQuery(
+                        "SELECT DISTINCT be.owner FROM "
+                            + getPersistentClass().getName()
+                            + " be WHERE be.institution = :institution",
+                        String.class)
+                    .setParameter("institution", CurrentInstitution.get())
+                    .getResultList());
+
+    return new HashSet<>(owners);
   }
 
   public void setEntityLockingDao(EntityLockingDao entityLockingDao) {
@@ -247,28 +241,19 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
   }
 
   protected List<Long> enumerateAllIds(final boolean includeSystem) {
-    return (List<Long>)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    // NOTE: Don't order by name here - use NumberStringComparator
-                    // on the returned list.
-                    StringBuilder hql = new StringBuilder("select id from ");
-                    hql.append(getPersistentClass().getName());
-                    hql.append(" where institution = :institution");
-                    if (!includeSystem) {
-                      hql.append(" and systemType = false");
-                    }
+    // NOTE: Don't order by name here - use NumberStringComparator on the returned list.
+    String hql =
+        "SELECT be.id FROM "
+            + getPersistentClass().getName()
+            + " be WHERE be.institution = :institution"
+            + (includeSystem ? "" : " AND be.systemType = false");
 
-                    Query query = session.createQuery(hql.toString());
-                    query.setParameter("institution", CurrentInstitution.get());
-                    query.setCacheable(true);
-                    query.setReadOnly(true);
-                    return query.list();
-                  }
-                });
+    return withSession(
+        session ->
+            session
+                .createQuery(hql, Long.class)
+                .setParameter("institution", CurrentInstitution.get())
+                .getResultList());
   }
 
   @Override

@@ -24,11 +24,12 @@ import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.schema.dao.SchemaDao;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.inject.Singleton;
+import org.hibernate.query.Query;
 
 @Bind(SchemaDao.class)
 @Singleton
-@SuppressWarnings("nls")
 public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements SchemaDao {
   public SchemaDaoImpl() {
     super(Schema.class);
@@ -36,12 +37,10 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
 
   @Override
   public List<String> getExportSchemaTypes() {
-    return (List<String>)
-        getHibernateTemplate()
-            .find(
-                "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t WHERE"
-                    + " s.institution = ?0 ORDER BY t.type",
-                CurrentInstitution.get());
+    return querySchemasOfCurrentInstitution(
+        "SELECT DISTINCT t.type FROM Schema s INNER JOIN s.expTransforms AS t"
+            + " WHERE s.institution = :institution ORDER BY t.type",
+        String.class);
   }
 
   @Override
@@ -56,23 +55,50 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
 
   @Override
   public List<Schema> getSchemasForExportSchemaType(String type) {
-    return (List<Schema>)
-        getHibernateTemplate()
-            .find(
-                "SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ?0 AND"
-                    + " LOWER(t.type) = ?1",
-                new Object[] {CurrentInstitution.get(), type.toLowerCase()});
+    return querySchemasOfCurrentInstitution(
+        "SELECT s FROM Schema s INNER JOIN s.expTransforms t"
+            + " WHERE s.institution = :institution AND LOWER(t.type) = :type",
+        Schema.class,
+        query -> query.setParameter("type", type.toLowerCase()));
   }
 
   @Override
-  @SuppressWarnings("nls")
   public List<String> getAllCitations() {
-    return (List<String>)
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select distinct c.name from Schema s join s.citations c where s.institution ="
-                    + " :inst",
-                "inst",
-                CurrentInstitution.get());
+    return querySchemasOfCurrentInstitution(
+        "SELECT DISTINCT c.name FROM Schema s INNER JOIN s.citations c"
+            + " WHERE s.institution = :institution",
+        String.class);
+  }
+
+  /** Runs a query which needs no parameters beyond {@code :institution}. */
+  private <R> List<R> querySchemasOfCurrentInstitution(String hql, Class<R> resultType) {
+    return querySchemasOfCurrentInstitution(hql, resultType, query -> {});
+  }
+
+  /**
+   * Runs an HQL query over the schemas of the current institution.
+   *
+   * <p>Every query in this DAO joins one of {@code Schema}'s collections and filters by
+   * institution, so the {@code :institution} binding - and the typing which avoids an unchecked
+   * cast on the result - are done here rather than four times over.
+   *
+   * @param hql the query, which must declare an {@code :institution} parameter
+   * @param resultType the type each row is projected to
+   * @param bindRemainingParameters binds whatever else the query declares
+   * @param <R> the type each row is projected to
+   * @return the matching rows
+   */
+  private <R> List<R> querySchemasOfCurrentInstitution(
+      String hql, Class<R> resultType, Consumer<Query<R>> bindRemainingParameters) {
+    return withSession(
+        session -> {
+          Query<R> query =
+              session
+                  .createQuery(hql, resultType)
+                  .setParameter("institution", CurrentInstitution.get());
+          bindRemainingParameters.accept(query);
+
+          return query.getResultList();
+        });
   }
 }
