@@ -19,7 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.BaseEntitySecurityView
+import io.github.openequella.graphql.api.views.{BaseEntitySecurityView, LanguageBundleView}
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   assertAccessDeniedError,
@@ -32,6 +32,7 @@ import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 
 class BaseEntityApiTest
     extends AnyFunSpec
+    with CrossInstitutionTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
@@ -85,6 +86,18 @@ class BaseEntityApiTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(BaseEntityApi.getNameById(AnyEntityId)(_))
     }
+
+    // This query requires no privilege beyond being logged in, so without institution filtering any
+    // user of any institution could enumerate IDs and harvest every entity name in the installation.
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[Option[LanguageBundleView]](
+        entityName = "base entity's name",
+        entityId = () => anEntityIdWithAName,
+        lookup = (id, session) => BaseEntityApi.getNameById(id)(session),
+        assertFound = _.value shouldBe defined,
+        assertNotFound = _ shouldBe Right(None)
+      )
+    )
   }
 
   describe("getSecurityById") {
@@ -148,13 +161,48 @@ class BaseEntityApiTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(BaseEntityApi.getSecurityById(AnyEntityId)(_))
     }
+
+    // Already institution filtered when this query was added - here as a regression guard. Sourced
+    // from an entity which has entries, so a leak would show as data rather than an empty success.
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[BaseEntitySecurityView](
+        entityName = "base entity's security details",
+        entityId = () =>
+          securityOfFirst(collectionIds)(_.targetList.nonEmpty)
+            .getOrElse(fail(NoCollectionWithEntries))
+            ._1,
+        lookup = (id, session) => BaseEntityApi.getSecurityById(id)(session),
+        assertFound = _.value.targetList should not be empty,
+        assertNotFound = assertNotFoundError
+      )
+    )
   }
 
-  private def getBaseEntityId: Long = {
-    val entities = MetadataSchemaApi.listSchemas().value
-    entities should not be empty
-    entities.head.id
-  }
+  /** The ID of a base entity whose name resolves, so that a cross-institution test can tell "not
+    * found because of the behaviour under test" from "not found because there was never a name".
+    *
+    * Lowest ID first: entity IDs increase, so this settles on an entity imported with the
+    * institution rather than one a concurrently running mutation suite is about to delete.
+    */
+  private def anEntityIdWithAName: Long =
+    MetadataSchemaApi
+      .listSchemas()
+      .value
+      .sortBy(_.id)
+      .view
+      .collectFirst { case ref if BaseEntityApi.getNameById(ref.id).value.isDefined => ref.id }
+      .getOrElse(fail("No base entity in this institution has a resolvable name"))
+
+  /** Lowest ID, so this is an entity imported with the institution rather than one a concurrently
+    * running mutation suite is about to delete - the callers fetch it again after listing it.
+    */
+  private def getBaseEntityId: Long =
+    MetadataSchemaApi
+      .listSchemas()
+      .value
+      .minByOption(_.id)
+      .getOrElse(fail("This institution has no metadata schemas"))
+      .id
 
   private def collectionIds: List[Long] = CollectionDefinitionApi.listCollections().value.map(_.id)
 

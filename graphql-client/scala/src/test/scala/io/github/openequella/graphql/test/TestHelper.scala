@@ -34,6 +34,12 @@ object TestHelper {
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
   val INSTITUTION_REST: String               = "rest"
 
+  /** A second institution, standing in for "somebody else's institution" in the cross-institution
+    * security tests. Entity IDs are globally unique across institutions, so an ID of
+    * [[INSTITUTION_REST]] can never also be an ID here.
+    */
+  val INSTITUTION_OTHER: String = "vanilla"
+
   /** An entity ID guaranteed not to exist, for exercising not-found behaviour. */
   val INVALID_ENTITY_ID: Long = -1L
 
@@ -188,6 +194,31 @@ object TestHelper {
     */
   def assertBadRequestError(response: Either[List[ApiError], _]): Unit =
     checkApiError(response) shouldBe a[BadRequestError]
+
+  /** A session in [[INSTITUTION_OTHER]], for checking that an entity of the institution under test
+    * is invisible to a caller elsewhere. Pass it explicitly to override the suite's implicit
+    * session:
+    *
+    * {{{
+    * CollectionDefinitionApi.getById(id)(sessionInOtherInstitution()) shouldBe Right(None)
+    * }}}
+    *
+    * Entity IDs are globally unique, so a by-ID lookup which is not institution filtered hands this
+    * institution's entity to a caller of another one. The ACL check behind the query does not
+    * prevent that: an institution wide grant (e.g. EDIT_COLLECTION at "All collections") is held
+    * against the target "*", which matches an entity of any institution.
+    *
+    * Authenticates as [[CREDENTIALS_ADMIN]], deliberately. As a system user it passes every
+    * privilege check, so the only thing which can produce a "not found" is the institution filter
+    * under test — whereas an ordinary user of that institution may be rejected by the privilege
+    * check first, and the test would pass without proving anything.
+    *
+    * Tests should source the ID the same way they source it for the happy path, and re-assert the
+    * happy path afterwards: the mutation suites run concurrently against the institution under
+    * test, so an entity which vanished mid-test would otherwise make the assertion vacuous.
+    */
+  def sessionInOtherInstitution(): ClientConfiguration =
+    loginToInstitution(INSTITUTION_OTHER, CREDENTIALS_ADMIN)
 
   /** Run the given action with a client configuration that is logged in with different credentials
     * to the given client configuration. This is useful for testing access control and multi-user

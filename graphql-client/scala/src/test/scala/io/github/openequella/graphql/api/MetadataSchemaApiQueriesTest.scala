@@ -19,11 +19,12 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, MetadataSchemaView}
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   INVALID_ENTITY_UUID,
   assertAccessDeniedError,
+  assertNotFoundError,
   checkApiError,
   loginToRestInstitution
 }
@@ -41,12 +42,44 @@ import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 class MetadataSchemaApiQueriesTest
     extends AnyFunSpec
     with ExportTestBehaviours
+    with CrossInstitutionTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
     with OptionValues
     with TableDrivenPropertyChecks {
   private implicit val cfg: ClientConfiguration = loginToRestInstitution()
+
+  /** The ID of a schema the concurrently running mutation suites will not delete, for tests which
+    * assert the schema is still there afterwards.
+    *
+    * Entity IDs increase, so the lowest belongs to a schema imported with the institution rather
+    * than created by a test. Taking an arbitrary one instead makes the test flaky: it can land on a
+    * mutation suite's short lived schema, which is then deleted mid-test.
+    */
+  private def aStableSchema: BaseEntityReferenceView =
+    MetadataSchemaApi
+      .listSchemas()
+      .value
+      .minByOption(_.id)
+      .getOrElse(fail("This institution has no metadata schemas"))
+
+  private def aStableSchemaId: Long = aStableSchema.id
+
+  /** The ID of a schema which has at least one import transformation. Scanned rather than assumed,
+    * so that a cross-institution test cannot pass vacuously by comparing an empty list to an empty
+    * list. Lowest ID first, so it settles on an institution fixture rather than a test's own
+    * schema.
+    */
+  private def schemaIdWithImportTransforms: Long =
+    MetadataSchemaApi
+      .listSchemas()
+      .value
+      .sortBy(_.id)
+      .view
+      .flatMap(ref => MetadataSchemaApi.getById(ref.id).value)
+      .collectFirst { case schema if schema.importTransforms.nonEmpty => schema.details.id }
+      .getOrElse(fail("No metadata schema in this institution has an import transformation"))
 
   describe("listSchemas") {
     it("returns all metadata schemas") {
@@ -67,7 +100,7 @@ class MetadataSchemaApiQueriesTest
   describe("getIdByUuid") {
     it("returns the ID for a valid schema UUID") {
       Given("a valid schema UUID")
-      val schema = MetadataSchemaApi.listSchemas().value.head
+      val schema = aStableSchema
 
       When("calling getIdByUuid with the schema UUID")
       val result = MetadataSchemaApi.getIdByUuid(schema.uuid)
@@ -97,7 +130,7 @@ class MetadataSchemaApiQueriesTest
   describe("getUses") {
     it("returns all entities using a valid schema") {
       Given("a valid metadata schema ID")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = aStableSchema.id
 
       When("calling getUses with the schema ID")
       val result = MetadataSchemaApi.getUses(schemaId)
@@ -127,7 +160,7 @@ class MetadataSchemaApiQueriesTest
   describe("hasReferences") {
     it("checks if a schema has references") {
       Given("a valid metadata schema ID")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = aStableSchema.id
 
       When("calling hasReferences with the schema ID")
       val result = MetadataSchemaApi.hasReferences(schemaId)
@@ -151,12 +184,23 @@ class MetadataSchemaApiQueriesTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(MetadataSchemaApi.hasReferences(1)(_))
     }
+
+    // Reaches the entity lookup by a different path to getById - via getReferencingClasses.
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[Boolean](
+        entityName = "metadata schema's references",
+        entityId = () => aStableSchemaId,
+        lookup = (id, session) => MetadataSchemaApi.hasReferences(id)(session),
+        assertFound = _.value should (be(true) or be(false)),
+        assertNotFound = assertNotFoundError
+      )
+    )
   }
 
   describe("getImportTypes") {
     it("returns available import types for a valid schema") {
       Given("a valid metadata schema ID")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = aStableSchema.id
 
       When("calling getImportTypes with the schema ID")
       val result = MetadataSchemaApi.getImportTypes(schemaId)
@@ -181,13 +225,25 @@ class MetadataSchemaApiQueriesTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(MetadataSchemaApi.getImportTypes(1)(_))
     }
+
+    // Sourced from a schema which does have import transformations: one with none would make this
+    // vacuous, since the leak returned the real list rather than an empty one.
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[List[String]](
+        entityName = "metadata schema's import types",
+        entityId = () => schemaIdWithImportTransforms,
+        lookup = (id, session) => MetadataSchemaApi.getImportTypes(id)(session),
+        assertFound = _.value should not be empty,
+        assertNotFound = _.value shouldBe empty
+      )
+    )
   }
 
   describe("exportSchema") {
     exportBehavior(
       ExportBehaviorConfig(
         entityName = "metadata schema",
-        getFirstIdFn = () => MetadataSchemaApi.listSchemas().value.head.id,
+        getFirstIdFn = () => aStableSchema.id,
         exportFn = MetadataSchemaApi.exportSchema,
         exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity,
         expectedEntityClass = "com.tle.beans.entity.Schema",
@@ -199,7 +255,7 @@ class MetadataSchemaApiQueriesTest
   describe("getById") {
     it("retrieves a schema by its ID") {
       Given("a valid schema ID")
-      val schema = MetadataSchemaApi.listSchemas().value.head
+      val schema = aStableSchema
 
       When("calling getById with the schema ID")
       val result = MetadataSchemaApi.getById(schema.id)
@@ -226,5 +282,15 @@ class MetadataSchemaApiQueriesTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(MetadataSchemaApi.getById(1)(_))
     }
+
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[Option[MetadataSchemaView]](
+        entityName = "metadata schema",
+        entityId = () => aStableSchemaId,
+        lookup = (id, session) => MetadataSchemaApi.getById(id)(session),
+        assertFound = _.value shouldBe defined,
+        assertNotFound = _.value shouldBe None
+      )
+    )
   }
 }
