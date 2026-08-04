@@ -1,4 +1,5 @@
 include:
   project: edalex-group/development/oeq/openequella-ci
   file: build/main.yml
-  ref: main
+  # TODO: revert to `main` once the corresponding openequella-ci MR is merged.
+  ref: test/scalatest-consolidation
