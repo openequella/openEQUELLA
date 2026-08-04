@@ -19,7 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.CollectionDefinitionView
+import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, CollectionDefinitionView}
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   INVALID_ENTITY_UUID,
@@ -40,6 +40,7 @@ import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 class CollectionDefinitionApiQueriesTest
     extends AnyFunSpec
     with ExportTestBehaviours
+    with CrossInstitutionTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
@@ -56,6 +57,22 @@ class CollectionDefinitionApiQueriesTest
       .listCollections()
       .value
       .flatMap(ref => CollectionDefinitionApi.getById(ref.id).value)
+
+  /** A collection the concurrently running mutation suites will not delete, for tests which fetch
+    * it again after listing it.
+    *
+    * Entity IDs increase, so the lowest belongs to a collection imported with the institution
+    * rather than created by a test. Taking an arbitrary one instead makes the test flaky: it can
+    * land on a mutation suite's short lived collection, which is then deleted before the fetch.
+    */
+  private def aStableCollection: BaseEntityReferenceView =
+    CollectionDefinitionApi
+      .listCollections()
+      .value
+      .minByOption(_.id)
+      .getOrElse(fail("This institution has no collections"))
+
+  private def aStableCollectionId: Long = aStableCollection.id
 
   describe("listCollections") {
     it("returns all collections") {
@@ -76,7 +93,7 @@ class CollectionDefinitionApiQueriesTest
   describe("getIdByUuid") {
     it("returns the ID for a valid collection UUID") {
       Given("a valid collection UUID")
-      val collection = CollectionDefinitionApi.listCollections().value.head
+      val collection = aStableCollection
 
       When("calling getIdByUuid with the collection UUID")
       val result = CollectionDefinitionApi.getIdByUuid(collection.uuid)
@@ -107,7 +124,7 @@ class CollectionDefinitionApiQueriesTest
     exportBehavior(
       ExportBehaviorConfig(
         entityName = "collection",
-        getFirstIdFn = () => CollectionDefinitionApi.listCollections().value.head.id,
+        getFirstIdFn = () => aStableCollection.id,
         exportFn = CollectionDefinitionApi.exportCollection,
         exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity,
         expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition",
@@ -119,7 +136,7 @@ class CollectionDefinitionApiQueriesTest
   describe("getById") {
     it("retrieves a collection by its ID") {
       Given("a valid collection ID")
-      val collection = CollectionDefinitionApi.listCollections().value.head
+      val collection = aStableCollection
 
       When("calling getById with the collection ID")
       val result = CollectionDefinitionApi.getById(collection.id)
@@ -146,6 +163,18 @@ class CollectionDefinitionApiQueriesTest
     it("denies access when not authenticated") {
       assertAccessDeniedError(CollectionDefinitionApi.getById(1)(_))
     }
+
+    // Without institution filtering this hands over the whole definition - including the opaque
+    // wizard pages XML.
+    crossInstitutionBehavior(
+      CrossInstitutionBehaviorConfig[Option[CollectionDefinitionView]](
+        entityName = "collection",
+        entityId = () => aStableCollectionId,
+        lookup = (id, session) => CollectionDefinitionApi.getById(id)(session),
+        assertFound = _.value shouldBe defined,
+        assertNotFound = _.value shouldBe None
+      )
+    )
   }
 
   describe("listCategories") {
@@ -207,7 +236,7 @@ class CollectionDefinitionApiQueriesTest
   describe("getByUuid") {
     it("retrieves a collection by its UUID") {
       Given("a valid collection UUID")
-      val collection = CollectionDefinitionApi.listCollections().value.head
+      val collection = aStableCollection
 
       When("calling getByUuid with the collection UUID")
       val result = CollectionDefinitionApi.getByUuid(collection.uuid)

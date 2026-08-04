@@ -28,9 +28,7 @@ import com.tle.core.entity.service.BaseEntityService;
 import com.tle.core.guice.Bind;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hibernate.Hibernate;
@@ -55,8 +53,9 @@ public class BaseEntityServiceImpl implements BaseEntityService {
   @Override
   public Optional<EntityPack<BaseEntity>> getReadOnlyPack(long id) {
     // Delegated so that the type specific @SecureOnReturn EDIT_<TYPE> check and any
-    // getOtherTargetListObjects() override apply. The delegate shares the request's Hibernate
-    // session with the lookup, so it re-reads the entity from the first level cache, not the DB.
+    // getOtherTargetListObjects() override apply. The delegate looks the entity up by ID again,
+    // which costs a second SELECT: both lookups are institution filtered, and a filtered query
+    // cannot be answered from the first level cache the way an unfiltered session.get could.
     return dao.getEntityInCurrentInstitution(id)
         .map(entity -> serviceFor(entity).getReadOnlyPack(id));
   }
@@ -94,15 +93,5 @@ public class BaseEntityServiceImpl implements BaseEntityService {
       }
     }
     return result;
-  }
-
-  @Override
-  public Map<Long, String> getUuids(Set<Long> ids) {
-    return dao.getUuids(ids);
-  }
-
-  @Override
-  public List<Long> getIdsFromUuids(Set<String> uuids) {
-    return dao.getIdsFromUuids(uuids);
   }
 }

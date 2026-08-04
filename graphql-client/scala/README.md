@@ -84,6 +84,12 @@ The test suite runs integration tests against a local openEQUELLA instance on th
 (the standard test institution used by CI). By default, it assumes the instance is on
 `localhost:8080`. You can customize the port for local development:
 
+The `vanilla` institution must also be present. The cross-institution security tests source an entity
+from `rest` and confirm it is invisible to a `vanilla` session — entity IDs are globally unique, so a
+by-ID lookup which is not institution filtered would return another institution's entity. Both
+institutions are in the standard dev fixture set (`autotest/Tests/tests/<name>/institution`). Those
+tests authenticate to `vanilla` as `TLE_ADMINISTRATOR`, so no user or ACL setup is needed there.
+
 ### Quick Start (CLI override only)
 
 Run tests with a different server port:
@@ -129,8 +135,9 @@ This means:
 - Local development can use `test.properties` for convenience
 - Individual test runs can still override via CLI if needed
 
-Tests always run against the `rest` institution (the standard test institution) to ensure
-consistent test expectations and data fixtures.
+Tests run against the `rest` institution (the standard test institution) to ensure consistent test
+expectations and data fixtures. The only exception is the cross-institution security tests, which
+additionally require `vanilla` — see [Test Configuration](#test-configuration).
 
 ## IntelliJ Setup
 

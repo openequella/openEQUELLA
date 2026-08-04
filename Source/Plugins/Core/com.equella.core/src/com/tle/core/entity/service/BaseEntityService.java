@@ -22,9 +22,7 @@ import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.EntityPack;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public interface BaseEntityService {
 
@@ -53,10 +51,6 @@ public interface BaseEntityService {
    * @throws com.tle.exceptions.AccessDeniedException if the current user may not edit the entity
    */
   Optional<EntityPack<BaseEntity>> getReadOnlyPack(long id);
-
-  List<Long> getIdsFromUuids(Set<String> uuids);
-
-  Map<Long, String> getUuids(Set<Long> ids);
 
   /**
    * A list of edit privileges for entities where the user either does not have permission, or does
