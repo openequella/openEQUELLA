@@ -269,7 +269,11 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
         .orElseThrow(
             () ->
                 new NotFoundException(
-                    "Couldn't find entity '" + id + "' : " + getPersistentClass().getName()));
+                    "Couldn't find entity "
+                        + getPersistentClass().getName()
+                        + " with ID '"
+                        + id
+                        + "'"));
   }
 
   @Override
