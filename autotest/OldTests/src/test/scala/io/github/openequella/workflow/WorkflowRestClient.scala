@@ -22,7 +22,8 @@ import com.dytech.devlib.PropBagEx
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.tle.webtests.pageobject.viewitem.ItemId
-import org.apache.commons.httpclient.methods.{GetMethod, PostMethod, PutMethod, StringRequestEntity}
+import io.github.openequella.rest.AuthHelper
+import org.apache.commons.httpclient.methods.{GetMethod, PutMethod, StringRequestEntity}
 import org.apache.commons.httpclient.{HttpClient, HttpMethod, HttpStatus, NameValuePair}
 
 import java.io.IOException
@@ -33,16 +34,12 @@ import scala.jdk.CollectionConverters._
   */
 private object WorkflowRestClient {
   object ApiPath {
-    val authLogin  = "api/auth/login"
-    val authLogout = "api/auth/logout"
     val item       = "api/item"
     val moderation = "moderation"
   }
 
   object QueryParam {
-    val info     = "info"
-    val password = "password"
-    val username = "username"
+    val info = "info"
   }
 
   object QueryValue {
@@ -69,6 +66,7 @@ class WorkflowRestClient(institutionUrl: String) {
 
   private val httpClient = new HttpClient()
   private val mapper     = new ObjectMapper()
+  private val authHelper = new AuthHelper(institutionUrl)
 
   private def itemEndpoint(itemId: ItemId): String =
     s"${institutionUrl}${ApiPath.item}/${itemId.getUuid}/${itemId.getVersion}"
@@ -86,20 +84,13 @@ class WorkflowRestClient(institutionUrl: String) {
     }
   }
 
-  def login(username: String, password: String): Unit = {
-    withMethod(new PostMethod(s"${institutionUrl}${ApiPath.authLogin}")) { method =>
-      method.setQueryString(
-        Array(
-          new NameValuePair(QueryParam.username, username),
-          new NameValuePair(QueryParam.password, password)
-        )
-      )
+  def login(username: String, password: String): Unit =
+    withMethod(authHelper.buildLoginMethod(username, password)) { method =>
       execute(method, s"log in as $username")
     }
-  }
 
   def logout(): Unit =
-    withMethod(new PutMethod(s"${institutionUrl}${ApiPath.authLogout}")) { method =>
+    withMethod(authHelper.buildLogoutMethod()) { method =>
       execute(method, "log out")
     }
 

@@ -23,19 +23,12 @@ import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.SearchSettings;
 import com.tle.common.EntityPack;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
 import javax.swing.JPanel;
 
 public abstract class SearchPlugin<T extends SearchSettings> {
   private final Class<T> settingsClass;
   protected JPanel panel;
   private ClientService clientService;
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
-  }
 
   public SearchPlugin(Class<T> settingsClass) {
     this.settingsClass = settingsClass;

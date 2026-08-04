@@ -34,6 +34,7 @@ import com.tle.common.util.TLEPattern;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.impl.AclExpressionEvaluator;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainDirective;
 import com.tle.plugins.ump.UserDirectoryUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +58,7 @@ public class TLERoleWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<RoleBean>> getRolesForUser(final String userID) {
+  public Pair<ChainDirective, Collection<RoleBean>> getRolesForUser(final String userID) {
     UserBean userBean = getChain().getInformationForUser(userID);
     if (userBean == null) {
       return null;
@@ -71,8 +72,8 @@ public class TLERoleWrapper extends AbstractUserDirectory {
       groups.add(group.getUniqueID());
     }
 
-    return new Pair<ChainResult, Collection<RoleBean>>(
-        ChainResult.CONTINUE, getInformationForRoles(getRolesForUser(state)).values());
+    Collection<RoleBean> roleInfos = getInformationForRoles(getRolesForUser(state)).values();
+    return new Pair<>(ChainDirective.CONTINUE, roleInfos);
   }
 
   @Override

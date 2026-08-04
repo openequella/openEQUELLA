@@ -35,6 +35,7 @@ import com.tle.core.usermanagement.standard.ldap.LDAP;
 import com.tle.core.usermanagement.standard.service.LDAPService;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainDirective;
 import com.tle.plugins.ump.UserDirectoryUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,32 +120,31 @@ public class LDAPUserPlugin extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
-    return new Pair<ChainResult, Collection<GroupBean>>(
-        ChainResult.CONTINUE, ldapService.getGroupsContainingUser(ldap, userID));
+  public Pair<ChainDirective, Collection<GroupBean>> getGroupsContainingUser(final String userID) {
+    return new Pair<>(ChainDirective.CONTINUE, ldapService.getGroupsContainingUser(ldap, userID));
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> getUsersForGroup(
+  public Pair<ChainDirective, Collection<UserBean>> getUsersInGroup(
       String groupId, boolean recursive) {
     return searchUsers("", groupId, recursive);
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(String query) {
-    return new Pair<ChainResult, Collection<UserBean>>(
-        ChainResult.CONTINUE, ldapService.searchUsers(ldap, query));
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(String query) {
+    return new Pair<>(ChainDirective.CONTINUE, ldapService.searchUsers(ldap, query));
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(
       final String query, final String parentGroupID, final boolean recursive) {
     if (Check.isEmpty(parentGroupID)) {
       return searchUsers(query);
     }
 
-    return new Pair<ChainResult, Collection<UserBean>>(
-        ChainResult.CONTINUE, ldapService.getUsersInGroup(ldap, query, parentGroupID, recursive));
+    return new Pair<>(
+        ChainDirective.CONTINUE,
+        ldapService.getUsersInGroup(ldap, query, parentGroupID, recursive));
   }
 
   @Override

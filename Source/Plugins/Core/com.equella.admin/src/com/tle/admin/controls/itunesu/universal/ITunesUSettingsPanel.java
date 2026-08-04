@@ -35,7 +35,7 @@ public class ITunesUSettingsPanel extends UniversalControlSettingPanel
 
   public ITunesUSettingsPanel() {
     super(); // thanks for asking
-    JLabel institutionIdLabel = new JLabel(getString("institutionid"));
+    JLabel institutionIdLabel = new JLabel(strings.text("institutionid"));
     institutionId = new JTextField();
     add(institutionIdLabel);
     add(institutionId);
@@ -43,7 +43,7 @@ public class ITunesUSettingsPanel extends UniversalControlSettingPanel
 
   @Override
   protected String getTitleKey() {
-    return getKey("itunesu.settings.title");
+    return strings.key("itunesu.settings.title");
   }
 
   @Override
@@ -62,7 +62,7 @@ public class ITunesUSettingsPanel extends UniversalControlSettingPanel
   }
 
   private String s(String postfix) {
-    return getString("settings." + postfix);
+    return strings.text("settings." + postfix);
   }
 
   @Override

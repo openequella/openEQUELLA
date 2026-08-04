@@ -61,7 +61,6 @@ import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.item.standard.service.ItemStandardService;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.extension.SchemaSaveExtension;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.url.URLCheckerService;
@@ -257,13 +256,13 @@ public class ItemStandardServiceImpl
       final ItemDefinition oldCollection = collectionService.getByUuid(oldCollectionUuid);
       final ItemDefinition newCollection = collectionService.getByUuid(newCollectionUuid);
       final String oldFilestoreId =
-          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          oldCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
       final String newFilestoreId =
-          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          newCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
       final boolean oldBucket =
-          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+          oldCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
       final boolean newBucket =
-          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+          newCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
       if (!Objects.equals(oldFilestoreId, newFilestoreId) || oldBucket != newBucket) {
         final ItemKey itemId = event.getItemId();
         ItemFile oldHandle =

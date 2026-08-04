@@ -36,6 +36,7 @@ import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.DebugSettings;
 import com.tle.web.entities.section.AbstractEntityEditor;
@@ -160,6 +161,9 @@ public abstract class AbstractConnectorEditorSection<
     boolean exportable = connectorRepositoryService.supportsExport(connector.getLmsType());
     boolean viewable = connectorRepositoryService.supportsView(connector.getLmsType());
 
+    UserServiceEntityResolverAdapter entityResolver =
+        new UserServiceEntityResolverAdapter(userService);
+
     String testedUrl = connector.getAttribute(ConnectorConstants.FIELD_TESTED_URL);
     if (!Check.isEmpty(testedUrl)) {
       if (testedUrl.endsWith("/")) {
@@ -182,7 +186,7 @@ public abstract class AbstractConnectorEditorSection<
         exportableExpression = Recipient.OWNER.getPrefix();
       }
       model.setExportableExpressionPretty(
-          new ExpressionFormatter(userService).convertToInfix(exportableExpression));
+          new ExpressionFormatter(entityResolver).convertToInfix(exportableExpression));
       exportableSelector.setExpression(context, exportableExpression);
     }
 
@@ -194,7 +198,7 @@ public abstract class AbstractConnectorEditorSection<
         viewableExpression = Recipient.OWNER.getPrefix();
       }
       model.setViewableExpressionPretty(
-          new ExpressionFormatter(userService).convertToInfix(viewableExpression));
+          new ExpressionFormatter(entityResolver).convertToInfix(viewableExpression));
       viewableSelector.setExpression(context, viewableExpression);
     }
     if (!DebugSettings.isAutoTestMode()) {

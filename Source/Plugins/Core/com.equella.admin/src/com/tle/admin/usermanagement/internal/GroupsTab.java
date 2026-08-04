@@ -27,19 +27,21 @@ import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.SearchAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.service.AdminTLEGroupService;
+import com.tle.admin.service.BasicGroupDetails;
 import com.tle.admin.usermanagement.internal.GroupDetailsPanel.MyGlassSwingWorker;
 import com.tle.beans.user.GroupTreeNode;
-import com.tle.beans.user.TLEGroup;
 import com.tle.client.gui.popup.TreePopupListener;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Enumeration;
+import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -51,11 +53,22 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * The GroupsTab class displays the groups in a tree format on the left side of the screen. The
+ * right side of the screen displays the details of the selected group.
+ *
+ * @see GroupDetailsPanel
+ */
 public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private final RemoteTLEGroupService groupService;
+  private final Logger LOGGER = LoggerFactory.getLogger(GroupsTab.class);
+
+  private final AdminTLEGroupService groupService;
 
   private GroupDetailsPanel details;
 
@@ -64,7 +77,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
   private DefaultTreeModel model;
 
   public GroupsTab(ClientService services) {
-    groupService = services.getService(RemoteTLEGroupService.class);
+    groupService = services.getService(AdminTLEGroupService.class);
 
     setupGui(services);
   }
@@ -131,36 +144,32 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
   @Override
   public void valueChanged(final TreeSelectionEvent e) {
     if (e.getSource() == tree) {
-      GlassSwingWorker<TLEGroup> worker =
-          new GlassSwingWorker<TLEGroup>() {
+      GlassSwingWorker<BasicGroupDetails> worker =
+          new GlassSwingWorker<>() {
             @Override
-            public TLEGroup construct() {
+            public BasicGroupDetails construct() {
               GroupTreeNode node = getSelectedGroupNode();
               if (node == null) {
                 return null;
               } else {
-                return groupService.get(node.getId());
+                return Optional.ofNullable(node.getId())
+                    .flatMap(groupService::get)
+                    .orElseThrow(
+                        () -> new RuntimeException("Failed to load group for node: " + node));
               }
             }
 
             @Override
             public void finished() {
-              final TLEGroup g = get();
+              final BasicGroupDetails g = get();
 
-              details.loadGroup(
-                  g,
-                  new TreeUpdateName() {
-                    @Override
-                    public void update(String name) {
-                      updateTreeName(e.getOldLeadSelectionPath(), name);
-                    }
-                  });
+              details.loadGroup(g, name -> updateTreeName(e.getOldLeadSelectionPath(), name));
               updateGui();
             }
 
             @Override
             public void exception() {
-              getException().printStackTrace();
+              LOGGER.error("Error loading group", getException());
             }
           };
       worker.setComponent(this);
@@ -179,7 +188,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
   private final TLEAction removeAction =
       new RemoveAction() {
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -220,31 +229,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
           }
 
           if (performDelete) {
-            GlassSwingWorker<?> worker =
-                new GlassSwingWorker<Object>() {
-                  @Override
-                  public Object construct() {
-                    groupService.delete(getSelectedGroupNode().getId(), deleteChildren);
-                    return null;
-                  }
-
-                  @Override
-                  public void finished() {
-                    details.clearChanges();
-                    details.loadGroup(null);
-                    doSearch();
-                  }
-
-                  @Override
-                  public void exception() {
-                    Driver.displayInformation(
-                        getComponent(),
-                        CurrentLocale.get(
-                            "com.tle.admin.usermanagement.internal.groupstabs.error"));
-                    getException().printStackTrace();
-                  }
-                };
-            worker.setComponent(GroupsTab.this);
+            GlassSwingWorker<?> worker = buildDeleteGroupWorker(deleteChildren);
             worker.start();
           }
         }
@@ -253,11 +238,47 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
         public void update() {
           setEnabled(tree.getSelectionCount() > 0);
         }
+
+        private GlassSwingWorker<Void> buildDeleteGroupWorker(boolean deleteChildren) {
+          GlassSwingWorker<Void> worker =
+              new GlassSwingWorker<>() {
+                @Override
+                public Void construct() {
+                  Optional.ofNullable(getSelectedGroupNode())
+                      .flatMap(
+                          node -> Optional.ofNullable(node.getId()).filter(Strings::isNotBlank))
+                      .ifPresentOrElse(
+                          id -> groupService.delete(id, deleteChildren),
+                          () -> {
+                            throw new RuntimeException("No group selected");
+                          });
+
+                  return null;
+                }
+
+                @Override
+                public void finished() {
+                  details.clearChanges();
+                  details.clearGroupDetails();
+                  doSearch();
+                }
+
+                @Override
+                public void exception() {
+                  LOGGER.error("Error deleting group", getException());
+                  Driver.displayInformation(
+                      getComponent(),
+                      CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.error"));
+                }
+              };
+          worker.setComponent(GroupsTab.this);
+          return worker;
+        }
       };
 
   private final TLEAction addAction =
       new AddAction() {
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -274,7 +295,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
             if (prompt == null) {
               return;
-            } else if (prompt.trim().length() == 0) {
+            } else if (prompt.trim().isEmpty()) {
               JOptionPane.showMessageDialog(
                   GroupsTab.this,
                   CurrentLocale.get("com.tle.admin.usermanagement.internal.groupstabs.notempty"));
@@ -288,7 +309,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
                 @Override
                 public GroupTreeNode construct() {
                   GroupTreeNode result = null;
-                  if (groupService.getByName(newGroupName) == null) {
+                  if (groupService.getByName(newGroupName).isEmpty()) {
                     result = new GroupTreeNode();
                     result.setName(newGroupName);
 
@@ -323,11 +344,11 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
                 @Override
                 public void exception() {
+                  LOGGER.error("Error adding group", getException());
                   Driver.displayInformation(
                       getComponent(),
                       CurrentLocale.get(
                           "com.tle.admin.usermanagement.internal.groupstabs.errorcreating"));
-                  getException().printStackTrace();
                 }
               };
           worker.setComponent(GroupsTab.this);
@@ -337,7 +358,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
   private final TLEAction saveAction =
       new SaveAction() {
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -369,10 +390,6 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
         }
       };
 
-  interface TreeUpdateName {
-    void update(String name);
-  }
-
   void updateTreeName(TreePath selectionPath, String name) {
     if (selectionPath != null) {
       GroupTreeNode node = (GroupTreeNode) selectionPath.getLastPathComponent();
@@ -384,7 +401,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
   private final TLEAction searchAction =
       new SearchAction() {
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -394,7 +411,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
   private void doSearch() {
     GlassSwingWorker<GroupTreeNode> w =
-        new GlassSwingWorker<GroupTreeNode>() {
+        new GlassSwingWorker<>() {
           @Override
           public GroupTreeNode construct() {
             GroupTreeNode results = groupService.searchTree(query.getText());
@@ -424,11 +441,11 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
 
           @Override
           public void exception() {
+            LOGGER.error("Error searching groups", getException());
             JOptionPane.showMessageDialog(
                 getComponent(),
                 CurrentLocale.get(
                     "com.tle.admin.usermanagement.internal.groupstabs.errorsearching"));
-            getException().printStackTrace();
           }
         };
     w.setComponent(this);

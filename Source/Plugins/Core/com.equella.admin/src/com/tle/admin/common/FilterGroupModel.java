@@ -19,10 +19,10 @@
 package com.tle.admin.common;
 
 import com.dytech.gui.filter.FilterModel;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.NameValue;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.util.UserBeanUtils;
-import com.tle.core.remoting.RemoteUserService;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -31,16 +31,16 @@ import org.apache.commons.logging.LogFactory;
 public class FilterGroupModel extends FilterModel<NameValue> {
   private static final Log LOGGER = LogFactory.getLog(FilterGroupModel.class);
 
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
-  public FilterGroupModel(RemoteUserService userService) {
-    this.userService = userService;
+  public FilterGroupModel(AdminUserDirectoryService userDirectoryService) {
+    this.userDirectoryService = userDirectoryService;
   }
 
   @Override
   public List<NameValue> search(String pattern) {
     try {
-      return removeExclusions(pairUp(userService.searchGroups(pattern)));
+      return removeExclusions(pairUp(userDirectoryService.searchGroups(pattern)));
     } catch (Exception ex) {
       LOGGER.warn("Error searching groups matching " + pattern, ex);
       return new ArrayList<NameValue>(0);

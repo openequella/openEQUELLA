@@ -19,7 +19,6 @@
 package com.tle.core.filesystem.staging.service.impl;
 
 import com.dytech.common.io.FileUtils;
-import com.dytech.common.io.FileUtils.GrepFunctor;
 import com.tle.beans.Staging;
 import com.tle.beans.item.Item;
 import com.tle.common.beans.exception.NotFoundException;
@@ -35,7 +34,6 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -58,6 +56,8 @@ public class StagingServiceImpl implements StagingService {
   @Override
   @Transactional
   public StagingFile createStagingArea() {
+    LOGGER.debug("Creating staging area");
+
     Staging s = new Staging();
     s.setStagingID(UUID.randomUUID().toString());
     s.setUserSession(CurrentUser.getSessionID());
@@ -66,6 +66,8 @@ public class StagingServiceImpl implements StagingService {
 
     StagingFile file = new StagingFile(s.getStagingID());
     fileSystemService.mkdir(file, "");
+
+    LOGGER.debug("Created new staging area [{}] - {}", s.getStagingID(), file.getAbsolutePath());
     return file;
   }
 
@@ -75,13 +77,14 @@ public class StagingServiceImpl implements StagingService {
     Staging s = stagingDao.findById(staging.getUuid());
     if (s == null) {
       LOGGER.error("Staging area does not exist");
-    } else {
-      LOGGER.debug("Deleting Staging entry in DB [" + s.getStagingID() + "]");
-      stagingDao.delete(s);
+      return;
     }
 
+    LOGGER.debug("Deleting Staging entry in DB [{}]", s.getStagingID());
+    stagingDao.delete(s);
+
     if (removeFiles) {
-      LOGGER.debug("Removing Staging area in the filestore [" + s.getStagingID() + "]");
+      LOGGER.debug("Removing Staging area in the filestore [{}]", s.getStagingID());
       fileSystemService.removeFile(staging);
     }
   }
@@ -105,17 +108,14 @@ public class StagingServiceImpl implements StagingService {
         new AllStagingFile(),
         "",
         "*/*",
-        new GrepFunctor() {
-          @Override
-          public void matched(Path file, String relFilepath) {
-            String uuid = file.getFileName().toString();
-            if (!stagingExists(uuid)) {
-              try {
-                LOGGER.debug("Deleting staging area [" + uuid + "]");
-                FileUtils.delete(file, null, true);
-              } catch (IOException ex) {
-                LOGGER.warn("Could not delete staging area [" + uuid + "]", ex);
-              }
+        (file, relFilepath) -> {
+          String uuid = file.getFileName().toString();
+          if (!stagingExists(uuid)) {
+            try {
+              LOGGER.debug("Deleting staging area [{}]", uuid);
+              FileUtils.delete(file, null, true);
+            } catch (IOException ex) {
+              LOGGER.warn("Could not delete staging area [{}]", uuid, ex);
             }
           }
         });

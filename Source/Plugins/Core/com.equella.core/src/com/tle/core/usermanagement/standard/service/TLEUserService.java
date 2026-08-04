@@ -19,11 +19,57 @@
 package com.tle.core.usermanagement.standard.service;
 
 import com.tle.beans.user.TLEUser;
-import com.tle.core.remoting.RemoteTLEUserService;
 import java.util.Collection;
 import java.util.List;
 
-public interface TLEUserService extends RemoteTLEUserService {
+public interface TLEUserService {
+  String add(TLEUser newUser);
+
+  String add(TLEUser newUser, boolean passwordNotHashed);
+
+  String add(TLEUser newUser, List<String> groups);
+
+  String add(String username, List<String> groups);
+
+  TLEUser get(String id);
+
+  TLEUser getByUsername(String username);
+
+  /**
+   * Given an existing user's TLEUser entity which has been modified, update the user in the
+   * database.
+   *
+   * @param user The user to update
+   * @param passwordNotHashed Whether the password is already hashed - if not, validate it meets
+   *     password requirements and hash it before updating the user.
+   * @return The UUID of the updated user
+   */
+  String edit(TLEUser user, boolean passwordNotHashed);
+
+  void delete(String uuid);
+
+  List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
+
+  List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive, Integer limit);
+
+  List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit, Integer offset);
+
+  /**
+   * Count the number of users in the system.
+   *
+   * @return The number of users in the system
+   */
+  int countUsers();
+
+  /**
+   * Count the number of users in the system that match the given query.
+   *
+   * @see #searchUsers(String, String, boolean)
+   * @see #countUsers()
+   */
+  int countUsers(String query, String parentGroupID, boolean recursive);
+
   boolean checkPasswordMatch(TLEUser user, String password);
 
   void validatePassword(String password, boolean passwordNotHashed);

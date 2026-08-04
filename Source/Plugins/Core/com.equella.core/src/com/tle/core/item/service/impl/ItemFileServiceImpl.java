@@ -38,7 +38,6 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.event.ItemMovedCollectionEvent;
 import com.tle.core.item.event.listener.ItemMovedCollectionEventListener;
 import com.tle.core.item.service.ItemFileService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.LoggingService;
 import java.util.concurrent.Callable;
@@ -118,7 +117,7 @@ public class ItemFileServiceImpl implements ItemFileService, ItemMovedCollection
 
   @Nullable
   protected String getBucketFolder(ItemDefinition collection) {
-    if (collection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false)) {
+    if (collection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false)) {
       return collection.getUuid();
     }
     return null;
@@ -127,7 +126,7 @@ public class ItemFileServiceImpl implements ItemFileService, ItemMovedCollection
   @Nullable
   protected String getFilestoreId(ItemDefinition collection) {
     final String filestoreId =
-        collection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+        collection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
     if (filestoreId != null && !filestoreId.equals(RemoteFileSystemService.DEFAULT_FILESTORE_ID)) {
       return filestoreId;
     }

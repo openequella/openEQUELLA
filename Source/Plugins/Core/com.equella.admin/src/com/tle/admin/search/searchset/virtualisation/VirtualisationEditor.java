@@ -24,11 +24,12 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.DynamicChoicePanel;
 import com.tle.admin.gui.common.RadioButtonChoiceList;
 import com.tle.admin.helper.GroupBox;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.search.searchset.SearchSet;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,18 +42,10 @@ import org.java.plugin.registry.Extension;
 
 @SuppressWarnings("nls")
 public class VirtualisationEditor extends JPanel implements Changeable {
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("searchset.virtualisation");
 
   protected String s(String key) {
-    return CurrentLocale.get(sKey(key));
-  }
-
-  protected String sKey(String key) {
-    return getKey("searchset.virtualisation." + key);
+    return strings.text(key);
   }
 
   private final ChangeDetector changeDetector;
@@ -69,8 +62,7 @@ public class VirtualisationEditor extends JPanel implements Changeable {
 
     StringBuilder instructions = new StringBuilder();
     instructions.append("<html>");
-    instructions.append(
-        CurrentLocale.get(sKey("instructions"), CurrentLocale.get(entityNameSingularKey)));
+    instructions.append(strings.text("instructions", CurrentLocale.get(entityNameSingularKey)));
     if (renamingHelpKey != null) {
       instructions.append("<br><br>");
       instructions.append(CurrentLocale.get(renamingHelpKey));

@@ -40,8 +40,8 @@ lazy val adminTool = (project in file("Source/Server/adminTool"))
   .dependsOn(
     platformSwing,
     platformEquella,
-    LocalProject("com_tle_webstart_admin"),
-    LocalProject("adminConsoleJar")
+    LocalProject("adminConsoleJar"),
+    LocalProject("com_equella_admin")
   )
 
 lazy val conversion = (project in file("Source/Server/conversion"))

@@ -27,6 +27,17 @@ public class ItemStatusTarget implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private final ItemStatus itemStatus;
+
+  /**
+   * A contextual back-reference to the {@link ItemDefinition} (Collection) that this target belongs
+   * to. This is always the entity currently being edited — it is <em>not</em> an independent
+   * per-entry value.
+   *
+   * <p><strong>Important:</strong> This field is compared in {@link #equals(Object)}, so map
+   * lookups (e.g. in {@code AbstractEntityServiceImpl.stopEdit()}) will fail if the reference does
+   * not match the expected entity. Always supply the correct {@code ItemDefinition} when
+   * constructing instances for use as map keys.
+   */
   private ItemDefinition itemDefinition;
 
   public ItemStatusTarget(ItemStatus itemStatus, ItemDefinition itemDefinition) {

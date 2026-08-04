@@ -26,12 +26,12 @@ import static com.tle.common.security.SecurityConstants.getRecipient;
 
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.VerticalFlowLayout;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.accesscontrolbuilder.BasicEditor.Mode;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.MultipleFinderDialog;
 import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -66,12 +66,15 @@ public class BasicEditorPanel extends JComponent implements ItemListener, Action
   private JList list;
   private JScrollPane listScroller;
   private JButton select;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   public BasicEditorPanel(
-      BasicEditor editor, RemoteUserService userService, Node privNode, PrivilegeList privList) {
+      BasicEditor editor,
+      AdminUserDirectoryService userDirectoryService,
+      Node privNode,
+      PrivilegeList privList) {
     this.editor = editor;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
     this.privNode = privNode;
     this.privList = privList;
 
@@ -87,7 +90,7 @@ public class BasicEditorPanel extends JComponent implements ItemListener, Action
     listModel = new LimitedSetListModel();
     list = new JList(listModel);
     list.setCellRenderer(
-        new ExpressionListCellRenderer(userService) {
+        new ExpressionListCellRenderer(userDirectoryService) {
           @Override
           public String getExpression(Object value) {
             return ((PrivilegeListEntry) value).getWho();
@@ -199,7 +202,7 @@ public class BasicEditorPanel extends JComponent implements ItemListener, Action
     if (e.getSource() == select) {
       List<String> expressions = listModel.getExpressions();
 
-      MultipleFinderDialog builder = new MultipleFinderDialog(userService);
+      MultipleFinderDialog builder = new MultipleFinderDialog(userDirectoryService);
       expressions = builder.editExpressions(this, expressions);
 
       if (expressions != null) {

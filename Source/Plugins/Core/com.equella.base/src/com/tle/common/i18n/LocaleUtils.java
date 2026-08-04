@@ -18,6 +18,7 @@
 
 package com.tle.common.i18n;
 
+import com.google.common.base.Strings;
 import com.tle.common.Check;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
 
 public final class LocaleUtils {
   private static final Pattern LOCALE_REGEX =
-      Pattern.compile("^([a-z][a-z])?(?:_([A-Z][A-Z])?(?:_(\\w+))?)?$"); // $NON-NLS-1$
+      Pattern.compile("^([a-z][a-z])?(?:_([A-Z][A-Z])?(?:_(\\w+))?)?$");
 
   @SuppressWarnings("nls")
   public static String toHtmlLang(Locale locale) {
@@ -77,12 +78,12 @@ public final class LocaleUtils {
       Matcher m = LOCALE_REGEX.matcher(localeString.trim());
       if (m.matches()) {
         return new Locale(
-            Check.nullToEmpty(m.group(1)),
-            Check.nullToEmpty(m.group(2)),
-            Check.nullToEmpty(m.group(3)));
+            Strings.nullToEmpty(m.group(1)),
+            Strings.nullToEmpty(m.group(2)),
+            Strings.nullToEmpty(m.group(3)));
       }
     }
-    throw new RuntimeException("Error parsing locale: " + localeString);
+    throw new RuntimeException("Error parsing locale: '" + localeString + "'");
   }
 
   /** Determines the priority for a LanaguageString based on a locale. */

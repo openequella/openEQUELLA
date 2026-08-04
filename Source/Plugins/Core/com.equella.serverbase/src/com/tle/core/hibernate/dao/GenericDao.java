@@ -20,6 +20,7 @@ package com.tle.core.hibernate.dao;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.core.dao.helpers.Pagination;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
@@ -58,6 +59,12 @@ public interface GenericDao<T, ID extends Serializable> {
   @Nullable
   T findById(ID id);
 
+  /**
+   * Find an entity by criteria.
+   *
+   * @param criterion the criteria to filter by
+   * @return the entity matching the criteria, or null if no entity matches
+   */
   @Nullable
   T findByCriteria(Criterion... criterion);
 
@@ -75,11 +82,28 @@ public interface GenericDao<T, ID extends Serializable> {
   List<T> findAllByCriteria(@Nullable Order order, int maxResults, Criterion... criterion);
 
   /**
+   * Find all entities by criteria with optional order, first result and max results.
+   *
    * @param order can be null if no order is required
    * @param maxResults can be -1 to retrieve all results.
+   * @param firstResult can be -1 to have no offset.
+   * @param criterion the criteria to filter by
+   * @return the list of entities matching the criteria
+   * @deprecated Use {@link #findAllByCriteria(Order, Pagination, Criterion...)} instead.
    */
+  @Deprecated(forRemoval = false)
   List<T> findAllByCriteria(
       @Nullable Order order, int firstResult, int maxResults, Criterion... criterion);
+
+  /**
+   * Find all entities by criteria with optional order and pagination.
+   *
+   * @param order can be null if no order is required
+   * @param pagination the pagination to use
+   * @param criterion the criteria to filter by
+   * @return the list of entities matching the criteria
+   */
+  List<T> findAllByCriteria(@Nullable Order order, Pagination pagination, Criterion... criterion);
 
   void flush();
 

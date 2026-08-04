@@ -24,11 +24,11 @@ import com.dytech.gui.workers.AdvancedSwingWorker;
 import com.tle.admin.AdminTool;
 import com.tle.admin.Driver;
 import com.tle.admin.security.tree.OverrideRenderer;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.admin.usermanagement.UMWConfig;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
@@ -365,13 +365,16 @@ public abstract class AdminToolSelect extends AdminTool implements ActionListene
     final UMWConfig config = wrapperModel.get(row);
 
     ClientService clientService = driver.getClientService();
-    final RemoteUserService userService = clientService.getService(RemoteUserService.class);
-    new AdvancedSwingWorker<Object>() {
+
+    final AdminUserDirectoryConfigService userDirectoryConfigService =
+        clientService.getService(AdminUserDirectoryConfigService.class);
+
+    new AdvancedSwingWorker<>() {
       @Override
-      public Object construct() throws Exception {
-        UserManagementSettings xml = userService.getPluginConfig(config.getSettingsClass());
-        xml.setEnabled(config.isEnabled());
-        userService.setPluginConfig(xml);
+      public Object construct() {
+        UserManagementSettings settings = userDirectoryConfigService.loadSettingsOrThrow(config);
+        settings.setEnabled(config.isEnabled());
+        userDirectoryConfigService.setPluginConfig(config.getSettingsClass(), settings);
         return null;
       }
 

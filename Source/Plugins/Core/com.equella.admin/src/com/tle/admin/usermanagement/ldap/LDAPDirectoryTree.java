@@ -21,9 +21,10 @@ package com.tle.admin.usermanagement.ldap;
 import com.dytech.common.text.NumberStringComparator;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteLDAPService;
 import java.awt.Component;
 import java.util.Collection;
@@ -55,11 +56,7 @@ public class LDAPDirectoryTree extends JTree implements TreeExpansionListener {
   private RemoteLDAPService ldapService;
   protected LDAPSettings settings;
 
-  private static String KEY_PFX = AbstractPluginService.getMyPluginId(ManageDNsDialog.class) + ".";
-
-  private static String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("ldap.general");
 
   public LDAPDirectoryTree() {
     super();
@@ -84,7 +81,7 @@ public class LDAPDirectoryTree extends JTree implements TreeExpansionListener {
       }
       treeModel.reload();
     } catch (Exception e) {
-      Driver.displayError(this, getKey("ldap.general.error"), getKey("ldap.general.check"), e);
+      Driver.displayError(this, strings.key("error"), strings.key("check"), e);
     }
   }
 
@@ -124,10 +121,7 @@ public class LDAPDirectoryTree extends JTree implements TreeExpansionListener {
             @Override
             public void exception() {
               Driver.displayError(
-                  getComponent(),
-                  getKey("ldap.general.error"),
-                  getKey("ldap.general.check"),
-                  getException());
+                  getComponent(), strings.key("error"), strings.key("check"), getException());
             }
           };
 

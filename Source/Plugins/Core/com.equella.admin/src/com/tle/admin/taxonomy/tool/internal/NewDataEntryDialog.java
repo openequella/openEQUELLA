@@ -22,10 +22,10 @@ import com.dytech.gui.ComponentHelper;
 import com.tle.admin.gui.common.actions.AddAction;
 import com.tle.admin.gui.common.actions.CancelAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.Pair;
 import com.tle.common.applet.gui.AppletGuiUtils.BetterGroup;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -45,15 +45,6 @@ import net.miginfocom.swing.MigLayout;
 public class NewDataEntryDialog extends JPanel {
   private JDialog dialog;
   private DataEntry entry;
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public NewDataEntryDialog(
       final Map<String, Pair<String, String>> predefinedTermDataKeys,
@@ -147,8 +138,10 @@ public class NewDataEntryDialog extends JPanel {
         });
   }
 
-  private String s(String keyPart) {
-    return getString("internal.tab.termeditor.newdata." + keyPart);
+  private static final StringLookup strings = Lookup.withPrefix("internal.tab.termeditor.newdata");
+
+  private String s(String key) {
+    return strings.text(key);
   }
 
   public DataEntry showDialog(Component parent) {

@@ -20,6 +20,7 @@ package com.tle.admin.common;
 
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
@@ -27,12 +28,12 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.usermanagement.util.UserBeanUtils;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Dialog;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -48,15 +49,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class UserGroupDialog extends JDialog implements ActionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private JButton okButton;
   private UserGroupPanel mainPanel;
   private boolean okPressed = false;
 
-  public UserGroupDialog(Dialog parent, RemoteUserService userService) {
+  public UserGroupDialog(Dialog parent, AdminUserDirectoryService userDirectoryService) {
     super(parent);
-    createGui(userService);
+    createGui(userDirectoryService);
   }
 
   @Override
@@ -94,8 +95,7 @@ public class UserGroupDialog extends JDialog implements ActionListener {
     dispose();
   }
 
-  @SuppressWarnings("nls")
-  private void createGui(RemoteUserService userService) {
+  private void createGui(AdminUserDirectoryService userDirectoryService) {
     setTitle(CurrentLocale.get("com.dytech.edge.admin.helper.usergroupdialog.title"));
 
     okButton = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.ok"));
@@ -104,7 +104,7 @@ public class UserGroupDialog extends JDialog implements ActionListener {
     okButton.addActionListener(this);
     cancelButton.addActionListener(this);
 
-    mainPanel = new UserGroupPanel(userService);
+    mainPanel = new UserGroupPanel(userDirectoryService);
 
     int height1 = cancelButton.getPreferredSize().height;
     int width1 = cancelButton.getPreferredSize().width;
@@ -120,11 +120,11 @@ public class UserGroupDialog extends JDialog implements ActionListener {
   }
 
   private static class UserGroupPanel extends JPanel implements ActionListener {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private static final Log LOGGER = LogFactory.getLog(UserGroupPanel.class);
 
-    private final RemoteUserService userService;
+    private final AdminUserDirectoryService userDirectoryService;
 
     private JTextField userQuery;
     private JTextField groupQuery;
@@ -138,8 +138,8 @@ public class UserGroupDialog extends JDialog implements ActionListener {
 
     JTabbedPane tabs;
 
-    public UserGroupPanel(RemoteUserService userService) {
-      this.userService = userService;
+    public UserGroupPanel(AdminUserDirectoryService userDirectoryService) {
+      this.userDirectoryService = userDirectoryService;
       createGui();
     }
 
@@ -154,7 +154,7 @@ public class UserGroupDialog extends JDialog implements ActionListener {
     private void doUserSearch(String query) {
       userModel.removeAllElements();
       try {
-        List<UserBean> results = userService.searchUsers(query);
+        List<UserBean> results = userDirectoryService.searchUsers(query);
         Collections.sort(results, Format.USER_BEAN_COMPARATOR);
         for (UserBean user : results) {
           userModel.addElement(UserBeanUtils.formatUser(user));
@@ -168,7 +168,7 @@ public class UserGroupDialog extends JDialog implements ActionListener {
     private void doGroupSearch(String query) {
       groupModel.removeAllElements();
       try {
-        List<GroupBean> results = userService.searchGroups(query);
+        List<GroupBean> results = userDirectoryService.searchGroups(query);
         Collections.sort(results, Format.GROUP_BEAN_COMPARATOR);
         for (GroupBean group : results) {
           groupModel.addElement(UserBeanUtils.formatGroup(group));

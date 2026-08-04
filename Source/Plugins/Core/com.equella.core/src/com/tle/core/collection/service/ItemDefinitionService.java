@@ -23,12 +23,16 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface ItemDefinitionService
-    extends AbstractEntityService<EntityEditingBean, ItemDefinition>, RemoteItemDefinitionService {
+    extends AbstractEntityService<EntityEditingBean, ItemDefinition> {
+  String ENTITY_TYPE = "COLLECTION";
+  String ATTRIBUTE_KEY_FILESTORE = "filestore.location";
+  String ATTRIBUTE_KEY_BUCKETS = "filestore.collectionbucket";
+
   List<ItemDefinition> enumerateForType(String type);
 
   List<ItemDefinition> enumerateForWorkflow(long workflowID);
@@ -56,4 +60,22 @@ public interface ItemDefinitionService
   ItemDefinition getForItemCreate(String uuid);
 
   ItemDefinition getByItemIdUnsecure(ItemKey itemId);
+
+  /**
+   * Get the wizard categories in use across all collections in the current institution.
+   *
+   * <p>Categories are free text set per collection, so the result is the distinct set of whatever
+   * has been entered; collections with no category are omitted.
+   *
+   * @return the wizard categories in use, sorted
+   */
+  Set<String> enumerateCategories();
+
+  /**
+   * Get the ID of the metadata schema used by a collection.
+   *
+   * @param value the UUID of the collection
+   * @return the ID of the collection's metadata schema
+   */
+  long getSchemaIdForCollectionUuid(String value);
 }

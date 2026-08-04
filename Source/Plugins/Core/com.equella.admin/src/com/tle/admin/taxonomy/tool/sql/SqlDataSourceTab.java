@@ -24,13 +24,13 @@ import static com.tle.common.taxonomy.datasource.sql.SqlTaxonomyDataSourceConsta
 import static com.tle.common.taxonomy.datasource.sql.SqlTaxonomyDataSourceConstants.SQL_USERNAME;
 
 import com.dytech.gui.Changeable;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.remotesqlquerying.QueryState;
 import com.tle.admin.remotesqlquerying.SqlConnectionAndQueryPanel;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.datasource.sql.SqlTaxonomyDataSourceConstants.Query;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,19 +38,11 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("nls")
 public class SqlDataSourceTab extends JPanel implements Changeable {
+  private static final StringLookup strings = Lookup.withPrefix("sql.tab");
+
   private final SqlConnectionAndQueryPanel scaqp;
 
   private List<QueryState> queries;
-
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public SqlDataSourceTab(ClientService clientService, boolean readonly) {
     super(new GridLayout(1, 1));
@@ -60,9 +52,7 @@ public class SqlDataSourceTab extends JPanel implements Changeable {
       String key = q.toString();
       queries.add(
           new QueryState(
-              key,
-              getString("sql.tab.queryname." + key),
-              "<html>" + getString("sql.tab.querydesc." + key)));
+              key, strings.text("queryname." + key), "<html>" + strings.text("querydesc." + key)));
     }
 
     scaqp = new SqlConnectionAndQueryPanel(clientService);

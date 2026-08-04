@@ -24,9 +24,10 @@ import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.LazyTreeNode;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 
@@ -41,15 +42,7 @@ public abstract class AbstractTreeNodeEditor extends JPanel {
 
   protected abstract void validation() throws EditorException;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   @SuppressWarnings("nls")
   public void doSave() {

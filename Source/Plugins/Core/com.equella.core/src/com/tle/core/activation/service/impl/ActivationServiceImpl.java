@@ -423,10 +423,7 @@ public class ActivationServiceImpl
     if (courseSettings.isPortionRestrictionsEnabled()) {
       final List<ActivateRequest> requests =
           requestDao.getAllActiveAndPendingRequests(activationType, attachmentUuid);
-      return requests.stream()
-          .filter(r -> r.getCourse().getCode().equals(courseCode))
-          .findFirst()
-          .isPresent();
+      return requests.stream().anyMatch(r -> r.getCourse().getCode().equals(courseCode));
     }
     return true;
   }

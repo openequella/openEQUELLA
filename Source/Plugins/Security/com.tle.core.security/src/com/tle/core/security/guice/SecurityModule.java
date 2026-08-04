@@ -20,9 +20,12 @@ package com.tle.core.security.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.AbstractMatcher;
+import com.google.inject.matcher.Matchers;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.security.impl.MethodSecurityInterceptor;
+import com.tle.core.security.impl.RequiresLogin;
+import com.tle.core.security.impl.RequiresLoginInterceptor;
 import com.tle.core.security.impl.SecurityAttributeSource;
 import java.lang.reflect.Method;
 
@@ -31,6 +34,11 @@ public class SecurityModule extends AbstractModule {
   @Override
   protected void configure() {
     PluginService pluginService = AbstractPluginService.get();
+    bindMethodSecurityInterceptor(pluginService);
+    bindRequiresLoginInterceptor(pluginService);
+  }
+
+  private void bindMethodSecurityInterceptor(PluginService pluginService) {
     MethodSecurityInterceptor interceptor =
         pluginService
             .getBeanLocator(pluginService.getPluginIdForObject(getClass()))
@@ -49,6 +57,23 @@ public class SecurityModule extends AbstractModule {
           }
         },
         interceptor);
+  }
+
+  private void bindRequiresLoginInterceptor(PluginService pluginService) {
+    RequiresLoginInterceptor requiresLoginInterceptor =
+        pluginService
+            .getBeanLocator(pluginService.getPluginIdForObject(getClass()))
+            .getBeanForType(RequiresLoginInterceptor.class);
+
+    // Bind the interceptor to any method annotated with @RequiresLogin, regardless of the class
+    // annotations.
+    bindInterceptor(
+        Matchers.any(), Matchers.annotatedWith(RequiresLogin.class), requiresLoginInterceptor);
+
+    // Bind the interceptor to methods in any class annotated with @RequiresLogin, regardless of the
+    // method annotations.
+    bindInterceptor(
+        Matchers.annotatedWith(RequiresLogin.class), Matchers.any(), requiresLoginInterceptor);
   }
 
   public static class TargetClassMatcher extends AbstractMatcher<Class<?>> {

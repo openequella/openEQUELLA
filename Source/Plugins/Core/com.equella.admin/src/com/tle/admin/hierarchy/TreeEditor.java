@@ -27,6 +27,7 @@ import com.tle.admin.common.gui.actions.ExportAction;
 import com.tle.admin.common.gui.actions.ImportAction;
 import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.common.Check;
 import com.tle.common.LazyTreeNode.ChildrenState;
@@ -35,6 +36,7 @@ import com.tle.common.hierarchy.RemoteHierarchyService;
 import com.tle.common.hierarchy.RemoteHierarchyService.ExportStatus;
 import com.tle.common.hierarchy.RemoteHierarchyService.ImportStatus;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
@@ -53,6 +55,8 @@ import javax.swing.SwingUtilities;
  */
 @SuppressWarnings("nls")
 public class TreeEditor extends AbstractTreeEditorTree<HierarchyTreeNode> {
+  private static final StringLookup treeStrings = Lookup.withPrefix("treeeditor");
+
   private static final Object INHERIT_CONSTRAINTS = new Object();
 
   private final RemoteHierarchyService hierarchyService;
@@ -97,8 +101,8 @@ public class TreeEditor extends AbstractTreeEditorTree<HierarchyTreeNode> {
     if (!parent.isRoot()
         && JOptionPane.showConfirmDialog(
                 this,
-                getString("treeeditor.constraints"),
-                getString("treeeditor.inheritconstraints"),
+                treeStrings.text("constraints"),
+                treeStrings.text("inheritconstraints"),
                 JOptionPane.YES_NO_OPTION)
             == JOptionPane.YES_OPTION) {
       params.put(INHERIT_CONSTRAINTS, INHERIT_CONSTRAINTS);
@@ -151,8 +155,8 @@ public class TreeEditor extends AbstractTreeEditorTree<HierarchyTreeNode> {
             final boolean exportSecurity =
                 JOptionPane.showConfirmDialog(
                         TreeEditor.this,
-                        getString("treeeditor.export"),
-                        getString("treeeditor.expsecurity"),
+                        treeStrings.text("export"),
+                        treeStrings.text("expsecurity"),
                         JOptionPane.YES_NO_OPTION)
                     == JOptionPane.YES_OPTION;
 
@@ -210,8 +214,8 @@ public class TreeEditor extends AbstractTreeEditorTree<HierarchyTreeNode> {
           boolean importSecurity = false;
           if (JOptionPane.showConfirmDialog(
                   TreeEditor.this,
-                  getString("treeeditor.import"),
-                  getString("treeeditor.impsecurity"),
+                  treeStrings.text("import"),
+                  treeStrings.text("impsecurity"),
                   JOptionPane.YES_NO_OPTION)
               == JOptionPane.YES_OPTION) {
             importSecurity = true;

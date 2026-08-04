@@ -23,11 +23,11 @@ import com.dytech.gui.ChangeDetector;
 import com.tle.admin.baseentity.EntityStagingFileViewer;
 import com.tle.admin.codeeditor.EquellaSyntaxTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.i18n.BundleCache;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,11 +56,12 @@ public class FreemarkerConfig extends AbstractTemplatingConfig {
     editor = new EquellaSyntaxTextArea(SyntaxConstants.SYNTAX_STYLE_HTML, 500, 2000);
     add(new RTextScrollPane(editor), "grow, push");
 
-    add(new JLabel(getString("summarysections.freemarker.label.script")));
+    add(new JLabel(strings.text("summarysections.freemarker.label.script")));
     script = new EquellaSyntaxTextArea(500, 2000);
     add(new RTextScrollPane(script), "grow, push");
 
-    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    final JButton showFiles =
+        new JButton(strings.text("summarydisplay.abstracttemplating.showfiles"));
     showFiles.addActionListener(
         new ActionListener() {
           @Override
@@ -68,7 +69,7 @@ public class FreemarkerConfig extends AbstractTemplatingConfig {
             EntityStagingFileViewer file =
                 new EntityStagingFileViewer(
                     state,
-                    clientService.getService(RemoteItemDefinitionService.class),
+                    clientService.getService(AdminCollectionDefinitionService.class),
                     "displaytemplate/");
             changeDetector.watch(file.getFileTreeModel());
 
@@ -114,6 +115,6 @@ public class FreemarkerConfig extends AbstractTemplatingConfig {
 
   @Override
   public String getEditorLabelKey() {
-    return getKey("summarysections.freemarker.label.markup");
+    return strings.key("summarysections.freemarker.label.markup");
   }
 }

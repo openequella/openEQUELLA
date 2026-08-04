@@ -21,13 +21,17 @@ package com.tle.admin.taxonomy.tool;
 import com.tle.admin.baseentity.AccessControlTab;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.tools.common.BaseEntityTool;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.Taxonomy;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaxonomyEditor extends BaseEntityEditor<Taxonomy> {
+  private static final StringLookup taxonomyStrings = Lookup.withPrefix("taxonomy");
+
   public TaxonomyEditor(BaseEntityTool<Taxonomy> tool, boolean readonly) {
     super(tool, readonly);
   }
@@ -47,16 +51,16 @@ public class TaxonomyEditor extends BaseEntityEditor<Taxonomy> {
 
   @Override
   protected String getEntityName() {
-    return getString("taxonomy.entityname"); // $NON-NLS-1$
+    return taxonomyStrings.text("entityname");
   }
 
   @Override
   protected String getWindowTitle() {
-    return getString("taxonomy.windowtitle"); // $NON-NLS-1$
+    return taxonomyStrings.text("windowtitle");
   }
 
   @Override
   public String getDocumentName() {
-    return getString("taxonomy.entityname"); // $NON-NLS-1$
+    return taxonomyStrings.text("entityname");
   }
 }

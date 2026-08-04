@@ -25,9 +25,9 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
 import com.tle.admin.gui.common.actions.CancelAction;
 import com.tle.admin.gui.common.actions.OkAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteLDAPService;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -42,6 +42,8 @@ import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("nls")
 public class ManageDNsDialog {
+  private static final StringLookup strings = Lookup.lookup;
+
   private JPanel all;
   private JShuffleEditList<String> baseList;
 
@@ -81,8 +83,8 @@ public class ManageDNsDialog {
                   public void exception() {
                     Driver.displayError(
                         getComponent(),
-                        getKey("ldap.general.error"),
-                        getKey("ldap.general.check"),
+                        strings.key("ldap.general.error"),
+                        strings.key("ldap.general.check"),
                         getException());
                   }
                 };
@@ -132,13 +134,9 @@ public class ManageDNsDialog {
     dialog.setVisible(true);
   }
 
-  private static String KEY_PFX = AbstractPluginService.getMyPluginId(ManageDNsDialog.class) + ".";
+  private static final StringLookup managednsStrings = Lookup.withPrefix("ldap.managedns");
 
-  private static String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
-  private static String s(String keypart, Object... values) {
-    return CurrentLocale.get(KEY_PFX + "ldap.managedns." + keypart, values);
+  private static String s(String key, Object... values) {
+    return managednsStrings.text(key, values);
   }
 }

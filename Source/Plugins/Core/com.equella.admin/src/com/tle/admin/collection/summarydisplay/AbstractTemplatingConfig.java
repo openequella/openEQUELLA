@@ -21,11 +21,11 @@ package com.tle.admin.collection.summarydisplay;
 import com.tle.admin.baseentity.EditorState;
 import com.tle.admin.baseentity.EntityStagingFileViewer;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,7 +59,8 @@ public abstract class AbstractTemplatingConfig extends AbstractOnlyTitleConfig {
     editor = new RSyntaxTextArea(500, 2000);
     add(new RTextScrollPane(editor), "grow, push");
 
-    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    final JButton showFiles =
+        new JButton(strings.text("summarydisplay.abstracttemplating.showfiles"));
     showFiles.addActionListener(
         new ActionListener() {
           @Override
@@ -67,7 +68,7 @@ public abstract class AbstractTemplatingConfig extends AbstractOnlyTitleConfig {
             EntityStagingFileViewer file =
                 new EntityStagingFileViewer(
                     state,
-                    clientService.getService(RemoteItemDefinitionService.class),
+                    clientService.getService(AdminCollectionDefinitionService.class),
                     "displaytemplate/");
             changeDetector.watch(file.getFileTreeModel());
 

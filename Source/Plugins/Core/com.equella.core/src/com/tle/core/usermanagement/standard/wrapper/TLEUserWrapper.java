@@ -29,8 +29,11 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.plugins.ump.AbstractUserDirectory;
+import com.tle.plugins.ump.ChainDirective;
+import com.tle.plugins.ump.ChainResult;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
@@ -98,8 +101,13 @@ public class TLEUserWrapper extends AbstractUserDirectory {
   }
 
   @Override
-  public Pair<ChainResult, Collection<UserBean>> searchUsers(String query) {
-    Collection<UserBean> users = new ArrayList<UserBean>();
+  public int countUsers(String query) {
+    return tleUserService.countUsers(query, null, false);
+  }
+
+  @Override
+  public Pair<ChainDirective, Collection<UserBean>> searchUsers(String query) {
+    Collection<UserBean> users = new ArrayList<>();
     for (TLEUser user : tleUserService.searchUsers(query, null, false)) {
       users.add(
           new DefaultUserBean(
@@ -109,6 +117,15 @@ public class TLEUserWrapper extends AbstractUserDirectory {
               user.getLastName(),
               user.getEmailAddress()));
     }
-    return new Pair<ChainResult, Collection<UserBean>>(ChainResult.CONTINUE, users);
+    return new Pair<>(ChainDirective.CONTINUE, users);
+  }
+
+  @Override
+  public ChainResult<UserBean> searchUsers(String query, int limit, int offset) {
+    List<UserBean> users =
+        tleUserService.searchUsers(query, null, false, limit, offset).stream()
+            .map(this::convert)
+            .toList();
+    return ChainResult.continueWith(users);
   }
 }

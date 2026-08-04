@@ -28,10 +28,10 @@ import com.tle.admin.controls.EntityShuffler;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.common.dynacollection.RemoteDynaCollectionService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.wizard.controls.htmleditmce.HtmlEditMceControl;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import com.tle.i18n.BundleCache;
 import java.awt.Rectangle;
@@ -78,7 +78,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
 
     title = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextField(BundleCache.getLanguages());
-    lazyLoad = new JCheckBox(getString("lazyload.label"));
+    lazyLoad = new JCheckBox(strings.text("lazyload.label"));
     mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
 
     final int height1 = title.getPreferredSize().height;
@@ -100,7 +100,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
     metadataPicker = WizardHelper.createMultiTargetChooser(this);
     addSection(WizardHelper.createMetaData(metadataPicker));
 
-    JLabel headingSelectorLabel = new JLabel(getString("htmlselector.label"));
+    JLabel headingSelectorLabel = new JLabel(strings.text("htmlselector.label"));
 
     JPanel selectionFeatures =
         new JPanel(new MigLayout("wrap 2, insets 10 15 20 5", "[][fill, grow]"));
@@ -108,7 +108,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
 
     restrictions.add(
         new EntityShuffler<HtmlEditMceControl>(
-            getKey("selectedcollections.label"), RemoteItemDefinitionService.class) {
+            strings.text("selectedcollections.label"), AdminCollectionDefinitionService.class) {
           @Override
           protected boolean isRestricted(HtmlEditMceControl control) {
             return control.isRestrictCollections();
@@ -131,7 +131,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
         });
     restrictions.add(
         new EntityShuffler<HtmlEditMceControl>(
-            getKey("selectedsearches.label"), RemotePowerSearchService.class) {
+            strings.text("selectedsearches.label"), RemotePowerSearchService.class) {
           @Override
           protected boolean isRestricted(HtmlEditMceControl control) {
             return control.isRestrictSearches();
@@ -154,7 +154,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
         });
     restrictions.add(
         new EntityShuffler<HtmlEditMceControl>(
-            getKey("selecteddynacolls.label"), RemoteDynaCollectionService.class) {
+            strings.text("selecteddynacolls.label"), RemoteDynaCollectionService.class) {
           @Override
           protected boolean isRestricted(HtmlEditMceControl control) {
             return control.isRestrictDynacolls();
@@ -176,8 +176,8 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
           }
         });
     restrictions.add(
-        new EntityShuffler<HtmlEditMceControl>(
-            getKey("selectedcontributables.label"), RemoteItemDefinitionService.class) {
+        new EntityShuffler<>(
+            strings.text("selectedcontributables.label"), AdminCollectionDefinitionService.class) {
           private static final long serialVersionUID = 1L;
 
           @Override

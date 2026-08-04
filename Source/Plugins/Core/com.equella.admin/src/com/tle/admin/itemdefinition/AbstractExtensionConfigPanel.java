@@ -18,18 +18,14 @@
 
 package com.tle.admin.itemdefinition;
 
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import javax.swing.JPanel;
 
 public abstract class AbstractExtensionConfigPanel extends JPanel {
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   protected ClientService clientService;
 

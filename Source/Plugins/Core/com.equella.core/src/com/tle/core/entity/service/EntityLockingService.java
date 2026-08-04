@@ -26,6 +26,14 @@ public interface EntityLockingService {
 
   EntityLock lockEntity(BaseEntity entity, String sessionId);
 
+  /**
+   * Unlocks an entity by removing its lock.
+   *
+   * @param entity the entity to unlock
+   * @param force if true, removes the lock regardless of which session owns it (forced unlock); if
+   *     false, only removes the lock if the current session owns it, otherwise throws a
+   *     LockedException
+   */
   void unlockEntity(BaseEntity entity, boolean force);
 
   EntityLock getLock(BaseEntity entity);

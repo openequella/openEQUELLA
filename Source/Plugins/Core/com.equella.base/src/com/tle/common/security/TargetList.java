@@ -29,6 +29,8 @@ public class TargetList implements Serializable, FieldEquality<TargetList> {
   private static final long serialVersionUID = 1L;
 
   private List<TargetListEntry> entries;
+  // Controls how deletes are carried out via AclDaoImpl.deleteAll. Only ever seems to be set
+  // to true when dealing with workflows.
   private boolean partial;
 
   public TargetList() {

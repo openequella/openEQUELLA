@@ -125,7 +125,7 @@ describe('Search with GET:', () => {
   });
 
   describe('Params related to attachments', () => {
-    test.each([
+    it.each([
       ['within attachments and their metadata', true, 4],
       ['within item metadata only (exclude searching attachments)', false, 3],
     ])(

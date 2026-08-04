@@ -27,12 +27,13 @@ import com.tle.admin.gui.common.actions.JTextlessButton;
 import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.client.gui.popup.TreePopupListener;
 import com.tle.common.Check;
 import com.tle.common.LazyTreeNode;
 import com.tle.common.LazyTreeNode.ChildrenState;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -65,15 +66,7 @@ public abstract class AbstractTreeEditorTree<NodeType extends LazyTreeNode> exte
 
   protected List<TLEAction> actions;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   public AbstractTreeEditorTree(boolean canAddRootNodes) {
     this.canAddRootNodes = canAddRootNodes;

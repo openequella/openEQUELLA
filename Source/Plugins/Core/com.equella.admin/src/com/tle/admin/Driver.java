@@ -24,14 +24,17 @@ import com.dytech.gui.ExceptionDialog;
 import com.tle.admin.boot.Bootstrap;
 import com.tle.admin.controls.ControlRepositoryImpl;
 import com.tle.admin.controls.repository.ControlRepository;
+import com.tle.admin.service.AdminConsolePluginService;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminLoginService;
+import com.tle.annotation.Nullable;
 import com.tle.common.Check;
-import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemotePluginDownloadService;
 import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+import java.util.Optional;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
@@ -45,7 +48,7 @@ import org.java.plugin.JpfException;
  */
 public final class Driver {
   private static final Log LOGGER = LogFactory.getLog(Driver.class);
-  private static final String COLON = ":"; // $NON-NLS-1$
+  private static final String COLON = ":";
 
   private static Driver driver = null;
 
@@ -68,21 +71,22 @@ public final class Driver {
   public static Driver create(ClientService clientService, PluginServiceImpl pluginService)
       throws Exception {
     if (driver != null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Invalid attempt to try and create second Driver instance");
     }
 
     driver = new Driver(clientService, pluginService);
     return driver;
   }
 
-  @SuppressWarnings("nls")
   private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception {
     this.clientService = clientService;
 
     // Setup some initial state.
-
-    SessionHolder session = clientService.getSession();
-    loggedInUserID = session.getLoginService().getLoggedInUserId();
+    loggedInUserID =
+        clientService
+            .getService(AdminLoginService.class)
+            .getLoggedInUserId()
+            .orElseThrow(() -> new IllegalStateException("No logged in user"));
     institutionName = clientService.getParameter(Bootstrap.SERVER_NAME_PARAMETER);
 
     version = Version.load();
@@ -93,7 +97,7 @@ public final class Driver {
           new PluginServiceImpl(
               clientService.getServerURL(),
               version.getCommit(),
-              clientService.getService(RemotePluginDownloadService.class));
+              clientService.getService(AdminConsolePluginService.class));
     }
     this.pluginService = pluginService;
     try {
@@ -101,9 +105,13 @@ public final class Driver {
     } catch (JpfException e) {
       throw new RuntimeException(e);
     }
-    session.enableKeepAlive(true);
+
+    clientService.getService(AdminKeepAliveService.class).start();
   }
 
+  // This is deprecated as far back as the history we have is (i.e. before 2013), but yet it is
+  // used extensively and I don't see an alternative.
+  // So perhaps this annotation should be removed.
   @Deprecated
   public ClientService getClientService() {
     return clientService;
@@ -118,10 +126,10 @@ public final class Driver {
   public static void displayError(Component parent, String messageGroup, Throwable throwable) {
     PropBagEx xml = Messages.getInstance().getError(messageGroup);
     if (xml == null) {
-      xml = Messages.getInstance().getError("unknown"); // $NON-NLS-1$
+      xml = Messages.getInstance().getError("unknown");
     }
-    String title = xml.getNode("title"); // $NON-NLS-1$
-    String message = xml.getNode("message"); // $NON-NLS-1$
+    String title = xml.getNode("title");
+    String message = xml.getNode("message");
     String thrownMsg = throwable.getMessage();
     if (!Check.isEmpty(thrownMsg)) {
       // Most likely thrown message is prefixed with a ':' separated chain
@@ -130,26 +138,40 @@ public final class Driver {
       if (thrownMsg.contains(COLON)) {
         thrownMsg = thrownMsg.substring(thrownMsg.lastIndexOf(COLON) + 1);
       }
-      message += "\n\n" + thrownMsg; // $NON-NLS-1$
+      message += "\n\n" + thrownMsg;
     }
-    message = message.replaceAll("\\\\n", "\n"); // $NON-NLS-1$ //$NON-NLS-2$
+    message = message.replaceAll("\\\\n", "\n");
     displayErrorRaw(parent, title, message, throwable);
   }
 
+  /**
+   * Displays an error dialog reporting {@code throwable}, with the given title and message shown
+   * verbatim (unlike {@link #displayError}, which resolves them as locale keys).
+   *
+   * @param parent the component to anchor the dialog to; may be {@code null} if no suitable
+   *     component is available (or it hasn't been added to a window yet), in which case the dialog
+   *     falls back to whichever window currently has focus, so it isn't shown ownerless behind the
+   *     rest of the application
+   * @param title the dialog title, displayed verbatim
+   * @param message the error message, displayed verbatim
+   * @param throwable the exception being reported, shown in the dialog's "Details" tab
+   */
   public static void displayErrorRaw(
-      Component parent, String title, String message, Throwable throwable) {
+      @Nullable Component parent, String title, String message, Throwable throwable) {
     String version = instance().getVersion().getFull();
-    ExceptionDialog ed;
+    Window owner = resolveOwnerWindow(parent);
 
-    parent = SwingUtilities.getWindowAncestor(parent);
-    if (parent instanceof Dialog) {
-      ed = new ExceptionDialog((Dialog) parent, title, message, version, throwable);
-    } else {
-      ed = new ExceptionDialog((Frame) parent, title, message, version, throwable);
-    }
-
-    ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title")); // $NON-NLS-1$
+    ExceptionDialog ed = new ExceptionDialog(owner, title, message, version, throwable);
+    ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title"));
     ed.setVisible(true);
+  }
+
+  // No parent to anchor to (or it isn't showing yet) - fall back to whichever window
+  // currently has focus, so the dialog doesn't open ownerless behind the app.
+  private static Window resolveOwnerWindow(@Nullable Component parent) {
+    return Optional.ofNullable(parent)
+        .map(SwingUtilities::getWindowAncestor)
+        .orElseGet(() -> KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow());
   }
 
   public static void displayInformation(Component parent, String message) {

@@ -21,9 +21,11 @@ package com.tle.admin.collection.wizard.editor;
 import com.dytech.edge.admin.wizard.editor.Editor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.itemdefinition.PagedWizardModel;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.entity.itemdef.Wizard;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -34,6 +36,8 @@ import javax.swing.JTextField;
 
 public class WizardEditor extends Editor {
   private static final long serialVersionUID = 8609815614841392333L;
+
+  private static final StringLookup wizardStrings = Lookup.withPrefix("wizard.editor");
 
   private JCheckBox allowNonSequential;
   private JCheckBox showPageTitlesNextPrev;
@@ -50,16 +54,16 @@ public class WizardEditor extends Editor {
   private void setupGUI() {
     JPanel all = new JPanel();
 
-    allowNonSequential = new JCheckBox(getString("wizard.editor.allowNonSequential.label"));
+    allowNonSequential = new JCheckBox(wizardStrings.text("allowNonSequential.label"));
 
-    showPageTitlesNextPrev = new JCheckBox(getString("wizard.editor.showPageTitlesNextPrev.label"));
+    showPageTitlesNextPrev = new JCheckBox(wizardStrings.text("showPageTitlesNextPrev.label"));
 
-    JLabel cssLabel = new JLabel(getString("wizard.editor.additionalCssClass.label"));
+    JLabel cssLabel = new JLabel(wizardStrings.text("additionalCssClass.label"));
     additionalCssClass = new JTextField();
-    JLabel cssHelp = new JLabel(getString("wizard.editor.additionalCssClass.help"));
+    JLabel cssHelp = new JLabel(wizardStrings.text("additionalCssClass.help"));
     cssHelp.setFont(all.getFont());
-    accessibilityHelpTitle = new JLabel(getString("wizard.editor.accesshelp.title"));
-    accessibilityHelp = new JTextArea(getString("wizard.editor.accesshelp.text"));
+    accessibilityHelpTitle = new JLabel(wizardStrings.text("accesshelp.title"));
+    accessibilityHelp = new JTextArea(wizardStrings.text("accesshelp.text"));
     accessibilityHelp.setEditable(false);
     accessibilityHelp.setBackground(all.getBackground());
     accessibilityHelp.setFont(all.getFont());

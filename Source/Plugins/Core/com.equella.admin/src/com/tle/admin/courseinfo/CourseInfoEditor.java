@@ -40,12 +40,12 @@ public class CourseInfoEditor extends BaseEntityEditor<CourseInfo> {
 
   @Override
   public String getDocumentName() {
-    return getString("editor.docname"); // $NON-NLS-1$
+    return strings.text("editor.docname");
   }
 
   @Override
   protected String getWindowTitle() {
-    return getString("editor.title"); // $NON-NLS-1$
+    return strings.text("editor.title");
   }
 
   @Override

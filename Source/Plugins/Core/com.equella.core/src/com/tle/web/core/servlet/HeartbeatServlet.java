@@ -18,36 +18,39 @@
 
 package com.tle.web.core.servlet;
 
-import com.tle.common.institution.CurrentInstitution;
-import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.UserService;
 import java.io.IOException;
-import javax.inject.Inject;
+import java.io.Serial;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Serves {@code /invoke.heartbeat}, polled every 10 minutes by {@code scripts/heartbeat.js} (which
+ * is included on every legacy page via {@code RenderTemplate}) to stop the user's session from
+ * timing out while a page is left open, and to alert the user when the server becomes unreachable.
+ *
+ * <p>The response body is intentionally empty: simply receiving the request is enough, as the
+ * servlet container resets the {@code HttpSession} inactivity timeout for any request associated
+ * with the session (with the openEQUELLA user state bound to it by {@code TleSessionFilter}). The
+ * REST equivalent used by the new UI and Admin Console is {@code /api/status/heartbeat} ({@code
+ * ServerResource}), which works the same way.
+ */
 @Bind
 @Singleton
 public class HeartbeatServlet extends HttpServlet {
-  private static final long serialVersionUID = 1L;
-  @Inject private UserService userService;
+  @Serial private static final long serialVersionUID = 1L;
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    if (!CurrentUser.isGuest() && CurrentInstitution.get() != null) {
-      userService.keepAlive();
-    }
-
     // IE will cache this otherwise
-    response.setHeader("Cache-Control", "no-cache"); // $NON-NLS-1$//$NON-NLS-2$
+    response.setHeader("Cache-Control", "no-cache");
     response.setStatus(HttpServletResponse.SC_OK);
     // FF3 will try to parse as XML if no content type sent
-    response.setContentType("text/plain"); // $NON-NLS-1$
+    response.setContentType("text/plain");
     response.getOutputStream().close();
   }
 }

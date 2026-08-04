@@ -32,12 +32,12 @@ import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.workflow.Workflow;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.item.event.ItemMovedCollectionEvent;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
 import com.tle.core.item.standard.ItemOperationFactory;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.service.SchemaService;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
@@ -129,13 +129,13 @@ public final class MoveDirectOperation extends AbstractStandardWorkflowOperation
     final String newCollectionUuid = newCollection.getUuid();
     if (!oldCollectionUuid.equals(newCollectionUuid)) {
       final String oldFilestoreId =
-          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          oldCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
       final String newFilestoreId =
-          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          newCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
       final boolean oldBucket =
-          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+          oldCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
       final boolean newBucket =
-          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+          newCollection.getAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
       if (!Objects.equals(oldFilestoreId, newFilestoreId) || oldBucket != newBucket) {
         final ItemKey itemId = item.getItemId();
         final ItemFile oldHandle =

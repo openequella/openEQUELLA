@@ -451,4 +451,32 @@
     <string>user.quota.quotas.0.size</string>
     <string>698351616</string>
   </entry>
+  <entry>
+    <string>wrapper.role.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.id</string>
+    <string>beeec3d7-94d1-4718-8e7e-d078d9fa469b</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.name</string>
+    <string>test-role-1</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.expression</string>
+    <string>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58 </string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.id</string>
+    <string>c98d8989-6497-4bd3-b468-76cfccbe81e3</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.name</string>
+    <string>test-role-2</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.expression</string>
+    <string>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58 </string>
+  </entry>
 </map>

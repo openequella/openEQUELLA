@@ -48,6 +48,6 @@ public class DynaCollectionTool extends BaseEntityTool<DynaCollection> {
 
   @Override
   protected String getEntityName() {
-    return getString("entityname"); // $NON-NLS-1$
+    return strings.text("entityname");
   }
 }

@@ -29,6 +29,8 @@ import static com.tle.common.security.PrivilegeTree.Node.FEDERATED_SEARCH;
 import static com.tle.common.security.PrivilegeTree.Node.POWER_SEARCH;
 import static com.tle.common.security.PrivilegeTree.Node.SCHEMA;
 
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
@@ -37,9 +39,7 @@ import com.tle.common.security.remoting.RemotePrivilegeTreeService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.remoting.RemoteCourseInfoService;
 import com.tle.core.remoting.RemoteFederatedSearchService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
-import com.tle.core.remoting.RemoteSchemaService;
 import java.util.List;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -59,11 +59,11 @@ public class SecurityTreeModel implements TreeModel {
             CurrentLocale.get("com.tle.admin.security.tree.model.securitytreemodel.collections"),
             ALL_COLLECTIONS,
             COLLECTION,
-            services.getService(RemoteItemDefinitionService.class)) {
+            services.getService(AdminCollectionDefinitionService.class)) {
           @Override
           protected SecurityTreeNode createNode(BaseEntityLabel label, Node nodeType) {
             return new ItemDefinitionNode(
-                label, services.getService(RemoteItemDefinitionService.class));
+                label, services.getService(AdminCollectionDefinitionService.class));
           }
         });
 
@@ -79,7 +79,7 @@ public class SecurityTreeModel implements TreeModel {
             CurrentLocale.get("com.tle.admin.security.tree.model.securitytreemodel.schemas"),
             ALL_SCHEMAS,
             SCHEMA,
-            services.getService(RemoteSchemaService.class)));
+            services.getService(AdminSchemaService.class)));
 
     root.addChild(
         new EntityGroupNode(

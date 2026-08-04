@@ -19,13 +19,15 @@
 package com.tle.admin.tools.common;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.exceptions.InUseException;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
+import com.tle.admin.AdminTool;
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.BaseEntityEditor;
+import com.tle.admin.i18n.Lookup;
+import com.tle.admin.service.ClientRequestException;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
@@ -38,10 +40,11 @@ import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.i18n.BundleCache;
+import io.github.openequella.graphql.api.LockedError;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,14 +62,136 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
+/**
+ * Base class for Admin Console tools that manage {@link BaseEntity} entities within openEQUELLA.
+ *
+ * <p>This is a key architectural component in the Admin Console that provides a complete CRUD
+ * (Create, Read, Update, Delete) interface for managing entities such as collections, schemas,
+ * workflows, power searches, taxonomies, and other system-level resources.
+ *
+ * <p><b>Class Hierarchy:</b>
+ *
+ * <ul>
+ *   <li>{@link AdminTool} - Top-level interface for all admin tools
+ *   <li>{@link AdminToolList} - Provides list-based UI with add, edit, remove functionality
+ *   <li>{@link AdminToolListClone} - Adds clone, import, export, archive, and unarchive
+ *       capabilities
+ *   <li><b>{@code BaseEntityTool}</b> - Implements full entity lifecycle management with server
+ *       interaction, locking, and validation
+ * </ul>
+ *
+ * <p><b>Key Responsibilities:</b>
+ *
+ * <ul>
+ *   <li><b>Entity Lifecycle Management:</b> Create, retrieve, update, delete entities with proper
+ *       server synchronisation
+ *   <li><b>Edit Locking:</b> Manage entity edit locks to prevent concurrent modification conflicts
+ *   <li><b>Import/Export:</b> Serialize/deserialize entities to/from ZIP files with optional
+ *       security rules
+ *   <li><b>Cloning:</b> Duplicate existing entities for reuse
+ *   <li><b>Archive/Unarchive:</b> Toggle entity availability without deletion
+ *   <li><b>Security:</b> Check privileges before allowing create/modify operations
+ *   <li><b>User Experience:</b> Coordinate background operations with {@link GlassSwingWorker},
+ *       handle errors gracefully, provide user feedback
+ * </ul>
+ *
+ * <p><b>Subclass Implementation Pattern:</b>
+ *
+ * <p>Concrete subclasses must implement four abstract methods to specialise for a specific entity
+ * type:
+ *
+ * <pre>{@code
+ * public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition> {
+ *   public ItemDefinitionTool() {
+ *     super(ItemDefinition.class, AdminCollectionDefinitionService.ENTITY_TYPE());
+ *   }
+ *
+ *   @Override
+ *   protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client) {
+ *     return client.getService(AdminCollectionDefinitionService.class);
+ *   }
+ *
+ *   @Override
+ *   protected BaseEntityEditor<ItemDefinition> createEditor(boolean readonly) {
+ *     return new ItemEditor(this, readonly);
+ *   }
+ *
+ *   @Override
+ *   protected String getEntityName() {
+ *     return CurrentLocale.get("com.tle.admin.gui.itemdefinitiontool.collection");
+ *   }
+ *
+ *   @Override
+ *   protected String getErrorPath() {
+ *     return "itemEditor";
+ *   }
+ * }
+ * }</pre>
+ *
+ * <p><b>Existing Implementations:</b>
+ *
+ * <ul>
+ *   <li>{@code ItemDefinitionTool} - Item collections
+ *   <li>{@code SchemaTool} - Metadata schemas
+ *   <li>{@code WorkflowTool} - Workflow definitions
+ *   <li>{@code PowerSearchTool} - Advanced search pages
+ *   <li>{@code TaxonomyTool} - Taxonomy/vocabulary management
+ *   <li>{@code HarvesterProfileTool} - Content harvesting profiles
+ *   <li>{@code CourseInfoTool} - Course/class management
+ *   <li>{@code SearchTool} - Federated search configurations
+ *   <li>{@code ReportingTool} - BIRT report definitions
+ *   <li>{@code DynaCollectionTool} - Dynamic collections
+ *   <li>{@code BaseEntityWithAddDialogTool} - Variant supporting type selection on creation
+ * </ul>
+ *
+ * <p><b>When to Add Code Here:</b>
+ *
+ * <ul>
+ *   <li>Adding generic entity management functionality needed by <i>all</i> or <i>most</i> entity
+ *       types
+ *   <li>Fixing bugs in core entity lifecycle operations (create, edit, delete, clone, import,
+ *       export)
+ *   <li>Enhancing error handling or user feedback for entity operations
+ *   <li>Improving locking/unlocking logic
+ * </ul>
+ *
+ * <p><b>When to Add Code Elsewhere:</b>
+ *
+ * <ul>
+ *   <li>Entity-specific behaviour → Implement in the concrete subclass (e.g., {@code
+ *       ItemDefinitionTool})
+ *   <li>Custom UI or validation → Implement in the {@link BaseEntityEditor} subclass (e.g., {@code
+ *       ItemEditor})
+ *   <li>Server-side business logic → Implement in the service layer (e.g., {@code
+ *       AdminCollectionDefinitionService} and the GraphQL query behind it)
+ *   <li>List display changes → Override methods in {@link AdminToolList} or {@link
+ *       AdminToolListClone}
+ * </ul>
+ *
+ * <p><b>Threading Model:</b>
+ *
+ * <p>All server communication and potentially long-running operations are executed on background
+ * threads via {@link GlassSwingWorker}. This prevents UI blocking while displaying a glass pane
+ * with progress indicator.
+ *
+ * @param <T> The specific {@link BaseEntity} subclass this tool manages (e.g., {@code
+ *     ItemDefinition}, {@code Schema}, {@code Workflow})
+ * @see BaseEntity
+ * @see AdminToolList
+ * @see AdminToolListClone
+ * @see BaseEntityEditor
+ * @see RemoteAbstractEntityService
+ */
 public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolListClone {
   static final Log LOGGER = LogFactory.getLog(BaseEntityTool.class);
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private static final String KEY_PREFIX = "com.tle.admin.gui.baseentitytool.";
 
-  protected String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
+  protected static final StringLookup strings = Lookup.lookup;
+
+  /** Shorthand for {@code CurrentLocale.get("com.tle.admin.gui.baseentitytool." + suffix, ...)}. */
+  static String s(String suffix, Object... values) {
+    return CurrentLocale.get(KEY_PREFIX + suffix, values);
   }
 
   // //////// ABSTRACT ///////////
@@ -221,8 +346,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void exception() {
             Exception exception = getException();
             LOGGER.warn("Error creating GUI", exception);
-            Driver.displayInformation(
-                parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.error"));
+            Driver.displayInformation(parentFrame, s("error"));
           }
         };
 
@@ -232,9 +356,9 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
   @Override
   protected final void onEdit() {
-    final long uuid = Long.parseLong(getSelectedObjects().get(0).getValue());
+    final long uuid = Long.parseLong(getSelectedObjects().getFirst().getValue());
     final GlassSwingWorker<LockedException> worker =
-        new GlassSwingWorker<LockedException>() {
+        new GlassSwingWorker<>() {
           EntityPack<T> original;
 
           @Override
@@ -244,6 +368,16 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
               return null;
             } catch (LockedException ex) {
               return ex;
+            } catch (ClientRequestException cex) {
+              scala.Option<LockedError> lockedError = cex.getApiErrorOfType(LockedError.class);
+              if (lockedError.isDefined()) {
+                // Only the message is needed, the rest of the LockedException details are not used
+                // where this 'exception' is handled down in 'finished()' - see 'msg' and 'locked1'
+                // variables.
+                return new LockedException(lockedError.get().message(), null, null, 0);
+              } else {
+                throw cex;
+              }
             }
           }
 
@@ -251,20 +385,14 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             LockedException locked1 = get();
             if (locked1 != null) {
-              String[] buttons = {
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.open"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.unlock"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.donotopen")
-              };
-              String msg =
-                  locked1.getMessage()
-                      + CurrentLocale.get("com.tle.admin.gui.baseentitytool.message");
+              String[] buttons = {s("open"), s("unlock"), s("donotopen")};
+              String msg = locked1.getMessage() + s("message");
 
               final int result =
                   JOptionPane.showOptionDialog(
                       parentFrame,
                       msg,
-                      CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
+                      s("locked"),
                       JOptionPane.YES_NO_CANCEL_OPTION,
                       JOptionPane.QUESTION_MESSAGE,
                       null,
@@ -359,65 +487,9 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
   @Override
   protected final void onRemove() {
-    final List<NameValue> pairs = getSelectedObjects();
-    final GlassSwingWorker<?> worker =
-        new GlassSwingWorker<Object>() {
-          private int upTo;
-
-          @Override
-          public Object construct() {
-            for (upTo = 0; upTo < pairs.size(); upTo++) {
-              remove(Long.parseLong(pairs.get(upTo).getValue()));
-            }
-            return null;
-          }
-
-          @Override
-          public void finished() {
-            removeSelectedObjects();
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.deleted", getEntityNameNormal()));
-          }
-
-          @Override
-          public void exception() {
-            Exception exception = getException();
-            if (exception instanceof InUseException) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.cannotdelete.inuse",
-                      pairs.get(upTo),
-                      exception.getMessage()));
-            } else if (exception instanceof LockedException) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.cannotdelete.locked", pairs.get(upTo)));
-            } else if (exception.getMessage() != null
-                && exception.getMessage().equals("Access is denied")) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.nopermission", pairs.get(upTo)));
-
-            } else {
-              Driver.displayError(parentFrame, getDeletingErrorMessage(), exception);
-              LOGGER.error(
-                  "Could not delete "
-                      + getEntityNameLower()
-                      + " "
-                      + pairs.get(upTo).getValue(), // $NON-NLS-2$
-                  exception);
-            }
-            refreshAndSelect();
-          }
-        };
-
-    worker.setComponent(parentFrame);
-    worker.start();
+    var onRemoveHandler =
+        new BaseEntityToolOnRemoveHandler(parentFrame, getSelectedObjects(), this);
+    onRemoveHandler.start();
   }
 
   @Override
@@ -436,10 +508,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             addToList(get());
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.cloned", getEntityNameNormal()));
+            Driver.displayInformation(parentFrame, s("cloned", getEntityNameNormal()));
           }
 
           @Override
@@ -472,8 +541,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
         final int result2 =
             JOptionPane.showConfirmDialog(
                 parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.confirmoverwrite"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.overwrite"),
+                s("confirmoverwrite"),
+                s("overwrite"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
 
@@ -491,10 +560,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
   private void doWrite(final long uuid, final File file) {
     final boolean exportSecurity =
         JOptionPane.showConfirmDialog(
-                parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.exportrules"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.export"),
-                JOptionPane.YES_NO_OPTION)
+                parentFrame, s("exportrules"), s("export"), JOptionPane.YES_NO_OPTION)
             == JOptionPane.YES_OPTION;
 
     final GlassSwingWorker<?> worker =
@@ -511,10 +577,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
           @Override
           public void finished() {
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.exported", getEntityNameNormal()));
+            Driver.displayInformation(parentFrame, s("exported", getEntityNameNormal()));
           }
 
           @Override
@@ -533,11 +596,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     final int confirm =
         JOptionPane.showConfirmDialog(
             parentFrame,
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.warningimport",
-                getEntityNameLower(),
-                CurrentLocale.get("com.tle.application.name")),
-            CurrentLocale.get("com.tle.admin.gui.baseentitytool.import", getEntityNameNormal()),
+            s("warningimport", getEntityNameLower(), CurrentLocale.get("com.tle.application.name")),
+            s("import", getEntityNameNormal()),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
@@ -551,8 +611,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
           doImport(service.importEntity(out.toByteArray()));
         } catch (Exception ex) {
-          Driver.displayInformation(
-              parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.notvalid"));
+          Driver.displayInformation(parentFrame, s("notvalid"));
           LOGGER.error("Couldn't load selected file", ex);
         }
       }
@@ -571,23 +630,21 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             long id = get();
-            if (id == 0 && !canAddNew) {
-              JOptionPane.showMessageDialog(
-                  parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.notallowed"));
+            boolean newEntity = id == 0;
+            if (newEntity && !canAddNew) {
+              JOptionPane.showMessageDialog(parentFrame, s("notallowed"));
               return;
             }
 
+            // Check if they also want to import security details for the entity
             if (JOptionPane.showConfirmDialog(
-                    parentFrame,
-                    CurrentLocale.get("com.tle.admin.gui.baseentitytool.confirmimport"),
-                    CurrentLocale.get("com.tle.admin.gui.baseentitytool.importsecurity"),
-                    JOptionPane.YES_NO_OPTION)
+                    parentFrame, s("confirmimport"), s("importsecurity"), JOptionPane.YES_NO_OPTION)
                 != JOptionPane.YES_OPTION) {
               pack.setTargetList(null);
               pack.setOtherTargetLists(null);
             }
 
-            if (id == 0) {
+            if (newEntity) {
               doNormalAdd(pack);
             } else {
               confirmBeforeOverwrite(pack, id);
@@ -622,9 +679,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
             NameValue nv = get();
             addToList(nv);
 
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.importsuccess", nv.getName()));
+            Driver.displayInformation(parentFrame, s("importsuccess", nv.getName()));
           }
 
           @Override
@@ -651,10 +706,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     int confirm =
         JOptionPane.showConfirmDialog(
             parentFrame,
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.warningoverwrite", getEntityNameLower()),
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.overwriteentity", getEntityNameNormal()),
+            s("warningoverwrite", getEntityNameLower()),
+            s("overwriteentity", getEntityNameNormal()),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
@@ -678,15 +731,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
               LockedException locked = (LockedException) get();
               if (locked != null) {
-                String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                String msg = locked.getMessage() + s("forcefully");
                 int confirm1 =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 unlockFirst = confirm1 == JOptionPane.YES_OPTION;
               }
               doOverwrite(pack, unlockFirst);
@@ -722,10 +770,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.importsuccess",
-                    CurrentLocale.get(entity.getName())));
+                parentFrame, s("importsuccess", CurrentLocale.get(entity.getName())));
           }
 
           @Override
@@ -765,15 +810,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
                 didArchive = true;
                 fin = true;
               } catch (LockedException locked) {
-                final String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                final String msg = locked.getMessage() + s("forcefully");
                 final int confirmUnlock =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 if (confirmUnlock == JOptionPane.YES_OPTION) {
                   forceUnlock(locked.getEntityId());
                 } else {
@@ -788,11 +828,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             if (didArchive) {
               Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.archived",
-                      ids.size(),
-                      getEntityNameLower()));
+                  parentFrame, s("archived", ids.size(), getEntityNameLower()));
             }
           }
 
@@ -833,15 +869,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
                 didUnarchive = true;
                 fin = true;
               } catch (LockedException locked) {
-                final String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                final String msg = locked.getMessage() + s("forcefully");
                 final int confirmUnlock =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 if (confirmUnlock == JOptionPane.YES_OPTION) {
                   forceUnlock(locked.getEntityId());
                 } else {
@@ -856,11 +887,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             if (didUnarchive) {
               Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.unarchived",
-                      ids.size(),
-                      getEntityNameLower()));
+                  parentFrame, s("unarchived", ids.size(), getEntityNameLower()));
             }
           }
 
@@ -875,9 +902,6 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     worker.start();
   }
 
-  /**
-   * @author Nicholas Read
-   */
   protected class ZipFileFilter extends FileFilter {
     @Override
     public boolean accept(File f) {
@@ -890,8 +914,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
     @Override
     public String getDescription() {
-      return CurrentLocale.get("com.tle.admin.gui.baseentitytool.exported", getEntityName())
-          + " (*.zip)";
+      return s("exported", getEntityName()) + " (*.zip)";
     }
   }
 
@@ -904,11 +927,15 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     return clientService;
   }
 
-  /** Return null if there was a (legitimate) problem creating this item. */
+  /** Create a new entity pack, either via the service or directly. */
   protected EntityPack<T> create() {
+    return service.isStartCreateSupported() ? service.startCreate() : createEntityDirect();
+  }
+
+  private EntityPack<T> createEntityDirect() {
     T entity;
     try {
-      entity = entityClass.newInstance();
+      entity = entityClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -916,7 +943,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     entity.setUuid(UUID.randomUUID().toString());
     entity.setOwner(driver.getLoggedInUserUUID());
 
-    return new EntityPack<T>(
+    return new EntityPack<>(
         entity, clientService.getService(RemoteAdminService.class).createStaging());
   }
 }

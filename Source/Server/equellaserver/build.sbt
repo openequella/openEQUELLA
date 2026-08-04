@@ -53,6 +53,11 @@ libraryDependencies ++= Seq(
   "com.auth0" % "jwks-rsa" % "0.24.1"
 )
 
+// Libraries needed for GraphQL
+libraryDependencies ++= Seq(
+  "com.github.ghostdogpr" %% "caliban" % "3.0.0"
+)
+
 // Jackson dependencies
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
@@ -343,7 +348,17 @@ run := {
       "-cp",
       Path.makeString(cp.files),
       "-Dequella.devmode=true",
-      "-Dequella.autotest=true"
+      "-Dequella.autotest=true",
+      "--add-opens=java.base/java.io=ALL-UNNAMED",
+      "--add-opens=java.base/java.lang.ref=ALL-UNNAMED",
+      "--add-opens=java.base/java.lang=ALL-UNNAMED",
+      "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+      "--add-opens=java.base/java.util=ALL-UNNAMED",
+      "--add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED",
+      "--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming.directory=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming=ALL-UNNAMED"
     )
   )
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))

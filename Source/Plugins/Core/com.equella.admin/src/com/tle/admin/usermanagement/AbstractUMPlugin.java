@@ -21,35 +21,36 @@ package com.tle.admin.usermanagement;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.admin.plugin.PluginDialog;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
 import com.tle.beans.ump.UserManagementSettings;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Frame;
+import java.io.Serial;
 
 public class AbstractUMPlugin extends PluginDialog<UserManagementSettings, UMPConfig> {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private UserManagementSettings settings;
-  private RemoteUserService userService;
+  private final AdminUserDirectoryConfigService userDirectoryConfigService;
 
   public AbstractUMPlugin(
       Frame frame,
       String title,
       UMPConfig setting,
       GeneralPlugin<UserManagementSettings> plugin,
-      RemoteUserService userService) {
+      AdminUserDirectoryConfigService userDirectoryConfigService) {
     super(frame, title, setting, plugin);
-    this.userService = userService;
+    this.userDirectoryConfigService = userDirectoryConfigService;
   }
 
   @Override
   protected void _load(GeneralPlugin<UserManagementSettings> gplugin) {
-    settings = userService.getPluginConfig(setting.getSettingsClass());
+    settings = userDirectoryConfigService.loadSettingsOrThrow(setting);
     gplugin.load(settings);
   }
 
   @Override
   protected void _save(GeneralPlugin<UserManagementSettings> gplugin) throws EditorException {
     if (gplugin.save(settings)) {
-      userService.setPluginConfig(settings);
+      userDirectoryConfigService.setPluginConfig(setting.getSettingsClass(), settings);
     }
   }
 }
