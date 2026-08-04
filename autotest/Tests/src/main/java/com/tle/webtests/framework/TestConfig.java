@@ -12,11 +12,24 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 
 public class TestConfig {
   private static final String INSTITUTION_PROPS = "institution.properties";
+
+  /** Directory under the base folder holding the per-institution fixture trees. */
+  private static final String INSTITUTIONS_DIR = "tests";
+
+  /** The other marker identifying the base folder, alongside {@link #INSTITUTIONS_DIR}. */
+  private static final String BUILD_DEFINITION = "build.sbt";
+
+  /** Config property overriding base folder discovery, relative to the working directory. */
+  private static final String BASE_FOLDER_PROPERTY = "test.base";
+
   private static final Config config = ConfigFactory.load();
   private static File baseFolder = null;
 
@@ -54,7 +67,7 @@ public class TestConfig {
   }
 
   private static File findInstitutionFolder(String name) {
-    return new File(getBaseFolder(), "tests/" + name);
+    return new File(getBaseFolder(), INSTITUTIONS_DIR + "/" + name);
   }
 
   public static String findInstitutionName(Class<?> clazz) {
@@ -246,22 +259,13 @@ public class TestConfig {
     File propsFile = new File(instFolder, INSTITUTION_PROPS);
     Properties props = null;
     if (propsFile.exists()) {
-      FileInputStream fis = new FileInputStream(propsFile);
-      try {
+      try (FileInputStream fis = new FileInputStream(propsFile)) {
         props = new Properties();
         props.load(fis);
-      } finally {
-        fis.close();
       }
     }
     return props;
   }
-
-  //
-  //    public String getInstitutionUrl()
-  //    {
-  //        return getServerUrl(isSsl()) + testFolder.getName() + '/';
-  //    }
 
   public String getInstitutionUrl() {
     return getInstitutionUrl(testFolder);
@@ -285,39 +289,65 @@ public class TestConfig {
     return alertSupported;
   }
 
+  /**
+   * The autotest project folder that owns the institution fixtures, and under which results and
+   * screenshots are written.
+   *
+   * <p>Resolved by walking up from this class's own file rather than from the working directory, so
+   * that it also works when tests are launched from an IDE. The folder is recognised by what it
+   * contains — an {@value #INSTITUTIONS_DIR} directory next to a {@value #BUILD_DEFINITION} —
+   * rather than by its name, so the project can be renamed or moved without breaking this. Both
+   * markers are needed: a compiled package path can itself contain a directory called {@value
+   * #INSTITUTIONS_DIR}.
+   *
+   * <p>Set the {@value #BASE_FOLDER_PROPERTY} config property to override, relative to the working
+   * directory.
+   */
   public static File getBaseFolder() {
     if (baseFolder == null) {
-      if (config.hasPath("test.base")) {
-        baseFolder = new File(config.getString("test.base"));
-      } else {
-        try {
-          File theFolder =
-              Paths.get(TestConfig.class.getResource("TestConfig.class").toURI()).toFile();
-          while (!theFolder.getName().equals("Tests")) {
-            theFolder = theFolder.getParentFile();
-          }
-          baseFolder = theFolder;
-        } catch (URISyntaxException e) {
-          e.printStackTrace();
-        }
-      }
+      baseFolder = configuredBaseFolder().orElseGet(() -> findBaseFolderAbove(ownClassFile()));
     }
     return baseFolder;
   }
 
-  //
-  //    public String getInstitutionUrlFromShortName(String shortName)
-  //    {
-  //        return getInstitutionUrlFromShortName(shortName, shortName.endsWith("ssl"));
-  //    }
-  //
-  //    public String getInstitutionUrlFromShortName(String shortName, boolean https)
-  //    {
-  //        return getServerUrl(https) + shortName + '/';
-  //    }
+  private static Optional<File> configuredBaseFolder() {
+    return config.hasPath(BASE_FOLDER_PROPERTY)
+        ? Optional.of(new File(config.getString(BASE_FOLDER_PROPERTY)))
+        : Optional.empty();
+  }
 
-  public static Config getConfigProps() {
-    return config;
+  /** Walks up the directories containing {@code start}, stopping at the first base folder. */
+  private static File findBaseFolderAbove(File start) {
+    return Stream.iterate(start, Objects::nonNull, File::getParentFile)
+        .filter(TestConfig::isBaseFolder)
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException(noBaseFolderMessage(start)));
+  }
+
+  private static String noBaseFolderMessage(File start) {
+    return MessageFormat.format(
+        "Could not find the autotest base folder above {0} - looked for a directory containing both"
+            + " ''{1}'' and ''{2}''. Set the ''{3}'' config property to override.",
+        start, INSTITUTIONS_DIR, BUILD_DEFINITION, BASE_FOLDER_PROPERTY);
+  }
+
+  private static boolean isBaseFolder(File dir) {
+    return new File(dir, INSTITUTIONS_DIR).isDirectory()
+        && new File(dir, BUILD_DEFINITION).isFile();
+  }
+
+  /** The file this class was loaded from, which is the starting point for the walk upwards. */
+  private static File ownClassFile() {
+    String name = TestConfig.class.getSimpleName() + ".class";
+    String failure = "Could not resolve the location of " + name;
+    URL location =
+        Optional.ofNullable(TestConfig.class.getResource(name))
+            .orElseThrow(() -> new IllegalStateException(failure));
+    try {
+      return Paths.get(location.toURI()).toFile();
+    } catch (URISyntaxException e) {
+      throw new IllegalStateException(failure, e);
+    }
   }
 
   public TimeZone getBrowserTimeZone() {
