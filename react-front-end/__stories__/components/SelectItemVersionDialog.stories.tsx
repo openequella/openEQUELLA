@@ -17,6 +17,7 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
+import { dialogDocsParameters } from "../storyUtils";
 import SelectItemVersionDialog, {
   SelectItemVersionDialogProps,
 } from "../../tsrc/components/SelectItemVersionDialog";
@@ -24,6 +25,7 @@ import SelectItemVersionDialog, {
 export default {
   title: "Component/SelectItemVersionDialog",
   component: SelectItemVersionDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "on close dialog" },
     onConfirm: {

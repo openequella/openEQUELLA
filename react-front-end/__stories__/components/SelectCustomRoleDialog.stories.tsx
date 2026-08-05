@@ -19,6 +19,7 @@ import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { searchRoles, roles } from "../../__mocks__/RoleModule.mock";
+import { dialogDocsParameters } from "../storyUtils";
 import type { CustomRole } from "../../tsrc/components/CustomRoleHelper";
 import {
   defaultSelectedRoleUrn,
@@ -32,6 +33,7 @@ import SelectCustomRoleDialog, {
 export default {
   title: "component/SelectCustomRoleDialog",
   component: SelectCustomRoleDialog,
+  parameters: dialogDocsParameters,
   argTypes: { onClose: { action: "On close" } },
 } as Meta<SelectCustomRoleDialogProps>;
 

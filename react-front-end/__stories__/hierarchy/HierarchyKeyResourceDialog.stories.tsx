@@ -17,6 +17,7 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
+import { dialogDocsParameters } from "../storyUtils";
 import HierarchyKeyResourceDialog, {
   HierarchyKeyResourceDialogProps,
 } from "../../tsrc/hierarchy/components/HierarchyKeyResourceDialog";
@@ -24,6 +25,7 @@ import HierarchyKeyResourceDialog, {
 export default {
   title: "Hierarchy/HierarchyKeyResourceDialog",
   component: HierarchyKeyResourceDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "on close dialog" },
     updateKeyResource: {

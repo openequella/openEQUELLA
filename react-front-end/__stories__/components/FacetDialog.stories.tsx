@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import type { Meta, StoryFn } from "@storybook/react";
+import { dialogDocsParameters } from "../storyUtils";
 import FacetDialog, {
   FacetDialogProps,
 } from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
@@ -25,6 +26,7 @@ import type { FacetedSearchClassificationWithFlags } from "../../tsrc/modules/Fa
 export default {
   title: "FacetDialog",
   component: FacetDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     onClose: { action: "onClose" },
     addOrEdit: { action: "addOrEdit" },
