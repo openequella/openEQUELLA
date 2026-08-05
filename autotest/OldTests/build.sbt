@@ -9,9 +9,8 @@ libraryDependencies += "com.opencsv" % "opencsv" % "5.12.0"
 libraryDependencies ++= Seq(
   "org.testng" % "testng" % "7.12.0" % Test,
   // The older Log4j is required by dependency "oclc-harvester2" at runtime.
-  "log4j"                    % "log4j"              % "1.2.17" % Test,
-  "commons-httpclient"       % "commons-httpclient" % "3.1"    % Test,
-  "com.thoughtworks.xstream" % "xstream"            % "1.4.21" % Test,
+  "log4j"              % "log4j"              % "1.2.17" % Test,
+  "commons-httpclient" % "commons-httpclient" % "3.1"    % Test,
   // Drives the property-based suites under `equellatests`. ScalaTest itself comes from
   // CommonSettings; scalacheck-1-19 is the ScalaTest 3.2.20 <-> ScalaCheck 1.19 bridge.
   "org.scalacheck"    %% "scalacheck"      % "1.19.0"   % Test,
@@ -30,8 +29,6 @@ libraryDependencies ++= Seq(
   "org.apache.commons"        % "commons-lang3"     % "3.20.0",
   "org.seleniumhq.selenium"   % "selenium-java"     % "4.45.0",
   "com.codeborne"             % "selenide"          % "7.17.0",
-  "org.easytesting"           % "fest-util"         % "1.2.5",
-  "org.easytesting"           % "fest-swing"        % "1.2.1",
   "xalan"                     % "xalan"             % "2.7.3",
   "xalan"                     % "serializer"        % "2.7.3",
   "org.apache.httpcomponents" % "httpclient"        % "4.5.14",
@@ -50,10 +47,6 @@ libraryDependencies ++= Seq(
   jacksonDataFormatYaml,
   "com.auth0" % "jwks-rsa" % "0.24.1"
 )
-
-// Prebuilt admin-console jars, needed by the fest-swing admin console tests. Left unscoped because
-// unmanagedBase is a project-level setting; the jars reach the test classpath from here.
-unmanagedBase := baseDirectory.value / "lib/adminjars"
 
 enablePlugins(TestNGPlugin)
 

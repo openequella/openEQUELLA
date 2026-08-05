@@ -6,7 +6,6 @@
 		<suite-file path="./testng-remote-moodle.xml"/>
 		<!-- 
 		<suite-file path="./testng-institution-sync.xml"/>
-		<suite-file path="./testng-remote-admin.xml"/>
 		<suite-file path="./testng-remote-blackboard.xml"/>
 		<suite-file path="./testng-remote-moodle.xml"/>
 		<suite-file path="./testng-remote-canvas.xml"/>

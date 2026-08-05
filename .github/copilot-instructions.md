@@ -227,7 +227,7 @@ autotest/
 │   ├── src/test/java/  # Tests, the com.tle.webtests framework, and Page Objects
 │   ├── src/test/scala/ # Newer test code being written in Scala
 │   ├── tests/          # Institution fixtures, imported by `sbt setupForTests`
-│   └── lib/adminjars/  # Prebuilt jars for the admin console tests
+│   └── lib/            # A stale prebuilt jar supplying com.tle.common.* (see its README)
 └── IntegTester/     # Integration test harness
 ```
 
