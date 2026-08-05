@@ -236,7 +236,8 @@ startEquella := serviceCommand(installOptions.value, "start")
 
 stopEquella := serviceCommand(installOptions.value, "stop")
 
-val TestPrj = LocalProject("Tests")
+// `equellatests.SetupForTests` and `equellatests.InstallFirstTime` live in OldTests' test sources.
+val TestPrj = LocalProject("OldTests")
 
 setupForTests := {
   val run = (TestPrj / Test / runner).value
@@ -270,7 +271,10 @@ collectArtifacts := {
   def allFiles(files: Seq[File]): Traversable[(File, String)] = {
     files.flatMap(f => (f ** "*").pair(rebase(f, f.getName)))
   }
-  val logsDir      = installDir.value / "logs"
+  val logsDir = installDir.value / "logs"
+  // Deliberately Tests, not OldTests: TestConfig.getResultsFolder is derived from the location of
+  // TestConfig.class (it walks up to the directory named "Tests"), so screenshots and results are
+  // written under Tests/target regardless of which project's test task is running.
   val scReportDir  = (LocalProject("Tests") / target).value / "test-reports"
   val oldReportDir = file((OldTests / testNGOutputDirectory).value)
 

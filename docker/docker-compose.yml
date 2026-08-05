@@ -53,7 +53,7 @@ services:
       - POSTGRES_PASSWORD=$OEQ_DATABASE_PASSWORD
 
   traefik:
-    image: traefik:v3.7.5
+    image: traefik:v3.7.9
     restart: always
     command:
       - "--api.dashboard=true"

@@ -129,5 +129,5 @@ openEQUELLA is actually reachable on the expected URL.
 
 Assuming that all passed, then you can run tests with:
 
-    ./sbt "project autotest" Tests/test Tests/Serial/test OldTests/test
+    ./sbt "project autotest" OldTests/test
 

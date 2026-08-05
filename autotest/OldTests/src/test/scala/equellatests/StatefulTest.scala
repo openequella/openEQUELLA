@@ -1,22 +1,14 @@
 package equellatests
 
-import java.io.File
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import java.util.UUID
 
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
 import equellatests.browserpage.BrowserPage
 import equellatests.domain._
-import equellatests.pages.{HomePage, LoginPage}
-import io.circe.generic.semiauto._
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder, Json}
-import org.openqa.selenium.WebDriver
+import equellatests.pages.LoginPage
 import org.scalacheck.Prop._
-import org.scalacheck.{Gen, Prop, Properties}
+import org.scalacheck.{Gen, Prop}
 
-import scala.collection.mutable
 import scala.util.Try
 
 trait SeleniumBrowser {
@@ -99,25 +91,17 @@ trait SimpleTestCase extends LogonTestCase {
   override def createInital: BrowserPage => Browser = SimpleSeleniumBrowser.apply
 }
 
-case class FailedTestCase(
-    shortName: String,
-    propertiesClass: String,
-    failedAfter: Int,
-    testCase: Json
-)
-
-object FailedTestCase {
-  implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder[FailedTestCase]
-  implicit val ftcDec: Decoder[FailedTestCase] = deriveDecoder[FailedTestCase]
-}
-
-abstract class StatefulProperties(name: String) extends Properties(name: String) {
+/** State-machine harness for the property-based browser suites. Generates a sequence of `Command`s
+  * from the current `State`, then replays them against a live browser, failing the property at the
+  * first command whose in-browser verification does not hold.
+  *
+  * Mix into a [[PropertyBasedBrowserTest]] and register each scenario with [[statefulTest]]. Use
+  * [[statefulProp]] directly only when the resulting `Prop` needs combining before being checked.
+  */
+trait StatefulTest { self: PropertyBasedBrowserTest =>
   type Command
   type Browser <: SeleniumBrowser
   type State
-
-  implicit val testCaseDecoder: Decoder[Command]
-  implicit val testCaseEncoder: Encoder[Command]
 
   def initialState: State
 
@@ -129,54 +113,42 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
 
   def runCommandInBrowser(c: Command, s: State, b: Browser): Prop
 
-  def executeProp(shortName: String, allCommands: Seq[Command], failedAfter: Option[Int]): Prop = {
+  def executeProp(shortName: String, allCommands: Seq[Command]): Prop = {
     val b = createBrowser
 
-    def nextCommand(s: State, commands: List[Command], previousCommands: Int): Prop =
+    def nextCommand(s: State, commands: List[Command]): Prop =
       commands match {
         case Nil       => Prop.proved
-        case c :: tail => {
-          failedAfter.foreach { failedAt =>
-            if (failedAt == previousCommands) System.err.println("*** Failed on next command ***")
-            System.err.println(c.toString)
-          }
+        case c :: tail =>
           Try(runCommandInBrowser(c, s, b)).fold(Prop.exception(_), identity).flatMap { r =>
             if (!r.success) {
-              val tc       = b.page.ctx.getTestConfig
-              val filename = (name + " " + shortName).replace(' ', '_')
+              val tc = b.page.ctx.getTestConfig
               Try(
                 ScreenshotTaker.takeScreenshot(
                   b.page.driver,
                   tc.getScreenshotFolder,
-                  filename,
+                  (suiteName + " " + shortName).replace(' ', '_'),
                   tc.isChromeDriverSet
                 )
               )
-              if (failedAfter.isEmpty) {
-                val testRunFile =
-                  Uniqueify.uniqueFile(tc.getResultsFolder.toPath).apply(filename + "_test.json")
-                val failure = FailedTestCase(
-                  shortName,
-                  getClass.getName,
-                  previousCommands,
-                  allCommands.asJson
-                ).asJson
-                System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
-                Files.write(testRunFile, failure.spaces2.getBytes(StandardCharsets.UTF_8))
-              }
               Prop(prms => r)
-            } else Prop(r) && nextCommand(runCommand(c, s), tail, previousCommands + 1)
+            } else Prop(r) && nextCommand(runCommand(c, s), tail)
           }
-        }
       }
 
-    nextCommand(initialState, allCommands.toList, 0).map { r =>
+    nextCommand(initialState, allCommands.toList).map { r =>
       destroyBrowser(b); r
     }
   }
 
-  def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]) =
-    property(shortName) = forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc, None))
+  def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]): Prop =
+    forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc))
+
+  /** Registers a ScalaTest test that generates a command sequence and replays it against a browser.
+    * `shortName` names both the test and any failure screenshot.
+    */
+  def statefulTest(shortName: String)(testCaseGen: Gen[Seq[Command]]): Unit =
+    test(shortName)(check(statefulProp(shortName)(testCaseGen)))
 
   def applyCommands(s: State, commands: List[Command]): State = {
     commands.foldLeft(s)((s, c) => runCommand(c, s))

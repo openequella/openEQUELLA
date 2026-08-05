@@ -1,18 +1,23 @@
 package equellatests
 
-import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
+import com.tle.webtests.framework.{PageContext, TestConfig}
 import com.tle.webtests.pageobject.LoginPage
 import equellatests.TestChecker.withBrowserDriver
 import equellatests.domain.TestLogon
-import org.scalacheck.{Prop, Properties}
+import org.scalacheck.Prop
 
-import scala.util.{Success, Try}
+import scala.util.Try
 
-abstract class ShotProperties(name: String) extends Properties(name) {
+/** For property-based suites whose properties are each a self-contained browser session: opens a
+  * driver, logs on, evaluates the property, then quits.
+  *
+  * Mix into a [[PropertyBasedBrowserTest]] and hand the resulting `Prop` to `check`.
+  */
+trait ShotTest { self: PropertyBasedBrowserTest =>
 
   def withLogon[A](logon: TestLogon)(f: PageContext => Prop): Prop = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
-    withBrowserDriver(name, testConfig) { driver =>
+    withBrowserDriver(suiteName, testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
       new LoginPage(context).load().login(logon.username, logon.password)
       val p = f(context)

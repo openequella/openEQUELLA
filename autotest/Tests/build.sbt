@@ -1,20 +1,8 @@
-lazy val Serial = config("serial") extend Test
-
-configs(Serial)
-
 dependsOn(LocalProject("IntegTester"), LocalProject("config"))
-
-inConfig(Serial)(Defaults.testTasks)
-
-// sbt auto-generates a `configuration` setting key for every custom Configuration and flags it as
-// unused by lintUnused, even though the Serial config itself is actively used (see .github/workflows/ci.yaml).
-Global / excludeLintKeys += Serial / configuration
 
 val circeVersion  = "0.14.12"
 val http4sVersion = "0.23.36"
 val catsVersion   = "2.13.0"
-
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -23,7 +11,6 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "org.scala-lang"            % "scala-reflect"     % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"     % "1.1",
   "org.apache.commons"        % "commons-lang3"     % "3.20.0",
   "org.seleniumhq.selenium"   % "selenium-java"     % "4.45.0",
@@ -40,7 +27,6 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j"  % "log4j"             % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-core"        % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl" % log4jVersion,
-  "org.scalacheck"           %% "scalacheck"        % "1.19.0" % "test,serial",
   "org.http4s" %% "http4s-blaze-client" % "0.23.17", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
   "org.http4s"    %% "http4s-circe"      % http4sVersion,
   "org.typelevel" %% "cats-free"         % catsVersion,
@@ -51,25 +37,3 @@ libraryDependencies ++= Seq(
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
-
-def serialFilter(name: String): Boolean = {
-  name endsWith "PropertiesSerial"
-}
-def stdFilter(name: String): Boolean = {
-  (name endsWith "Properties") && !serialFilter(name)
-}
-
-val commonOptions = Seq(
-  sbt.Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1")
-)
-(Serial / testOptions) := commonOptions
-
-(Test / testOptions) := commonOptions
-
-(Test / testOptions) += sbt.Tests.Filter(stdFilter)
-
-(Serial / testOptions) += sbt.Tests.Filter(serialFilter)
-
-(Serial / parallelExecution) := false
-
-(Test / parallelExecution) := autotestBuildConfig.value.getBoolean("tests.parallel")
