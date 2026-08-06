@@ -26,11 +26,13 @@ import {
   DashboardEditor,
   DashboardEditorProps,
 } from "../../tsrc/dashboard/DashboardEditor";
+import { dialogDocsParameters } from "../storyUtils";
 import { buildDashboardPageContextDecorator } from "./editor/DashboardLayout.stories";
 
 export default {
   title: "Dashboard/DashboardEditor",
   component: DashboardEditor,
+  parameters: dialogDocsParameters,
   argTypes: {
     onClose: { action: "onClose" },
   },
