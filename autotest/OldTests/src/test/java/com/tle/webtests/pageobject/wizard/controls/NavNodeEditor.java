@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -59,15 +59,15 @@ public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor> {
   }
 
   public void setFields(String newTitle, String resourceName, String viewerName) {
-    if (!Check.isEmpty(newTitle)) {
+    if (StringUtils.isNotBlank(newTitle)) {
       getNameField().clear();
       getNameField().sendKeys(newTitle);
       navNode.setDisplayName(newTitle);
     }
-    if (!Check.isEmpty(resourceName)) {
+    if (StringUtils.isNotBlank(resourceName)) {
       new EquellaSelect(context, getResource()).selectByVisibleText(resourceName);
     }
-    if (!Check.isEmpty(viewerName)) {
+    if (StringUtils.isNotBlank(viewerName)) {
       new EquellaSelect(context, getViewer()).selectByVisibleText(viewerName);
     }
   }

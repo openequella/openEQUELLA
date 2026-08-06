@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.common.Pair;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -264,7 +263,7 @@ public class UserGroupManagementApiTest extends AbstractRestApiTest {
       params.add("q");
       params.add(query);
     }
-    if (!Check.isEmpty(otherParams)) {
+    if (otherParams != null && !otherParams.isEmpty()) {
       for (Entry<?, ?> entry : otherParams.entrySet()) {
         params.add(entry.getKey().toString());
         params.add(entry.getValue().toString());

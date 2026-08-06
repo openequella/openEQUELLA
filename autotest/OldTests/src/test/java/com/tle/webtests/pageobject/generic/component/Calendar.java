@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.generic.component;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
@@ -9,6 +8,7 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -111,7 +111,7 @@ public class Calendar extends AbstractPage<Calendar> {
 
   public Date getHiddenDateValue() {
     final String rawDate = getRawDateValue();
-    if (Check.isEmpty(rawDate)) {
+    if (StringUtils.isBlank(rawDate)) {
       return null;
     }
     try {

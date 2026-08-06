@@ -1,7 +1,6 @@
 /** */
 package com.tle.webtests.pageobject.settings;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
@@ -77,7 +76,7 @@ public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPag
 
   public int findUserQuotaByUserName(String userName) {
     List<WebElement> trs = getUserQuotasElements();
-    if (!Check.isEmpty(trs)) {
+    if (trs != null && !trs.isEmpty()) {
       for (int i = 0; i < trs.size(); ++i) {
         WebElement we = trs.get(i);
         if (we.getText().equals(userName)) {

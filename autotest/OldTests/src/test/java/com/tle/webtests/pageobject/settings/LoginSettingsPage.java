@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.settings;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ReceiptPage;
@@ -119,7 +118,7 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
 
   public int findIpAddress(String ipAddress) {
     List<WebElement> trs = getIpAddressElements();
-    if (!Check.isEmpty(trs)) {
+    if (trs != null && !trs.isEmpty()) {
       for (int i = 0; i < trs.size(); ++i) {
         WebElement we = trs.get(i);
         if (we.findElement(By.xpath("./td[@class='name']")).getText().equals(ipAddress)) {

@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.viewitem;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.ReceiptPage;
@@ -11,6 +10,7 @@ import com.tle.webtests.pageobject.selection.SelectionCheckoutPage;
 import com.tle.webtests.pageobject.selection.SelectionStatusPage;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -211,7 +211,7 @@ public class SummaryPage extends ItemPage<SummaryPage> {
     List<WebElement> elems = driver.findElements(By.className(classAttrib));
     for (WebElement elem : elems) {
       String elemText = elem.getText();
-      if (!Check.isEmpty(elemText)) {
+      if (StringUtils.isNotBlank(elemText)) {
         vals.add(elemText);
       }
     }
@@ -252,7 +252,7 @@ public class SummaryPage extends ItemPage<SummaryPage> {
 
     for (WebElement elem : elems) {
       String elemText = elem.getText();
-      if (!Check.isEmpty(elemText)) {
+      if (StringUtils.isNotBlank(elemText)) {
         vals.add(elemText);
       }
     }

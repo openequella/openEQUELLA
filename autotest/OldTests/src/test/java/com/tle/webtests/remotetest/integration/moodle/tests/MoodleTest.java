@@ -3,7 +3,6 @@ package com.tle.webtests.remotetest.integration.moodle.tests;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.integration.moodle.MoodleCoursePage;
 import com.tle.webtests.pageobject.integration.moodle.MoodleEditResourcePage;
 import com.tle.webtests.pageobject.integration.moodle.MoodleIndexPage;
@@ -11,6 +10,7 @@ import com.tle.webtests.pageobject.integration.moodle.MoodleLoginPage;
 import com.tle.webtests.pageobject.integration.moodle.MoodleResourcePage;
 import com.tle.webtests.pageobject.viewitem.DRMAgreementPage;
 import com.tle.webtests.remotetest.integration.moodle.AbstractParallelMoodleTest;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -123,7 +123,7 @@ public class MoodleTest extends AbstractParallelMoodleTest {
 
   @BeforeMethod
   public void checkMoodleUrl() throws Exception {
-    if (Check.isEmpty(context.getIntegUrl())) {
+    if (StringUtils.isBlank(context.getIntegUrl())) {
       throw new SkipException("Properties for moodle are not set up");
     }
   }

@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
-import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
@@ -11,6 +10,7 @@ import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -81,7 +81,7 @@ public class FlickrUniversalControlType
     getNextButton().click();
     waitForElement(getNameField());
 
-    if (!Check.isEmpty(displayName)) {
+    if (StringUtils.isNotBlank(displayName)) {
       getNameField().clear();
       getNameField().sendKeys(displayName);
     }

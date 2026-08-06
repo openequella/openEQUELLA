@@ -3,7 +3,6 @@ package com.tle.webtests.pageobject.tasklist;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
@@ -11,6 +10,7 @@ import com.tle.webtests.pageobject.wizard.ApproveMessagePage;
 import com.tle.webtests.pageobject.wizard.CommentMessagePage;
 import com.tle.webtests.pageobject.wizard.ModerationMessagePage;
 import com.tle.webtests.pageobject.wizard.RejectMessagePage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -126,7 +126,7 @@ public class ModerationView extends AbstractPage<ModerationView> {
   }
 
   private String xpathForComment(String comment) {
-    if (Check.isEmpty(comment)) {
+    if (StringUtils.isBlank(comment)) {
       return "//div[@class='comment' and count(div[@class='comment-content']) = 0]";
     }
     return "//div[@class[contains(.,'comment')] and contains(div[@class='comment-content'],'"

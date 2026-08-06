@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.integration.canvas;
 
-import com.tle.common.Check;
 import com.tle.common.PathUtils;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.SkipException;
 import com.tle.webtests.pageobject.AbstractPage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -25,7 +25,7 @@ public class CanvasLoginPage extends AbstractPage<CanvasLoginPage> {
 
   @Override
   protected void loadUrl() {
-    if (Check.isEmpty(context.getIntegUrl())) {
+    if (StringUtils.isBlank(context.getIntegUrl())) {
       throw new SkipException("Canvas url not set");
     }
     driver.get(PathUtils.urlPath(context.getIntegUrl(), "login"));

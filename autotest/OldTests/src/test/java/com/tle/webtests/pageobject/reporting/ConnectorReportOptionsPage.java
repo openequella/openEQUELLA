@@ -1,9 +1,9 @@
 package com.tle.webtests.pageobject.reporting;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -38,7 +38,7 @@ public class ConnectorReportOptionsPage
   }
 
   public ConnectorReportOptionsPage showArchived(boolean on) {
-    if (on == Check.isEmpty(showArchived.getAttribute("checked"))) {
+    if (on == StringUtils.isBlank(showArchived.getAttribute("checked"))) {
       showArchived.click();
     }
     return get();

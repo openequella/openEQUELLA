@@ -1,12 +1,12 @@
 package com.tle.webtests.pageobject.integration.moodle;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.factory.DontCache;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -146,7 +146,8 @@ public class MoodleCoursePage extends MoodleBasePage<MoodleCoursePage> {
           public Boolean apply(WebDriver d) {
             Set<String> windowList = driver.getWindowHandles();
             for (String windowHandle : windowList) {
-              if (!Check.isEmpty(windowHandle) && !windowHandle.equals(currentWindowHandle)) {
+              if (StringUtils.isNotBlank(windowHandle)
+                  && !windowHandle.equals(currentWindowHandle)) {
                 driver.switchTo().window(windowHandle);
                 return Boolean.TRUE;
               }

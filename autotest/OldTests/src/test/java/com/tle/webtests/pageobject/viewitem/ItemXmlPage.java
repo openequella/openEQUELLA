@@ -3,9 +3,9 @@ package com.tle.webtests.pageobject.viewitem;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
 import com.dytech.devlib.PropBagEx.ValueThoroughIterator;
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import org.apache.commons.lang3.StringUtils;
 
 public class ItemXmlPage extends AbstractPage<ItemXmlPage> {
   private final ItemId itemId;
@@ -51,7 +51,7 @@ public class ItemXmlPage extends AbstractPage<ItemXmlPage> {
   }
 
   public boolean nodeHasValue(String path, String attribute, String value) {
-    if (!Check.isEmpty(attribute)) {
+    if (StringUtils.isNotBlank(attribute)) {
       PropBagThoroughIterator iterateAll = xml.iterateAll(path);
       while (iterateAll.hasNext()) {
         PropBagEx node = (PropBagEx) iterateAll.next();

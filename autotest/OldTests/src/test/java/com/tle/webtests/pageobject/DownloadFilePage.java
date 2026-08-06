@@ -1,7 +1,6 @@
 package com.tle.webtests.pageobject;
 
 import com.google.common.io.Closeables;
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NotFoundException;
 
 public class DownloadFilePage extends AbstractPage<DownloadFilePage> {
@@ -63,7 +63,7 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage> {
     if (!file.exists()) {
       throw new NotFoundException("File does not exist");
     }
-    if (!Check.isEmpty(md5)) {
+    if (StringUtils.isNotBlank(md5)) {
       FileInputStream inputStream = null;
       try {
         inputStream = new FileInputStream(file);
@@ -90,7 +90,7 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage> {
     if (!file.exists()) {
       return false;
     }
-    if (!Check.isEmpty(md5)) {
+    if (StringUtils.isNotBlank(md5)) {
       FileInputStream inputStream = null;
       try {
         inputStream = new FileInputStream(file);

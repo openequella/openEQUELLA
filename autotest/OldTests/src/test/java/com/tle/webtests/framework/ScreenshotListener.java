@@ -3,9 +3,9 @@ package com.tle.webtests.framework;
 import static org.testng.internal.Utils.longStackTrace;
 import static org.testng.internal.Utils.shortStackTrace;
 
-import com.tle.common.Check;
 import java.io.File;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.testng.*;
 
@@ -29,7 +29,7 @@ public class ScreenshotListener implements ITestListener {
       Reporter.log(
           "<h3>" + testResult.getTestClass().getName() + "." + testResult.getName() + "</h3>");
       String testName = testResult.getTestName();
-      if (!Check.isEmpty(testName)) {
+      if (StringUtils.isNotBlank(testName)) {
         Reporter.log("<h2>" + testName + "</h2>");
       }
 
@@ -79,17 +79,17 @@ public class ScreenshotListener implements ITestListener {
           test.invalidateSession();
 
           Reporter.log("<strong>Failed at url:</strong> " + driver.getCurrentUrl());
-          if (!Check.isEmpty(error)) {
+          if (StringUtils.isNotBlank(error)) {
             Reporter.log("<strong>Captured error: </strong><pre>" + error + "</pre>");
           }
-          if (!Check.isEmpty(screenshot)) {
+          if (StringUtils.isNotBlank(screenshot)) {
             Reporter.log(
                 String.format(
                     "<strong>Screenshot:</strong> <a href='%s/%s'>%s</a>",
                     "screenshots", screenshot, screenshot));
           }
 
-          if (!Check.isEmpty(jsError)) {
+          if (StringUtils.isNotBlank(jsError)) {
             Reporter.log("<strong>JS error: </strong><pre>" + jsError + "</pre>");
           }
 

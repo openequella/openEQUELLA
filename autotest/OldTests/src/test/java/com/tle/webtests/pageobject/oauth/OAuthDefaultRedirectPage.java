@@ -1,12 +1,12 @@
 package com.tle.webtests.pageobject.oauth;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.URLUtils;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.net.URI;
 import java.util.Map;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openqa.selenium.By;
 
 public class OAuthDefaultRedirectPage extends AbstractPage<OAuthDefaultRedirectPage> {
@@ -23,7 +23,7 @@ public class OAuthDefaultRedirectPage extends AbstractPage<OAuthDefaultRedirectP
 
   public boolean hasAccessToken() {
     Map<String, String[]> params = getClientParams();
-    return !Check.isEmpty(params.get("access_token"));
+    return !ArrayUtils.isEmpty(params.get("access_token"));
   }
 
   private Map<String, String[]> getClientParams() {

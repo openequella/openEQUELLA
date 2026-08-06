@@ -2,12 +2,12 @@ package com.tle.webtests.pageobject.oai;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.oclc.oai.harvester2.verb.GetRecord;
 import org.oclc.oai.harvester2.verb.Identify;
 import org.oclc.oai.harvester2.verb.ListIdentifiers;
@@ -65,7 +65,7 @@ public class OAIPage {
       results.put(key, next.getNode("metadata/xml/item/name").trim());
     }
 
-    while (!Check.isEmpty(listRecords.getResumptionToken())) {
+    while (StringUtils.isNotBlank(listRecords.getResumptionToken())) {
       listRecords = new ListRecords(baseUrl, listRecords.getResumptionToken());
       records = new PropBagEx(listRecords.toString());
       iterator = records.iterateAll("ListRecords/record");
@@ -96,7 +96,7 @@ public class OAIPage {
       formats.add(iterator.next().getNode("identifier"));
     }
 
-    while (!Check.isEmpty(listIdentifiers.getResumptionToken())) {
+    while (StringUtils.isNotBlank(listIdentifiers.getResumptionToken())) {
       listIdentifiers = new ListIdentifiers(baseUrl, listIdentifiers.getResumptionToken());
       records = new PropBagEx(listIdentifiers.toString());
       iterator = records.iterateAll("ListIdentifiers/header");

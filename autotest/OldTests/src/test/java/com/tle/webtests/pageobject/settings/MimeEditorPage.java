@@ -1,11 +1,12 @@
 package com.tle.webtests.pageobject.settings;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import java.net.URL;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -48,12 +49,12 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   }
 
   public MimeEditorPage setDetails(String desc, String mimeType, String[] ext) {
-    if (!Check.isEmpty(desc)) {
+    if (StringUtils.isNotBlank(desc)) {
       descField.clear();
       descField.sendKeys(desc);
     }
 
-    if (!Check.isEmpty(mimeType)) {
+    if (StringUtils.isNotBlank(mimeType)) {
       mimeTypeField.click();
       mimeTypeField.clear();
       mimeTypeField.sendKeys(mimeType);
@@ -65,7 +66,7 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
       ajaxUpdate.get();
     }
 
-    if (!Check.isEmpty(ext)) {
+    if (!ArrayUtils.isEmpty(ext)) {
       for (int i = 0; i < ext.length; i++) {
         extField.clear();
         extField.sendKeys(ext[i]);

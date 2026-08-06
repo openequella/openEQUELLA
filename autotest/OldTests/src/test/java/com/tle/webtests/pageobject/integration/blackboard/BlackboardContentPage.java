@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.integration.blackboard;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
@@ -175,7 +175,8 @@ public class BlackboardContentPage extends AbstractBlackboardCoursePage<Blackboa
             public Boolean apply(WebDriver d) {
               Set<String> windowList = driver.getWindowHandles();
               for (String windowHandle : windowList) {
-                if (!Check.isEmpty(windowHandle) && !windowHandle.equals(currentWindowHandle)) {
+                if (StringUtils.isNotBlank(windowHandle)
+                    && !windowHandle.equals(currentWindowHandle)) {
                   driver.switchTo().window(windowHandle);
                   return Boolean.TRUE;
                 }

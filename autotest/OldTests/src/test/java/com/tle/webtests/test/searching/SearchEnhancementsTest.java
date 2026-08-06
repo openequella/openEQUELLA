@@ -5,7 +5,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -133,7 +132,7 @@ public class SearchEnhancementsTest extends AbstractCleanupAutoTest {
     for (String name : expected) {
       assertTrue(results.doesResultExist(name), "Expecting '" + name);
     }
-    if (!Check.isEmpty(notExpected)) {
+    if (notExpected != null && !notExpected.isEmpty()) {
       for (String name : notExpected) {
         assertFalse(results.doesResultExist(name, 1), "Not expecting '" + name);
       }

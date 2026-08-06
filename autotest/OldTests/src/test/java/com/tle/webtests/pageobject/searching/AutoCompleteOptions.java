@@ -1,11 +1,11 @@
 package com.tle.webtests.pageobject.searching;
 
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import java.time.Duration;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -90,7 +90,7 @@ public class AutoCompleteOptions extends AbstractPage<AutoCompleteOptions> {
 
   private void listWait(String expected) {
     final By by;
-    if (Check.isEmpty(expected)) {
+    if (StringUtils.isBlank(expected)) {
       by = By.xpath("li/a");
     } else {
       by =
@@ -113,7 +113,7 @@ public class AutoCompleteOptions extends AbstractPage<AutoCompleteOptions> {
 
             }
 
-            if (Check.isEmpty(lastQuery)) {
+            if (StringUtils.isBlank(lastQuery)) {
               lastQuery = qs.getQueryText();
               qs.getLoadedElement().sendKeys(Keys.ESCAPE);
               qs.getLoadedElement().clear();

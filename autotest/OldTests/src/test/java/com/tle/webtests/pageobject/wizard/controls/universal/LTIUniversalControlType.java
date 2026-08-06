@@ -1,10 +1,10 @@
 /** */
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebElement;
 
 public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUniversalControlType> {
@@ -28,7 +28,7 @@ public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUni
 
   public LTIUniversalControlType openPage(int indexToolProvider, String launchUrl) {
     getConfiguredToolSelector().selectByIndex(indexToolProvider);
-    if (!Check.isEmpty(launchUrl)) {
+    if (StringUtils.isNotBlank(launchUrl)) {
       ccc.getLaunchUrlEditBox().sendKeys(launchUrl);
     }
     return this;

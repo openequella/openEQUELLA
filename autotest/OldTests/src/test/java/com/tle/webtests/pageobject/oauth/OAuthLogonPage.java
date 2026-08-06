@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.oauth;
 
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.By;
@@ -36,7 +36,7 @@ public class OAuthLogonPage extends AbstractPage<OAuthLogonPage> {
 
   public <T extends AbstractPage<T>> T logon(
       String username, String password, AbstractPage<T> redirTo) {
-    if (!Check.isEmpty(username)) {
+    if (StringUtils.isNotBlank(username)) {
       setUsername(username);
     }
     setPassword(password);
@@ -92,7 +92,7 @@ public class OAuthLogonPage extends AbstractPage<OAuthLogonPage> {
   }
 
   public OAuthLogonPage logonError(String username, String password) {
-    if (!Check.isEmpty(username)) {
+    if (StringUtils.isNotBlank(username)) {
       setUsername(username);
     }
     setPassword(password);
