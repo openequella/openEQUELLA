@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.tle.common.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
@@ -31,7 +31,7 @@ public class MyResourcesApiTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   private JsonNode doMyResourcesSearch(

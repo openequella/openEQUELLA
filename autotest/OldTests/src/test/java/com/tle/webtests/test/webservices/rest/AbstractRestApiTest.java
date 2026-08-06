@@ -9,7 +9,6 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.annotation.Nullable;
-import com.tle.common.Pair;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.test.AbstractIntegrationTest;
 import java.io.BufferedOutputStream;
@@ -37,6 +36,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -222,9 +222,9 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
     addOAuthClients(clients);
     for (Pair<String, String> client : clients) {
       OAuthClient oClient = new OAuthClient();
-      oClient.setName(client.getFirst());
-      oClient.setClientId(client.getFirst());
-      oClient.setUsername(client.getSecond());
+      oClient.setName(client.getLeft());
+      oClient.setClientId(client.getLeft());
+      oClient.setUsername(client.getRight());
       oClients.add(oClient);
     }
     return oClients;

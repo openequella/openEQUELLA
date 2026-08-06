@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.generic.component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
@@ -13,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -106,7 +106,7 @@ public class CheckList extends AbstractPage<CheckList> implements ListRenderer {
           checkListContainer
               .findElement(By.xpath(".//label[@for=" + quoteXPath(check.getAttribute("id")) + "]"))
               .getAttribute("title");
-      selectionOptions.add(new Pair<String, String>(anOptionText, anOptionAlt));
+      selectionOptions.add(Pair.of(anOptionText, anOptionAlt));
     }
     return selectionOptions;
   }
@@ -118,7 +118,7 @@ public class CheckList extends AbstractPage<CheckList> implements ListRenderer {
         new Function<Pair<String, String>, String>() {
           @Override
           public String apply(Pair<String, String> option) {
-            return option.getFirst();
+            return option.getLeft();
           }
         });
   }

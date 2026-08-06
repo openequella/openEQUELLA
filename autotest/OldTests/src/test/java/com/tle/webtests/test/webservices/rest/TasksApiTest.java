@@ -8,13 +8,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.tle.common.Pair;
 import java.text.ParsePosition;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
@@ -52,7 +53,7 @@ public class TasksApiTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   private JsonNode doTasksSearch(
@@ -135,17 +136,18 @@ public class TasksApiTest extends AbstractRestApiTest {
   public void taskFilterCountsTest() throws Exception {
     // An expectation is keyed by tasktype, with a target number and a
     // boolean result (false until reset to true)
-    Map<String, Pair<Integer, Boolean>> expectations =
-        new HashMap<String, Pair<Integer, Boolean>>();
+    // MutablePair rather than Pair: the boolean is flipped in place below as each
+    // expectation is affirmed.
+    Map<String, MutablePair<Integer, Boolean>> expectations = new HashMap<>();
 
     // @formatter:off
-    expectations.put("taskall", new Pair<Integer, Boolean>(8, false));
-    expectations.put("taskme", new Pair<Integer, Boolean>(1, false));
-    expectations.put("taskothers", new Pair<Integer, Boolean>(1, false));
-    expectations.put("tasknoone", new Pair<Integer, Boolean>(6, false));
-    expectations.put("taskmust", new Pair<Integer, Boolean>(6, false));
-    expectations.put("noteall", new Pair<Integer, Boolean>(2, false));
-    expectations.put("noteoverdue", new Pair<Integer, Boolean>(2, false));
+    expectations.put("taskall", MutablePair.of(8, false));
+    expectations.put("taskme", MutablePair.of(1, false));
+    expectations.put("taskothers", MutablePair.of(1, false));
+    expectations.put("tasknoone", MutablePair.of(6, false));
+    expectations.put("taskmust", MutablePair.of(6, false));
+    expectations.put("noteall", MutablePair.of(2, false));
+    expectations.put("noteoverdue", MutablePair.of(2, false));
     // @formatter:off
 
     String token = requestToken(OAUTH_CLIENT_ID);
@@ -174,20 +176,20 @@ public class TasksApiTest extends AbstractRestApiTest {
       String taskId = elemNode.get("id").asText();
       int count = elemNode.get("count").asInt();
 
-      Pair<Integer, Boolean> expects = expectations.get(taskId);
+      MutablePair<Integer, Boolean> expects = expectations.get(taskId);
       if (expects != null) {
         // the expectation exists: does the result match our assumption?
         assertTrue(
-            expects.getFirst().compareTo(count) <= 0,
-            "expected at least " + expects.getFirst() + " for " + taskId + "' but got " + count);
+            expects.getLeft().compareTo(count) <= 0,
+            "expected at least " + expects.getLeft() + " for " + taskId + "' but got " + count);
         // record success of the expectation
-        expects.setSecond(true);
+        expects.setRight(true);
       }
     }
 
     // ensure all expectations were hit
     for (String key : expectations.keySet()) {
-      assertTrue(expectations.get(key).getSecond(), "Neglected to affirm " + key);
+      assertTrue(expectations.get(key).getRight(), "Neglected to affirm " + key);
     }
   }
 

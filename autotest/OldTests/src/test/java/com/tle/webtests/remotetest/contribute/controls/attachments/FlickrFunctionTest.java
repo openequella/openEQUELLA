@@ -2,7 +2,6 @@ package com.tle.webtests.remotetest.contribute.controls.attachments;
 
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Pair;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.ItemSearchResult;
@@ -13,6 +12,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FlickrUniversalCont
 import com.tle.webtests.pageobject.wizard.controls.universal.FlickrUniversalControlType.SearchType;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -94,8 +94,8 @@ public class FlickrFunctionTest extends AbstractCleanupAutoTest {
     for (Pair<String, String> textAltPair : licencesTextAltPairs) {
       // Search on one licence at a time
       String[] licencesToSearchOn = new String[1];
-      licencesToSearchOn[0] = textAltPair.getFirst();
-      String expectedLicenceText = textAltPair.getSecond();
+      licencesToSearchOn[0] = textAltPair.getLeft();
+      String expectedLicenceText = textAltPair.getRight();
       searchResultsPage = flickrControl.useLicencesToSearch(licencesToSearchOn);
       int howManyThisOption = searchResultsPage.getTotalAvailable();
       sumLicencesAllOptions += howManyThisOption;
