@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
@@ -39,6 +40,13 @@ import type { ACLRecipient } from "../../../tsrc/modules/ACLRecipientModule";
 export default {
   title: "Component/ACLExpressionBuilder/ACLTreeRecipient",
   component: ACLTreeRecipient,
+  decorators: [
+    (Story) => (
+      <SimpleTreeView>
+        <Story />
+      </SimpleTreeView>
+    ),
+  ],
 } as Meta<ACLTreeRecipientProps>;
 
 const recipient = (recipient: ACLRecipient) => (
