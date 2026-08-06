@@ -26,9 +26,14 @@ object CollectionQueries {
   /** List all collections
     */
   def list[A](
-      innerSelection: SelectionBuilder[BaseEntityReference, A]
-  ): SelectionBuilder[CollectionQueries, List[A]] =
-    _root_.caliban.client.SelectionBuilder.Field("list", ListOf(Obj(innerSelection)))
+      includeSystem: scala.Option[Boolean] = None
+  )(innerSelection: SelectionBuilder[BaseEntityReference, A])(implicit
+      encoder0: ArgEncoder[scala.Option[Boolean]]
+  ): SelectionBuilder[CollectionQueries, List[A]] = _root_.caliban.client.SelectionBuilder.Field(
+    "list",
+    ListOf(Obj(innerSelection)),
+    arguments = List(Argument("includeSystem", includeSystem, "Boolean"))
+  )
 
   /** Export a collection, returning a base64 encoded zip file
     */
