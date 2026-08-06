@@ -16,6 +16,9 @@ import testng.annotation.NewUIOnly
 @NewUIOnly
 class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
 
+  // Deliberately points at the upstream GitHub repository rather than a local path: the test needs a
+  // remotely hosted image to check that the login notice renders it. The path is upstream's layout,
+  // so it does not track moves of our own fixture tree and must not be "corrected" to match it.
   private val equellaGithubAvatarURL =
     "https://raw.githubusercontent.com/openequella/openEQUELLA/develop/autotest/Tests/tests/fiveo/institution/items/42/216490/cat1.jpg"
 

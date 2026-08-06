@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import org.fest.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -87,7 +87,7 @@ public class MoodleTestFactory {
             if (allowedMoodles.contains(version)) {
               AbstractMoodleTest moodleTest = AbstractMoodleTest.class.cast(clazz.newInstance());
               String moodleContextUrl = testConfig.getMoodleContextUrl(version);
-              if (!Strings.isEmpty(moodleContextUrl)) {
+              if (!StringUtils.isEmpty(moodleContextUrl)) {
                 moodleTest.setMoodleUrl(moodleContextUrl);
                 moodleTest.setOrder(order);
                 testObjects.add(moodleTest);

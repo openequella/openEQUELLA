@@ -121,8 +121,8 @@ tests {
 ```
 This will set the TestNG suite to be the same as is run on the AWS CodeBuild server.
 
-All the tests live in the `OldTests` project. The `Tests` project is now just the shared Selenium
-framework and page-object library that `OldTests` depends on, and has no tests of its own.
+Everything lives in the `OldTests` project: the tests themselves, the shared Selenium framework and
+page-object library under `com.tle.webtests`, and the institution fixtures in `OldTests/tests`.
 
 `OldTests` holds two kinds of end-to-end test, split into one sbt configuration per test framework:
 

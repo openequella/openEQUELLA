@@ -19,9 +19,7 @@ lazy val config = (project in file("config"))
 
 lazy val IntegTester = project in file("IntegTester")
 
-lazy val Tests = project in file("Tests")
-
-lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
+lazy val OldTests = (project in file("OldTests")).dependsOn(IntegTester, config)
 
 (ThisBuild / autotestBuildConfig) := {
   val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))
@@ -272,10 +270,8 @@ collectArtifacts := {
     files.flatMap(f => (f ** "*").pair(rebase(f, f.getName)))
   }
   val logsDir = installDir.value / "logs"
-  // Deliberately Tests, not OldTests: TestConfig.getResultsFolder is derived from the location of
-  // TestConfig.class (it walks up to the directory named "Tests"), so screenshots and results are
-  // written under Tests/target regardless of which project's test task is running.
-  val scReportDir  = (LocalProject("Tests") / target).value / "test-reports"
+  // Where TestConfig.getResultsFolder writes screenshots and failed-test artefacts.
+  val scReportDir  = (OldTests / target).value / "test-reports"
   val oldReportDir = file((OldTests / testNGOutputDirectory).value)
 
   sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")

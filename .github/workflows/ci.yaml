@@ -259,18 +259,18 @@ jobs:
       # Runs both the TestNG suites and the ScalaTest property-based suites, which now live in the
       # same project. The latter are tagged @NewUIOnly and so are skipped on the Old UI leg, via
       # OLD_TEST_NEWUI (see OldTests/build.sbt) — the same variable TestNG filtering already uses.
+      # OldTests has one sbt configuration per test framework: the default `test` runs the TestNG
+      # suites and `ScalaTest/test` runs the ScalaTest ones. Both are needed here.
       - name: Run tests
         run: |
-          ./sbt "project autotest" OldTests/test dumpCoverage
+          ./sbt "project autotest" OldTests/test OldTests/ScalaTest/test dumpCoverage
 
-      # Screenshots and failed-property artifacts are written under Tests/target regardless of which
-      # project runs the tests, because TestConfig derives its base folder from its own location.
       - name: Save property-based test results
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
           name: PropertyTestReports-${{ env.MATRIX_ID }}
-          path: autotest/Tests/target/test-reports
+          path: autotest/OldTests/target/test-reports
 
       - name: Save TestNG Reports
         if: failure()
@@ -291,7 +291,7 @@ jobs:
         uses: actions/upload-artifact@v4.4.0
         with:
           name: Screenshots-${{ env.MATRIX_ID }}
-          path: autotest/Tests/target/test-reports/screenshots
+          path: autotest/OldTests/target/test-reports/screenshots
 
       - name: Generate coverage report
         run: |

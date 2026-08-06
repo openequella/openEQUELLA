@@ -162,6 +162,14 @@ export default defineConfig([
     },
   },
   {
-    ignores: ["**/node_modules", "**/target", "**/output"],
+    ignores: [
+      "**/node_modules",
+      "**/target",
+      "**/output",
+      // Institution fixtures for the autotests. These contain third-party content, such as the
+      // JavaScript inside SCORM packages, which must be preserved byte-for-byte rather than linted
+      // or reformatted.
+      "autotest/**/tests/**",
+    ],
   },
 ]);

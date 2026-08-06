@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import org.fest.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Factory;
 
 @TestInstitution("moodle")
@@ -31,7 +31,7 @@ public class SyncMoodle {
       if (allowedMoodles.contains(version)) {
         SyncMoodleTest moodleTest = new SyncMoodleTest();
         String moodleContextUrl = testConfig.getMoodleContextUrl(version);
-        if (!Strings.isEmpty(moodleContextUrl)) {
+        if (!StringUtils.isEmpty(moodleContextUrl)) {
           moodleTest.setMoodleUrl(moodleContextUrl);
           testObjects.add(moodleTest);
         } else {

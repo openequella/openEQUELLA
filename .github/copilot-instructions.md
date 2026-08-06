@@ -223,12 +223,16 @@ autotest project.
 
 ```
 autotest/
-├── OldTests/        # Main Selenium test suite (misnomer - actively used)
-│   ├── src/test/java/  # Test code and Page Objects
-│   └── src/test/scala/ # Newer test code being written in Scala
-├── Tests/           # Additional test suite
+├── OldTests/        # All the Selenium tests (misnomer - actively used)
+│   ├── src/test/java/  # Tests, the com.tle.webtests framework, and Page Objects
+│   ├── src/test/scala/ # Newer test code being written in Scala
+│   ├── tests/          # Institution fixtures, imported by `sbt setupForTests`
+│   └── lib/            # A stale prebuilt jar supplying com.tle.common.* (see its README)
 └── IntegTester/     # Integration test harness
 ```
+
+`OldTests` has one sbt configuration per test framework — `OldTests/test` runs the TestNG suites and
+`OldTests/ScalaTest/test` runs the ScalaTest ones. ScalaTest is where new tests should go.
 
 **Build & Configuration:**
 
