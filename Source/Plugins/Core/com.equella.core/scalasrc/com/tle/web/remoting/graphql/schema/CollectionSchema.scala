@@ -47,7 +47,7 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
 
   private val queries = Queries(
     collection = CollectionQueryOps(
-      list = () => collectionProvider.listCollections(),
+      list = args => collectionProvider.listCollections(args.includeSystem.getOrElse(false)),
       export = args => collectionProvider.exportCollection(args.id, args.withSecurity),
       idForUuid = uuid => collectionProvider.collectionIdForUuid(uuid),
       byId = args => collectionProvider.collectionById(args.id),
@@ -79,7 +79,7 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
   @GQLName("CollectionQueries")
   case class CollectionQueryOps(
       @GQLDescription("List all collections")
-      list: () => List[BaseEntityReference],
+      list: CollectionListArgs => List[BaseEntityReference],
       @GQLDescription("Export a collection, returning a base64 encoded zip file")
       export: CollectionExportArgs => Option[String],
       @GQLDescription("Get the collection ID for a given UUID")
@@ -92,6 +92,13 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       categories: () => List[String],
       @GQLDescription("List the collections which use the specified schema")
       listForSchema: CollectionsForSchemaArgs => List[BaseEntityReference]
+  )
+
+  case class CollectionListArgs(
+      @GQLDescription(
+        "Whether to include 'system type' collections such as the \"My Content\" collection backing the Scrapbook. Defaults to false if not provided."
+      )
+      includeSystem: Option[Boolean] = Some(false)
   )
 
   case class CollectionExportArgs(

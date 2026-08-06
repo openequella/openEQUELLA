@@ -53,15 +53,24 @@ class MetadataSchemaProvider @Inject() (
 ) {
   private val LOGGER = LoggerFactory.getLogger(classOf[MetadataSchemaProvider])
 
-  /** List all metadata schemas.
+  /** List all metadata schemas the current user can edit.
     *
+    * @param includeSystem
+    *   whether to also include 'system type' schemas, which are hidden by default - such as the "My
+    *   Content" schema backing the Scrapbook. Needed by callers assigning ACLs, such as the Admin
+    *   Console Security Manager. The per-schema ACL filtering applies either way - this flag only
+    *   controls the inclusion of system schemas.
     * @return
     *   a list of `BaseEntityReference` objects representing the metadata schemas.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
-  def listSchemas(): List[BaseEntityReference] = {
-    LOGGER.debug("Listing all metadata schemas")
-    schemaService.listEditable().asScala.map(BaseEntityReference(_)).toList
+  def listSchemas(includeSystem: Boolean): List[BaseEntityReference] = {
+    LOGGER.debug(s"Listing all metadata schemas (includeSystem: $includeSystem)")
+    val schemas =
+      if (includeSystem) schemaService.listEditableIncludingSystem()
+      else schemaService.listEditable()
+
+    schemas.asScala.map(BaseEntityReference(_)).toList
   }
 
   /** Export a metadata schema as a base64 String representing the contents of a zip file. This can

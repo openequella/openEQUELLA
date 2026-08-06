@@ -533,6 +533,18 @@ public abstract class AbstractEntityServiceImpl<
     return listAll();
   }
 
+  /**
+   * As per listEditable(), but the result also includes 'system type' entities. The ACL check is
+   * identical - system type entities are the only difference between the two.
+   *
+   * @return a list of all entities that the current user can edit, including system type entities
+   */
+  @Override
+  @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  public List<BaseEntityLabel> listEditableIncludingSystem() {
+    return listAllIncludingSystem();
+  }
+
   @Override
   @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   public EntityPack<T> getReadOnlyPack(long id) {
