@@ -19,7 +19,10 @@ lazy val config = (project in file("config"))
 
 lazy val IntegTester = project in file("IntegTester")
 
-lazy val OldTests = (project in file("OldTests")).dependsOn(IntegTester, config)
+// platformCommon supplies com.dytech.devlib.PropBagEx and the com.tle.common.* utilities these tests
+// use. It replaces a hand-built 2015 jar that used to sit in OldTests/lib, so the tests now exercise
+// the same classes the server does.
+lazy val OldTests = (project in file("OldTests")).dependsOn(IntegTester, config, platformCommon)
 
 (ThisBuild / autotestBuildConfig) := {
   val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))

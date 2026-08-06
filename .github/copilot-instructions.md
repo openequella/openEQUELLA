@@ -226,8 +226,7 @@ autotest/
 ├── OldTests/        # All the Selenium tests (misnomer - actively used)
 │   ├── src/test/java/  # Tests, the com.tle.webtests framework, and Page Objects
 │   ├── src/test/scala/ # Newer test code being written in Scala
-│   ├── tests/          # Institution fixtures, imported by `sbt setupForTests`
-│   └── lib/            # A stale prebuilt jar supplying com.tle.common.* (see its README)
+│   └── tests/          # Institution fixtures, imported by `sbt setupForTests`
 └── IntegTester/     # Integration test harness
 ```
 
