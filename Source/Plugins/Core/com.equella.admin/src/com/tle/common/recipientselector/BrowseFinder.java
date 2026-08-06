@@ -20,19 +20,20 @@ package com.tle.common.recipientselector;
 
 import com.dytech.common.text.NumberStringComparator;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,24 +64,28 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
-  private static final long serialVersionUID = 1L;
-  private final RemoteUserService userService;
-  private final boolean allowGroupSelection;
-  private final boolean allowUserSelection;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private TreePanel treePanel;
+  private static final Logger LOGGER = LoggerFactory.getLogger(BrowseFinder.class);
+
+  private final AdminUserDirectoryService userDirectoryService;
+  private final boolean allowGroupSelection;
+
+  private final TreePanel treePanel;
   private EventListenerList eventListenerList;
   private UserPanel userPanel;
   private BrowsePanelFinder selected;
 
-  public BrowseFinder(RemoteUserService userService, RecipientFilter... filters) {
-    this.userService = userService;
+  public BrowseFinder(AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
+    this.userDirectoryService = userDirectoryService;
 
     List<RecipientFilter> fs = Arrays.asList(filters);
     allowGroupSelection = fs.contains(RecipientFilter.GROUPS);
-    allowUserSelection = fs.contains(RecipientFilter.USERS);
+    boolean allowUserSelection = fs.contains(RecipientFilter.USERS);
 
     treePanel = new TreePanel();
     selected = treePanel;
@@ -121,13 +126,25 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
 
   List<UserBean> search(String query) {
     try {
-      List<UserBean> rv = userService.searchUsers(query, treePanel.getSelectedParentGroup(), true);
-      Collections.sort(rv, Format.USER_BEAN_COMPARATOR);
+      List<UserBean> rv = searchUsers(query);
+      rv.sort(Format.USER_BEAN_COMPARATOR);
       return rv;
     } catch (RuntimeException ex) {
-      ex.printStackTrace();
+      LOGGER.error("Failed to search users with query: {}", query, ex);
       throw ex;
     }
+  }
+
+  /**
+   * Searches for users matching {@code query}. If a group is selected in the tree panel, the search
+   * is scoped to that group (recursively); otherwise all users are searched.
+   */
+  private List<UserBean> searchUsers(String query) {
+    String parentGroupId = treePanel.getSelectedParentGroup();
+    if (parentGroupId == null) {
+      return userDirectoryService.searchUsers(query);
+    }
+    return userDirectoryService.searchUsersInGroup(query, parentGroupId, true);
   }
 
   private BrowsePanelFinder getSelectedPanel() {
@@ -199,7 +216,6 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
     protected abstract int getSelectedResultCount();
   }
 
-  @SuppressWarnings("nls")
   private class UserPanel extends BrowsePanelFinder
       implements ListSelectionListener, ActionListener {
     private JTextField query;
@@ -359,13 +375,13 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
     @Override
     public void actionPerformed(ActionEvent e) {
       GlassSwingWorker<GroupNode> w =
-          new GlassSwingWorker<GroupNode>() {
-            private Map<String, GroupNode> cachedNodes = new HashMap<String, GroupNode>();
-            private GroupNode root = new RootNode();
+          new GlassSwingWorker<>() {
+            private final Map<String, GroupNode> cachedNodes = new HashMap<>();
+            private final GroupNode root = new RootNode();
 
             @Override
             public GroupNode construct() throws Exception {
-              List<GroupBean> searchResults = userService.searchGroups(query.getText());
+              List<GroupBean> searchResults = userDirectoryService.searchGroups(query.getText());
               for (GroupBean gb : searchResults) {
                 setupParents(new GroupNode(gb));
               }
@@ -374,7 +390,8 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
 
             private GroupNode setupParents(GroupNode node) {
               if (!cachedNodes.containsKey(node.get().getUniqueID())) {
-                GroupBean parent = userService.getParentGroupForGroup(node.getId());
+                GroupBean parent =
+                    userDirectoryService.getParentGroupForGroup(node.getId()).orElse(null);
                 if (parent == null) {
                   root.insertInOrder(node);
                 } else {
@@ -429,7 +446,7 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
     @Override
     public List<Object> getSelectedResults() {
       TreePath[] paths = tree.getSelectionPaths();
-      List<Object> o = new ArrayList<Object>(paths.length);
+      List<Object> o = new ArrayList<>(paths.length);
       for (TreePath path : paths) {
         Object o2 = ((GroupNode) path.getLastPathComponent()).get();
         if (o2 != null) {
@@ -468,7 +485,7 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
     }
 
     protected class RootNode extends GroupNode {
-      private static final long serialVersionUID = 1L;
+      @Serial private static final long serialVersionUID = 1L;
 
       @Override
       public String getId() {
@@ -477,7 +494,7 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
     }
 
     protected class GroupNode extends DefaultMutableTreeNode {
-      private static final long serialVersionUID = 1L;
+      @Serial private static final long serialVersionUID = 1L;
 
       public GroupNode() {
         super();
@@ -495,7 +512,6 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
         return get().getUniqueID();
       }
 
-      @SuppressWarnings("unchecked")
       public void insertInOrder(MutableTreeNode newChild) {
         if (!Check.isEmpty(children)) {
           List<TreeNode> childNodes = Collections.list(children.elements());

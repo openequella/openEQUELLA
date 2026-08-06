@@ -21,26 +21,25 @@ package com.tle.beans.entity;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
 import com.tle.common.i18n.BundleReference;
+import java.io.Serial;
 import java.io.Serializable;
 
 public class BaseEntityLabel
     implements Serializable, FieldEquality<BaseEntityLabel>, BundleReference {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final long id;
   private final long bundleId;
   private final String uuid;
   private final String owner;
-  private final boolean systemType;
 
-  private String privType;
+  private boolean forCollection;
 
-  public BaseEntityLabel(long id, String uuid, long bundleId, String owner, boolean systemType) {
+  public BaseEntityLabel(long id, String uuid, long bundleId, String owner) {
     this.id = id;
     this.uuid = uuid;
     this.bundleId = bundleId;
     this.owner = owner;
-    this.systemType = systemType;
   }
 
   public long getId() {
@@ -60,16 +59,25 @@ public class BaseEntityLabel
     return owner;
   }
 
-  public boolean isSystemType() {
-    return systemType;
+  /**
+   * @return true if this entity is associated with a collection, false otherwise.
+   */
+  public boolean isForCollection() {
+    return forCollection;
   }
 
-  public void setPrivType(String privType) {
-    this.privType = privType;
+  public void setForCollection(boolean forCollection) {
+    this.forCollection = forCollection;
   }
 
-  public String getPrivType() {
-    return privType;
+  /**
+   * Static helper to determine if forCollection should be true based on a String value.
+   *
+   * @param type the type string to check
+   * @return true if type equals "COLLECTION", false otherwise
+   */
+  public static boolean isCollectionType(String type) {
+    return "COLLECTION".equals(type);
   }
 
   @Override

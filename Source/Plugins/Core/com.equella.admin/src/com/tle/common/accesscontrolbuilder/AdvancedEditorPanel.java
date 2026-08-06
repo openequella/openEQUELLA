@@ -26,6 +26,7 @@ import com.tle.admin.gui.common.actions.JTextlessButton;
 import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.client.gui.popup.TablePopupListener;
 import com.tle.common.i18n.CurrentLocale;
@@ -36,7 +37,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,16 +74,16 @@ public class AdvancedEditorPanel extends JComponent
   private OverrideDefaultAclViewer.Filter overridesFilter;
   private OverrideDefaultAclViewer.Filter defaultsFilter;
   private final RemoteTLEAclManager aclManager;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   public AdvancedEditorPanel(
       RemoteTLEAclManager aclManager,
-      RemoteUserService userService,
+      AdminUserDirectoryService userDirectoryService,
       Node privNode,
       PrivilegeList accessModel,
       Object domainObj) {
     this.aclManager = aclManager;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
     this.privilege = accessModel.getPrivilege();
     this.domainObj = domainObj;
 
@@ -118,8 +118,8 @@ public class AdvancedEditorPanel extends JComponent
     actionColumn.setCellEditor(new ActionTableCellEditor());
 
     TableColumn whoColumn = privilegeTable.getColumnModel().getColumn(1);
-    whoColumn.setCellRenderer(new ExpressionTableCellRenderer(userService));
-    whoColumn.setCellEditor(new WhoTableCellEditor(userService, this));
+    whoColumn.setCellRenderer(new ExpressionTableCellRenderer(userDirectoryService));
+    whoColumn.setCellEditor(new WhoTableCellEditor(userDirectoryService, this));
 
     JScrollPane scroller = new JScrollPane(privilegeTable);
 
@@ -461,7 +461,8 @@ public class AdvancedEditorPanel extends JComponent
     @Override
     public OverrideDefaultAclViewer construct() throws Exception {
       if (oldViewer == null) {
-        return new OverrideDefaultAclViewer(aclManager, userService, domainObj, privilege, filter);
+        return new OverrideDefaultAclViewer(
+            aclManager, userDirectoryService, domainObj, privilege, filter);
       }
       return null;
     }

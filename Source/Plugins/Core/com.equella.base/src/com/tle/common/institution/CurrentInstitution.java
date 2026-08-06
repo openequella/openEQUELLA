@@ -19,8 +19,16 @@
 package com.tle.common.institution;
 
 import com.tle.beans.Institution;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 public final class CurrentInstitution {
+  /** The name of the attribute by which institution owned entities refer to their institution. */
+  private static final String INSTITUTION_ATTRIBUTE = "institution";
+
   private static final ThreadLocal<Institution> local = new ThreadLocal<Institution>();
 
   public static Institution get() {
@@ -33,6 +41,27 @@ public final class CurrentInstitution {
 
   public static void remove() {
     local.remove();
+  }
+
+  /**
+   * @return a Hibernate criterion that filters by the current institution - based on property name
+   *     of "institution"
+   */
+  public static Criterion equalityCriteria() {
+    return Restrictions.eq(INSTITUTION_ATTRIBUTE, get());
+  }
+
+  /**
+   * The JPA criteria counterpart of {@link #equalityCriteria()}, for queries built with a {@code
+   * CriteriaBuilder} rather than the legacy Hibernate {@code Criteria} API.
+   *
+   * @param criteriaBuilder the builder the query is being built with
+   * @param path the root (or join) of the institution owned entity being filtered
+   * @return a predicate that filters by the current institution - based on property name of
+   *     "institution"
+   */
+  public static Predicate equalityPredicate(CriteriaBuilder criteriaBuilder, Path<?> path) {
+    return criteriaBuilder.equal(path.get(INSTITUTION_ATTRIBUTE), get());
   }
 
   private CurrentInstitution() {

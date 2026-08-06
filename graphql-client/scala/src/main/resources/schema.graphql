@@ -1,0 +1,1069 @@
+schema {
+  query: Queries
+  mutation: Mutations
+}
+
+"A date-time without a time-zone in the ISO-8601 calendar system in the format of 1970-01-01T00:00:00"
+scalar LocalDateTime
+
+scalar Long
+
+scalar Unit
+
+"The type of sub-entity target for an access control list."
+enum OtherTargetListType {
+  "Per-metadata-rule ACLs."
+  ITEM_METADATA
+  "Per-item-status ACLs (e.g. DRAFT, LIVE, MODERATING)."
+  ITEM_STATUS
+  "Per-workflow-task ACLs."
+  WORKFLOW_TASK
+}
+
+"A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
+input CitationInput {
+  "Name for the citation"
+  name: String!
+  "Name of the XSLT file for citation - can be downloaded from the server"
+  transformation: String!
+}
+
+"A collection definition, defining the structure and configuration for a collection of items in openEQUELLA."
+input CollectionDefinitionInput {
+  "Common details of the collection definition, including UUID and owner."
+  details: EntityDetailsInput!
+  "ID of the metadata schema associated with this collection."
+  schemaId: Long
+  "Category identifier for the wizard used by this collection."
+  wizardCategory: String
+  "ID of the workflow associated with this collection."
+  workflowId: Long
+  "The review period in days. None if no review period is configured for this collection."
+  reviewPeriod: Int
+  "Name of the XSLT used for SCORM packaging."
+  scormPackagingTransformation: String
+  "Whether direct contribution by users is denied for this collection."
+  denyDirectContribution: Boolean!
+  "Contribution wizard configuration for this collection."
+  wizard: CollectionWizardInput
+  "Search results display configuration for this collection."
+  searchDetails: CollectionSearchDetailsInput
+  "Metadata import mapping configuration for this collection."
+  metadataMapping: CollectionMetadataMappingInput
+  "Rules controlling access to items in this collection based on their metadata."
+  itemMetadataRules: [CollectionItemMetadataRuleInput!]!
+  "Rules that apply dynamic ACL entries to items based on their metadata."
+  dynamicMetadataRules: [CollectionDynamicMetadataRuleInput!]!
+  "Summary page display template for items in this collection."
+  itemSummaryDisplayTemplate: CollectionSummaryDisplayTemplateInput
+}
+
+"A node in the metadata to display for items in search results."
+input CollectionDisplayNodeInput {
+  "XPath to the metadata node"
+  node: String
+  "The type of display for this node"
+  nodeType: String
+  "The display mode for this node"
+  mode: String
+  "Splitter character between repeated node values"
+  splitter: String
+  "Display title for this node"
+  title: LanguageBundleInput
+  "Maximum display length before truncation"
+  truncateLength: Int
+}
+
+"A rule that applies dynamic ACL entries to an item based on its metadata values."
+input CollectionDynamicMetadataRuleInput {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "XPath to the metadata node whose values drive the ACL"
+  path: String
+  "Type of dynamic rule"
+  ruleType: String
+  "ACL entries applied by this rule"
+  targetList: [TargetListEntryInput!]!
+}
+
+"An HTML metadata field mapping."
+input CollectionHtmlMappingInput {
+  "HTML source field name"
+  html: String!
+  "Collection metadata target path"
+  itemdef: String!
+}
+
+"An IMS/LOM metadata field mapping."
+input CollectionImsMappingInput {
+  "IMS/LOM source field path"
+  ims: String!
+  "Collection metadata target path"
+  itemdef: String!
+  "Mapping type"
+  mappingType: String!
+  "Whether to replace existing values at the target path"
+  replace: Boolean!
+}
+
+"A rule that controls access to an item based on its metadata."
+input CollectionItemMetadataRuleInput {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "Script that evaluates the metadata condition"
+  script: String
+}
+
+"A literal value used to trigger a metadata mapping."
+input CollectionLiteralInput {
+  "The literal value to match"
+  value: String
+  "A script to compute the mapping value"
+  script: String
+}
+
+"A literal value metadata mapping."
+input CollectionLiteralMappingInput {
+  "Collection metadata target path"
+  value: String
+  "Literal values that trigger this mapping"
+  literals: [CollectionLiteralInput!]!
+}
+
+"Configuration for mapping external metadata formats to collection metadata."
+input CollectionMetadataMappingInput {
+  "IMS/LOM metadata mappings"
+  imsMapping: [CollectionImsMappingInput!]!
+  "HTML metadata mappings"
+  htmlMapping: [CollectionHtmlMappingInput!]!
+  "Literal value metadata mappings"
+  literalMapping: [CollectionLiteralMappingInput!]!
+}
+
+"Configuration for how a collection's items are displayed in search results."
+input CollectionSearchDetailsInput {
+  "Controls how attachments are displayed in search results"
+  attDisplay: String
+  "Whether to disable the thumbnail display in search results"
+  disableThumbnail: Boolean!
+  "Whether search results open in the standard view by default"
+  standardOpen: Boolean!
+  "Whether search results open in integration contexts by default"
+  integrationOpen: Boolean!
+  "The list of metadata nodes to display for each item in search results"
+  displayNodes: [CollectionDisplayNodeInput!]!
+}
+
+"Template controlling how item summary pages are displayed."
+input CollectionSummaryDisplayTemplateInput {
+  "The ordered list of section configurations for this template"
+  configList: [CollectionSummarySectionConfigInput!]!
+  "Whether the item owner is hidden from the summary page"
+  hideOwner: Boolean!
+  "Whether collaborators are hidden from the summary page"
+  hideCollaborators: Boolean!
+}
+
+"Configuration for a single section in the item summary display template."
+input CollectionSummarySectionConfigInput {
+  "Unique identifier for this section configuration"
+  uuid: String
+  "The section type identifier (plugin extension ID)"
+  value: String!
+  "Plugin-specific XML configuration for this section"
+  configuration: String
+  "Display title override for this section"
+  bundleTitle: LanguageBundleInput
+}
+
+"Configuration for the contribution wizard for a collection."
+input CollectionWizardInput {
+  "Display name of the wizard"
+  name: String
+  "Script to run when an item is redrafted"
+  redraftScript: String
+  "Script to run when an item is saved"
+  saveScript: String
+  "Whether contributors can navigate wizard pages non-sequentially"
+  allowNonSequentialNavigation: Boolean!
+  "Whether to show page titles in the next/previous navigation"
+  showPageTitlesNextPrev: Boolean!
+  "Additional CSS class applied to the wizard container"
+  additionalCssClass: String
+  "Internal use only. Opaque serialised XML of the wizard pages. Do not parse this field directly ? use dedicated APIs for wizard page manipulation."
+  pages: String
+  "Internal use only. Opaque serialised XML of the fixed metadata applied by the wizard."
+  fixedMetadata: String
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+input EditableEntityCollectionDefinitionInput {
+  "Base entity being edited"
+  entity: CollectionDefinitionInput!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntryInput!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetListInput!]!
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+input EditableEntityMetadataSchemaInput {
+  "Base entity being edited"
+  entity: MetadataSchemaInput!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntryInput!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetListInput!]!
+}
+
+"Common details for entities, including identifiers, ownership, timestamps, and additional attributes."
+input EntityDetailsInput {
+  "Unique identifier for this entity."
+  id: Long!
+  "Universally unique identifier for this entity, used for referencing across different entities."
+  uuid: String!
+  "Owner of this entity, typically the user who created it."
+  owner: String!
+  "Timestamp for when this entity was created - only valid when starting an edit on an existing entity."
+  dateCreated: LocalDateTime
+  "Timestamp for when this entity was last modified - only valid when starting an edit on an existing entity."
+  dateModified: LocalDateTime
+  "Language bundle for the _name_ of this entity, used for internationalization."
+  nameBundle: LanguageBundleInput
+  "Language bundle for the _description_ of this entity, used for internationalization."
+  descriptionBundle: LanguageBundleInput
+  "A map of additional attributes for this entity, allowing for flexible metadata storage."
+  attributes: [KVStringStringInput!]!
+  "Indicates whether this entity is disabled, affecting its visibility and usability."
+  disabled: Boolean!
+}
+
+"A key-value pair of String and String"
+input KVStringStringInput {
+  "Key"
+  key: String!
+  "Value"
+  value: String!
+}
+
+"A bundle of language strings, each representing a translation for a specific locale."
+input LanguageBundleInput {
+  "Unique identifier for this language bundle."
+  id: Long!
+  "List of language strings in this bundle."
+  strings: [LanguageStringInput!]!
+}
+
+"A single translation of a piece of text for a specific locale."
+input LanguageStringInput {
+  "Unique identifier for this language string."
+  id: Long!
+  "Priority of this language string, with lower numbers indicating higher priority."
+  priority: Int!
+  "Locale code for this language string, e.g., 'en' for English."
+  locale: String!
+  "The translated text for this locale."
+  text: String!
+}
+
+"A metadata schema, which defines the structure and transforms for metadata items in openEQUELLA."
+input MetadataSchemaInput {
+  "Details of the metadata schema, including UUID and owner"
+  details: EntityDetailsInput!
+  "Transforms applied when exporting this schema between repositories"
+  exportTransforms: [MetadataSchemaTransformInput!]!
+  "Transforms applied when importing this schema between repositories"
+  importTransforms: [MetadataSchemaTransformInput!]!
+  "Path to the name attribute in the schema"
+  itemNamePath: String!
+  "Path to the description attribute in the schema"
+  itemDescriptionPath: String!
+  "XML definition of the schema"
+  definition: String!
+  "List of citations associated with this schema"
+  citations: [CitationInput!]!
+}
+
+"A schema transform that defines how metadata is transformed during export or import operations with external systems."
+input MetadataSchemaTransformInput {
+  "Filename of the schema transform stored on the server - managed via staging area"
+  filename: String!
+  "Type of the schema transform, e.g., OAI_Identity, HARVESTER, OAI_DC"
+  schemaType: String!
+}
+
+"A sub-entity access control list, keyed by the type of target (e.g. item status, metadata rule, workflow task)."
+input OtherTargetListInput {
+  "Discriminator indicating what kind of target this list is for."
+  targetType: OtherTargetListType!
+  "For ITEM_STATUS targets: the item status this list applies to (e.g. DRAFT, LIVE, MODERATING). Null for other target types."
+  itemStatus: String
+  "For ITEM_METADATA targets: the ID of the metadata rule this list applies to. Null for other target types."
+  metadataRuleId: String
+  "For WORKFLOW_TASK targets: the ID of the workflow task this list applies to. Null for other target types."
+  taskId: String
+  "The access control entries for this target."
+  entries: [TargetListEntryInput!]!
+}
+
+input TargetListEntryInput {
+  "Whether the privilege is granted or revoked"
+  granted: Boolean!
+  "Has precedence over other actions in the list"
+  overridden: Boolean!
+  "The privilege being granted or revoked, e.g., 'VIEW_ITEM', 'EDIT_SCHEMA', etc."
+  privilege: String!
+  "The user, group or other entity this applies to. Expecting values like '*', 'U:<username>', 'G:<groupname>' etc."
+  who: String!
+  "An optional postfix for the entry, used for additional context or information - defaults to empty string"
+  postfix: String!
+}
+
+type AdminConsolePluginQueries {
+  "List all admin console plugins details. Returns an empty list if no plugins are found."
+  list: [PluginDetails!]
+}
+
+type BaseEntityQueries {
+  "Retrieve the name of the base entity by its unique ID"
+  nameById("The unique ID of the base entity to retrieve" id: Long!): LanguageBundle
+  "Retrieve the access control details (ACLs) of the base entity by its unique ID. Entity type agnostic - the owning entity service is resolved from the ID. An entity with no access control entries returns empty lists; an unknown ID is an error."
+  securityById("The unique ID of the base entity whose security details are to be retrieved" id: Long!): BaseEntitySecurity
+}
+
+type BaseEntityReference {
+  "The database ID of the entity"
+  id: Long!
+  "The UUID of the entity"
+  uuid: String!
+  "The language bundle ID of the entity"
+  bundleId: Long!
+  "The owner of the entity"
+  owner: String!
+  "Whether this entity is a collection"
+  forCollection: Boolean!
+}
+
+"The access control details (ACLs) of an entity, independent of the entity's own attributes."
+type BaseEntitySecurity {
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted. Empty if the entity has no entries of its own."
+  targetList: [TargetListEntry!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetList!]!
+}
+
+"A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
+type Citation {
+  "Name for the citation"
+  name: String!
+  "Name of the XSLT file for citation - can be downloaded from the server"
+  transformation: String!
+}
+
+"A collection definition, defining the structure and configuration for a collection of items in openEQUELLA."
+type CollectionDefinition {
+  "Common details of the collection definition, including UUID and owner."
+  details: EntityDetails!
+  "ID of the metadata schema associated with this collection."
+  schemaId: Long
+  "Category identifier for the wizard used by this collection."
+  wizardCategory: String
+  "ID of the workflow associated with this collection."
+  workflowId: Long
+  "The review period in days. None if no review period is configured for this collection."
+  reviewPeriod: Int
+  "Name of the XSLT used for SCORM packaging."
+  scormPackagingTransformation: String
+  "Whether direct contribution by users is denied for this collection."
+  denyDirectContribution: Boolean!
+  "Contribution wizard configuration for this collection."
+  wizard: CollectionWizard
+  "Search results display configuration for this collection."
+  searchDetails: CollectionSearchDetails
+  "Metadata import mapping configuration for this collection."
+  metadataMapping: CollectionMetadataMapping
+  "Rules controlling access to items in this collection based on their metadata."
+  itemMetadataRules: [CollectionItemMetadataRule!]!
+  "Rules that apply dynamic ACL entries to items based on their metadata."
+  dynamicMetadataRules: [CollectionDynamicMetadataRule!]!
+  "Summary page display template for items in this collection."
+  itemSummaryDisplayTemplate: CollectionSummaryDisplayTemplate
+}
+
+"A node in the metadata to display for items in search results."
+type CollectionDisplayNode {
+  "XPath to the metadata node"
+  node: String
+  "The type of display for this node"
+  nodeType: String
+  "The display mode for this node"
+  mode: String
+  "Splitter character between repeated node values"
+  splitter: String
+  "Display title for this node"
+  title: LanguageBundle
+  "Maximum display length before truncation"
+  truncateLength: Int
+}
+
+"A rule that applies dynamic ACL entries to an item based on its metadata values."
+type CollectionDynamicMetadataRule {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "XPath to the metadata node whose values drive the ACL"
+  path: String
+  "Type of dynamic rule"
+  ruleType: String
+  "ACL entries applied by this rule"
+  targetList: [TargetListEntry!]!
+}
+
+"An HTML metadata field mapping."
+type CollectionHtmlMapping {
+  "HTML source field name"
+  html: String!
+  "Collection metadata target path"
+  itemdef: String!
+}
+
+"An IMS/LOM metadata field mapping."
+type CollectionImsMapping {
+  "IMS/LOM source field path"
+  ims: String!
+  "Collection metadata target path"
+  itemdef: String!
+  "Mapping type"
+  mappingType: String!
+  "Whether to replace existing values at the target path"
+  replace: Boolean!
+}
+
+"A rule that controls access to an item based on its metadata."
+type CollectionItemMetadataRule {
+  "Unique identifier for this rule"
+  ruleId: String
+  "Display name for this rule"
+  name: String
+  "Script that evaluates the metadata condition"
+  script: String
+}
+
+"A literal value used to trigger a metadata mapping."
+type CollectionLiteral {
+  "The literal value to match"
+  value: String
+  "A script to compute the mapping value"
+  script: String
+}
+
+"A literal value metadata mapping."
+type CollectionLiteralMapping {
+  "Collection metadata target path"
+  value: String
+  "Literal values that trigger this mapping"
+  literals: [CollectionLiteral!]!
+}
+
+"Configuration for mapping external metadata formats to collection metadata."
+type CollectionMetadataMapping {
+  "IMS/LOM metadata mappings"
+  imsMapping: [CollectionImsMapping!]!
+  "HTML metadata mappings"
+  htmlMapping: [CollectionHtmlMapping!]!
+  "Literal value metadata mappings"
+  literalMapping: [CollectionLiteralMapping!]!
+}
+
+type CollectionMutations {
+  "Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit operation."
+  startEdit("ID of the collection to edit" id: Long!): EditableEntityCollectionDefinition!
+  "Start creating a new collection. Typically followed by an add operation with details for new collection."
+  startCreate: EditableEntitySkeleton!
+  "Add a new collection - typically after a startCreate operation, with details for the new collection."
+  add("Details of the collection to add" details: EditableEntityCollectionDefinitionInput!, "Whether the newly added collection should be locked for editing after creation" lockAfterwards: Boolean!): BaseEntityReference
+  "Clone a collection - creating a copy of the collection with a new ID."
+  clone("ID of the collection to clone" id: Long!): BaseEntityReference
+  "Delete a collection - with consideration to references controllable by args."
+  delete("ID of the collection to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the collection regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
+  "Import a collection from a base64-encoded zip file."
+  import("Base64-encoded zip file of the collection to import" zipBase64: String!): EditableEntityCollectionDefinition
+  "Cancel editing a collection - discarding any changes made and unlocking the collection."
+  cancelEdit("ID of the collection edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
+  "Stop editing a collection - saving changes and optionally unlocking."
+  stopEdit("Details of the collection to save" details: EditableEntityCollectionDefinitionInput!, "Whether to unlock the collection after saving, if false, keeps it locked for continued editing" unlock: Boolean!): CollectionDefinition
+}
+
+type CollectionQueries {
+  "List all collections"
+  list: [BaseEntityReference!]!
+  "Export a collection, returning a base64 encoded zip file"
+  export("ID of the collection to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
+  "Get the collection ID for a given UUID"
+  idForUuid(value: String!): Long
+  "Get a collection by ID"
+  byId("ID of the collection" id: Long!): CollectionDefinition
+  "Get a collection by UUID"
+  byUuid("UUID of the collection" uuid: String!): CollectionDefinition
+  "List the wizard categories in use across all collections"
+  categories: [String!]!
+  "List the collections which use the specified schema"
+  listForSchema("ID of the schema" schemaId: Long!): [BaseEntityReference!]!
+}
+
+"Configuration for how a collection's items are displayed in search results."
+type CollectionSearchDetails {
+  "Controls how attachments are displayed in search results"
+  attDisplay: String
+  "Whether to disable the thumbnail display in search results"
+  disableThumbnail: Boolean!
+  "Whether search results open in the standard view by default"
+  standardOpen: Boolean!
+  "Whether search results open in integration contexts by default"
+  integrationOpen: Boolean!
+  "The list of metadata nodes to display for each item in search results"
+  displayNodes: [CollectionDisplayNode!]!
+}
+
+"Template controlling how item summary pages are displayed."
+type CollectionSummaryDisplayTemplate {
+  "The ordered list of section configurations for this template"
+  configList: [CollectionSummarySectionConfig!]!
+  "Whether the item owner is hidden from the summary page"
+  hideOwner: Boolean!
+  "Whether collaborators are hidden from the summary page"
+  hideCollaborators: Boolean!
+}
+
+"Configuration for a single section in the item summary display template."
+type CollectionSummarySectionConfig {
+  "Unique identifier for this section configuration"
+  uuid: String
+  "The section type identifier (plugin extension ID)"
+  value: String!
+  "Plugin-specific XML configuration for this section"
+  configuration: String
+  "Display title override for this section"
+  bundleTitle: LanguageBundle
+}
+
+"Configuration for the contribution wizard for a collection."
+type CollectionWizard {
+  "Display name of the wizard"
+  name: String
+  "Script to run when an item is redrafted"
+  redraftScript: String
+  "Script to run when an item is saved"
+  saveScript: String
+  "Whether contributors can navigate wizard pages non-sequentially"
+  allowNonSequentialNavigation: Boolean!
+  "Whether to show page titles in the next/previous navigation"
+  showPageTitlesNextPrev: Boolean!
+  "Additional CSS class applied to the wizard container"
+  additionalCssClass: String
+  "Internal use only. Opaque serialised XML of the wizard pages. Do not parse this field directly ? use dedicated APIs for wizard page manipulation."
+  pages: String
+  "Internal use only. Opaque serialised XML of the fixed metadata applied by the wizard."
+  fixedMetadata: String
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+type EditableEntityCollectionDefinition {
+  "Base entity being edited"
+  entity: CollectionDefinition!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntry!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetList!]!
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+type EditableEntityMetadataSchema {
+  "Base entity being edited"
+  entity: MetadataSchema!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntry!]!
+  "Sub-entity access control lists, keyed by target type (e.g. per item status, per metadata rule, per workflow task). Empty for entity types that do not have sub-entity ACLs."
+  otherTargetLists: [OtherTargetList!]!
+}
+
+"A skeleton for creating a new editable entity, containing essential metadata such as UUID, owner, and staging ID."
+type EditableEntitySkeleton {
+  "Unique identifier for the new entity"
+  uuid: String!
+  "Owner of the new entity, typically the user who is creating it"
+  owner: String!
+  "Staging ID for the new entity, used to store files before they are committed"
+  stagingId: String!
+}
+
+"Common details for entities, including identifiers, ownership, timestamps, and additional attributes."
+type EntityDetails {
+  "Unique identifier for this entity."
+  id: Long!
+  "Universally unique identifier for this entity, used for referencing across different entities."
+  uuid: String!
+  "Owner of this entity, typically the user who created it."
+  owner: String!
+  "Timestamp for when this entity was created - only valid when starting an edit on an existing entity."
+  dateCreated: LocalDateTime
+  "Timestamp for when this entity was last modified - only valid when starting an edit on an existing entity."
+  dateModified: LocalDateTime
+  "Language bundle for the _name_ of this entity, used for internationalization."
+  nameBundle: LanguageBundle
+  "Language bundle for the _description_ of this entity, used for internationalization."
+  descriptionBundle: LanguageBundle
+  "A map of additional attributes for this entity, allowing for flexible metadata storage."
+  attributes: [KVStringString!]!
+  "Indicates whether this entity is disabled, affecting its visibility and usability."
+  disabled: Boolean!
+}
+
+"A group from the user directory system, representing a group from any configured user management plugin."
+type Group {
+  "The unique identifier for the group"
+  uniqueId: String!
+  "The name of the group"
+  name: String!
+}
+
+"A Connection object paging through Groups as per the GraphQL Cursor Connections Specification"
+type GroupConnection {
+  pageInfo: PageInfo!
+  edges: [GroupEdge!]!
+}
+
+"An Edge object for Groups as per the GraphQL Cursor Connections Specification"
+type GroupEdge {
+  cursor: String!
+  node: Group!
+}
+
+"An entry in the result of fetching multiple groups by IDs."
+type GroupWithId {
+  "The requested group ID"
+  id: String!
+  "The resolved group"
+  group: Group!
+}
+
+type InternalGroup {
+  "The unique identifier for the group - typically a UUID"
+  uniqueId: String!
+  "The name of the group"
+  name: String!
+  "The description for the group"
+  description: String
+  "The unique identifier of the parent group, or null if this is a top-level group"
+  parentId: String
+  "Whether this group has sub-groups"
+  hasGroups: Boolean!
+  "Whether this group has users"
+  hasUsers: Boolean!
+}
+
+"A Connection object paging through internal Groups as per the GraphQL Cursor Connections Specification"
+type InternalGroupConnection {
+  pageInfo: PageInfo!
+  edges: [InternalGroupEdge!]!
+}
+
+"An Edge object for internal Groups as per the GraphQL Cursor Connections Specification"
+type InternalGroupEdge {
+  cursor: String!
+  node: InternalGroup!
+}
+
+type InternalGroupMutations {
+  "Create a new group"
+  create("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): InternalGroup
+  "Delete a group by its unique ID"
+  delete("The unique ID of the group to delete" uniqueId: String!, "Whether to delete all children of the group, or move them to the parent of the group being deleted" deleteChildren: Boolean!): Unit
+  "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
+  update("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): InternalGroup
+}
+
+type InternalGroupQueries {
+  "Retrieve a group by its unique ID"
+  byId("The unique ID of the group to retrieve" uniqueId: String!): InternalGroup
+  "Retrieve a group by its name"
+  byName("The name of the group to retrieve" name: String!): InternalGroup
+  "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
+  list("The unique ID of the parent group to list groups for - or none for the root" parentId: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
+  "List multiple groups by their unique IDs, invalid IDs will be ignored"
+  listByIds("The unique IDs of the groups to retrieve" uniqueIds: [String!]!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
+  "Search for groups anywhere within the hierarchy by name (wildcard search)"
+  search("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
+  "List user ids for all users in the specified group"
+  users("The unique ID of the group to list users for" uniqueId: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): StringConnection
+}
+
+type InternalUserMutations {
+  "Create a new internal user"
+  create("Username of the user to create which they'll use for authentication - must be unique" username: String!, "Email address of the user" email: String, "First name of the user" firstName: String!, "Last name of the user" lastName: String!, "Password of the user - will be hashed on store" password: String!): User
+  "Update an existing internal user"
+  update("ID of existing user to update - used to find target user" id: String!, "New username of the user - should be unique" username: String, "New email address of the user" email: String, "New first name of the user" firstName: String, "New last name of the user" lastName: String, "New password of the user - will be hashed on store" password: String): User
+  "Delete an existing internal user"
+  delete("The unique ID of the user to delete" id: String!): Unit
+}
+
+type InternalUserQueries {
+  "List all internal users, optionally filtered by a query"
+  list("A string to filter users by" query: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): UserConnection
+  "Retrieve details of a user based on username"
+  byUsername("Username of the user to retrieve" username: String!): User
+  "Retrieve details of a user based on unique ID"
+  byId("Unique ID of the user to retrieve" id: String!): User
+}
+
+type JavaScriptQueries {
+  "List names and IDs of all JavaScript libraries"
+  libraries: [NameValue!]!
+  "Retrieve names and IDs of all JavaScript modules for a given JavaScript library ID"
+  modules("The unique ID of the JavaScript library to retrieve module names and IDs for" id: String!): [NameValue!]
+}
+
+"A key-value pair of String and String"
+type KVStringString {
+  "Key"
+  key: String!
+  "Value"
+  value: String!
+}
+
+"A language configuration entry, representing a specific locale."
+type Language {
+  "Unique identifier for this language entry."
+  id: Long!
+  "Language code, e.g., 'en' for English."
+  language: String!
+  "Country code, e.g., 'AU' for Australia."
+  country: String!
+  "Locale variant."
+  variant: String!
+}
+
+"A bundle of language strings, each representing a translation for a specific locale."
+type LanguageBundle {
+  "Unique identifier for this language bundle."
+  id: Long!
+  "List of language strings in this bundle."
+  strings: [LanguageString!]!
+}
+
+"Resolved display text for a language bundle."
+type LanguageBundleName {
+  "The language bundle ID."
+  id: Long!
+  "The closest resolved display text for the language bundle."
+  string: String!
+}
+
+type LanguageQueries {
+  "List all configured languages"
+  list: [Language!]!
+  "Resolve display text for the provided language bundle IDs. If a bundle ID cannot be resolved, it will be omitted from the results."
+  names("Language bundle IDs to resolve" ids: [Long!]!): [LanguageBundleName!]!
+}
+
+"A single translation of a piece of text for a specific locale."
+type LanguageString {
+  "Unique identifier for this language string."
+  id: Long!
+  "Priority of this language string, with lower numbers indicating higher priority."
+  priority: Int!
+  "Locale code for this language string, e.g., 'en' for English."
+  locale: String!
+  "The translated text for this locale."
+  text: String!
+}
+
+"A metadata schema, which defines the structure and transforms for metadata items in openEQUELLA."
+type MetadataSchema {
+  "Details of the metadata schema, including UUID and owner"
+  details: EntityDetails!
+  "Transforms applied when exporting this schema between repositories"
+  exportTransforms: [MetadataSchemaTransform!]!
+  "Transforms applied when importing this schema between repositories"
+  importTransforms: [MetadataSchemaTransform!]!
+  "Path to the name attribute in the schema"
+  itemNamePath: String!
+  "Path to the description attribute in the schema"
+  itemDescriptionPath: String!
+  "XML definition of the schema"
+  definition: String!
+  "List of citations associated with this schema"
+  citations: [Citation!]!
+}
+
+type MetadataSchemaMutations {
+  "Start editing an existing metadata schema. Expected that it will be followed by a stopEdit or cancelEdit operation."
+  startEdit("ID of the metadata schema to edit, or none to create a new one" id: Long!): EditableEntityMetadataSchema!
+  "Start creating a new metadata schema. Typically followed by an add operation with details for new schema."
+  startCreate: EditableEntitySkeleton!
+  "Cancel editing a metadata schema - discarding any changes made and unlocking the schema."
+  cancelEdit("ID of the metadata schema edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
+  "Add a new metadata schema - typically after a startCreate operation, with details for the new schema."
+  add("Details of the metadata schema to add" details: EditableEntityMetadataSchemaInput!, "Whether the newly added schema should be locked for editing after creation" lockAfterwards: Boolean!): BaseEntityReference
+  "Stop editing a metadata schema - saving changes and optionally unlocking."
+  stopEdit("Details of the metadata schema to save" details: EditableEntityMetadataSchemaInput!, "Whether to unlock the schema after saving, if false, keeps it locked for continued editing" unlock: Boolean!): MetadataSchema
+  "Delete a metadata schema - with consideration to references controllable by args."
+  delete("ID of the metadata schema to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
+  "Clone a metadata schema - creating a copy of the schema with a new ID."
+  clone("ID of the metadata schema to clone" id: Long!): BaseEntityReference
+  "Import a metadata schema from a base64-encoded zip file. Returns an editable entity ready for stopEdit to complete the import."
+  import("Base64-encoded zip file of the metadata schema to import" zipBase64: String!): EditableEntityMetadataSchema
+}
+
+type MetadataSchemaQueries {
+  "List all metadata schemas"
+  list: [BaseEntityReference!]!
+  "Export a metadata schema, returning a base64 encoded zip file"
+  export("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
+  "Get the metadata schema ID for a given UUID"
+  idForUuid(value: String!): Long
+  "Get a metadata schema by ID"
+  byId("ID of the metadata schema" id: Long!): MetadataSchema
+  "Get the uses of a metadata schema by ID"
+  uses("ID of the metadata schema" id: Long!): [BaseEntityReference!]!
+  "Get the types of schema import transformations for a metadata schema by ID"
+  importTypes("ID of the metadata schema" id: Long!): [String!]!
+  "Check if a metadata schema has an referencing entities"
+  hasReferences("ID of the metadata schema" id: Long!): Boolean!
+}
+
+"A schema transform that defines how metadata is transformed during export or import operations with external systems."
+type MetadataSchemaTransform {
+  "Filename of the schema transform stored on the server - managed via staging area"
+  filename: String!
+  "Type of the schema transform, e.g., OAI_Identity, HARVESTER, OAI_DC"
+  schemaType: String!
+}
+
+type Mutations {
+  "Operations for managing Collections"
+  collection: CollectionMutations!
+  "Operations for managing Metadata Schemas"
+  metadataSchema: MetadataSchemaMutations!
+  "Operations for managing internal groups"
+  internalGroups: InternalGroupMutations!
+  "Operations for managing internal users"
+  internalUsers: InternalUserMutations!
+  "Mutations for user management plugin configuration"
+  userDirectoryConfig: UserDirectoryConfigMutations!
+}
+
+"A simple name/value pair."
+type NameValue {
+  "Display name for the value."
+  name: String!
+  "Value associated with the name."
+  value: String!
+}
+
+"A sub-entity access control list, keyed by the type of target (e.g. item status, metadata rule, workflow task)."
+type OtherTargetList {
+  "Discriminator indicating what kind of target this list is for."
+  targetType: OtherTargetListType!
+  "For ITEM_STATUS targets: the item status this list applies to (e.g. DRAFT, LIVE, MODERATING). Null for other target types."
+  itemStatus: String
+  "For ITEM_METADATA targets: the ID of the metadata rule this list applies to. Null for other target types."
+  metadataRuleId: String
+  "For WORKFLOW_TASK targets: the ID of the workflow task this list applies to. Null for other target types."
+  taskId: String
+  "The access control entries for this target."
+  entries: [TargetListEntry!]!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+"Details of a plugin available for download, including its base URL and manifest XML."
+type PluginDetails {
+  "The base URL from which the plugin can be downloaded."
+  baseUrl: String!
+  "The XML manifest content describing the plugin."
+  manifestXml: String!
+}
+
+type Queries {
+  "Queries for admin console plugin"
+  adminConsolePlugin: AdminConsolePluginQueries!
+  "Queries for base entities"
+  baseEntities: BaseEntityQueries!
+  "Queries for Collections"
+  collection: CollectionQueries!
+  "Queries for JavaScript"
+  javaScript: JavaScriptQueries!
+  "Queries for language"
+  language: LanguageQueries!
+  "Queries for Metadata Schemas"
+  metadataSchema: MetadataSchemaQueries!
+  "Queries for internal groups"
+  internalGroups: InternalGroupQueries!
+  "Queries for internal users"
+  internalUsers: InternalUserQueries!
+  "Queries for user management plugin configuration"
+  userDirectoryConfig: UserDirectoryConfigQueries!
+  "Queries for the user directory - users, groups, and roles from all configured user management plugins"
+  userDirectory: UserDirectoryQueries!
+}
+
+"A role from the user directory system, representing a role from any configured user management plugin."
+type Role {
+  "The unique identifier for the role"
+  uniqueId: String!
+  "The name of the role"
+  name: String!
+}
+
+"A Connection object paging through Roles as per the GraphQL Cursor Connections Specification"
+type RoleConnection {
+  pageInfo: PageInfo!
+  edges: [RoleEdge!]!
+}
+
+"An Edge object for Roles as per the GraphQL Cursor Connections Specification"
+type RoleEdge {
+  cursor: String!
+  node: Role!
+}
+
+"An entry in the result of fetching multiple roles by IDs."
+type RoleWithId {
+  "The requested role ID"
+  id: String!
+  "The resolved role"
+  role: Role!
+}
+
+"A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"
+type StringConnection {
+  pageInfo: PageInfo!
+  edges: [StringEdge!]!
+}
+
+"An Edge object for Strings as per the GraphQL Cursor Connections Specification"
+type StringEdge {
+  cursor: String!
+  node: String!
+}
+
+type TargetListEntry {
+  "Whether the privilege is granted or revoked"
+  granted: Boolean!
+  "Has precedence over other actions in the list"
+  overridden: Boolean!
+  "The privilege being granted or revoked, e.g., 'VIEW_ITEM', 'EDIT_SCHEMA', etc."
+  privilege: String!
+  "The user, group or other entity this applies to. Expecting values like '*', 'U:<username>', 'G:<groupname>' etc."
+  who: String!
+  "An optional postfix for the entry, used for additional context or information - defaults to empty string"
+  postfix: String!
+}
+
+type User {
+  "The unique identifier for the user"
+  uniqueId: String!
+  "The username a user authenticates with"
+  username: String!
+  "User's email address"
+  email: String
+  "User's first name"
+  firstName: String!
+  "User's last name"
+  lastName: String!
+}
+
+"A Connection object paging through Users as per the GraphQL Cursor Connections Specification"
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge!]!
+}
+
+type UserDirectoryConfigMutations {
+  "Persist a UserManagementSettings configuration supplied as JSON"
+  setPluginConfig("The fully qualified settings class name to persist" settingsClass: String!, "The JSON representation of the plugin configuration" configJson: String!): Unit
+}
+
+type UserDirectoryConfigQueries {
+  "List the shared secret IDs used by user management plugins"
+  sharedSecretIds: [String!]!
+  "Retrieve a UserManagementSettings configuration as a JSON string"
+  pluginConfig("The fully qualified settings class name to load" settingsClass: String!): String
+}
+
+"Queries for the user directory, which aggregates users, groups, and roles from all configured user management plugins."
+type UserDirectoryQueries {
+  "Retrieve a user by their unique ID"
+  userById("The unique ID of the user to retrieve" userId: String!): User
+  "Retrieve multiple users by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  usersByIds("The unique IDs of the users to retrieve" userIds: [String!]!): [UserWithId!]!
+  "Search for users matching the query. Wildcards at the start and end of the query are implied."
+  searchUsers("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Search for users within the specified group, optionally searching subgroups recursively. Returns NOT_FOUND if the group cannot be resolved."
+  searchUsersInGroup("The query to search for users by (server will surround with wildcard). Matches against username, first name, and last name." query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!, "Whether to search subgroups recursively" recursive: Boolean!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Retrieve all roles assigned to the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  rolesForUser("The unique ID of the user" userId: String!): [Role!]
+  "Retrieve the IDs of all groups that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  groupIdsForUser("The unique ID of the user" userId: String!): [String!]
+  "Retrieve all groups (including subgroups) that contain the specified user. Returns NOT_FOUND if the user cannot be resolved."
+  groupsForUser("The unique ID of the user" userId: String!): [Group!]
+  "List all users in the specified group. Returns NOT_FOUND if the group cannot be resolved."
+  usersInGroup("The unique ID of the group" groupId: String!, "Whether to include users from subgroups recursively" recursive: Boolean!, "Pagination - how many users to return from the start of the possible list of users" first: Int, "Pagination - how many users to return from the end of the possible list of users" last: Int, "Pagination - the cursor for a user before which all users should be returned" before: String, "Pagination - the cursor for a user after which all users should be returned" after: String): UserConnection
+  "Retrieve a group by its unique ID. Returns NOT_FOUND if the group cannot be resolved."
+  groupById("The unique ID of the group to retrieve" groupId: String!): Group
+  "Retrieve multiple groups by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  groupsByIds("The unique IDs of the groups to retrieve" groupIds: [String!]!): [GroupWithId!]!
+  "Search for groups matching the query across the entire group hierarchy. Wildcards at the start and end of the query are implied."
+  searchGroups("The query to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many groups to return from the start of the possible list of groups" first: Int, "Pagination - how many groups to return from the end of the possible list of groups" last: Int, "Pagination - the cursor for a group before which all groups should be returned" before: String, "Pagination - the cursor for a group after which all groups should be returned" after: String): GroupConnection
+  "Search for groups matching the query within the specified parent group. Wildcards at the start and end of the query are implied. Returns NOT_FOUND if the parent group cannot be resolved."
+  searchGroupsInParent("The query to search for groups by (server will surround with wildcard)" query: String!, "The unique ID of the parent group to restrict the search to" parentGroupId: String!, "Pagination - how many groups to return from the start of the possible list of groups" first: Int, "Pagination - how many groups to return from the end of the possible list of groups" last: Int, "Pagination - the cursor for a group before which all groups should be returned" before: String, "Pagination - the cursor for a group after which all groups should be returned" after: String): GroupConnection
+  "Retrieve the parent group of the specified group, if one exists. Returns NOT_FOUND if the group cannot be resolved."
+  parentGroup("The unique ID of the group to retrieve the parent for" groupId: String!): Group
+  "Retrieve a role by its unique ID. Returns NOT_FOUND if the role cannot be resolved."
+  roleById("The unique ID of the role to retrieve" roleId: String!): Role
+  "Retrieve multiple roles by their unique IDs. Returns one entry per resolved ID; IDs not found in any user directory are absent from the result."
+  rolesByIds("The unique IDs of the roles to retrieve" roleIds: [String!]!): [RoleWithId!]!
+  "Search for roles matching the query. Wildcards at the start and end of the query are implied."
+  searchRoles("The query to search for roles by (server will surround with wildcard)" query: String!, "Pagination - how many roles to return from the start of the possible list of roles" first: Int, "Pagination - how many roles to return from the end of the possible list of roles" last: Int, "Pagination - the cursor for a role before which all roles should be returned" before: String, "Pagination - the cursor for a role after which all roles should be returned" after: String): RoleConnection
+}
+
+"An Edge object for Users as per the GraphQL Cursor Connections Specification"
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+"An entry in the result of fetching multiple users by IDs."
+type UserWithId {
+  "The requested user ID"
+  id: String!
+  "The resolved user"
+  user: User!
+}

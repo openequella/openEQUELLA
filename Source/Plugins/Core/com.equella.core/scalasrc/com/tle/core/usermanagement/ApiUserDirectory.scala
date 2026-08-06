@@ -22,11 +22,12 @@ import cats.implicits._
 import com.tle.common.Pair
 import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
-import com.tle.plugins.ump.UserDirectory
+import com.tle.plugins.ump.ChainDirective
 import io.circe.{ACursor, Decoder, Json}
 import org.slf4j.LoggerFactory
 import sttp.client3.basicRequest
 import sttp.client3.circe.asJson
+import sttp.client3.HttpError
 import sttp.model.{Header, Uri}
 
 import java.net.URL
@@ -82,6 +83,30 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   private var tokenLoggingEnabled: Boolean = _
 
   private val LOGGER = LoggerFactory.getLogger(classOf[ApiUserDirectory])
+
+  /** Log a failed user lookup at a level that reflects whether it is worth attention: an expected
+    * failure (see [[isExpectedFailure]]) is logged at debug, so routine chain misses don't flood
+    * the production log; anything else is a genuine error and logged at error level.
+    */
+  private def logLookupFailure(message: String)(error: Throwable): Unit =
+    if (isExpectedFailure(error)) LOGGER.debug(message, error) else LOGGER.error(message, error)
+
+  /** In oEQ, User Directories are chained: a lookup is dispatched to every directory in the chain.
+    * It is therefore normal for a lookup to "miss" here - the identifier being resolved simply
+    * doesn't belong to this IdP - and such misses should not be logged as errors, or they flood the
+    * production log on every lookup. An expected failure is either of:
+    *   - an empty attribute search (`NotFoundException` from [[getInformationForUser]]); or
+    *   - the IdP rejecting the identifier as unknown or invalid (any 4xx). This is a 404, or a 400
+    *     when the IdP validates the id format - e.g. Auth0 answers a chained local username such as
+    *     `andrew.gibb` with `400 invalid_uri` because it isn't a valid Auth0 user-id.
+    *
+    * Everything else (token, connectivity, decoding, 5xx) is a genuine error.
+    */
+  private def isExpectedFailure(error: Throwable): Boolean = error match {
+    case _: NotFoundException => true
+    case HttpError(_, status) => status.isClientError
+    case _                    => false
+  }
 
   /** Each IdP's API returns the user details in a proprietary structure, therefore each IdP
     * UserDirectory needs to provide a custom Circe decoder to map from those structures to the
@@ -176,7 +201,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     */
   override def searchUsers(
       query: String
-  ): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
+  ): Pair[ChainDirective, util.Collection[UserBean]] = {
     val users = execute { (idp, tokenState) =>
       val endpoint = userListEndpoint(idp, query)
       searchUsers(endpoint, tokenState, idp)
@@ -185,7 +210,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       .getOrElse(List.empty)
       .asJavaCollection
 
-    new Pair(UserDirectory.ChainResult.CONTINUE, users)
+    new Pair(ChainDirective.CONTINUE, users)
   }
 
   override def getInformationForUser(userId: String): UserBean = {
@@ -234,7 +259,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       .filter(_.nonEmpty)
       .flatMap(id =>
         execute(search(id))
-          .leftMap(LOGGER.error(s"Failed to get information for user $userId", _))
+          .leftMap(logLookupFailure(s"Failed to get information for user $userId"))
           .toOption
       )
       .orNull

@@ -18,20 +18,21 @@
 
 package com.tle.core.entity.event;
 
-import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.events.listeners.ApplicationListener;
+import java.io.Serial;
+import java.util.ArrayList;
 import java.util.List;
 
 @NonNullByDefault
 public abstract class BaseEntityReferencesEvent<E extends BaseEntity, L extends ApplicationListener>
     extends ApplicationEvent<L> {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   protected final E entity;
-  protected final List<Class<?>> referencingClasses = Lists.newArrayList();
+  protected final List<Class<?>> referencingClasses = new ArrayList<>();
 
   public BaseEntityReferencesEvent(E entity) {
     super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);

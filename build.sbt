@@ -40,8 +40,8 @@ lazy val adminTool = (project in file("Source/Server/adminTool"))
   .dependsOn(
     platformSwing,
     platformEquella,
-    LocalProject("com_tle_webstart_admin"),
-    LocalProject("adminConsoleJar")
+    LocalProject("adminConsoleJar"),
+    LocalProject("com_equella_admin")
   )
 
 lazy val conversion = (project in file("Source/Server/conversion"))
@@ -105,7 +105,7 @@ name := "Equella"
 (ThisBuild / equellaMajor)   := 2026
 (ThisBuild / equellaMinor)   := 2
 (ThisBuild / equellaPatch)   := 0
-(ThisBuild / equellaStream)  := "Alpha"
+(ThisBuild / equellaStream)  := "RC3"
 (ThisBuild / equellaBuild)   := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
 

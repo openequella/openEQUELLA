@@ -18,10 +18,27 @@
 
 package com.tle.core.javascript;
 
-import com.tle.common.javascript.RemoteJavascriptService;
+import com.tle.common.NameValue;
+import com.tle.common.beans.exception.NotFoundException;
 import java.util.List;
 
-public interface JavascriptService extends RemoteJavascriptService {
+public interface JavascriptService {
+  /**
+   * Get all JavaScript libraries as display-name/id pairs.
+   *
+   * @return all JavaScript libraries in name-value form
+   */
+  List<NameValue> listLibraries();
+
+  /**
+   * Get all JavaScript modules for a given JavaScript library as display-name/id pairs.
+   *
+   * @param libraryId the JavaScript library ID
+   * @return all modules for the library in name-value form, sorted case-insensitively by name
+   * @throws NotFoundException if no library exists with the given ID
+   */
+  List<NameValue> modulesByLibraryId(String libraryId);
+
   List<JavascriptLibrary> getAllJavascriptLibraries();
 
   JavascriptLibrary getJavascriptLibrary(String libraryId);

@@ -18,18 +18,19 @@
 
 package com.tle.common.accesscontrolbuilder;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
+import java.io.Serial;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 public class ExpressionListCellRenderer extends DefaultListCellRenderer {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private ExpressionFormatter formatter;
 
-  public ExpressionListCellRenderer(RemoteUserService userService) {
-    formatter = new ExpressionFormatter(userService);
+  public ExpressionListCellRenderer(AdminUserDirectoryService userDirectoryService) {
+    formatter = new ExpressionFormatter(userDirectoryService);
   }
 
   @Override

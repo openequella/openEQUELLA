@@ -23,10 +23,12 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
 import com.tle.admin.baseentity.EditorState;
 import com.tle.admin.gui.common.JAdminSpinner;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -38,6 +40,8 @@ import net.miginfocom.swing.MigLayout;
 
 public class BasicConfig extends AbstractOnlyTitleConfig implements ActionListener {
   private static final long serialVersionUID = 1L;
+
+  private static final StringLookup basicStrings = Lookup.withPrefix("summarysections.basic");
 
   private static String SHOW_OWNER_KEY = "owner"; // $NON-NLS-1$
   private static String TITLE_LENGTH_KEY = "title"; // $NON-NLS-1$
@@ -64,26 +68,22 @@ public class BasicConfig extends AbstractOnlyTitleConfig implements ActionListen
     setLayout(new MigLayout());
     super.setup();
 
-    limitDesc = new JCheckBox(getString("summarysections.basic.limitdesclabel")); // $NON-NLS-1$
+    limitDesc = new JCheckBox(basicStrings.text("limitdesclabel"));
     maxLengthDesc = new JAdminSpinner(355, 10, 10000, 5);
 
-    limitTitle = new JCheckBox(getString("summarysections.basic.limittitlelabel")); // $NON-NLS-1$
+    limitTitle = new JCheckBox(basicStrings.text("limittitlelabel"));
     maxLengthTitle = new JAdminSpinner(200, 10, 10000, 5);
 
     limitDesc.addActionListener(this);
     limitTitle.addActionListener(this);
 
-    add(limitTitle, "wrap"); // $NON-NLS-1$
-    add(
-        new JLabel(getString("summarysections.basic.maxlabel")), // $NON-NLS-1$
-        "split 2"); //$NON-NLS-1$
-    add(maxLengthTitle, "wrap"); // $NON-NLS-1$
+    add(limitTitle, "wrap");
+    add(new JLabel(basicStrings.text("maxlabel")), "split 2");
+    add(maxLengthTitle, "wrap");
 
-    add(limitDesc, "wrap"); // $NON-NLS-1$
-    add(
-        new JLabel(getString("summarysections.basic.maxlabel")), // $NON-NLS-1$
-        "split 2"); //$NON-NLS-1$
-    add(maxLengthDesc, "wrap"); // $NON-NLS-1$
+    add(limitDesc, "wrap");
+    add(new JLabel(basicStrings.text("maxlabel")), "split 2");
+    add(maxLengthDesc, "wrap");
 
     changeDetector = new ChangeDetector();
     changeDetector.watch(maxLengthDesc);

@@ -1,0 +1,65 @@
+val guiceVersion = "5.1.0"
+val slf4jVersion = "2.0.18"
+val sttpVersion  = "3.11.0"
+
+libraryDependencies ++= Seq(
+  // Logging dependencies
+  "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+  "org.slf4j" % "slf4j-api"      % slf4jVersion,
+  log4jSlf4jImpl,
+  // (support YAML based logging configuration)
+  jacksonDataBind,
+  jacksonDataFormatYaml,
+  // General dependencies
+  "com.github.equella.jpf" % "jpf"   % "1.0.7",
+  "com.google.guava"       % "guava" % "33.6.0-jre",
+  springWeb,
+  springAop,
+  springContext,
+  "com.fifesoft"  % "rsyntaxtextarea" % "4.0.1",
+  "com.miglayout" % "miglayout-swing" % "11.4.3",
+  xstreamDep,
+  "io.github.openequella" %% "graphql-client" % "0.13.0-SNAPSHOT",
+  "com.google.inject"      % "guice"          % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    // Maybe it can be removed when all HTTP Invoker code is gone
+    ExclusionRule(
+      organization = "aopalliance",
+      name = "aopalliance"
+    )
+  ),
+  // STTP for REST calls, ideally match the version with the transitive from graphql-client
+  "com.softwaremill.sttp.client3" %% "core"  % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe" % sttpVersion,
+  // Circe generic for decoding REST JSON responses
+  "io.circe" %% "circe-generic" % "0.14.15"
+)
+
+excludeDependencies ++= Seq(
+  "commons-logging" % "commons-logging",
+  // Spring 5 added a default logging bridge.  In oEQ, this results in
+  // a [deduplicate: different file contents found in the following] error
+  // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.23.jar:org/apache/commons/logging/Log.class
+  // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
+  // since we already have logging in place, we can safely exclude the dep from spring.
+  "org.springframework" % "spring-jcl"
+)
+
+(assembly / packageOptions) += Package.ManifestAttributes("Permissions" -> "all-permissions")
+(assembly / assemblyOption)        := (assembly / assemblyOption).value
+(assembly / assemblyMergeStrategy) := {
+  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  // The following three were added when the hibernate-types was added the the hibernate module
+  case PathList("javax", "activation", _*)       => MergeStrategy.first
+  case PathList("javax", "xml", _*)              => MergeStrategy.first
+  case PathList("META-INF", "versions", "9", _*) => MergeStrategy.first
+  // Added due to a [deduplicate: different file contents found in the following] error against:
+  // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
+  // org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
+  case x if x.contains("overview.html") => MergeStrategy.first
+  case x                                =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_equella_admin"))

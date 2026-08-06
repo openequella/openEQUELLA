@@ -3,87 +3,71 @@
  */
 package com.tle.core.xstream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.ParserConfigurationException;
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class XMLCompareTest extends TestCase {
+public class XMLCompareTest {
   private XMLCompare comparer;
 
-  @Override
-  protected void setUp() {
+  @BeforeEach
+  void setUp() {
     comparer = new XMLCompare();
     comparer.setTrimTextValues(true);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    comparer = null;
-  }
-
+  @Test
   public void testUnordered() throws Exception {
-    doTest();
-  }
-
-  private void doTest() throws Exception {
     int testNumber = 1;
-
-    String baseName = "unordered/base-" + testNumber + ".xml";
+    String baseName = baseName(testNumber);
     Document base = getDocument(baseName);
-    if (base == null) {
-      fail("Could not find base-" + testNumber + ".xml");
-    }
+    assertNotNull(base, "Could not find " + baseName);
 
     while (base != null) {
-      System.out.println("---------------------------------");
-      System.out.println("Testing " + baseName);
+      compareAgainstVariations(base, "good", testNumber, true);
+      compareAgainstVariations(base, "bad", testNumber, false);
 
-      System.out.println("\tShould Match...");
-      int varNumber = 1;
-      Document variation;
-      do {
-        String varName = "unordered/good-" + varNumber + "-for-" + testNumber + ".xml";
-        variation = getDocument(varName);
-        if (variation != null) {
-          System.out.println("\t\t" + varName);
-          try {
-            assertTrue(comparer.compare(base, variation));
-          } catch (AssertionFailedError ex) {
-            comparer.compare(base, variation);
-            throw ex;
-          }
-        }
-        varNumber++;
-      } while (variation != null);
-
-      System.out.println("\tShould Differ...");
-      varNumber = 1;
-      do {
-        String varName = "unordered/bad-" + varNumber + "-for-" + testNumber + ".xml";
-        variation = getDocument(varName);
-        if (variation != null) {
-          System.out.println("\t\t" + varName);
-          try {
-            assertFalse(comparer.compare(base, variation));
-          } catch (AssertionFailedError ex) {
-            comparer.compare(base, variation);
-            throw ex;
-          }
-        }
-        varNumber++;
-      } while (variation != null);
-
-      // Move to the next test
       testNumber++;
-      baseName = "unordered/base-" + testNumber + ".xml";
+      baseName = baseName(testNumber);
       base = getDocument(baseName);
     }
+  }
+
+  /**
+   * Compares the base document against every numbered variation of the given kind, of which there
+   * may be none, asserting that each one either matches or differs as its name says it should.
+   */
+  private void compareAgainstVariations(
+      Document base, String kind, int testNumber, boolean shouldMatch) throws Exception {
+    int varNumber = 1;
+    Document variation;
+    do {
+      String varName = "unordered/" + kind + "-" + varNumber + "-for-" + testNumber + ".xml";
+      variation = getDocument(varName);
+      if (variation != null) {
+        boolean matched = comparer.compare(base, variation);
+        if (shouldMatch) {
+          assertTrue(matched, varName + " should have matched " + baseName(testNumber));
+        } else {
+          assertFalse(matched, varName + " should have differed from " + baseName(testNumber));
+        }
+      }
+      varNumber++;
+    } while (variation != null);
+  }
+
+  private static String baseName(int testNumber) {
+    return "unordered/base-" + testNumber + ".xml";
   }
 
   private Document getDocument(String filename)

@@ -53,6 +53,11 @@ libraryDependencies ++= Seq(
   "com.auth0" % "jwks-rsa" % "0.24.1"
 )
 
+// Libraries needed for GraphQL
+libraryDependencies ++= Seq(
+  "com.github.ghostdogpr" %% "caliban" % "3.0.0"
+)
+
 // Jackson dependencies
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,

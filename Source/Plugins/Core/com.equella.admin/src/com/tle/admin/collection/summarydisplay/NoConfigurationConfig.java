@@ -20,12 +20,12 @@ package com.tle.admin.collection.summarydisplay;
 
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.EditorState;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Component;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
@@ -34,19 +34,11 @@ import javax.swing.SwingConstants;
 
 @SuppressWarnings("nls")
 public class NoConfigurationConfig extends JPanel implements SummaryDisplayConfig {
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("summarysections");
 
   @Override
   public void setup() {
-    JLabel label = new JLabel(getString("summarysections.noconfiguration"));
+    JLabel label = new JLabel(strings.text("noconfiguration"));
     label.setHorizontalAlignment(SwingConstants.CENTER);
     setLayout(new GridLayout(1, 1));
     add(label);

@@ -61,12 +61,12 @@ public class HarvesterProfileTool extends BaseEntityTool<HarvesterProfile> {
 
   @Override
   protected String getEntityName() {
-    return getString("entityname"); // $NON-NLS-1$
+    return strings.text("entityname");
   }
 
   @Override
   protected String getErrorPath() {
-    return "harvester"; //$NON-NLS-1$
+    return "harvester";
   }
 
   @Override
@@ -101,10 +101,7 @@ public class HarvesterProfileTool extends BaseEntityTool<HarvesterProfile> {
   protected EntityPack<HarvesterProfile> create() {
     PluginDialog plugin = new PluginDialog();
     JOptionPane.showMessageDialog(
-        parentFrame,
-        plugin,
-        getString("createdialog.title"),
-        JOptionPane.QUESTION_MESSAGE); // $NON-NLS-1$
+        parentFrame, plugin, strings.text("createdialog.title"), JOptionPane.QUESTION_MESSAGE);
     String tool = plugin.getSelectedTool();
     EntityPack<HarvesterProfile> pack = null;
     if (tool != null) {

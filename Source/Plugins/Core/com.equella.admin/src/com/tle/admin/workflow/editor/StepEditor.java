@@ -19,22 +19,25 @@
 package com.tle.admin.workflow.editor;
 
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.remoting.RemoteSchemaService;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.io.Serial;
 import javax.swing.JDialog;
 import javax.swing.JTabbedPane;
 
 public class StepEditor extends NodeEditor {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  public StepEditor(final RemoteUserService userService, final RemoteSchemaService schemaService) {
+  public StepEditor(
+      final AdminUserDirectoryService userDirectoryService,
+      final AdminSchemaService schemaService) {
     super(
-        userService,
+        userDirectoryService,
         schemaService,
         "com.tle.admin.workflow.editor.stepeditor.title"); //$NON-NLS-1$
   }
@@ -50,7 +53,7 @@ public class StepEditor extends NodeEditor {
   }
 
   public class WorkflowItemPanel extends WorkflowNodePanel {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
     private DetailsTab details;
     private ModeratorsTab moderators;
 
@@ -88,7 +91,7 @@ public class StepEditor extends NodeEditor {
     @Override
     protected void setup() {
       details = new DetailsTab(changeDetector, schemaService);
-      moderators = new ModeratorsTab(changeDetector, userService, schemaService);
+      moderators = new ModeratorsTab(changeDetector, userDirectoryService, schemaService);
 
       final JTabbedPane tabs = new JTabbedPane();
       tabs.add(

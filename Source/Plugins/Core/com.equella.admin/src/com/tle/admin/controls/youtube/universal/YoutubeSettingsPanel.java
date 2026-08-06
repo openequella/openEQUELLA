@@ -53,24 +53,25 @@ public class YoutubeSettingsPanel extends UniversalControlSettingPanel {
 
   @SuppressWarnings("nls")
   private void createGUI() {
-    enableChannel = GroupBox.withCheckBox(getString("allowChannel"), false);
+    enableChannel = GroupBox.withCheckBox(strings.text("allowChannel"), false);
     setLayout(new MigLayout("wrap, insets 0", "[grow]", "[][grow]"));
 
     add(enableChannel, "grow");
 
     enableChannel.getInnerPanel().setLayout(new MigLayout("wrap", "[grow]"));
 
-    allow = new JRadioButton(getString("option.allowChannel"));
-    restrict = new JRadioButton(getString("option.restrictChannel"));
+    allow = new JRadioButton(strings.text("option.allowChannel"));
+    restrict = new JRadioButton(strings.text("option.restrictChannel"));
     allow.setSelected(true);
     ButtonGroup buttonGroup = new ButtonGroup();
     buttonGroup.add(allow);
     buttonGroup.add(restrict);
 
-    displayLabel = new JLabel(getString("allowChannel"));
-    helpLabel1 = new JLabel(getString("channel.help1"));
-    helpLabel2 = new JLabel(getString("channel.help2"));
-    channels = new DualShuffleList(getString("label.channelName"), getString("label.userName"));
+    displayLabel = new JLabel(strings.text("allowChannel"));
+    helpLabel1 = new JLabel(strings.text("channel.help1"));
+    helpLabel2 = new JLabel(strings.text("channel.help2"));
+    channels =
+        new DualShuffleList(strings.text("label.channelName"), strings.text("label.userName"));
     channels.setEnabled(false);
 
     enableChannel.add(allow);
@@ -84,7 +85,7 @@ public class YoutubeSettingsPanel extends UniversalControlSettingPanel {
   @SuppressWarnings("nls")
   @Override
   protected String getTitleKey() {
-    return getKey("youtube.settings.title");
+    return strings.key("youtube.settings.title");
   }
 
   @Override

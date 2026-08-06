@@ -25,12 +25,14 @@ import com.tle.common.Check;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public final class UserDirectoryUtils {
+
   /**
    * User, group and role information is already cached in the UDC, but there may be a need for
    * caching specific information in a UD, for example, TLEGroupWrapper caches group UUIDs for a
@@ -43,8 +45,23 @@ public final class UserDirectoryUtils {
     // values if it needs to in LRU order, which is really nice and
     // automatic for us!
     return CacheBuilder.newBuilder()
-        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .expireAfterWrite(Duration.ofMinutes(10))
         .maximumSize(5000)
+        .softValues()
+        .build();
+  }
+
+  /**
+   * Creates a short-lived cache with a 30-second TTL.
+   *
+   * <p>This is intended for bursty request patterns where the same expensive directory lookup is
+   * repeated in a small time window. A common example is the Admin Console, where many places still
+   * send unpaged requests and repeatedly fetch the full list of users or groups.
+   */
+  public static <T> Cache<String, T> makeShortLivedCache() {
+    return CacheBuilder.newBuilder()
+        .expireAfterWrite(Duration.ofSeconds(30))
+        .maximumSize(500)
         .softValues()
         .build();
   }
@@ -105,17 +122,14 @@ public final class UserDirectoryUtils {
 
   public static Map<String, RoleBean> getMultipleRoleInfosFromSingleInfos(
       UserDirectory ud, Collection<String> roleIds) {
-    Map<String, RoleBean> rv = null;
+    Map<String, RoleBean> roleInfos = new HashMap<>();
     for (String roleID : roleIds) {
-      RoleBean gb = ud.getInformationForRole(roleID);
-      if (gb != null) {
-        if (rv == null) {
-          rv = Maps.newHashMapWithExpectedSize(roleIds.size());
-        }
-        rv.put(roleID, gb);
+      RoleBean roleInfo = ud.getInformationForRole(roleID);
+      if (roleInfo != null) {
+        roleInfos.put(roleID, roleInfo);
       }
     }
-    return rv;
+    return roleInfos;
   }
 
   public static boolean searchQueryContainsNonWildcards(String query) {

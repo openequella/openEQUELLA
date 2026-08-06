@@ -68,20 +68,78 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
 
   EntityPack<T> getReadOnlyPack(long id);
 
+  /**
+   * Starts the editing of an existing entity, with staging area.
+   *
+   * @param id the ID of the entity to edit
+   * @return an EntityPack with the entity ready for editing.
+   */
   EntityPack<T> startEdit(long id);
 
+  /**
+   * Starts the creation of a new entity, with staging area.
+   *
+   * @return an EntityPack with a new entity ready for editing.
+   */
+  default EntityPack<T> startCreate() {
+    throw new UnsupportedOperationException("Creation of new entities is not supported");
+  }
+
+  /**
+   * Used to check if the service provides managed creation of new entities. If not, the UI needs to
+   * handle creation in some other way.
+   *
+   * @return whether creating new entities is supported by the service.
+   */
+  default boolean isStartCreateSupported() {
+    return false;
+  }
+
+  /**
+   * Cancels the editing session for an entity and removes its lock.
+   *
+   * @param id the ID of the entity being edited
+   * @param force if true, removes the lock regardless of which session owns it (forced unlock); if
+   *     false, only removes the lock if the current session owns it, otherwise throws a
+   *     LockedException
+   */
   void cancelEdit(long id, boolean force);
 
   T stopEdit(EntityPack<T> pack, boolean unlock);
 
-  List<Class<?>> getReferencingClasses(long id);
+  /**
+   * Checks if the entity with the given ID has any classes that reference it. Useful for
+   * determining if an entity can be deleted, as well as for displaying a warning to the user before
+   * editing.
+   *
+   * @param id the ID of the entity to check
+   * @return true if there are classes that reference the entity, false otherwise
+   */
+  boolean hasReferencingClasses(long id);
 
   byte[] exportEntity(long id, boolean withSecurity);
 
+  /**
+   * Starts the process of importing an entity defined in a zip file, by extracting the zip file and
+   * storing the contents in the staging area. <strong>The entity is not yet imported.</strong>
+   *
+   * <p>After this call, the caller must use {@code stopEdit()} with the returned {@code EntityPack}
+   * to complete the import and persist the entity. To discard the import, discard the returned pack
+   * (the staging area will be cleaned up by the server).
+   *
+   * @param zip the zip file to import
+   * @return the entity pack containing the entity prepared for import
+   */
   EntityPack<T> importEntity(byte[] zip);
 
   /**
-   * @return a pair containing the entity ID, and the name bundle ID.
+   * Clones the entity with the given ID, persisting the new copy immediately. The cloned entity is
+   * assigned a new UUID and has its owner cleared. Its name is prefixed with a locale-specific
+   * "Copy of " string (from the {@code baseentity.clone.prefix} language key) in every language
+   * variant. Associated entity files are also copied to a new staging area.
+   *
+   * @param id the ID of the entity to clone
+   * @return a label for the newly created clone
    */
   BaseEntityLabel clone(long id);
 

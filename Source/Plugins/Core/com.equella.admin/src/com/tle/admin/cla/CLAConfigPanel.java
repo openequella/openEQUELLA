@@ -75,8 +75,8 @@ public class CLAConfigPanel extends AbstractExtensionConfigPanel {
   private RemoteAdminService adminService;
 
   public CLAConfigPanel() {
-    JLabel actErrLabel = new JLabel(getString("activationerror")); // $NON-NLS-1$
-    JLabel inactErrLabel = new JLabel(getString("inactiveerror")); // $NON-NLS-1$
+    JLabel actErrLabel = new JLabel(strings.text("activationerror"));
+    JLabel inactErrLabel = new JLabel(strings.text("inactiveerror"));
 
     activationError = new I18nTextArea(BundleCache.getLanguages());
     inactiveError = new I18nTextArea(BundleCache.getLanguages());
@@ -102,9 +102,9 @@ public class CLAConfigPanel extends AbstractExtensionConfigPanel {
   }
 
   private void initUploadPanel() {
-    JLabel titleLabel = new JLabel(getString("agreement.instructions")); // $NON-NLS-1$
+    JLabel titleLabel = new JLabel(strings.text("agreement.instructions"));
 
-    final JButton upload = new JButton(getString("agreement.upload")); // $NON-NLS-1$
+    final JButton upload = new JButton(strings.text("agreement.upload"));
     upload.addActionListener(
         new ActionListener() {
           @Override
@@ -113,7 +113,7 @@ public class CLAConfigPanel extends AbstractExtensionConfigPanel {
           }
         });
 
-    final JButton remove = new JButton(getString("agreement.remove")); // $NON-NLS-1$
+    final JButton remove = new JButton(strings.text("agreement.remove"));
     remove.addActionListener(
         new ActionListener() {
           @Override
@@ -141,7 +141,7 @@ public class CLAConfigPanel extends AbstractExtensionConfigPanel {
     uploadPanel.add(upload, new Rectangle(1, 1, 1, 1));
     uploadPanel.add(remove, new Rectangle(2, 1, 1, 1));
 
-    agreementGroup = new JGroup(getString("cla.agreement.requires")); // $NON-NLS-1$
+    agreementGroup = new JGroup(strings.text("cla.agreement.requires"));
     agreementGroup.setInnerLayout(new BorderLayout());
     agreementGroup.addInner(uploadPanel);
     agreementGroup.addActionListener(
@@ -219,7 +219,7 @@ public class CLAConfigPanel extends AbstractExtensionConfigPanel {
         new FileFilter() {
           @Override
           public String getDescription() {
-            return getString("agreement.filefilter"); // $NON-NLS-1$
+            return strings.text("agreement.filefilter");
           }
 
           @Override

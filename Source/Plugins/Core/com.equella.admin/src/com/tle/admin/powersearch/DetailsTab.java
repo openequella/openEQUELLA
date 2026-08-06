@@ -27,6 +27,9 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
@@ -36,9 +39,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -65,7 +65,7 @@ public class DetailsTab extends AbstractPowerSearchTab
   private SingleUserSelector owner;
 
   private JShuffleBox<NameValue> itemdefs;
-  private RemoteSchemaService schemaService;
+  private AdminSchemaService schemaService;
 
   private JComboBox schemaList;
   int lastSelectedIndex;
@@ -73,7 +73,7 @@ public class DetailsTab extends AbstractPowerSearchTab
   @Override
   public void setDriver(Driver driver) {
     super.setDriver(driver);
-    this.schemaService = clientService.getService(RemoteSchemaService.class);
+    this.schemaService = clientService.getService(AdminSchemaService.class);
   }
 
   @Override
@@ -104,14 +104,14 @@ public class DetailsTab extends AbstractPowerSearchTab
     name = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextArea(BundleCache.getLanguages());
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
 
     itemdefs = new JShuffleBox<NameValue>();
     itemdefs.setAllowDuplicates(false);
 
     schemaList = new JComboBox();
     try {
-      List<BaseEntityLabel> schemas = clientService.getService(RemoteSchemaService.class).listAll();
+      List<BaseEntityLabel> schemas = schemaService.listAll();
       List<NameValue> nameValues = BundleCache.getNameValues(schemas);
       Collections.sort(nameValues, Format.NAME_VALUE_COMPARATOR);
       AppletGuiUtils.addItemsToJCombo(schemaList, nameValues);
@@ -320,26 +320,23 @@ public class DetailsTab extends AbstractPowerSearchTab
 
     List<BaseEntityLabel> labels =
         clientService
-            .getService(RemoteItemDefinitionService.class)
+            .getService(AdminCollectionDefinitionService.class)
             .listUsableItemDefinitionsForSchema(schemaId);
     final List<NameValue> itemdefsForSchema = BundleCache.getNameValues(labels);
     Collections.sort(itemdefsForSchema, Format.NAME_VALUE_COMPARATOR);
 
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Load the schema
-            schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
+        () -> {
+          // Load the schema
+          schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
 
-            // Add all the item defs
-            itemdefs.removeAllFromLeft();
-            itemdefs.removeAllFromRight();
-            itemdefs.addToLeft(itemdefsForSchema);
+          // Add all the item defs
+          itemdefs.removeAllFromLeft();
+          itemdefs.removeAllFromRight();
+          itemdefs.addToLeft(itemdefsForSchema);
 
-            if (afterLoad != null) {
-              afterLoad.run();
-            }
+          if (afterLoad != null) {
+            afterLoad.run();
           }
         });
   }

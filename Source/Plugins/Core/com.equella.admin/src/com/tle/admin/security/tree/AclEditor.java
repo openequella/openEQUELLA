@@ -27,6 +27,7 @@ import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
 import com.tle.admin.security.tree.model.AbstractAclEditor;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.client.gui.popup.TablePopupListener;
 import com.tle.common.accesscontrolbuilder.ActionTableCellEditor;
 import com.tle.common.accesscontrolbuilder.ActionTableCellRenderer;
@@ -40,7 +41,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Set;
@@ -55,7 +55,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings("nls")
 public class AclEditor extends AbstractAclEditor implements SecurityTreeTab {
   protected ClientService services;
   private MyTableModel model;
@@ -109,9 +108,9 @@ public class AclEditor extends AbstractAclEditor implements SecurityTreeTab {
 
     TableColumn whoColumn = table.getColumnModel().getColumn(2);
     whoColumn.setCellRenderer(
-        new ExpressionTableCellRenderer(services.getService(RemoteUserService.class)));
+        new ExpressionTableCellRenderer(services.getService(AdminUserDirectoryService.class)));
     whoColumn.setCellEditor(
-        new WhoTableCellEditor(services.getService(RemoteUserService.class), this));
+        new WhoTableCellEditor(services.getService(AdminUserDirectoryService.class), this));
 
     table.getColumnModel().getColumn(3).setCellRenderer(new OverrideRenderer());
 

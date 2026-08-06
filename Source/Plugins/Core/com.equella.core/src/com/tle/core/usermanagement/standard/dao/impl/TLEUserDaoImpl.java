@@ -18,9 +18,6 @@
 
 package com.tle.core.usermanagement.standard.dao.impl;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.common.institution.CurrentInstitution;
@@ -29,13 +26,15 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.security.impl.SecureOnCallSystem;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
-import com.tle.core.usermanagement.standard.service.impl.TLEUserServiceImpl;
+import com.tle.core.usermanagement.standard.dao.UserQueryBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,85 +48,82 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
   }
 
   @Override
-  public long totalExistingUsers() {
-    return (Long)
-        getHibernateTemplate()
-            .execute(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) {
-                    Query query =
-                        session.createQuery(
-                            "select count(*) from TLEUser where institution = :institution");
-                    query.setParameter("institution", CurrentInstitution.get());
-                    return query.iterate().next();
-                  }
-                });
+  public int totalExistingUsers() {
+    return Optional.ofNullable(
+            getHibernateTemplate()
+                .execute(
+                    session -> {
+                      org.hibernate.query.Query<Long> query =
+                          session.createQuery(
+                              "select count(*) from TLEUser where institution = :institution");
+                      query.setParameter("institution", CurrentInstitution.get());
+
+                      return query.uniqueResult();
+                    }))
+        .map(Long::intValue)
+        .orElse(0);
+  }
+
+  @Override
+  public int countUsersInGroup(String likeQuery, String parentGroupID, boolean recurse) {
+    return Optional.ofNullable(
+            getHibernateTemplate()
+                .execute(
+                    session ->
+                        new UserQueryBuilder<Long>()
+                            .select("count(*)")
+                            .withQueryString(likeQuery)
+                            .withParentGroupID(parentGroupID, recurse)
+                            .build(session)
+                            .uniqueResult()))
+        .map(Long::intValue)
+        .orElse(0);
+  }
+
+  @Override
+  public List<TLEUser> searchUsersInGroup(String likeQuery, String parentGroupID, boolean recurse) {
+    return searchUsersInGroup(likeQuery, parentGroupID, recurse, null, null);
   }
 
   @Override
   public List<TLEUser> searchUsersInGroup(
-      String userQuery, final String parentGroupID, boolean recurse) {
-    // Prep the query by converting all *'s to %'s and lowercase it.
-    userQuery = userQuery.replace('*', '%').toLowerCase();
+      String likeQuery, String parentGroupID, boolean recurse, Integer limit) {
+    return searchUsersInGroup(likeQuery, parentGroupID, recurse, null, limit);
+  }
 
-    // Split it up on white space, removing leading/trailing % signs and
-    // ignore empty strings.
-    final Collection<String> tokens =
-        Lists.newArrayList(
-            Splitter.onPattern("\\s")
-                .trimResults(CharMatcher.is('%'))
-                .omitEmptyStrings()
-                .split(userQuery));
+  @Override
+  public List<TLEUser> searchUsersInGroup(
+      String userQuery,
+      final String parentGroupID,
+      boolean recurse,
+      Integer limit,
+      Integer offset) {
 
-    final StringBuilder q = new StringBuilder();
-    q.append("FROM TLEUser t WHERE t.institution = :institution");
+    return getHibernateTemplate()
+        .execute(
+            session -> {
+              UserQueryBuilder<TLEUser> queryBuilder =
+                  new UserQueryBuilder<TLEUser>()
+                      .withQueryString(userQuery)
+                      .withParentGroupID(parentGroupID, recurse);
 
-    for (int i = 0, size = tokens.size(); i < size; ++i) {
-      q.append(" AND (LOWER(first_name) LIKE :token");
-      q.append(i);
-      q.append(" OR LOWER(last_name) LIKE :token");
-      q.append(i);
-      q.append(" OR LOWER(username) LIKE :token");
-      q.append(i);
-      q.append(')');
-    }
+              if (offset != null) {
+                // If an offset is provided, we need to ensure consistent ordering
+                queryBuilder.orderBy(Order.asc("id"));
+              }
 
-    if (!Check.isEmpty(parentGroupID)) {
-      q.append(" AND t.uuid IN (SELECT ELEMENTS(g.users) FROM TLEGroup g");
-      if (!recurse) {
-        q.append(" WHERE g.institution = :institution AND g.uuid = :groupID)");
-      } else {
-        q.append(
-            " LEFT OUTER JOIN g.allParents sg WHERE g.institution = :institution AND (sg.uuid ="
-                + " :groupID OR g.uuid = :groupID))");
-      }
-    }
+              org.hibernate.query.Query<TLEUser> query = queryBuilder.build(session);
+              query.setCacheable(true);
+              query.setReadOnly(true);
+              if (offset != null) {
+                query.setFirstResult(offset);
+              }
+              if (limit != null) {
+                query.setMaxResults(limit);
+              }
 
-    return (List<TLEUser>)
-        getHibernateTemplate()
-            .execute(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) {
-                    Query query = session.createQuery(q.toString());
-                    query.setCacheable(true);
-                    query.setReadOnly(true);
-
-                    query.setParameter("institution", CurrentInstitution.get());
-
-                    int ti = 0;
-                    for (String t : tokens) {
-                      query.setParameter("token" + (ti++), '%' + t + '%');
-                    }
-
-                    if (!Check.isEmpty(parentGroupID)) {
-                      query.setParameter("groupID", parentGroupID);
-                    }
-
-                    return query.list();
-                  }
-                });
+              return query.list();
+            });
   }
 
   @Override
@@ -164,12 +160,10 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
 
   /**
    * It seems to have been long possible for a username to be created that was spelt the same as a
-   * pre-existing one, differing only in case. This method however would prevent (among other
+   * pre-existing one, differing only in case. This method, however, would prevent (among other
    * things) either user from logging in because the LOWER(username) query would fail by not
    * returning a unique result. From which we may conclude that there are no in-use duplicated
    * usernames in the production world
-   *
-   * @see TLEUserServiceImpl#usernameExists(String, String)
    */
   @Override
   public TLEUser findByUsername(final String username) {

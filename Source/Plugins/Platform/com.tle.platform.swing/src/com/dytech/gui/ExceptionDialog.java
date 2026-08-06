@@ -19,10 +19,9 @@
 package com.dytech.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -53,14 +52,8 @@ public class ExceptionDialog extends JDialog implements ActionListener {
   }
 
   public ExceptionDialog(
-      Dialog dialog, String title, String message, String version, Throwable throwable) {
-    super(dialog);
-    setup(title, message, version, throwable);
-  }
-
-  public ExceptionDialog(
-      Frame frame, String title, String message, String version, Throwable throwable) {
-    super(frame);
+      Window owner, String title, String message, String version, Throwable throwable) {
+    super(owner);
     setup(title, message, version, throwable);
   }
 

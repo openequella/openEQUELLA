@@ -23,6 +23,7 @@ import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
 import com.tle.beans.entity.Schema;
@@ -34,7 +35,6 @@ import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowItem.AutoAction;
 import com.tle.common.workflow.node.WorkflowItem.MoveLive;
 import com.tle.common.workflow.node.WorkflowItem.Priority;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -54,7 +54,7 @@ public class DetailsTab extends JPanel {
   private static final long serialVersionUID = 1L;
 
   private final SchemaModel schemaModel = new SchemaModel();
-  private final RemoteSchemaService schemaService;
+  private final AdminSchemaService schemaService;
 
   private JLabel nameLabel;
   private I18nTextField name;
@@ -90,7 +90,7 @@ public class DetailsTab extends JPanel {
   private JLabel dynamicUserPathLabel;
   private SingleTargetChooser dynamicDueDate;
 
-  public DetailsTab(ChangeDetector changeDetector, RemoteSchemaService schemaService) {
+  public DetailsTab(ChangeDetector changeDetector, AdminSchemaService schemaService) {
     this.schemaService = schemaService;
     setupGui();
     setupLayout();

@@ -18,28 +18,69 @@
 
 package com.tle.core.services.user;
 
+import com.tle.beans.ump.UserManagementSettings;
 import com.tle.beans.user.UserInfoBackup;
 import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteUserService;
+import com.tle.plugins.ump.UserDirectoryQueries;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * The <code>authenticate*</code> methods do not will only do authentication and setup a UserState
- * object; this must be passed back into the <code>login(UserState)</code> method if you actually
- * want to login a user. Alternatively, you can simply call any of the other <code>login*</code>
- * methods which do both of these steps in one go.
+ * This interface provides methods to retrieve information about users, groups and roles from the
+ * user management system. The user management system is a plugin system, so the implementation of
+ * this interface will be provided by a plugin. Typically, that is a collection of UserDirectory
+ * plugins which are interacted with sequentially and the results aggregated.
  *
- * @author Nicholas Read
+ * <p>This is different from the TLEUserService, which is specifically focused on the internal TLE
+ * Users. (And sits alongside TLEGroupService and TLERoleService.)
+ *
+ * <p>The <code>authenticate*</code> methods do not will only do authentication and setup a
+ * UserState object; this must be passed back into the <code>login(UserState)</code> method if you
+ * actually want to login a user. Alternatively, you can simply call any of the other <code>login*
+ * </code> methods which do both of these steps in one go.
  */
-public interface UserService extends RemoteUserService {
+public interface UserService extends UserDirectoryQueries {
+  /**
+   * Get the IDs of all shared secrets configured in the current user management chain.
+   *
+   * @return The shared secret IDs aggregated across all configured plugins
+   */
+  List<String> getTokenSecretIds();
+
+  /**
+   * Get the configuration of the user management plugin identified by the given settings class.
+   * Requires the {@code EDIT_USER_MANAGEMENT} privilege.
+   *
+   * @param settingsConfig The fully qualified class name of the plugin's settings class
+   * @return The plugin's configuration, or null if no matching plugin is found
+   */
+  UserManagementSettings getPluginConfig(String settingsConfig);
+
+  /**
+   * Same as {@link #getPluginConfig(String)}, but without the privilege check. Intended for
+   * internal read-only access to the configuration.
+   *
+   * @param settingsConfig The fully qualified class name of the plugin's settings class
+   * @return The plugin's configuration, or null if no matching plugin is found
+   */
+  UserManagementSettings getReadOnlyPluginConfig(String settingsConfig);
+
+  /**
+   * Save the given user management plugin configuration. Requires the {@code EDIT_USER_MANAGEMENT}
+   * privilege.
+   *
+   * @param config The configuration to save
+   */
+  void setPluginConfig(UserManagementSettings config);
+
   UserState login(
       String username, String password, WebAuthenticationDetails details, boolean forceSession);
 
@@ -81,8 +122,6 @@ public interface UserService extends RemoteUserService {
   URI logoutRedirect(URI loggedoutUri);
 
   <T> T getAttribute(Object key);
-
-  void clearUserSearchCache();
 
   // Only for autologin settings
   void refreshSettings();

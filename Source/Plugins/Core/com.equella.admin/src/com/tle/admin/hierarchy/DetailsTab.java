@@ -24,12 +24,14 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.NameId;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.common.applet.client.EntityCache;
 import com.tle.common.applet.gui.AppletGuiUtils;
+import com.tle.common.i18n.StringLookup;
 import com.tle.i18n.BundleCache;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
@@ -37,6 +39,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 public class DetailsTab extends AbstractTopicEditorTab {
+  private static final StringLookup strings = Lookup.withPrefix("detailstab");
+
   private static final long serialVersionUID = 1L;
 
   private final EntityCache cache;
@@ -58,13 +62,13 @@ public class DetailsTab extends AbstractTopicEditorTab {
 
   @Override
   public void setup(ChangeDetector changeDetector) {
-    JLabel topicNameLabel = new JLabel(getString("detailstab.topicname")); // $NON-NLS-1$
-    JLabel shortLabel = new JLabel(getString("detailstab.shortdesc")); // $NON-NLS-1$
-    JLabel longLabel = new JLabel(getString("detailstab.fulldesc")); // $NON-NLS-1$
-    JLabel sectionsLabel = new JLabel(getString("detailstab.sectionnames")); // $NON-NLS-1$
-    JLabel subtopicsLabel = new JLabel(getString("detailstab.subtopics")); // $NON-NLS-1$
-    JLabel searchResultsLabel = new JLabel(getString("detailstab.searchresults")); // $NON-NLS-1$
-    JLabel advancedSearchLabel = new JLabel(getString("detailstab.advancedsearch")); // $NON-NLS-1$
+    JLabel topicNameLabel = new JLabel(strings.text("topicname"));
+    JLabel shortLabel = new JLabel(strings.text("shortdesc"));
+    JLabel longLabel = new JLabel(strings.text("fulldesc"));
+    JLabel sectionsLabel = new JLabel(strings.text("sectionnames"));
+    JLabel subtopicsLabel = new JLabel(strings.text("subtopics"));
+    JLabel searchResultsLabel = new JLabel(strings.text("searchresults"));
+    JLabel advancedSearchLabel = new JLabel(strings.text("advancedsearch"));
 
     topicName = new I18nTextField(BundleCache.getLanguages());
 
@@ -75,10 +79,10 @@ public class DetailsTab extends AbstractTopicEditorTab {
     longDescription = new I18nTextArea(BundleCache.getLanguages());
 
     hideSubtopicsWithNoResults =
-        new JCheckBox(getString("detailstab.hidesubtopicswithnoresults")); // $NON-NLS-1$
+        new JCheckBox(strings.text("hidesubtopicswithnoresults")); // $NON-NLS-1$
 
     advancedSearchSelector = new JComboBox();
-    advancedSearchSelector.addItem(getString("detailstab.nopowersearch")); // $NON-NLS-1$
+    advancedSearchSelector.addItem(strings.text("nopowersearch")); // $NON-NLS-1$
     AppletGuiUtils.addItemsToJCombo(advancedSearchSelector, cache.getPowerSearches());
 
     final int width1 = 20;

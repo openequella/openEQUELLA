@@ -21,10 +21,10 @@ package com.tle.admin.taxonomy.tool;
 import com.dytech.gui.Changeable;
 import com.tle.admin.baseentity.DynamicTabService;
 import com.tle.admin.gui.common.DynamicChoicePanel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.Taxonomy;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
 import java.awt.LayoutManager;
 import javax.swing.JComponent;
@@ -37,14 +37,10 @@ public abstract class DataSourceChoice extends DynamicChoicePanel<Taxonomy> {
   private boolean readonly;
   private String entityUuid;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private static final StringLookup strings = Lookup.lookup;
 
   protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
+    return strings.text(key);
   }
 
   public DataSourceChoice() {

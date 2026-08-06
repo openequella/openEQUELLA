@@ -18,11 +18,12 @@
 
 package com.tle.admin.collection.summarydisplay;
 
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.plugins.PluginService;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,21 +34,10 @@ import org.java.plugin.registry.Extension;
 public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig> {
   private final Map<String, String> defaultNames = new HashMap<String, String>();
 
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(NewDisplaySummarySectionDialog.class) + ".";
-
-  protected static String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected static String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("summarysections.adddialog");
 
   public NewDisplaySummarySectionDialog(final PluginService pluginService) {
-    super(
-        getString("summarysections.adddialog.instructions"),
-        getString("summarysections.adddialog.title"));
+    super(strings.text("instructions"), strings.text("title"));
 
     for (Extension ext :
         pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay")) {

@@ -47,6 +47,7 @@ public final class SecurityConstants {
   public static final String ARCHIVE_ITEM = "ARCHIVE_ITEM";
   public static final String VIEW_VIEWCOUNT = "VIEW_VIEWCOUNT";
 
+  public static final String EDIT_USER_MANAGEMENT = "EDIT_USER_MANAGEMENT";
   public static final String EDIT_SYSTEM_SETTINGS = "EDIT_SYSTEM_SETTINGS";
   public static final String LIST_USERS = "LIST_USERS";
 

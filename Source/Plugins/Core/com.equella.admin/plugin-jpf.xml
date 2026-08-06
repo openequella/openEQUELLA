@@ -15,14 +15,12 @@
     <import plugin-id="com.tle.admin.taxonomy.tool" />
     <import plugin-id="com.tle.admin.tools" />
     <import plugin-id="com.tle.admin.usermanagement.tool" />
-    <import plugin-id="com.tle.common.applet" exported="true" />
     <import plugin-id="com.tle.common.dynacollection" />
     <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.common.wizard.controls.resource" />
     <import plugin-id="com.tle.platform.common" exported="true" />
     <import plugin-id="com.tle.platform.equella" exported="true" />
     <import plugin-id="com.tle.platform.swing" exported="true" />
-    <import plugin-id="com.tle.webstart.admin" exported="true" optional="true" />
   </requires>
   <extension plugin-id="com.tle.admin.tools" point-id="tool" id="harvestertool">
     <parameter id="displayorder" value="900" />

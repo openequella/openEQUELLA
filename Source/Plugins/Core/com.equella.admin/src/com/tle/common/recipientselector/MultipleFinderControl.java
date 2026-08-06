@@ -20,12 +20,13 @@ package com.tle.common.recipientselector;
 
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.gui.models.GenericListModel;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -37,8 +38,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.EventListenerList;
 
 public class MultipleFinderControl extends JPanel implements ActionListener {
-  private static final long serialVersionUID = 1L;
-  private final RemoteUserService userService;
+  @Serial private static final long serialVersionUID = 1L;
+  private final AdminUserDirectoryService userDirectoryService;
   private final RecipientFilter[] filters;
   private final EventListenerList listeners;
 
@@ -50,12 +51,14 @@ public class MultipleFinderControl extends JPanel implements ActionListener {
   private JList list;
   private UserGroupRoleFinder finder;
 
-  public MultipleFinderControl(RemoteUserService userService) {
-    this(userService, RecipientFilter.USERS, RecipientFilter.GROUPS, RecipientFilter.ROLES);
+  public MultipleFinderControl(AdminUserDirectoryService userDirectoryService) {
+    this(
+        userDirectoryService, RecipientFilter.USERS, RecipientFilter.GROUPS, RecipientFilter.ROLES);
   }
 
-  public MultipleFinderControl(RemoteUserService userService, RecipientFilter... filters) {
-    this.userService = userService;
+  public MultipleFinderControl(
+      AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
+    this.userDirectoryService = userDirectoryService;
     this.filters = filters;
 
     listeners = new EventListenerList();
@@ -89,12 +92,12 @@ public class MultipleFinderControl extends JPanel implements ActionListener {
     removeSelected.addActionListener(this);
     removeAll.addActionListener(this);
 
-    finder = new TabbedFinder(userService, filters);
+    finder = new TabbedFinder(userDirectoryService, filters);
 
     listModel = new GenericListModel<String>();
 
     list = new JList(listModel);
-    list.setCellRenderer(new ExpressionListCellRenderer(userService));
+    list.setCellRenderer(new ExpressionListCellRenderer(userDirectoryService));
 
     JScrollPane listScroller = new JScrollPane(list);
     listScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);

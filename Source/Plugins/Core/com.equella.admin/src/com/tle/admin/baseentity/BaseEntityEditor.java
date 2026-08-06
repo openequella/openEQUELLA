@@ -29,6 +29,7 @@ import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.CloseAction;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.tools.common.BaseEntityTool;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
@@ -40,7 +41,7 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -82,11 +83,7 @@ public abstract class BaseEntityEditor<T extends BaseEntity>
   protected JStatusBar statusbar;
   @Deprecated protected Driver driver;
   protected AbstractDetailsTab<T> detailsTab;
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   public BaseEntityEditor(BaseEntityTool<T> tool, boolean readonly) {
     this.tool = tool;
@@ -305,8 +302,10 @@ public abstract class BaseEntityEditor<T extends BaseEntity>
 
     try {
       if (state.isLoaded()) {
+        // If the user is editing ...
         state.setEntity(tool.stopEdit(state.getEntityPack(), false));
       } else {
+        // If the user is adding ...
         T entity = state.getEntity();
         if (Check.isEmpty(entity.getOwner())) {
           entity.setOwner(driver.getLoggedInUserUUID());

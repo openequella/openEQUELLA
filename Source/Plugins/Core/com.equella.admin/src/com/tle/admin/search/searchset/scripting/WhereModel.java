@@ -31,12 +31,12 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -45,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,24 +57,25 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This controls the data model of an "Where" statement using in the Learning Edge's hierarchy. This
  * should be used along with the <code>ScriptView</code> class in order to display and edit a
  * statement. Given a Clause data structure, the model will display on Clause and OpTerm elements in
  * the ScriptView. Each Clause and OpTerm will display their first Term in the same row as
- * themselves. <b>Warning:</b> The code is ugly, and I'm not proud of it!! It needs some serious
- * refactoring, and some bits need a scraping. I'll look in to it more when I have time :)
+ * themselves.
+ *
+ * <p><b>Warning:</b> The code is ugly, and I'm not proud of it!! It needs some serious refactoring,
+ * and some bits need a scraping. I'll look in to it more when I have time :)
  *
  * @author Nicholas Read
  */
-@SuppressWarnings({"nls", "rawtypes"})
 public class WhereModel extends DefaultListModel implements ScriptModel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private static final Log LOGGER = LogFactory.getLog(WhereModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WhereModel.class);
 
   protected static final List<String> TYPES =
       Collections.unmodifiableList(Arrays.asList("where", "where (", "and", "and (", "or", "or ("));
@@ -156,7 +158,9 @@ public class WhereModel extends DefaultListModel implements ScriptModel {
     try {
       if (itemDefinition.getSchema() == null) {
         itemDefinition =
-            clientService.getService(RemoteItemDefinitionService.class).get(itemDefinition.getId());
+            clientService
+                .getService(AdminCollectionDefinitionService.class)
+                .get(itemDefinition.getId());
       }
 
       loadSchema(clientService, itemDefinition.getSchema());
@@ -164,19 +168,20 @@ public class WhereModel extends DefaultListModel implements ScriptModel {
       targetMap = new TargetValueMap();
       targetMap.addPages(itemDefinition.getWizard().getPages());
     } catch (Exception ex) {
-      LOGGER.error("Error loading collection " + itemDefinition.getId(), ex); // $NON-NLS-1$
-      Driver.displayError(parent, "itemEditor/loading", ex); // $NON-NLS-1$
+      LOGGER.error("Error loading collection {}", itemDefinition.getId(), ex);
+      Driver.displayError(parent, "itemEditor/loading", ex);
     }
   }
 
   private void loadSchema(ClientService clientService, Schema schema) {
+    final long schemaId = schema.getId();
     try {
-      schema = clientService.getService(RemoteSchemaService.class).get(schema.getId());
-      xpathField.loadSchema(schema.getDefinitionNonThreadSafe());
+      final AdminSchemaService schemaService = clientService.getService(AdminSchemaService.class);
+      final Schema freshSchema = schemaService.get(schemaId);
+      xpathField.loadSchema(freshSchema.getDefinitionNonThreadSafe());
     } catch (Exception ex) {
-      LOGGER.error("Error loading schema " + schema.getId(), ex); // $NON-NLS-1$
-      Driver.displayInformation(
-          parent, "There was an error retrieving the schema from the server"); // $NON-NLS-1$
+      LOGGER.error("Error loading schema {}", schemaId, ex);
+      Driver.displayInformation(parent, "There was an error retrieving the schema from the server");
     }
   }
 

@@ -58,7 +58,7 @@ public class FlickrSettingsPanel
         "<html><head><style>"
             + "<!--a{color:#0000cc;text-decoration: none;}//--></style></head>"
             + "<body>"
-            + getString("settings.label.apikeyhelp"));
+            + strings.text("settings.label.apikeyhelp"));
     apiKeyHelp.addHyperlinkListener(
         new HyperlinkListener() {
           @Override
@@ -72,15 +72,15 @@ public class FlickrSettingsPanel
 
     add(apiKeyHelp, "span 2");
 
-    add(new JLabel(getString("settings.label.apikey")));
+    add(new JLabel(strings.text("settings.label.apikey")));
     add(apiKey);
-    add(new JLabel(getString("settings.label.apisharedsecret")));
+    add(new JLabel(strings.text("settings.label.apisharedsecret")));
     add(apiSharedSecret);
   }
 
   @Override
   protected String getTitleKey() {
-    return getKey("flickr.settings.title");
+    return strings.key("flickr.settings.title");
   }
 
   @Override

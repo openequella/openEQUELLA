@@ -26,6 +26,7 @@ import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.report.Report;
 import com.tle.common.adminconsole.FileUploader;
 import com.tle.common.applet.client.DialogUtils;
@@ -34,7 +35,6 @@ import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.reporting.RemoteReportingService;
 import com.tle.common.reporting.ReportingException;
 import com.tle.common.reporting.ReportingException.Type;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -105,7 +105,7 @@ public class DetailsTab extends BaseEntityTab<Report>
     identifier.setEditable(false);
     name = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextArea(BundleCache.getLanguages());
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
     hideReport = new JCheckBox();
 
     final int height1 = owner.getPreferredSize().height;

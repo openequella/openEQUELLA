@@ -116,7 +116,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
       Arrays.asList(
           AclResource.class,
           AdvancedSearchResource.class,
-          Auth.class,
           DrmResource.class,
           FacetedSearchClassificationResource.class,
           GdprResource.class,
@@ -134,6 +133,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   // API classes which can use Guice normal Dependency Injection.
   private static final List<Class> apiClasses =
       Arrays.asList(
+          Auth.class,
           BrowseHierarchyResource.class,
           DashboardResource.class,
           FavouriteResource.class,

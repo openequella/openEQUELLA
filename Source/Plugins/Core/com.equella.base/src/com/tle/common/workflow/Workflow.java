@@ -44,6 +44,11 @@ public class Workflow extends BaseEntity {
     super();
   }
 
+  public Workflow(long id) {
+    super();
+    setId(id);
+  }
+
   public boolean isMovelive() {
     return movelive;
   }

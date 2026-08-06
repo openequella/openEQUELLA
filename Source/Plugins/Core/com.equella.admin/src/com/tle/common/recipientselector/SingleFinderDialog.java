@@ -21,9 +21,9 @@ package com.tle.common.recipientselector;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -34,7 +34,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-@SuppressWarnings("nls")
 public class SingleFinderDialog implements ActionListener, FinderListener {
   private JButton ok;
   private JButton cancel;
@@ -52,8 +51,9 @@ public class SingleFinderDialog implements ActionListener, FinderListener {
   }
 
   /** Creates a default tabbed finder. */
-  public SingleFinderDialog(RemoteUserService userService, RecipientFilter... filters) {
-    this(new TabbedFinder(userService, filters));
+  public SingleFinderDialog(
+      AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
+    this(new TabbedFinder(userDirectoryService, filters));
   }
 
   private void setupGUI() {

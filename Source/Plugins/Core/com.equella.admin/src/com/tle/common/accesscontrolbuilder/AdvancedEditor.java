@@ -18,18 +18,19 @@
 
 package com.tle.common.accesscontrolbuilder;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import javax.swing.JComponent;
 
 public class AdvancedEditor implements PrivilegeListEditor {
   private final RemoteTLEAclManager aclManager;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
-  public AdvancedEditor(RemoteTLEAclManager aclManager, RemoteUserService userService) {
+  public AdvancedEditor(
+      RemoteTLEAclManager aclManager, AdminUserDirectoryService userDirectoryService) {
     this.aclManager = aclManager;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
   }
 
   /*
@@ -53,6 +54,6 @@ public class AdvancedEditor implements PrivilegeListEditor {
    */
   @Override
   public JComponent createView(Object domainObj, Node privNode, PrivilegeList list) {
-    return new AdvancedEditorPanel(aclManager, userService, privNode, list, domainObj);
+    return new AdvancedEditorPanel(aclManager, userDirectoryService, privNode, list, domainObj);
   }
 }

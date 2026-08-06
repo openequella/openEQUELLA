@@ -1,0 +1,175 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.tle.admin.boot;
+
+import com.dytech.common.net.Proxy;
+import com.tle.admin.PluginServiceImpl;
+import com.tle.admin.rest.AuthApi;
+import com.tle.client.harness.HarnessInterface;
+import com.tle.client.impl.ClientServiceImpl;
+import com.tle.common.Check;
+import com.tle.exceptions.BadCredentialsException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.URL;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@SuppressWarnings("nls")
+public final class Bootstrap {
+  private static final Pattern LOCALE_REGEX =
+      Pattern.compile("^([a-z][a-z])?(?:_([A-Z][A-Z])?(?:_(\\w+))?)?$");
+
+  public static final String PROPERTY_PREFIX = "jnlp.";
+  public static final String ENDPOINT_PARAMETER = PROPERTY_PREFIX + "ENDPOINT";
+  public static final String LOCALE_PARAMETER = PROPERTY_PREFIX + "LOCALE";
+  public static final String SERVER_NAME_PARAMETER = "SERVER_NAME";
+  public static final String USERNAME_PARAMETER = PROPERTY_PREFIX + "USERNAME";
+  public static final String PASSWORD_PARAMETER = PROPERTY_PREFIX + "PASSWORD";
+  public static final String PROXY_HOST = PROPERTY_PREFIX + "PROXYHOST";
+  public static final String PROXY_PORT = PROPERTY_PREFIX + "PROXYPORT";
+  public static final String PROXY_USERNAME = PROPERTY_PREFIX + "PROXYUSERNAME";
+  public static final String PROXY_PASSWORD = PROPERTY_PREFIX + "PROXYPASSWORD";
+
+  private final String endpointParam;
+  private final Locale locale;
+
+  public static void main(String[] args) {
+    new Bootstrap().run();
+  }
+
+  private Bootstrap() {
+    String endpointParam = System.getProperty(ENDPOINT_PARAMETER);
+    if (endpointParam == null) {
+      endpointParam = System.getProperty("ENDPOINT");
+    }
+    if (endpointParam == null) {
+      throw new RuntimeException("ENDPOINT parameter not specified");
+    }
+    this.endpointParam = endpointParam;
+
+    final String localeParam = System.getProperty(LOCALE_PARAMETER);
+    if (localeParam != null) {
+      locale = parseLocale(localeParam);
+    } else {
+      locale = Locale.getDefault();
+    }
+
+    final String proxyHostParam = System.getProperty(PROXY_HOST);
+    final String proxyPortParam = System.getProperty(PROXY_PORT);
+    if (proxyHostParam != null && proxyPortParam != null) {
+      try {
+        final int proxyPort = Integer.parseInt(proxyPortParam);
+        Proxy.setProxy(
+            proxyHostParam,
+            proxyPort,
+            System.getProperty(PROXY_USERNAME),
+            System.getProperty(PROXY_PASSWORD));
+      } catch (NumberFormatException nfe) {
+        throw new RuntimeException("Invalid proxy port " + proxyPortParam);
+      }
+    }
+  }
+
+  private void run() {
+    try {
+      final URL endpointUrl = new URL(endpointParam);
+      if (login(endpointUrl)) {
+        final ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
+        final PluginServiceImpl pluginService = clientService.getService(PluginServiceImpl.class);
+        pluginService.registerPlugins();
+
+        final HarnessInterface client =
+            (HarnessInterface)
+                pluginService.getBean("com.equella.admin", "com.tle.admin.AdminConsole");
+        client.setClientService(clientService);
+        client.setPluginService(pluginService);
+        client.setLocale(locale);
+        client.setEndpointURL(endpointUrl);
+        client.start();
+      }
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  private boolean login(URL endpointUrl) {
+    try {
+      // Must be installed before the first REST call: the shared REST/GraphQL backends capture
+      // the default CookieHandler, and the login response's JSESSIONID lands in it.
+      CookieHandler.setDefault(new CookieManager());
+
+      // bring up username/password modal
+      String username = System.getProperty(USERNAME_PARAMETER);
+      String password = System.getProperty(PASSWORD_PARAMETER);
+
+      LoginDialog loginDialog = new LoginDialog();
+      try {
+        if (username != null && password != null) {
+          if (tryLogin(endpointUrl, username, password)) {
+            return true;
+          }
+        }
+
+        while (true) {
+          loginDialog.setUsername(username);
+          loginDialog.setVisible(true);
+          if (loginDialog.getResult() == LoginDialog.RESULT_OK) {
+            username = loginDialog.getUsername();
+            password = loginDialog.getPassword();
+            if (tryLogin(endpointUrl, username, password)) {
+              return true;
+            } else {
+              loginDialog.setErrorMessage("Your credentials are invalid.");
+            }
+          } else {
+            return false;
+          }
+        }
+      } finally {
+        loginDialog.dispose();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static boolean tryLogin(URL endpointUrl, String username, String password) {
+    try {
+      AuthApi.login(endpointUrl, username, password);
+      return true;
+    } catch (BadCredentialsException e) {
+      return false;
+    }
+  }
+
+  private static Locale parseLocale(String localeString) {
+    if (localeString != null) {
+      Matcher m = LOCALE_REGEX.matcher(localeString.trim());
+      if (m.matches()) {
+        return new Locale(
+            Check.nullToEmpty(m.group(1)),
+            Check.nullToEmpty(m.group(2)),
+            Check.nullToEmpty(m.group(3)));
+      }
+    }
+    throw new RuntimeException("Error parsing locale: " + localeString);
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "openequella-graphiql",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf dist/ node_modules/ .parcel-cache/",
+    "dev": "vite build --watch --mode development --emptyOutDir",
+    "devbuild": "vite build --mode development --emptyOutDir",
+    "build": "vite build --mode production"
+  },
+  "dependencies": {
+    "@graphiql/toolkit": "0.11.3",
+    "graphiql": "5.2.2",
+    "graphql": "16.8.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.4",
+    "typescript": "5.4.4",
+    "vite": "7.3.1",
+    "vite-plugin-monaco-editor": "1.1.0"
+  }
+}

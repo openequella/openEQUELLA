@@ -19,11 +19,11 @@
 package com.tle.admin.usermanagement.ldap;
 
 import com.dytech.gui.ChangeDetector;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.encryption.RemoteEncryptionService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -170,11 +170,9 @@ public class LDAPGeneralSettings extends AbstractLDAPPanel {
     usernameField.setText(usernameField.getText().trim());
   }
 
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(LDAPGeneralSettings.class) + ".";
+  private static final StringLookup strings = Lookup.withPrefix("ldap.general");
 
-  @SuppressWarnings("nls")
-  private static String s(String keypart) {
-    return CurrentLocale.get(KEY_PFX + "ldap.general." + keypart);
+  private static String s(String key) {
+    return strings.text(key);
   }
 }

@@ -26,13 +26,12 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteTLEUserService;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
@@ -51,8 +50,7 @@ import javax.swing.JTextField;
 public class UserDetailsPanel extends JChangeDetectorPanel {
   private static final long serialVersionUID = 1L;
 
-  private final RemoteTLEUserService userService;
-  private final RemoteUserService userCacheService;
+  private final AdminTLEUserService userService;
 
   private final Map<String, JLabel> labels = new HashMap<String, JLabel>();
 
@@ -67,9 +65,8 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   private JPasswordField newPassword;
   private JPasswordField passwordConfirm;
 
-  public UserDetailsPanel(RemoteTLEUserService userService, RemoteUserService userCacheService) {
+  public UserDetailsPanel(AdminTLEUserService userService) {
     this.userService = userService;
-    this.userCacheService = userCacheService;
     setupGui();
 
     loadUser(null);
@@ -283,10 +280,8 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
     clearChanges();
   }
 
-  /**
-   * @return true if password has changed
-   */
-  private boolean saveDetails() {
+  /** Copy across the details from the UI into the {@code loadedUser} object. */
+  private void refreshLoadedUser() {
     loadedUser.setUsername(username.getText().trim());
     loadedUser.setFirstName(firstName.getText());
     loadedUser.setLastName(lastName.getText());
@@ -301,12 +296,10 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
             Collections.singletonList(
                 new ValidationError(
                     "password",
-                    CurrentLocale //$NON-NLS-1$
-                        .get(
-                        "com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch")))); //$NON-NLS-1$
+                    CurrentLocale.get(
+                        "com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch"))));
       }
     }
-    return passwordChanged;
   }
 
   public void save() throws EditorException {
@@ -320,14 +313,16 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   }
 
   public void saveLoadedUser() {
-    boolean needsHashing = saveDetails();
+    refreshLoadedUser();
     String id = loadedUser.getUuid();
     if (Check.isEmpty(id)) {
       id = userService.add(loadedUser);
-      loadedUser = userService.get(id);
+      loadedUser =
+          userService
+              .get(id)
+              .orElseThrow(() -> new IllegalStateException("Failed to retrieve newly added user."));
     } else {
-      id = userService.edit(loadedUser, needsHashing);
-      userCacheService.removeFromCache(id);
+      id = userService.edit(loadedUser);
     }
     loadedUser.setUuid(id);
 
