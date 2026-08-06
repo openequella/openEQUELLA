@@ -32,10 +32,12 @@ import { itemWithBookmark } from "../../../__mocks__/SearchResult.mock";
 import { basicSearchObj } from "../../../__mocks__/searchresult_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import FavouritesPage from "../../../tsrc/favourites/FavouritesPage";
-import { FAVOURITES_TYPE_PARAM } from "../../../tsrc/favourites/FavouritesPageHelper";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
-import { FavouritesType } from "../../../tsrc/modules/FavouriteModule";
+import {
+  FAVOURITES_TYPE_PARAM,
+  FavouritesType,
+} from "../../../tsrc/modules/FavouriteModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
