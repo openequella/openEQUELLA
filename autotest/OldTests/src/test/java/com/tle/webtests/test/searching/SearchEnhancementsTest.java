@@ -10,6 +10,7 @@ import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
@@ -132,7 +133,7 @@ public class SearchEnhancementsTest extends AbstractCleanupAutoTest {
     for (String name : expected) {
       assertTrue(results.doesResultExist(name), "Expecting '" + name);
     }
-    if (notExpected != null && !notExpected.isEmpty()) {
+    if (CollectionUtils.isNotEmpty(notExpected)) {
       for (String name : notExpected) {
         assertFalse(results.doesResultExist(name, 1), "Not expecting '" + name);
       }

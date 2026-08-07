@@ -14,7 +14,6 @@ import org.openqa.selenium.support.FindBy;
 
 public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPage> {
   public static final String BANNED_EXT_SECTION_TITLE = "Banned file extensions";
-  public static final String QUOTAS_SECTION_TITLE = "User content quotas";
 
   @FindBy(id = "_bannedExtensions")
   private WebElement bannedExtTable;
@@ -57,13 +56,6 @@ public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPag
     return abePage.ok(newWaiter(bannedExtension));
   }
 
-  public AddBannedExtensionPage addBannedExtFail(String bannedExtension) {
-    addExtLink.click();
-    AddBannedExtensionPage abePage = new AddBannedExtensionPage(context).get();
-    abePage.setBannedExt(bannedExtension);
-    return abePage.fail();
-  }
-
   private ExpectWaiter<ContentRestrictionsPage> newWaiter(String named) {
     return ExpectWaiter.waiter(
         ExpectedConditions2.visibilityOfElementLocated(bannedExtTable, getBannedExtBy(named)),
@@ -72,36 +64,6 @@ public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPag
 
   private By getBannedExtBy(String name) {
     return By.xpath(".//td[@class='name' and text()=" + quoteXPath(name) + "]");
-  }
-
-  public int findUserQuotaByUserName(String userName) {
-    List<WebElement> trs = getUserQuotasElements();
-    if (trs != null && !trs.isEmpty()) {
-      for (int i = 0; i < trs.size(); ++i) {
-        WebElement we = trs.get(i);
-        if (we.getText().equals(userName)) {
-          return i;
-        }
-      }
-    }
-    return -1; // not found
-  }
-
-  public boolean deleteUserQuotasByIndex(int index) {
-    boolean deleted = false;
-    List<WebElement> trs = getUserQuotasElements();
-    if (trs != null && trs.size() > index) {
-      WebElement tr = trs.get(index);
-      WebElement wibble =
-          tr.findElement(By.xpath("following-sibling::td[@class='actions']/a[@class='unselect']"));
-      // confirmTrue (to clear the confirmation box) before calling
-      // click()
-      // (which creates the confirmation box).
-      wibble.click();
-      acceptConfirmation();
-      deleted = true;
-    }
-    return deleted;
   }
 
   public int countUserQuotas() {

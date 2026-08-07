@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.settings;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
@@ -112,23 +111,6 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
     return !isVisible(disableAutoLoginCheck);
   }
 
-  public int countIPAddresses() {
-    return getIpAddressElements().size();
-  }
-
-  public int findIpAddress(String ipAddress) {
-    List<WebElement> trs = getIpAddressElements();
-    if (trs != null && !trs.isEmpty()) {
-      for (int i = 0; i < trs.size(); ++i) {
-        WebElement we = trs.get(i);
-        if (we.findElement(By.xpath("./td[@class='name']")).getText().equals(ipAddress)) {
-          return i;
-        }
-      }
-    }
-    return -1;
-  }
-
   public LoginSettingsPage addIPAddress(String ipAddress) {
     WaitingPageObject<LoginSettingsPage> ajaxUpdate = ajaxUpdate(ipAjaxDiv);
     return openAddIPDialog().setIpAddress(ipAddress).ok(ajaxUpdate);
@@ -147,22 +129,6 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
 
   public boolean hasUser(String user) {
     return isPresent(By.xpath("//span[@title=" + quoteXPath(user) + "]"));
-  }
-
-  public boolean deleteIpAddressByIndex(int index) {
-    boolean deleted = false;
-    List<WebElement> trs = getIpAddressElements();
-    if (trs.size() > index) {
-      WebElement tr = trs.get(index);
-      WebElement wobble = tr.findElement(By.xpath("td[@class='actions']/a[@class='unselect']"));
-      // confirmTrue (to clear the confirmation box) before calling
-      // click()
-      // (which creates the confirmation box).
-      wobble.click();
-      acceptConfirmation();
-      deleted = true;
-    }
-    return deleted;
   }
 
   public LoginSettingsPage deleteIpAddress(String ip) {
@@ -193,28 +159,11 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
   public List<String> getErrors() {
     List<WebElement> errorElements = driver.findElements(By.className("ctrlinvalidmessage"));
 
-    return Lists.transform(
-        errorElements,
-        new Function<WebElement, String>() {
-
-          @Override
-          public String apply(WebElement we) {
-            return we.getText();
-          }
-        });
+    return Lists.transform(errorElements, WebElement::getText);
   }
 
   public boolean hasError(String text) {
     return isPresent(
         By.xpath("//div[contains(@class, 'ctrlinvalid')]/p[text()=" + quoteXPath(text) + "]"));
-  }
-
-  /**
-   * Returns the rows containing 'name' elements, so should exclude the table header (if any) "
-   *
-   * @return a non-null list, possibly empty
-   */
-  private List<WebElement> getIpAddressElements() {
-    return ipAddressTable.findElements(By.xpath(".//tr[td[@class='name']]"));
   }
 }

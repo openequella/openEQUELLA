@@ -23,7 +23,7 @@ public class OAuthDefaultRedirectPage extends AbstractPage<OAuthDefaultRedirectP
 
   public boolean hasAccessToken() {
     Map<String, String[]> params = getClientParams();
-    return !ArrayUtils.isEmpty(params.get("access_token"));
+    return ArrayUtils.isNotEmpty(params.get("access_token"));
   }
 
   private Map<String, String[]> getClientParams() {

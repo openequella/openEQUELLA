@@ -66,10 +66,10 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
       ajaxUpdate.get();
     }
 
-    if (!ArrayUtils.isEmpty(ext)) {
-      for (int i = 0; i < ext.length; i++) {
+    if (ArrayUtils.isNotEmpty(ext)) {
+      for (String s : ext) {
         extField.clear();
-        extField.sendKeys(ext[i]);
+        extField.sendKeys(s);
         addExtButton.click();
       }
     }

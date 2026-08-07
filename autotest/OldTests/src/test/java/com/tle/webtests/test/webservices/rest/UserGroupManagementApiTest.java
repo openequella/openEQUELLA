@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -263,7 +264,7 @@ public class UserGroupManagementApiTest extends AbstractRestApiTest {
       params.add("q");
       params.add(query);
     }
-    if (otherParams != null && !otherParams.isEmpty()) {
+    if (MapUtils.isNotEmpty(otherParams)) {
       for (Entry<?, ?> entry : otherParams.entrySet()) {
         params.add(entry.getKey().toString());
         params.add(entry.getValue().toString());
