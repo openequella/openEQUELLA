@@ -15,23 +15,24 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion   = "3.15.6.Final"
-val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.120"
-val axis2Version      = "2.0.1"
-val circeVersion      = "0.14.5"
-val curatorVersion    = "5.9.0"
-val cxfVersion        = "3.6.11"
-val fs2Version        = "3.13.0"
-val guiceVersion      = "6.0.0"
-val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.22.2"
-val prometheusVersion = "0.16.0"
-val sttpVersion       = "3.11.0"
-val tikaVersion       = "3.3.2"
-val luceneVersion     = "10.5.0"
-val nettyVersion      = "4.2.16.Final"
-val rampartVersion    = "1.8.0"
+val RestEasyVersion           = "3.15.6.Final"
+val SwaggerVersion            = "1.6.16"
+val TomcatVersion             = "9.0.120"
+val axis2Version              = "2.0.1"
+val circeVersion              = "0.14.5"
+val curatorVersion            = "5.9.0"
+val cxfVersion                = "3.6.11"
+val fs2Version                = "3.13.0"
+val guiceVersion              = "6.0.0"
+val jsassVersion              = "5.11.1"
+val jsoupVersion              = "1.22.2"
+val owaspHtmlSanitizerVersion = "20260313.1"
+val prometheusVersion         = "0.16.0"
+val sttpVersion               = "3.11.0"
+val tikaVersion               = "3.3.2"
+val luceneVersion             = "10.5.0"
+val nettyVersion              = "4.2.16.Final"
+val rampartVersion            = "1.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -227,6 +228,7 @@ libraryDependencies ++= Seq(
   "org.jboss.spec.javax.ws.rs"      % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "javax.json.bind"                 % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                       % "jsoup"                          % jsoupVersion,
+  "com.googlecode.owasp-java-html-sanitizer" % "owasp-java-html-sanitizer" % owaspHtmlSanitizerVersion,
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
