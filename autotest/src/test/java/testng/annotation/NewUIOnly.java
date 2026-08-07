@@ -12,7 +12,7 @@ import org.scalatest.TagAnnotation;
  * which disables annotated tests based on the {@code OLD_TEST_NEWUI} environment variable. The
  * {@link TagAnnotation} meta-annotation additionally makes it a ScalaTest suite-level tag (named by
  * this annotation's fully qualified class name), excluded via the same environment variable in
- * OldTests/build.sbt.
+ * autotest/build.sbt.
  */
 @TagAnnotation
 @Retention(RetentionPolicy.RUNTIME)

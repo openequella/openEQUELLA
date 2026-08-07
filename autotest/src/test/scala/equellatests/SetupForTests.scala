@@ -1,6 +1,6 @@
 package equellatests
 
-import com.tle.webtests.framework.PageContext
+import com.tle.webtests.framework.{PageContext, TestConfig}
 import com.tle.webtests.pageobject.institution._
 import com.tle.webtests.pageobject.{LoginPage, SettingsPage, UndeterminedPage}
 import equellatests.GlobalConfig._
@@ -24,8 +24,7 @@ class ImportInsts(allowed: String => Boolean) {
   import ImportInsts._
 
   val insts: Seq[File] = {
-    val baseTestFolder = new File(testConfig.getTestFolder, "tests")
-    baseTestFolder.listFiles.toSeq.filter { testDir =>
+    TestConfig.getInstitutionsFolder.listFiles.toSeq.filter { testDir =>
       allowed(testDir.getName) && new File(testDir, INSTITUTION_FILE).isDirectory
     }
   }

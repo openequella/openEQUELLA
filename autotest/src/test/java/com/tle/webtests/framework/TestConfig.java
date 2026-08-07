@@ -22,7 +22,7 @@ public class TestConfig {
   private static final String INSTITUTION_PROPS = "institution.properties";
 
   /** Directory under the base folder holding the per-institution fixture trees. */
-  private static final String INSTITUTIONS_DIR = "tests";
+  private static final String INSTITUTIONS_DIR = "institutions";
 
   /** The other marker identifying the base folder, alongside {@link #INSTITUTIONS_DIR}. */
   private static final String BUILD_DEFINITION = "build.sbt";
@@ -66,8 +66,13 @@ public class TestConfig {
     return findInstitutionFolder(folderName);
   }
 
+  /** The directory holding every per-institution fixture tree. */
+  public static File getInstitutionsFolder() {
+    return new File(getBaseFolder(), INSTITUTIONS_DIR);
+  }
+
   private static File findInstitutionFolder(String name) {
-    return new File(getBaseFolder(), INSTITUTIONS_DIR + "/" + name);
+    return new File(getInstitutionsFolder(), name);
   }
 
   public static String findInstitutionName(Class<?> clazz) {

@@ -11,7 +11,7 @@ import testng.annotation.NewUIOnly
 
 /** Login notices are institution-wide state, so this suite must not run alongside anything else
   * touching the `fiveo` institution — which is why `tests.parallel` is honoured in
-  * OldTests/build.sbt.
+  * autotest/build.sbt.
   */
 @NewUIOnly
 class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
