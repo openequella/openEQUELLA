@@ -4,10 +4,10 @@ import static org.testng.Assert.assertEquals;
 
 import com.dytech.devlib.PropBagEx;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.Pair;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
 
 /**
@@ -27,7 +27,7 @@ public class ItemApiXxeTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   /** Creates an item with the given metadata XML and registers it for cleanup after the test. */

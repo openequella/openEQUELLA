@@ -1,8 +1,8 @@
 package com.tle.webtests.pageobject.integration.moodle;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.ExpectedConditions2;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -28,7 +28,7 @@ public final class ChromeHacks {
     String width = objectTag.getAttribute("width");
     String iframe;
 
-    if (!Check.isEmpty(width) && !Check.isEmpty(height)) {
+    if (StringUtils.isNotBlank(width) && StringUtils.isNotBlank(height)) {
       iframe =
           "<iframe width="
               + width

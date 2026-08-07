@@ -1,11 +1,11 @@
 package com.tle.webtests.pageobject.viewitem;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -24,7 +24,7 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
     By selectedPath =
         By.xpath(
             "//a[text()=" + quoteXPath(title) + "]/../../../div[contains(@class, 'selected')]");
-    if (!Check.isEmpty(title) && !isPresent(selectedPath)) {
+    if (StringUtils.isNotBlank(title) && !isPresent(selectedPath)) {
       driver.findElement(By.xpath("//a[text()=" + quoteXPath(title) + "]")).click();
       waitForElement(By.xpath("id('content1')/iframe"));
     }

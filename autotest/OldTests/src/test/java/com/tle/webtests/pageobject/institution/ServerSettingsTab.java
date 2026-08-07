@@ -1,7 +1,7 @@
 package com.tle.webtests.pageobject.institution;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -55,6 +55,6 @@ public class ServerSettingsTab extends InstitutionTab<ServerSettingsTab> {
   }
 
   private boolean isServerMessageEnabled() {
-    return !Check.isEmpty(serverMessageEnabled.getAttribute("checked"));
+    return StringUtils.isNotBlank(serverMessageEnabled.getAttribute("checked"));
   }
 }

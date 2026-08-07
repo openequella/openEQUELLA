@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.PrefixedName;
@@ -36,6 +35,7 @@ import com.tle.webtests.pageobject.viewitem.VersionsPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.remotetest.integration.ConnectorHelper;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
@@ -500,7 +500,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test
   public void setupBlackboard() {
-    if (Check.isEmpty(testConfig.getIntegrationUrl("blackboard"))) {
+    if (StringUtils.isBlank(testConfig.getIntegrationUrl("blackboard"))) {
       throw new SkipException("blackboard url not set");
     }
 
@@ -545,7 +545,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
   @Override
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
-    if (!Check.isEmpty(testConfig.getIntegrationUrl("blackboard"))) {
+    if (StringUtils.isNotBlank(testConfig.getIntegrationUrl("blackboard"))) {
       String partialName = context.getNamePrefix();
 
       BlackboardMyInstitutionPage indexPage =
@@ -568,13 +568,13 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
   }
 
   private String ensureProxy() {
-    if (Check.isEmpty(password)) {
+    if (StringUtils.isBlank(password)) {
       new BlackboardLoginPage(context).load().logon(ADMIN_USERNAME, ADMIN_PASSWORD);
       BlackboardProxyPage proxyPage = new BlackboardProxyPage(context).load();
       assertTrue(proxyPage.hasEquella(), "No EQUELLA proxy tool found");
       password = proxyPage.setAvailable();
     }
-    assertTrue(!Check.isEmpty(password));
+    assertTrue(StringUtils.isNotBlank(password));
     return password;
   }
 }

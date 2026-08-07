@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.PrefixedName;
@@ -24,6 +23,7 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.ResourceUniversalControlType;
 import com.tle.webtests.remotetest.integration.ConnectorHelper;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
@@ -176,7 +176,7 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
   @Override
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
-    if (!Check.isEmpty(testConfig.getIntegrationUrl("moodle"))) {
+    if (StringUtils.isNotBlank(testConfig.getIntegrationUrl("moodle"))) {
       logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
       ShowConnectorsPage page = new ShowConnectorsPage(context).load();
       page.deleteAllNamed(CONNECTOR);

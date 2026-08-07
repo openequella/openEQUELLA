@@ -5,9 +5,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tle.common.Pair;
 import java.net.URI;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
 
 public class DynaCollectionApiTest extends AbstractRestApiTest {
@@ -36,7 +36,7 @@ public class DynaCollectionApiTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   @Test

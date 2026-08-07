@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
@@ -9,6 +8,7 @@ import com.tle.webtests.pageobject.generic.component.StringSelectedStuff;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import java.time.Duration;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -108,11 +108,11 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
           public Boolean apply(WebDriver driver) {
 
             boolean loaded = new AutoCompleteTermResults(AutoCompleteTermControl.this).isLoaded();
-            if (Check.isEmpty(lastQuery) && loaded) {
+            if (StringUtils.isBlank(lastQuery) && loaded) {
               return true;
             }
 
-            if (Check.isEmpty(lastQuery)) {
+            if (StringUtils.isBlank(lastQuery)) {
               lastQuery = getTermField().getAttribute("value");
               getTermField().sendKeys(Keys.ESCAPE);
               getTermField().clear();

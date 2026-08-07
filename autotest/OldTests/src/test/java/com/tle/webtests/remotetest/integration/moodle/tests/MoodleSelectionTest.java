@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.URLUtils;
 import com.tle.webtests.pageobject.integration.moodle.MoodleCoursePage;
 import com.tle.webtests.pageobject.integration.moodle.MoodleEditResourcePage;
@@ -20,6 +19,7 @@ import com.tle.webtests.pageobject.viewitem.AttachmentsPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.remotetest.integration.moodle.AbstractMoodleSectionTest;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -158,7 +158,7 @@ public class MoodleSelectionTest extends AbstractMoodleSectionTest {
     summary.selectItemNoCheckout();
 
     SelectionCheckoutPage selections = session.finish();
-    if (!Check.isEmpty(selected)) {
+    if (StringUtils.isNotBlank(selected)) {
       assertTrue(selections.hasVersionSelection());
       assertEquals(selections.versionSelected(), selected);
     } else {

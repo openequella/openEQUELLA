@@ -1,11 +1,11 @@
 package com.tle.webtests.framework.moodle;
 
-import com.tle.common.Check;
 import com.tle.webtests.remotetest.integration.moodle.AbstractSequentialMoodleTest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITestAnnotation;
 
@@ -41,7 +41,7 @@ public class SequentialMoodleInterceptor implements IAnnotationTransformer {
         }
 
         String depends = map.get(clazz.getSimpleName());
-        if (!Check.isEmpty(depends)) {
+        if (StringUtils.isNotBlank(depends)) {
           annotation.setDependsOnGroups(new String[] {depends});
         }
         lastClass = clazz;

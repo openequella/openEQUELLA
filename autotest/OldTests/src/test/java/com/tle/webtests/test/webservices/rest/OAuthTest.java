@@ -3,7 +3,6 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.AssertJUnit.assertEquals;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.oauth.OAuthClientEditorPage;
@@ -19,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -41,8 +41,8 @@ public class OAuthTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<>(CLIENT_ID, "AutoTest"));
-    clients.add(new Pair<>(CLIENT_ID_VALIDITY, "AutoTest"));
+    clients.add(Pair.of(CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(CLIENT_ID_VALIDITY, "AutoTest"));
   }
 
   private OAuthLogonPage defaultClientTokenRequest(String... otherParams) {

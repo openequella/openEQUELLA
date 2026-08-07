@@ -1,8 +1,8 @@
 package com.tle.webtests.pageobject.viewitem;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -43,7 +43,7 @@ public class CommentsSection extends AbstractPage<CommentsSection> {
           .click();
     }
     addButton.click();
-    if (!doGet && (!Check.isEmpty(comment) || rating != 0)) {
+    if (!doGet && (StringUtils.isNotBlank(comment) || rating != 0)) {
       waitForElement(By.xpath(xpathForComment(comment)));
     } else {
       get();
@@ -62,7 +62,7 @@ public class CommentsSection extends AbstractPage<CommentsSection> {
   }
 
   private String xpathForComment(String comment) {
-    if (Check.isEmpty(comment)) {
+    if (StringUtils.isBlank(comment)) {
       return "//div[@class='comment' and count(div[@class='comment-content']) = 0]";
     }
     return "//div[@class='comment' and div[@class='comment-content']/p[normalize-space(text())="

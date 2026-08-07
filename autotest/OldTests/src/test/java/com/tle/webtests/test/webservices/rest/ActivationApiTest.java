@@ -7,12 +7,12 @@ import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.Pair;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.testng.annotations.Test;
 
@@ -27,7 +27,7 @@ public class ActivationApiTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   @Test(dependsOnMethods = {"testDeactivateAndReactivateActivation"})

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.annotation.Nullable;
-import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.DRMAgreementPage;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
@@ -26,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -54,9 +54,9 @@ public class ItemApiEditTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>("IAETClient", "AutoTest"));
-    clients.add(new Pair<String, String>(OAUTH_OTHER_CLIENT_ID, "tokenuser"));
-    clients.add(new Pair<String, String>(OAUTH_NOPRIVS_CLIENT_ID, "RESTNoPrivs"));
+    clients.add(Pair.of("IAETClient", "AutoTest"));
+    clients.add(Pair.of(OAUTH_OTHER_CLIENT_ID, "tokenuser"));
+    clients.add(Pair.of(OAUTH_NOPRIVS_CLIENT_ID, "RESTNoPrivs"));
   }
 
   private void createItem(String token) throws IOException {

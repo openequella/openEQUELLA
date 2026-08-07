@@ -2,11 +2,11 @@ package com.tle.webtests.pageobject.generic.component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -52,7 +52,7 @@ public class ShuffleBox extends AbstractPage<ShuffleBox> implements ListRenderer
   private void deselectAll(Select select) {
     // select.deselectAll();
     for (WebElement option : select.getAllSelectedOptions()) {
-      if (!Check.isEmpty(option.getAttribute("checked"))) {
+      if (StringUtils.isNotBlank(option.getAttribute("checked"))) {
         option.click();
       }
     }

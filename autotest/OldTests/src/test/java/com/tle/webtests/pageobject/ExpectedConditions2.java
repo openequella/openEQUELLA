@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.factory.RefreshableElement;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -174,7 +174,7 @@ public final class ExpectedConditions2 {
       public WebElement apply(WebDriver driver) {
         lastValue = realElement.getAttribute(attribute);
 
-        if (!Check.isEmpty(lastValue) && lastValue.contains(value)) {
+        if (StringUtils.isNotBlank(lastValue) && lastValue.contains(value)) {
           return element;
         }
         return null;

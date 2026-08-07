@@ -3,9 +3,9 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.Assert.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tle.common.Pair;
 import java.net.URI;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
 
 public class SchemaApiTest extends AbstractRestApiTest {
@@ -20,7 +20,7 @@ public class SchemaApiTest extends AbstractRestApiTest {
    */
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   @Test

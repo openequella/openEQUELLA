@@ -1,7 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
 import com.google.common.collect.Sets;
-import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import com.tle.webtests.framework.EBy;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -92,7 +92,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
     int upto = 2;
     while (true) {
       final String uniqueName =
-          name + '(' + upto + ')' + (Check.isEmpty(extension) ? "" : '.' + extension);
+          name + '(' + upto + ')' + (StringUtils.isBlank(extension) ? "" : '.' + extension);
       String uniqueLower = uniqueName.toLowerCase();
       if (!lowerFilenames.contains(uniqueLower)) {
         lowerFilenames.add(uniqueLower);

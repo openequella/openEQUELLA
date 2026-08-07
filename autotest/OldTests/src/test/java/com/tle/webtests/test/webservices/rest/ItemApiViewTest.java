@@ -5,10 +5,10 @@ import static org.testng.Assert.assertEquals;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.text.ParseException;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
 
 public class ItemApiViewTest extends AbstractItemApiTest {
@@ -24,8 +24,8 @@ public class ItemApiViewTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
-    clients.add(new Pair<String, String>(OAUTH_NOPRIVS_CLIENT_ID, "RESTNoPrivs"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_NOPRIVS_CLIENT_ID, "RESTNoPrivs"));
   }
 
   @Test

@@ -1,12 +1,12 @@
 package com.tle.webtests.pageobject.searching;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -48,7 +48,7 @@ public abstract class AbstractItemList<
    * @return the number of results, or 0 if the string is empty or doesn't contain any numbers
    */
   public static int parseAllAvailableFromSummaryString(String summaryString) {
-    if (Check.isEmpty(summaryString)) {
+    if (StringUtils.isBlank(summaryString)) {
       return 0;
     }
     Matcher matcher = Pattern.compile("[\\d,]+").matcher(summaryString);

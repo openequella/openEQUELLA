@@ -4,7 +4,6 @@ import static org.testng.Assert.assertNotNull;
 
 import com.dytech.devlib.PropBagEx;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import com.tle.webtests.test.webservices.rest.AbstractItemApiTest;
 import java.io.IOException;
@@ -13,13 +12,14 @@ import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Element;
 
 public abstract class AbstractWizardControlsTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<>(getClass().getSimpleName(), "AutoTest"));
+    clients.add(Pair.of(getClass().getSimpleName(), "AutoTest"));
   }
 
   protected void checkExists(XPath xpath, String expr, Element rootElement)

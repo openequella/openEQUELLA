@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.wizard;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.generic.component.ShuffleBox;
@@ -8,6 +7,7 @@ import com.tle.webtests.pageobject.wizard.controls.CalendarControl;
 import com.tle.webtests.pageobject.wizard.controls.EditBoxControl;
 import com.tle.webtests.pageobject.wizard.controls.GroupControl;
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -114,7 +114,7 @@ public class DRMAccessWizardPage extends AbstractPage<DRMAccessWizardPage> {
 
   public void setAcceptanceTerms(String terms) {
     GroupControl group = enableRequireTermsAcceptance(true);
-    boolean empty = Check.isEmpty(terms);
+    boolean empty = StringUtils.isBlank(terms);
 
     if (!empty) {
       group.getGroupItem(0, 0).editbox(1, terms);

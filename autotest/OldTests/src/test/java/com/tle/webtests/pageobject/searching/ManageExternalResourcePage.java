@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.searching;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -58,7 +58,7 @@ public class ManageExternalResourcePage
 
   public ManageExternalResourcePage showArchived(boolean on) {
     openFilters();
-    if (on == Check.isEmpty(showArchived.getAttribute("checked"))) {
+    if (on == StringUtils.isBlank(showArchived.getAttribute("checked"))) {
       WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
       showArchived.click();
       return waitForResultsReload(waiter);
@@ -68,7 +68,7 @@ public class ManageExternalResourcePage
 
   public ManageExternalResourcePage setSortRevese(boolean on) {
     openSort();
-    if (on == Check.isEmpty(reverseBox.getAttribute("checked"))) {
+    if (on == StringUtils.isBlank(reverseBox.getAttribute("checked"))) {
       WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
       reverseBox.click();
       return waitForResultsReload(waiter);
@@ -80,7 +80,7 @@ public class ManageExternalResourcePage
     openFilters();
     WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
     EquellaSelect courseSelect = new EquellaSelect(context, courseDropDown);
-    if (Check.isEmpty(course)) {
+    if (StringUtils.isBlank(course)) {
       courseSelect.selectByIndex(0);
     } else {
       courseSelect.selectByVisibleText(course);

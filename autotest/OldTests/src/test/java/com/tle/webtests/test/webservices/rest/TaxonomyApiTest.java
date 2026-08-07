@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
-import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import java.io.IOException;
 import java.net.URI;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   @Test
@@ -297,7 +297,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
     final List<Pair<String, String>> level0Terms =
         createChildTerms(taxonomyUuid, null, nodesPerLevel, null);
-    rootTermNames.addAll(Lists.transform(level0Terms, Pair::getSecond));
+    rootTermNames.addAll(Lists.transform(level0Terms, Pair::getRight));
 
     // You could do this recursively, but we want to keep track of certain nodes
     for (int level0Index = 0; level0Index < level0Terms.size(); level0Index++) {
@@ -305,29 +305,28 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
       final List<Pair<String, String>> level1Terms =
           createChildTerms(
-              taxonomyUuid, level0Term.getFirst(), nodesPerLevel, level0Term.getSecond());
+              taxonomyUuid, level0Term.getLeft(), nodesPerLevel, level0Term.getRight());
       for (int level1Index = 0; level1Index < level1Terms.size(); level1Index++) {
         final Pair<String, String> level1Term = level1Terms.get(level1Index);
 
         final List<Pair<String, String>> level2Terms =
             createChildTerms(
-                taxonomyUuid, level1Term.getFirst(), nodesPerLevel, level1Term.getSecond());
+                taxonomyUuid, level1Term.getLeft(), nodesPerLevel, level1Term.getRight());
         for (int level2Index = 0; level2Index < level2Terms.size(); level2Index++) {
           final Pair<String, String> level2Term = level2Terms.get(level2Index);
 
           final List<Pair<String, String>> level3Terms =
               createChildTerms(
-                  taxonomyUuid, level2Term.getFirst(), nodesPerLevel, level2Term.getSecond());
+                  taxonomyUuid, level2Term.getLeft(), nodesPerLevel, level2Term.getRight());
           initTestData(
               levelTermData,
               2,
               level2Index,
-              level0Term.getSecond() + "\\" + level1Term.getSecond(),
+              level0Term.getRight() + "\\" + level1Term.getRight(),
               level2Term,
               level3Terms);
         }
-        initTestData(
-            levelTermData, 1, level1Index, level0Term.getSecond(), level1Term, level2Terms);
+        initTestData(levelTermData, 1, level1Index, level0Term.getRight(), level1Term, level2Terms);
       }
       initTestData(levelTermData, 0, level0Index, null, level0Term, level1Terms);
     }
@@ -376,11 +375,11 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       List<Pair<String, String>> children) {
     final TermTestData testData = levelTermData.get(level);
     if (termIndex == testData.termIndex) {
-      testData.childrenNames = new ArrayList<>(Lists.transform(children, Pair::getSecond));
-      testData.termUuid = term.getFirst();
-      testData.termName = term.getSecond();
+      testData.childrenNames = new ArrayList<>(Lists.transform(children, Pair::getRight));
+      testData.termUuid = term.getLeft();
+      testData.termName = term.getRight();
       testData.termPath =
-          (prefixPath == null ? term.getSecond() : prefixPath + "\\" + term.getSecond());
+          (prefixPath == null ? term.getRight() : prefixPath + "\\" + term.getRight());
     }
   }
 
@@ -409,7 +408,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       final String termUuid = UUID.randomUUID().toString();
 
       createTerm(taxonomyUuid, termUuid, termName, parentTermUuid, -1);
-      result.add(new Pair<>(termUuid, termName));
+      result.add(Pair.of(termUuid, termName));
     }
     return result;
   }

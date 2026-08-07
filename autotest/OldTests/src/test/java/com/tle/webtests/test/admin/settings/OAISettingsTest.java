@@ -3,12 +3,12 @@ package com.tle.webtests.test.admin.settings;
 
 import static org.testng.Assert.assertTrue;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.LoginPage;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.settings.OAISettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Test;
 
 @TestInstitution("vanilla")
@@ -27,7 +27,8 @@ public class OAISettingsTest extends AbstractSessionTest {
     assertTrue(
         "nufn".equals(oaip.getOAIScheme()), "Expected 'nufn', got " + oaip.getOAIScheme() + '.');
     assertTrue(
-        Check.isEmpty(oaip.getNamespace()), "Expected null, got " + oaip.getNamespace() + '.');
+        StringUtils.isBlank(oaip.getNamespace()),
+        "Expected null, got " + oaip.getNamespace() + '.');
     assertTrue(
         "This is not an email".equals(oaip.getEmail()),
         "Expected 'This is not an email', got " + oaip.getEmail() + '.');

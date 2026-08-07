@@ -1,12 +1,12 @@
 package com.tle.webtests.pageobject.viewitem;
 
-import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -75,7 +75,7 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
   }
 
   private String xpathForComment(String comment) {
-    if (Check.isEmpty(comment)) {
+    if (StringUtils.isBlank(comment)) {
       return "//div[@class='modcomment' and count(div[@class='comment-content']) = 0]";
     }
     return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and"

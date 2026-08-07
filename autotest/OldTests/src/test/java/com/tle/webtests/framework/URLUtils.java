@@ -1,9 +1,9 @@
 package com.tle.webtests.framework;
 
-import com.tle.common.Check;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public final class URLUtils {
 
@@ -77,7 +77,7 @@ public final class URLUtils {
   public static Map<String, String[]> parseParamString(String query) {
     Map<String, String[]> paramMap = new LinkedHashMap<String, String[]>();
 
-    if (!Check.isEmpty(query)) {
+    if (StringUtils.isNotBlank(query)) {
       try {
         String[] qparams = query.split("&");
         for (String qparam : qparams) {

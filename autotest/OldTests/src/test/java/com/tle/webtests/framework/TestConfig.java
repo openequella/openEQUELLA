@@ -1,6 +1,5 @@
 package com.tle.webtests.framework;
 
-import com.tle.common.Check;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.io.File;
@@ -17,6 +16,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 public class TestConfig {
   private static final String INSTITUTION_PROPS = "institution.properties";
@@ -144,7 +144,7 @@ public class TestConfig {
 
   public int getSslPort() {
     String sslPort = getProperty("server.ssl.port");
-    if (Check.isEmpty(sslPort)) {
+    if (StringUtils.isBlank(sslPort)) {
       return 8443;
     }
     return Integer.parseInt(sslPort);
@@ -160,7 +160,7 @@ public class TestConfig {
 
   public String getMoodleContextUrl(String version) {
     String moodleUrl = getMoodleUrl(version);
-    return Check.isEmpty(moodleUrl)
+    return StringUtils.isBlank(moodleUrl)
         ? moodleUrl
         : MessageFormat.format("{0}moodle{1}/", moodleUrl, version);
   }
@@ -187,7 +187,7 @@ public class TestConfig {
 
   public int getIntProperty(String property, int defaultValue) {
     String val = getProperty(property);
-    if (!Check.isEmpty(val)) {
+    if (StringUtils.isNotBlank(val)) {
       try {
         return Integer.parseInt(val);
       } catch (NumberFormatException ex) {
@@ -203,7 +203,7 @@ public class TestConfig {
 
   public boolean getBooleanProperty(String property, boolean defaultValue) {
     String val = getProperty(property);
-    if (!Check.isEmpty(val)) {
+    if (StringUtils.isNotBlank(val)) {
       return Boolean.parseBoolean(val);
     }
     return defaultValue;
@@ -252,7 +252,7 @@ public class TestConfig {
         System.setProperty("webdriver.chrome.verboseLogging", chromeVerboseLogging);
       }
     }
-    return !Check.isEmpty(chromeDriver);
+    return StringUtils.isNotBlank(chromeDriver);
   }
 
   private static Properties getInstProperties(File instFolder) throws IOException {

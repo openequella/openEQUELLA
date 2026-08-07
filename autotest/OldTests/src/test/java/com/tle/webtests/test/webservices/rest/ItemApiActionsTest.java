@@ -2,10 +2,10 @@ package com.tle.webtests.test.webservices.rest;
 
 import com.dytech.devlib.PropBagEx;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
 
 public class ItemApiActionsTest extends AbstractItemApiTest {
@@ -13,7 +13,7 @@ public class ItemApiActionsTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   private String createSimpleItem() throws IOException {

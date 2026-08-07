@@ -4,9 +4,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tle.common.Pair;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpHead;
@@ -21,7 +21,7 @@ public class FileListingApiTest extends AbstractItemApiTest {
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
 
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   protected String getListingUrl(String uuid, int version) {

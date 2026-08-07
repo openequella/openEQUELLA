@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.integration.moodle;
 
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,7 +27,7 @@ public class MoodleSelectionPage extends AbstractPage<MoodleSelectionPage> {
     switchToSelection();
     SelectionSession selectionSession = new SelectionSession(context).get();
     SummaryPage summary = selectionSession.homeExactSearch(search).getResult(1).viewSummary();
-    if (Check.isEmpty(attachment)) {
+    if (StringUtils.isBlank(attachment)) {
       return summary.selectMultipleItem(coursePage);
     } else {
       return summary.attachments().selectAttachmentMultiple(attachment, coursePage);

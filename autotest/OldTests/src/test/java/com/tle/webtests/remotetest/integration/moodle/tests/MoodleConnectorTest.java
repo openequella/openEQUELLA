@@ -5,7 +5,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.NotPrefixedName;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.cal.CALActivatePage;
@@ -39,6 +38,7 @@ import com.tle.webtests.remotetest.integration.ConnectorHelper;
 import com.tle.webtests.remotetest.integration.moodle.AbstractParallelMoodleTest;
 import java.util.List;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
@@ -562,7 +562,7 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
 
   @Test
   public void setupMoodle() {
-    if (Check.isEmpty(context.getIntegUrl())) {
+    if (StringUtils.isBlank(context.getIntegUrl())) {
       throw new SkipException("moodle url not set");
     }
 
@@ -595,7 +595,7 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
   @Override
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
-    if (!Check.isEmpty(testConfig.getIntegrationUrl("moodle"))) {
+    if (StringUtils.isNotBlank(testConfig.getIntegrationUrl("moodle"))) {
       logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
       ShowConnectorsPage page = new ShowConnectorsPage(context).load();
       page.deleteAllNamed(Lists.newArrayList(CONNECTOR_NAME, CONNECTOR_NAME2));

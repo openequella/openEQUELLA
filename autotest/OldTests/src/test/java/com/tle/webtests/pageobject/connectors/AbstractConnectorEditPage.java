@@ -1,10 +1,10 @@
 package com.tle.webtests.pageobject.connectors;
 
-import com.tle.common.Check;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.entities.AbstractEditEntityPage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -52,7 +52,7 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
   }
 
   public THIS setAllowSummary(boolean allow) {
-    if (allow == Check.isEmpty(getAllowSummaryCheckbox().getAttribute("checked"))) {
+    if (allow == StringUtils.isBlank(getAllowSummaryCheckbox().getAttribute("checked"))) {
       getAllowSummaryCheckbox().click();
     }
     return get();

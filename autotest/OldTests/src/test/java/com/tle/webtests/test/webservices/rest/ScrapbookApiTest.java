@@ -5,10 +5,10 @@ import static org.testng.Assert.assertEquals;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.tle.common.Pair;
 import com.tle.webtests.test.files.Attachments;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.testng.annotations.Test;
@@ -21,7 +21,7 @@ public class ScrapbookApiTest extends AbstractItemApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(OAUTH_CLIENT_ID, "AutoTest"));
+    clients.add(Pair.of(OAUTH_CLIENT_ID, "AutoTest"));
   }
 
   private ObjectNode buildScrapbookItem(String type, String filename, String fileUuid) {
