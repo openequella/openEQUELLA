@@ -106,7 +106,7 @@ testNGOutputDirectory := (target.value / "testng").absolutePath
 
 testNGParameters ++= Seq("-log", autotestBuildConfig.value.getInt("tests.verbose").toString)
 
-// Suite names are configured bare (e.g. "testng-codebuild.yaml") and resolved here, so that the
+// Suite names are configured bare (e.g. "all.yaml") and resolved here, so that the
 // `suites` folder is this build's business rather than something every config file has to know.
 testNGSuites := {
   val tc = autotestBuildConfig.value.getConfig("tests")
@@ -131,7 +131,7 @@ ScalaTest / testOptions += {
   Tests.Argument(TestFrameworks.ScalaTest, "-l", if (newUiEnabled) OldUiOnlyTag else NewUiOnlyTag)
 }
 
-// JUnit XML, so results reach GitLab's test report alongside TestNG's own junitreports. Absolute
+// JUnit XML, so results reach CI's test report alongside TestNG's own junitreports. Absolute
 // because sbt's working directory is the build root rather than this project.
 ScalaTest / testOptions += Tests.Argument(
   TestFrameworks.ScalaTest,
@@ -140,7 +140,7 @@ ScalaTest / testOptions += Tests.Argument(
 )
 
 // The TestNG suites have long been run strictly sequentially (see `threadCount: 1` in
-// testng-codebuild.yaml), and every config that is actually used sets `tests.parallel = false`.
+// suites/all.yaml), and every config that is actually used sets `tests.parallel = false`.
 // Honouring the same key for both keeps the ScalaTest suites in step, which is what isolates the ones
 // that mutate institution-wide state from the TestNG suites sharing that institution.
 Test / parallelExecution      := autotestBuildConfig.value.getBoolean("tests.parallel")

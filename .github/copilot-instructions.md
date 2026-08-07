@@ -223,15 +223,16 @@ autotest project.
 
 ```
 autotest/
-├── OldTests/        # All the Selenium tests (misnomer - actively used)
-│   ├── src/test/java/  # Tests, the com.tle.webtests framework, and Page Objects
-│   ├── src/test/scala/ # Newer test code being written in Scala
-│   └── tests/          # Institution fixtures, imported by `sbt setupForTests`
-└── IntegTester/     # Integration test harness
+├── src/test/java/   # Tests, the com.tle.webtests framework, and Page Objects
+├── src/test/scala/  # Newer test code being written in Scala
+├── institutions/    # Institution fixtures, imported by `sbt setupForTests`
+├── suites/          # TestNG suite definitions
+├── config/          # Autotest configuration (HOCON)
+└── IntegTester/     # Support services the tests start up
 ```
 
-`OldTests` has one sbt configuration per test framework — `OldTests/test` runs the TestNG suites and
-`OldTests/ScalaTest/test` runs the ScalaTest ones. ScalaTest is where new tests should go.
+`autotest` has one sbt configuration per test framework — `test` runs the TestNG suites and
+`ScalaTest/test` runs the ScalaTest ones. ScalaTest is where new tests should go.
 
 **Build & Configuration:**
 
@@ -366,7 +367,7 @@ integration tests in `autotest/IntegTester/`.
 
 ### Selenium End-to-End Tests
 
-**Location:** `autotest/OldTests/` (despite name, this is the active test suite)
+**Location:** `autotest/`
 
 **Critical: Locator Strategy**
 
@@ -385,16 +386,16 @@ flakiness:
 **Guidelines:**
 
 - **Never use XPath unless absolutely necessary**
-- Use Page Object pattern (see existing Page Objects in `autotest/OldTests/src/.../pageobject/`)
+- Use Page Object pattern (see existing Page Objects in `autotest/src/.../pageobject/`)
 - Write tests that are robust to timing issues (proper waits, not sleeps)
 - Reduce flakiness by using explicit waits and stable locators
 - Match patterns in existing tests
 
 **Running Selenium Tests:**
 
-- Various TestNG XML configurations in `autotest/OldTests/`
+- TestNG suite definitions in `autotest/suites/`
 - Requires running openEQUELLA instance
-- See `autotest/OldTests/` for test organization
+- See `autotest/README.md` for test organisation and how to run them
 
 ## Development Environment
 
