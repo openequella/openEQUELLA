@@ -32,39 +32,45 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 /**
  * Control tests for the deserialization denylist enforced by {@link PluginAwareObjectInputStream}
  * (the stream behind the HTTP-invoker endpoint {@code /invoker/*}).
  *
- * <p>{@code resolveClass} rejects a class purely by its fully-qualified name. The XSLTC {@code
- * TemplatesImpl} code-execution sink exists under two names - the JDK-internal copy and the
- * standalone Apache Xalan copy bundled by the reporting and z3950 plugins - so both must be denied.
- * The standalone-Xalan test is red before the denylist is extended (the class name passes the
- * check) and green after; the JDK-internal test guards the pre-existing behaviour.
+ * <p>{@code resolveClass} rejects a class purely by its fully-qualified name, so the denylist must
+ * cover two kinds of class. First, code-execution <em>sinks</em>: the XSLTC {@code TemplatesImpl}
+ * (present under both the JDK-internal name and the standalone Apache Xalan name bundled by the
+ * reporting and z3950 plugins) and the JNDI sink {@code JdbcRowSetImpl}. Second, nested-
+ * deserialization <em>smuggling gadgets</em> ({@code SignedObject}, {@code MarshalledObject}) whose
+ * inner {@code ObjectInputStream} is not this stream and would otherwise tunnel any sink past the
+ * check. Each name is rejected before the class is loaded, so these tests need no gadget on the
+ * classpath and execute no payload.
  *
  * <p>Written as JUnit 5 (Jupiter) because that is the engine the build runs (see {@code
  * com.dytech.devlib.PropBagExXxeTest} for the same rationale).
  */
 public class PluginAwareObjectInputStreamTest {
 
-  private static final String JDK_INTERNAL_TEMPLATES_IMPL =
-      "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl";
-  private static final String STANDALONE_XALAN_TEMPLATES_IMPL =
-      "org.apache.xalan.xsltc.trax.TemplatesImpl";
-
   private static final long ANY_SERIAL_VERSION_UID = 0L;
   private static final short NO_FIELDS = 0;
 
-  @Test
-  public void deniesJdkInternalTemplatesImpl() {
-    assertDenied(JDK_INTERNAL_TEMPLATES_IMPL);
-  }
-
-  @Test
-  public void deniesStandaloneXalanTemplatesImpl() {
-    assertDenied(STANDALONE_XALAN_TEMPLATES_IMPL);
+  @TestFactory
+  Stream<DynamicTest> deniesKnownSinksAndNestingGadgets() {
+    return Stream.of(
+            // code-execution sinks (both TemplatesImpl names, and the JNDI sink)
+            "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",
+            "org.apache.xalan.xsltc.trax.TemplatesImpl",
+            "com.sun.rowset.JdbcRowSetImpl",
+            // nested-deserialization smuggling gadgets
+            "java.security.SignedObject",
+            "java.rmi.MarshalledObject")
+        .map(
+            className ->
+                DynamicTest.dynamicTest("denies " + className, () -> assertDenied(className)));
   }
 
   @Test
