@@ -146,7 +146,7 @@ Test / parallelExecution      := autotestBuildConfig.value.getBoolean("tests.par
 ScalaTest / parallelExecution := autotestBuildConfig.value.getBoolean("tests.parallel")
 
 (ThisBuild / autotestBuildConfig) := {
-  val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))
+  val defaultConfig = ConfigFactory.parseFile(file("autotest/config/defaults.conf"))
   val configFile    = file(
     sys.props.getOrElse(
       "config.file", {
