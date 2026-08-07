@@ -80,6 +80,16 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 
   void toggleEnabled(String uuid);
 
+  /**
+   * As per {@link RemoteAbstractEntityService#listEditable()}, but the result also includes 'system
+   * type' entities - which are otherwise hidden. Callers assigning ACLs (such as the Admin Console
+   * Security Manager) need them, as the "My Content" collection and schema used for Scrapbook items
+   * are both system type.
+   *
+   * @return a list of all entities the current user can edit, including system type entities
+   */
+  List<BaseEntityLabel> listEditableIncludingSystem();
+
   List<T> enumerate();
 
   List<T> query(EnumerateOptions options);
