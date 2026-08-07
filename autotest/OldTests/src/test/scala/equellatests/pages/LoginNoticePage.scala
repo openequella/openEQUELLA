@@ -1,5 +1,7 @@
 package equellatests.pages
 
+import com.codeborne.selenide.Condition
+import com.codeborne.selenide.Selenide.$
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.ExpectedConditions2
 import equellatests.browserpage.NewTitledPage
@@ -80,6 +82,19 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
+    save()
+  }
+
+  def setPreLoginNoticeWithLinkURL(linkURL: String, linkText: String): Unit = {
+    $(By.cssSelector("button[aria-label='Insert/edit link']")).click()
+    val url = $(By.cssSelector(".tox-dialog input[type='url']"))
+    url.sendKeys(linkURL)
+
+    val text = $(By.cssSelector(".tox-dialog input[type='text']"))
+    text.clear()
+    text.sendKeys(linkText)
+
+    $(By.xpath("//div[contains(@class,'tox-dialog')]//button[text()='Save']")).click()
     save()
   }
 
