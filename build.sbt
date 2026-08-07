@@ -36,7 +36,7 @@ val legacyPaths          = Seq(
 // utilities the tests use, so they exercise the same classes the server does. Deliberately not part
 // of the `equella` aggregate below - a root `sbt test` must not launch Selenium.
 lazy val autotest = (project in file("autotest"))
-  .dependsOn(LocalProject("IntegTester"), LocalProject("config"), platformCommon)
+  .dependsOn(LocalProject("IntegTester"), platformCommon)
 
 lazy val equellaserver =
   (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)

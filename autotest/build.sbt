@@ -13,8 +13,10 @@ import scala.jdk.CollectionConverters._
 
 name := "equella-autotests"
 
-lazy val config = (project in file("config"))
-  .settings((Compile / resourceDirectory) := baseDirectory.value / "resources")
+// application.conf has to be on the test classpath, because TestConfig reads it with
+// ConfigFactory.load(). AUTOTEST_CONFIG still wins over it, via the config.file system property set
+// below.
+Test / unmanagedResourceDirectories += baseDirectory.value / "config" / "resources"
 
 // The supplementary services some tests need: a mock LMS integration and an HTTP echo service.
 // A separate project because it has main sources and its own front-end build, rather than tests.
@@ -83,8 +85,7 @@ enablePlugins(TestNGPlugin)
 //
 //   test            -> TestNG only
 //   ScalaTest/test  -> ScalaTest only
-// Qualified, because the `config` project above shadows sbt's own config() in this file.
-lazy val ScalaTest = sbt.config("scalatest") extend Test
+lazy val ScalaTest = config("scalatest") extend Test
 
 configs(ScalaTest)
 
