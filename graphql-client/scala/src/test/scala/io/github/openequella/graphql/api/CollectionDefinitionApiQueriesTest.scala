@@ -79,9 +79,8 @@ class CollectionDefinitionApiQueriesTest
   private val systemListingConfig = SystemEntityListingBehaviorConfig(
     entityName = "collection",
     systemEntityUuid = MY_CONTENT_COLLECTION_UUID,
-    listFn = () => CollectionDefinitionApi.listCollections(),
-    listIncludingSystemFn = () => CollectionDefinitionApi.listCollectionsIncludingSystem(),
-    unauthListIncludingSystemFn = CollectionDefinitionApi.listCollectionsIncludingSystem()(_)
+    listFn = CollectionDefinitionApi.listCollections()(_),
+    listIncludingSystemFn = CollectionDefinitionApi.listCollectionsIncludingSystem()(_)
   )
 
   describe("listCollections") {
@@ -141,10 +140,9 @@ class CollectionDefinitionApiQueriesTest
       ExportBehaviorConfig(
         entityName = "collection",
         getFirstIdFn = () => aStableCollection.id,
-        exportFn = CollectionDefinitionApi.exportCollection,
-        exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity,
-        expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition",
-        unauthExportFn = cfg => CollectionDefinitionApi.exportCollection(1)(cfg)
+        exportFn = CollectionDefinitionApi.exportCollection(_)(_),
+        exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity(_)(_),
+        expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition"
       )
     )
   }

@@ -33,19 +33,16 @@ import org.scalatest.{EitherValues, GivenWhenThen}
   *   UUID of the institution's one 'system type' entity of this type - the "My Content" entity
   *   backing the Scrapbook.
   * @param listFn
-  *   The listing which excludes system entities; cfg captured at call site.
+  *   The listing which excludes system entities, taking the session to run it against.
   * @param listIncludingSystemFn
-  *   The listing which includes them; cfg captured at call site.
-  * @param unauthListIncludingSystemFn
-  *   [[listIncludingSystemFn]] accepting an explicit [[ClientConfiguration]], used to simulate an
-  *   unauthenticated caller.
+  *   The listing which includes them, taking the session to run it against. Called both as the
+  *   authenticated user and, for the access check, as an unauthenticated one.
   */
 case class SystemEntityListingBehaviorConfig(
     entityName: String,
     systemEntityUuid: String,
-    listFn: () => Either[List[ApiError], List[BaseEntityReferenceView]],
-    listIncludingSystemFn: () => Either[List[ApiError], List[BaseEntityReferenceView]],
-    unauthListIncludingSystemFn: ClientConfiguration => Either[List[
+    listFn: ClientConfiguration => Either[List[ApiError], List[BaseEntityReferenceView]],
+    listIncludingSystemFn: ClientConfiguration => Either[List[
       ApiError
     ], List[BaseEntityReferenceView]]
 )
@@ -62,6 +59,13 @@ case class SystemEntityListingBehaviorConfig(
   * {{{
   * private val systemListingConfig = SystemEntityListingBehaviorConfig(...)
   *
+  * private val systemListingConfig = SystemEntityListingBehaviorConfig(
+  *   entityName = "my entity",
+  *   systemEntityUuid = MY_ENTITY_SYSTEM_UUID,
+  *   listFn = MyApi.listEntities()(_),
+  *   listIncludingSystemFn = MyApi.listEntitiesIncludingSystem()(_)
+  * )
+  *
   * describe("listEntities") {
   *   systemEntityExcludedBehavior(systemListingConfig)
   * }
@@ -74,20 +78,34 @@ case class SystemEntityListingBehaviorConfig(
 trait SystemEntityListingTestBehaviours {
   self: AnyFunSpec with Matchers with GivenWhenThen with EitherValues =>
 
-  /** Registers the one `it` block asserting the plain listing hides system entities. */
-  def systemEntityExcludedBehavior(config: SystemEntityListingBehaviorConfig): Unit = {
+  /** Registers the one `it` block asserting the plain listing hides system entities.
+    *
+    * @param config
+    *   Entity-specific configuration for the tests.
+    * @param cfg
+    *   Authenticated [[ClientConfiguration]] to list against.
+    */
+  def systemEntityExcludedBehavior(
+      config: SystemEntityListingBehaviorConfig
+  )(implicit cfg: ClientConfiguration): Unit = {
     import config._
 
     it(s"excludes the system $entityName") {
       When(s"listing ${entityName}s without system ${entityName}s")
-      val result = listFn()
+      val result = listFn(cfg)
 
       Then(s"the system $entityName is absent")
       result.value.map(_.uuid) should not contain systemEntityUuid
     }
   }
 
-  /** Registers the `it` blocks covering the listing which includes system entities. */
+  /** Registers the `it` blocks covering the listing which includes system entities.
+    *
+    * @param config
+    *   Entity-specific configuration for the tests.
+    * @param cfg
+    *   Authenticated [[ClientConfiguration]] for the happy-path tests.
+    */
   def systemEntityIncludedBehavior(
       config: SystemEntityListingBehaviorConfig
   )(implicit cfg: ClientConfiguration): Unit = {
@@ -95,25 +113,25 @@ trait SystemEntityListingTestBehaviours {
 
     it(s"includes the system $entityName") {
       When(s"listing ${entityName}s including system ${entityName}s")
-      val result = listIncludingSystemFn()
+      val result = listIncludingSystemFn(cfg)
 
       Then(s"the system $entityName is present")
       result.value.map(_.uuid) should contain(systemEntityUuid)
     }
 
     // Guards against the flag being read as a filter *for* system entities rather than an addition
-    // to the normal listing. A cardinality comparison against listFn() would be flaky here: the
+    // to the normal listing. A cardinality comparison against listFn would be flaky here: the
     // mutation suites run concurrently and create and delete their own entities between the calls.
     it(s"also returns ordinary ${entityName}s") {
       When(s"listing ${entityName}s including system ${entityName}s")
-      val result = listIncludingSystemFn()
+      val result = listIncludingSystemFn(cfg)
 
       Then(s"non-system ${entityName}s are present too")
       result.value.filterNot(_.uuid == systemEntityUuid) should not be empty
     }
 
     it("denies access when not authenticated") {
-      assertAccessDeniedError(unauthListIncludingSystemFn)
+      assertAccessDeniedError(listIncludingSystemFn)
     }
   }
 }

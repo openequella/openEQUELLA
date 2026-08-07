@@ -86,9 +86,8 @@ class MetadataSchemaApiQueriesTest
   private val systemListingConfig = SystemEntityListingBehaviorConfig(
     entityName = "metadata schema",
     systemEntityUuid = MY_CONTENT_SCHEMA_UUID,
-    listFn = () => MetadataSchemaApi.listSchemas(),
-    listIncludingSystemFn = () => MetadataSchemaApi.listSchemasIncludingSystem(),
-    unauthListIncludingSystemFn = MetadataSchemaApi.listSchemasIncludingSystem()(_)
+    listFn = MetadataSchemaApi.listSchemas()(_),
+    listIncludingSystemFn = MetadataSchemaApi.listSchemasIncludingSystem()(_)
   )
 
   describe("listSchemas") {
@@ -260,10 +259,9 @@ class MetadataSchemaApiQueriesTest
       ExportBehaviorConfig(
         entityName = "metadata schema",
         getFirstIdFn = () => aStableSchema.id,
-        exportFn = MetadataSchemaApi.exportSchema,
-        exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity,
-        expectedEntityClass = "com.tle.beans.entity.Schema",
-        unauthExportFn = cfg => MetadataSchemaApi.exportSchema(1)(cfg)
+        exportFn = MetadataSchemaApi.exportSchema(_)(_),
+        exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity(_)(_),
+        expectedEntityClass = "com.tle.beans.entity.Schema"
       )
     )
   }
