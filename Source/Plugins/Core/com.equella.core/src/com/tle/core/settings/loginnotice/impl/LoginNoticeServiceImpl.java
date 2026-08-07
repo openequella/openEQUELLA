@@ -23,6 +23,7 @@ import static com.tle.legacy.LegacyGuice.loginNoticeEditorPrivilegeTreeProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
@@ -94,6 +95,11 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       if (notice.getStartDate().isAfter(notice.getEndDate())) {
         throw new BadRequestException("Invalid date range.");
       }
+
+      String sanitisedNoticeContent =
+          PreLoginNoticeSanitiser.sanitise(notice.getNotice(), CurrentInstitution.get().getUrl());
+      notice.setNotice(sanitisedNoticeContent);
+
       configurationService.setProperty(
           PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
     }
