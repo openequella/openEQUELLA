@@ -23,6 +23,7 @@ import { complexExpressionACLExpression } from "../../__mocks__/ACLExpressionMod
 import { searchGroups } from "../../__mocks__/GroupModule.mock";
 import { searchRoles } from "../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../__mocks__/UserModule.mock";
+import { dialogDocsParameters } from "../storyUtils";
 import { generate } from "../../tsrc/modules/ACLExpressionModule";
 import ACLExpressionBuilderDialog, {
   ACLExpressionBuilderDialogProps,
@@ -31,6 +32,7 @@ import ACLExpressionBuilderDialog, {
 export default {
   title: "Component/ACLExpressionBuilderDialog",
   component: ACLExpressionBuilderDialog,
+  parameters: dialogDocsParameters,
 } as Meta<ACLExpressionBuilderDialogProps>;
 
 export const Standard: StoryFn<ACLExpressionBuilderDialogProps> = (args) => (

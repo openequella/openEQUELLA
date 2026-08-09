@@ -15,27 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
-import { dialogDocsParameters } from "../storyUtils";
-import SimpleConfirmDialog, {
-  SimpleConfirmDialogProps,
-} from "../../tsrc/components/SimpleConfirmDialog";
 
-export default {
-  title: "Component/SimpleConfirmDialog",
-  component: SimpleConfirmDialog,
-  parameters: dialogDocsParameters,
-  argTypes: {
-    onCancel: { action: "onCancel" },
-    onConfirm: { action: "onConfirm" },
+/**
+ * Renders the story in its own iframe on the Docs page instead of inline.
+ * Needed for components (e.g. MUI Dialog) whose backdrop is a fixed-position
+ * portal that would otherwise cover the whole Docs page when open by default.
+ */
+export const dialogDocsParameters = {
+  docs: {
+    story: { inline: false, height: "500px" },
   },
-} as Meta<SimpleConfirmDialogProps>;
-
-export const ShowDialog: StoryFn<SimpleConfirmDialogProps> = (args) => (
-  <SimpleConfirmDialog {...args} />
-);
-ShowDialog.args = {
-  open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
 };

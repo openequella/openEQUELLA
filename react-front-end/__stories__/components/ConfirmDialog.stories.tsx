@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-webpack5";
+import { dialogDocsParameters } from "../storyUtils";
 import ConfirmDialog, {
   ConfirmDialogProps,
 } from "../../tsrc/components/ConfirmDialog";
@@ -24,6 +25,7 @@ import ConfirmDialog, {
 export default {
   title: "ConfirmDialog",
   component: ConfirmDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     onCancel: { action: "onCancel" },
     onConfirm: { action: "onConfirm" },

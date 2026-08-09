@@ -18,6 +18,7 @@
 import * as React from "react";
 import * as O from "fp-ts/Option";
 import { Meta, StoryFn } from "@storybook/react";
+import { dialogDocsParameters } from "../storyUtils";
 import {
   ShareAttachmentDialog,
   ShareAttachmentDialogProps,
@@ -26,6 +27,7 @@ import {
 export default {
   title: "component/ShareAttachmentDialog",
   component: ShareAttachmentDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "on close dialog" },
   },

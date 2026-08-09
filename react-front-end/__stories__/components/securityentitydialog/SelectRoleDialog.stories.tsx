@@ -21,6 +21,7 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { searchRoles, roles } from "../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../tsrc/modules/RoleModule";
+import { dialogDocsParameters } from "../../storyUtils";
 import SelectRoleDialog, {
   SelectRoleDialogProps,
 } from "../../../tsrc//components/securityentitydialog/SelectRoleDialog";
@@ -29,6 +30,7 @@ import * as RS from "fp-ts/ReadonlySet";
 export default {
   title: "component/SecurityEntityDialog/SelectRoleDialog",
   component: SelectRoleDialog,
+  parameters: dialogDocsParameters,
 } as Meta<SelectRoleDialogProps>;
 
 const commonParams: SelectRoleDialogProps = {

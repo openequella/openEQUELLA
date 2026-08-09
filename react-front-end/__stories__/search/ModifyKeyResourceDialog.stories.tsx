@@ -22,6 +22,7 @@ import {
   getHierarchyIdsWithKeyResource,
 } from "../../__mocks__/Hierarchy.mock";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
+import { dialogDocsParameters } from "../storyUtils";
 import ModifyKeyResourceDialog, {
   ModifyKeyResourceDialogProps,
 } from "../../tsrc/search/components/ModifyKeyResourceDialog";
@@ -29,6 +30,7 @@ import ModifyKeyResourceDialog, {
 export default {
   title: "Search/ModifyKeyResourceDialog",
   component: ModifyKeyResourceDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     onClose: { action: "dialog on close" },
   },
