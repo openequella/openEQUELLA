@@ -17,7 +17,7 @@
  */
 import * as S from "fp-ts/string";
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import GeneralDetailsSection, {
   FieldRenderOptions,
   GeneralDetailsSectionProps,

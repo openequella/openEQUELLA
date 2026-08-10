@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import * as O from "fp-ts/Option";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { dialogDocsParameters } from "../storyUtils";
 import {
   ShareAttachmentDialog,

@@ -20,7 +20,7 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
 
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/react-vite";
 
 const preview: Preview = {
   decorators: [

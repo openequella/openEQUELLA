@@ -17,7 +17,7 @@
  */
 import InfoIcon from "@mui/icons-material/Info";
 import { IconButton } from "@mui/material";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {

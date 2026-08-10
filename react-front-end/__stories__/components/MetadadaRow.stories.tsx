@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import MetadataRow from "../../tsrc/components/MetadataRow";
 import type { StackProps } from "@mui/material/Stack";
 
