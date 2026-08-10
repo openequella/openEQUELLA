@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import {
@@ -39,6 +40,13 @@ import type { ACLRecipient } from "../../../tsrc/modules/ACLRecipientModule";
 export default {
   title: "Component/ACLExpressionBuilder/ACLTreeRecipient",
   component: ACLTreeRecipient,
+  decorators: [
+    (Story) => (
+      <SimpleTreeView>
+        <Story />
+      </SimpleTreeView>
+    ),
+  ],
 } as Meta<ACLTreeRecipientProps>;
 
 const recipient = (recipient: ACLRecipient) => (

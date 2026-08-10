@@ -36,6 +36,9 @@ export default {
 export const NoWildcardToggle: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
+NoWildcardToggle.args = {
+  query: "",
+};
 
 export const NonWildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />

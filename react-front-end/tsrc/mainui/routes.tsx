@@ -20,8 +20,10 @@ import { pipe } from "fp-ts/function";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { getRelativeUrl } from "../AppConfig";
-import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
-import { FavouritesType } from "../modules/FavouriteModule";
+import {
+  FAVOURITES_TYPE_PARAM,
+  FavouritesType,
+} from "../modules/FavouriteModule";
 import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
 import { buildMyResourceUrl } from "../modules/MyResourceModule";
 import {
