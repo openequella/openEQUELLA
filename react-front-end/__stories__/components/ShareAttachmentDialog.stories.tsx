@@ -40,6 +40,7 @@ export const LinkOnly: StoryFn<ShareAttachmentDialogProps> = (
 LinkOnly.args = {
   open: true,
   src: "https://localhost/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/image.jpg",
+  embedCode: O.none,
 };
 
 export const WithEmbedCode: StoryFn<ShareAttachmentDialogProps> = (
