@@ -192,7 +192,13 @@ public class TLEGroupServiceImpl
       updateGroup(group);
     }
 
-    eventService.publishApplicationEvent(new GroupEditEvent(group.getUuid(), group.getUsers()));
+    // Hand the event a detached snapshot of the members. GroupEditEvent is POST_ONLY_TO_SELF, so
+    // it is dispatched on the event executor thread, while group.getUsers() may still be an
+    // uninitialised Hibernate PersistentSet bound to this thread's Session. A listener iterating
+    // it (e.g. UserServiceImpl.groupEditedEvent) would then lazily load it from the event thread,
+    // racing this thread's commit over the same Session and JDBC connection.
+    eventService.publishApplicationEvent(
+        new GroupEditEvent(group.getUuid(), new HashSet<>(group.getUsers())));
     return group.getUuid();
   }
 
