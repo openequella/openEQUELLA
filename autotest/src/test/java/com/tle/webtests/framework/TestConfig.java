@@ -66,9 +66,19 @@ public class TestConfig {
     return findInstitutionFolder(folderName);
   }
 
-  /** The directory holding every per-institution fixture tree. */
+  /**
+   * The directory holding every per-institution fixture tree.
+   *
+   * <p>Verified to exist, because callers reach straight for {@link File#listFiles()} - which
+   * returns null for a missing directory, and so fails later with an opaque NullPointerException
+   * rather than naming the path that was wrong.
+   */
   public static File getInstitutionsFolder() {
-    return new File(getBaseFolder(), INSTITUTIONS_DIR);
+    File institutions = new File(getBaseFolder(), INSTITUTIONS_DIR);
+    if (!institutions.isDirectory()) {
+      throw new IllegalStateException("No institution fixtures at " + institutions);
+    }
+    return institutions;
   }
 
   private static File findInstitutionFolder(String name) {

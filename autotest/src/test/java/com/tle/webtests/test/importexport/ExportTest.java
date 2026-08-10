@@ -2,6 +2,7 @@ package com.tle.webtests.test.importexport;
 
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.institution.ExportPage;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
 import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
@@ -37,7 +38,7 @@ public class ExportTest extends AbstractInstTest {
 
   @DataProvider(parallel = false)
   public Object[][] toExport() throws Exception {
-    File[] institutions = new File(testConfig.getTestFolder(), "tests").listFiles();
+    File[] institutions = TestConfig.getInstitutionsFolder().listFiles();
     List<Object[]> instDirs = new ArrayList<Object[]>();
     for (File instDir : institutions) {
       if (new File(instDir, INSTITUTION_FOLDER).exists()) {

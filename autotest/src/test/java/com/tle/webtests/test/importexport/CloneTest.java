@@ -2,6 +2,7 @@ package com.tle.webtests.test.importexport;
 
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.institution.ClonePage;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
 import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
@@ -56,7 +57,7 @@ public class CloneTest extends AbstractInstTest {
 
   @DataProvider(parallel = false)
   public Object[][] toClone() throws Exception {
-    File[] institutions = new File(testConfig.getTestFolder(), "tests").listFiles();
+    File[] institutions = TestConfig.getInstitutionsFolder().listFiles();
     List<Object[]> instDirs = new ArrayList<Object[]>();
     for (File instDir : institutions) {
       if (new File(instDir, INSTITUTION_FOLDER).exists()) {

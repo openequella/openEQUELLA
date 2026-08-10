@@ -70,7 +70,7 @@ public class Setup extends JPanel {
     if (props.containsKey("institutions.folder")) {
       institutionsFolder = new File((String) props.get("institutions.folder"));
     } else {
-      institutionsFolder = new File("tests");
+      institutionsFolder = new File("institutions");
     }
     init(institutionsFolder);
   }
