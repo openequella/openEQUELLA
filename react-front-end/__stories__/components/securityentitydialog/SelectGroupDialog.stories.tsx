@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "storybook/actions";
-import { Meta } from "@storybook/react";
+import type { Meta } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { dialogDocsParameters } from "../../storyUtils";
