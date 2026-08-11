@@ -109,12 +109,12 @@ steps:
 To set up the minimum of environment variables you'd consider doing:
 
 ```bash
-export AUTOTEST_CONFIG=autotest/codebuild.conf  # set the configuration file to control things
+export AUTOTEST_CONFIG=autotest/config/docker-build.conf  # the configuration file to control things
 export EQ_EXIFTOOL_PATH=/usr/bin/exiftool
-export OLD_TEST_NEWUI=true                      # true if you want the tests in New UI mode
+export OLD_TEST_NEWUI=true                                # true if you want the tests in New UI mode
 
 # Override the ChromeDriver path to match where install-chromedriver placed it in the image.
-# codebuild.conf defaults to ${HOME}/chromedriver which won't exist here.
+# docker-build.conf defaults to ${HOME}/chromedriver which won't exist here.
 export SBT_OPTS="-Dwebdriver.chrome.driver=/usr/local/bin/chromedriver"
 ```
 
@@ -129,5 +129,5 @@ openEQUELLA is actually reachable on the expected URL.
 
 Assuming that all passed, then you can run tests with:
 
-    ./sbt "project autotest" OldTests/test
+    ./sbt "project autotest" test
 

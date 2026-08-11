@@ -31,7 +31,13 @@ val legacyPaths          = Seq(
   (Test / unmanagedSourceDirectories)      := (Test / javaSource).value :: Nil
 )
 
-lazy val autotest      = project in file("autotest")
+// The end-to-end test suite. Its own subprojects are declared in autotest/build.sbt, hence
+// LocalProject here. platformCommon supplies com.dytech.devlib.PropBagEx and the com.tle.common.*
+// utilities the tests use, so they exercise the same classes the server does. Deliberately not part
+// of the `equella` aggregate below - a root `sbt test` must not launch Selenium.
+lazy val autotest = (project in file("autotest"))
+  .dependsOn(LocalProject("IntegTester"), platformCommon)
+
 lazy val equellaserver =
   (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
 

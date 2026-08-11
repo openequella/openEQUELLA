@@ -169,7 +169,7 @@ export default defineConfig([
       // Institution fixtures for the autotests. These contain third-party content, such as the
       // JavaScript inside SCORM packages, which must be preserved byte-for-byte rather than linted
       // or reformatted.
-      "autotest/**/tests/**",
+      "autotest/institutions/**",
     ],
   },
 ]);

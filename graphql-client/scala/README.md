@@ -87,7 +87,7 @@ The test suite runs integration tests against a local openEQUELLA instance on th
 The `vanilla` institution must also be present. The cross-institution security tests source an entity
 from `rest` and confirm it is invisible to a `vanilla` session — entity IDs are globally unique, so a
 by-ID lookup which is not institution filtered would return another institution's entity. Both
-institutions are in the standard dev fixture set (`autotest/Tests/tests/<name>/institution`). Those
+institutions are in the standard dev fixture set (`autotest/institutions/<name>/institution`). Those
 tests authenticate to `vanilla` as `TLE_ADMINISTRATOR`, so no user or ACL setup is needed there.
 
 ### Quick Start (CLI override only)
