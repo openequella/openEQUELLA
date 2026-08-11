@@ -51,7 +51,7 @@ libraryDependencies ++= Seq(
   "javax.jws"                 % "javax.jws-api"        % "1.1",
   "org.apache.commons"        % "commons-lang3"        % "3.20.0",
   "org.apache.commons"        % "commons-collections4" % "4.5.0",
-  "org.seleniumhq.selenium"   % "selenium-java"        % "4.45.0",
+  "org.seleniumhq.selenium"   % "selenium-java"        % "4.46.0",
   "com.codeborne"             % "selenide"             % "7.17.0",
   "xalan"                     % "xalan"                % "2.7.3",
   "xalan"                     % "serializer"           % "2.7.3",
