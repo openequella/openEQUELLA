@@ -167,28 +167,6 @@ import as always used:
 4. In the **Imports always marked as used** section (bottom right), add
    `caliban.schema.ArgBuilder.auto._`.
 
-### Dedicated working directory
-
-> **Temporary:** This section is only relevant while the GraphQL feature branch has not yet been
-> merged to `develop`. It can be removed once that merge is complete.
-
-Switching between the main branches (e.g. `develop`) and the GraphQL feature branches
-(e.g. `component/admin-comms`) can cause issues due to the additional module. The recommended
-approach is to maintain a dedicated working directory:
-
-1. Use [git worktrees](https://git-scm.com/docs/git-worktree) to create an additional working
-   directory — this avoids the overhead of a full clone.
-2. Create a separate local database for the new working directory.
-3. In the new working directory, run `./sbt prepareDevConfig` and then adjust the generated
-   configuration:
-  - Point it at your new database.
-  - Set a different port (e.g. `9090`) so it doesn't clash with your main working directory.
-
-> **Note on git hooks:** Pre-commit hooks are shared across worktrees because there is only one
-> real `.git` directory (in the original working directory). In practice this is usually fine —
-> Husky delegates to tooling in the active working directory — but it is worth keeping in mind if
-> anything unexpected happens with the pre-commit hooks.
-
 ## Code Quality
 
 This project enforces strict code quality standards:
