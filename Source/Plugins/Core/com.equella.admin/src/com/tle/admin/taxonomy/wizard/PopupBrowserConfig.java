@@ -22,9 +22,9 @@ import static com.tle.common.taxonomy.wizard.PopupBrowserConstants.POPUP_ALLOW_B
 import static com.tle.common.taxonomy.wizard.PopupBrowserConstants.POPUP_ALLOW_SEARCHING;
 
 import com.tle.admin.gui.common.DynamicChoicePanel;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.admin.i18n.Lookup;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.wizard.TermSelectorControl;
-import com.tle.core.plugins.AbstractPluginService;
 import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -35,15 +35,7 @@ public class PopupBrowserConfig extends DynamicChoicePanel<TermSelectorControl> 
   private JCheckBox browseMode;
   private JCheckBox searchMode;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   public PopupBrowserConfig() {
     super(new MigLayout("wrap 1, insets 0"));
@@ -85,6 +77,6 @@ public class PopupBrowserConfig extends DynamicChoicePanel<TermSelectorControl> 
   }
 
   private String s(String keyPart) {
-    return getString("wizard.popupBrowser." + keyPart);
+    return strings.text("wizard.popupBrowser." + keyPart);
   }
 }

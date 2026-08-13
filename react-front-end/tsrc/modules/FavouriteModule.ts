@@ -122,6 +122,9 @@ export const FavouritesTypeUnion = t.union([
 ]);
 export type FavouritesType = t.TypeOf<typeof FavouritesTypeUnion>;
 
+/** Query string parameter name used to store the FavouritesType for the Favourites page. */
+export const FAVOURITES_TYPE_PARAM = "favouritesType";
+
 /**
  * Add an Item to user's favourites.
  * @param itemID Item's unique ID

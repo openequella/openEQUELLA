@@ -1,16 +1,45 @@
+val guiceVersion = "5.1.0"
+val slf4jVersion = "2.0.18"
+val sttpVersion  = "3.11.0"
+
 libraryDependencies ++= Seq(
-  "org.slf4j"              % "jcl-over-slf4j"  % "2.0.18",
-  "org.slf4j"              % "slf4j-api"       % "2.0.18",
-  "org.slf4j"              % "slf4j-simple"    % "2.0.18",
+  // Logging dependencies
+  "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+  "org.slf4j" % "slf4j-api"      % slf4jVersion,
+  log4jSlf4jImpl,
+  // (support YAML based logging configuration)
+  jacksonDataBind,
+  jacksonDataFormatYaml,
+  // General dependencies
   "com.google.guava"       % "guava"           % "33.6.0-jre",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
-  "com.fifesoft"           % "rsyntaxtextarea" % "3.6.3",
+  "com.fifesoft"           % "rsyntaxtextarea" % "4.0.1",
   "com.miglayout"          % "miglayout-swing" % "11.4.3",
   springWeb,
   springAop,
-  springContext
+  springContext,
+  "io.github.openequella" %% "graphql-client" % "0.13.0-SNAPSHOT",
+  "com.google.inject"      % "guice"          % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    // Maybe it can be removed when all HTTP Invoker code is gone
+    ExclusionRule(
+      organization = "aopalliance",
+      name = "aopalliance"
+    )
+  ),
+  // STTP for REST calls, ideally match the version with the transitive from graphql-client
+  "com.softwaremill.sttp.client3" %% "core"  % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe" % sttpVersion,
+  // Circe generic for decoding REST JSON responses
+  "io.circe" %% "circe-generic" % "0.14.15"
 )
 
 (run / fork) := true
+
+// Brings `sbt adminTool/run` into line with the IntelliJ run configuration and, more importantly,
+// with the shipped launcher: admin-console-package's ClientLauncher passes this same flag when it
+// starts the console. Required because DRM pages serialise a TreeSet via Java custom serialization,
+// whose XStream emulation reflects into java.util.
+(run / javaOptions) += "--add-opens=java.base/java.util=ALL-UNNAMED"
 
 (Compile / run / mainClass) := Some("com.tle.client.harness.ClientLauncher")

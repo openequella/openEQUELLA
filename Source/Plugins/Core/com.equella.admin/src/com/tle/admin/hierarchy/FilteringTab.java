@@ -22,16 +22,20 @@ import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.search.searchset.SearchSetFilter;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.SearchSetAdapter;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 
 public class FilteringTab extends AbstractTopicEditorTab {
+  private static final StringLookup strings = Lookup.withPrefix("filteringtab");
+
   private final EntityCache cache;
   private final ClientService clientService;
 
@@ -45,7 +49,7 @@ public class FilteringTab extends AbstractTopicEditorTab {
 
   @Override
   public void setup(ChangeDetector changeDetector) {
-    showResults = new JCheckBox(getString("filteringtab.display"), true); // $NON-NLS-1$
+    showResults = new JCheckBox(strings.text("display"), true);
     filter = new SearchSetFilter(cache, clientService);
 
     final int[] rows = {

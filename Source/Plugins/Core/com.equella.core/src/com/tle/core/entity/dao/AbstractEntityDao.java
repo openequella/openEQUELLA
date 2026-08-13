@@ -52,6 +52,14 @@ public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitut
 
   Set<String> getReferencedUsers();
 
+  /**
+   * The UUID of the entity of the current institution with the given ID.
+   *
+   * @param id the identity of the entity
+   * @return the entity's UUID
+   * @throws com.tle.common.beans.exception.NotFoundException if the current institution has no
+   *     entity with that ID
+   */
   String getUuidForId(long id);
 
   List<T> search(String freetext, boolean archived, int offset, int perPage);

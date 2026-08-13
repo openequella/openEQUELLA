@@ -24,14 +24,14 @@ import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
 import com.tle.admin.common.gui.tree.AbstractTreeNodeEditor;
 import com.tle.admin.common.gui.tree.BasicMessageEditor;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.RemoteHierarchyService;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -48,15 +48,7 @@ public class HierarchyDialog extends JDialog {
 
   protected AbstractTreeEditor<HierarchyTreeNode> tree;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.lookup;
 
   public HierarchyDialog(Frame frame, final ClientService clientService) {
     super(frame);
@@ -73,7 +65,7 @@ public class HierarchyDialog extends JDialog {
           @Override
           protected AbstractTreeNodeEditor createEditor(HierarchyTreeNode node) {
             if (!tree.canEdit(node)) {
-              return new BasicMessageEditor(getString("notopic.noteditable"));
+              return new BasicMessageEditor(strings.text("notopic.noteditable"));
             }
 
             HierarchyPack pack = hierarchyService.getHierarchyPack(node.getId());
@@ -100,7 +92,7 @@ public class HierarchyDialog extends JDialog {
     all.add(new JSeparator(), "growx");
     all.add(new JButton(closeAction), "alignx right");
 
-    setTitle(getString("hierarchydialog.title"));
+    setTitle(strings.text("hierarchydialog.title"));
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     getContentPane().add(all);
     setModal(true);

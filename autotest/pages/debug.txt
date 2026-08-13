@@ -1,3 +1,0 @@
-/status.do
-/access/scheduledtasksdebug.do
-/access/diagnostics.do

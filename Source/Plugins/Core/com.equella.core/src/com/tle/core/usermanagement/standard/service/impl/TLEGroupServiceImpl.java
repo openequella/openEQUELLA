@@ -18,13 +18,15 @@
 
 package com.tle.core.usermanagement.standard.service.impl;
 
-import com.tle.beans.user.GroupTreeNode;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.dao.helpers.Pagination;
+import com.tle.core.events.GroupAddedEvent;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
@@ -42,11 +44,10 @@ import com.tle.core.usermanagement.standard.service.TLEGroupService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -77,7 +78,12 @@ public class TLEGroupServiceImpl
     TLEGroup group = createGroup(null, name);
 
     if (parentID != null) {
-      group.setParent(get(parentID));
+      Optional.ofNullable(get(parentID))
+          .ifPresentOrElse(
+              group::setParent,
+              () -> {
+                throw new NotFoundException("No such parent with id of " + parentID + " found.");
+              });
     }
 
     if (Check.isEmpty(group.getUuid())) {
@@ -116,11 +122,14 @@ public class TLEGroupServiceImpl
 
       dao.save(group);
 
-      return group.getUuid();
+      String groupUuid = group.getUuid();
+      eventService.publishApplicationEvent(new GroupAddedEvent(groupUuid));
+      return groupUuid;
     }
     return null;
   }
 
+  @Transactional(readOnly = true)
   @Override
   public TLEGroup get(String id) {
     return dao.findByUuid(id);
@@ -132,11 +141,21 @@ public class TLEGroupServiceImpl
         Restrictions.eq("name", name), Restrictions.eq("institution", CurrentInstitution.get()));
   }
 
-  private void checkInUse(TLEGroup group, boolean forAdd) {
-    Criterion c1 = forAdd ? null : Restrictions.ne("uuid", group.getUuid());
-    Criterion c2 = Restrictions.eq("name", group.getName());
-    Criterion c3 = Restrictions.eq("institution", CurrentInstitution.get());
-    if (!dao.findAllByCriteria(c1, c2, c3).isEmpty()) {
+  /**
+   * Check if the group is in use, looking for any other group (different by uuid) in the same
+   * institution and with the same name. Thereby attempting to ensure the name is unique.
+   *
+   * @param group The group to check
+   * @param ignoreUuid Whether to ignore the UUID of the group when checking for uniqueness, useful
+   *     when adding a new group which doesn't yet have a UUID.
+   */
+  private void checkInUse(TLEGroup group, boolean ignoreUuid) {
+    Criterion hasDifferentUuid = ignoreUuid ? null : Restrictions.ne("uuid", group.getUuid());
+    Criterion withSameName = Restrictions.eq("name", group.getName());
+    boolean unique =
+        dao.findAllByCriteria(hasDifferentUuid, withSameName, CurrentInstitution.equalityCriteria())
+            .isEmpty();
+    if (!unique) {
       ValidationError error = new ValidationError("name", "Name already exists");
       throw new InvalidDataException(Collections.singletonList(error));
     }
@@ -146,12 +165,20 @@ public class TLEGroupServiceImpl
   @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
   @Transactional(propagation = Propagation.REQUIRED)
   public String edit(final TLEGroup group) {
-    boolean parentSame;
-    TLEGroup original = get(group.getUuid());
-    TLEGroup oldParent = original.getParent();
+    // Use the DAO directly rather than calling get() (which is annotated
+    // @Transactional(readOnly=true)). Because Guice AOP intercepts self-calls (unlike Spring
+    // CGLIB proxies), calling get() here would apply readOnly=true semantics to the
+    // already-active
+    // write transaction. On some JDBC driver versions this causes an implicit connection commit,
+    // making the subsequent rollback (on error) fail with:
+    //   "Cannot rollback transaction in current status [COMMITTED]"
+    TLEGroup original = dao.findByUuid(group.getUuid());
+    Optional<TLEGroup> oldParent = Optional.ofNullable(original.getParent());
+
     dao.unlinkFromSession(original);
-    dao.unlinkFromSession(oldParent);
-    parentSame = Objects.equals(oldParent, group.getParent());
+    oldParent.ifPresent(dao::unlinkFromSession);
+
+    boolean parentSame = Objects.equals(oldParent.orElse(null), group.getParent());
 
     group.setInstitution(CurrentInstitution.get());
 
@@ -165,7 +192,13 @@ public class TLEGroupServiceImpl
       updateGroup(group);
     }
 
-    eventService.publishApplicationEvent(new GroupEditEvent(group.getUuid(), group.getUsers()));
+    // Hand the event a detached snapshot of the members. GroupEditEvent is POST_ONLY_TO_SELF, so
+    // it is dispatched on the event executor thread, while group.getUsers() may still be an
+    // uninitialised Hibernate PersistentSet bound to this thread's Session. A listener iterating
+    // it (e.g. UserServiceImpl.groupEditedEvent) would then lazily load it from the event thread,
+    // racing this thread's commit over the same Session and JDBC connection.
+    eventService.publishApplicationEvent(
+        new GroupEditEvent(group.getUuid(), new HashSet<>(group.getUsers())));
     return group.getUuid();
   }
 
@@ -183,7 +216,7 @@ public class TLEGroupServiceImpl
     TLEGroup parent = group.getParent();
 
     if (!deleteChildren) {
-      // Move children up to same level as group we're deleting
+      // Move children up to the same level as the group we're deleting
       for (TLEGroup child : getGroupsInGroup(group)) {
         child.setParent(parent);
         updateGroup(child);
@@ -199,7 +232,12 @@ public class TLEGroupServiceImpl
   @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
   @Transactional(propagation = Propagation.REQUIRED)
   public void delete(String groupID, boolean deleteChildren) {
-    delete(get(groupID), deleteChildren);
+    Optional.ofNullable(get(groupID))
+        .ifPresentOrElse(
+            group -> delete(group, deleteChildren),
+            () -> {
+              throw new NotFoundException("No such group with id of " + groupID + " found.");
+            });
   }
 
   @Override
@@ -207,17 +245,37 @@ public class TLEGroupServiceImpl
     return dao.getUsersInGroup(parentGroupID, recurse);
   }
 
-  private List<TLEGroup> getGroupsInGroup(TLEGroup group) {
-    Criterion c1 = group == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", group);
-    return dao.findAllByCriteria(c1);
+  @Override
+  public List<String> getUsersInGroup(
+      String parentGroupID, boolean recurse, Integer limit, Integer offset) {
+    return dao.getUsersInGroup(parentGroupID, recurse, Pagination.of(offset, limit));
+  }
+
+  @Override
+  public List<TLEGroup> getGroupsInGroup(TLEGroup group) {
+    return getGroupsInGroup(group, null, null);
+  }
+
+  public List<TLEGroup> getGroupsInGroup(TLEGroup group, Integer limit, Integer offset) {
+    return dao.findAllByCriteria(
+        orderByName(),
+        Pagination.of(offset, limit),
+        withParent(group),
+        CurrentInstitution.equalityCriteria());
   }
 
   @Override
   public List<TLEGroup> search(String query) {
-    Criterion c1 = Restrictions.ilike("name", query.replace('*', '%'));
-    Criterion c2 = Restrictions.eq("institution", CurrentInstitution.get());
+    return search(query, null, null);
+  }
 
-    return dao.findAllByCriteria(Order.asc("name"), -1, c1, c2);
+  @Override
+  public List<TLEGroup> search(String query, Integer limit, Integer offset) {
+    return dao.findAllByCriteria(
+        orderByName(),
+        Pagination.of(offset, limit),
+        withNameLike(query),
+        CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -308,47 +366,18 @@ public class TLEGroupServiceImpl
   }
 
   @Override
-  public GroupTreeNode searchTree(String query) {
-    query = prepareQuery(query);
-
-    Map<String, GroupTreeNode> cachedNodes = new HashMap<String, GroupTreeNode>();
-    GroupTreeNode root = new GroupTreeNode();
-
-    for (TLEGroup gb : search(query)) {
-      setupParents(gb, cachedNodes, root);
-      for (TLEGroup sub : dao.getAllSubnodeForNode(gb)) {
-        setupParents(sub, cachedNodes, root);
-      }
-    }
-
-    return root;
-  }
-
-  private GroupTreeNode setupParents(
-      TLEGroup group, Map<String, GroupTreeNode> cachedNodes, GroupTreeNode root) {
-    final String groupID = group.getUuid();
-
-    if (!cachedNodes.containsKey(groupID)) {
-      GroupTreeNode node = new GroupTreeNode();
-      node.setId(groupID);
-      node.setName(group.getName());
-
-      TLEGroup parent = group.getParent();
-      if (parent == null) {
-        root.add(node);
-      } else {
-        GroupTreeNode pnode = setupParents(parent, cachedNodes, root);
-        pnode.add(node);
-      }
-      cachedNodes.put(node.getId(), node);
-    }
-
-    return cachedNodes.get(groupID);
+  public List<TLEGroup> getInformationForGroups(Collection<String> groups) {
+    return dao.getInformationForGroups(groups);
   }
 
   @Override
-  public List<TLEGroup> getInformationForGroups(Collection<String> groups) {
-    return dao.getInformationForGroups(groups);
+  public List<TLEGroup> getInformationForGroups(
+      Collection<String> groupIds, Integer limit, Integer offset) {
+    return dao.findAllByCriteria(
+        orderByName(),
+        Pagination.of(offset, limit),
+        Restrictions.in("uuid", groupIds),
+        CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -416,5 +445,43 @@ public class TLEGroupServiceImpl
     }
 
     return searchString;
+  }
+
+  @Override
+  public long countUsersInGroup(String groupId) {
+    return dao.countUsersInGroup(groupId);
+  }
+
+  @Override
+  public long countGroupsInGroupById(String groupId) {
+    return countGroupsInGroup(get(groupId));
+  }
+
+  @Override
+  public long countGroupsInGroup(TLEGroup parent) {
+    return dao.countByCriteria(withParent(parent), CurrentInstitution.equalityCriteria());
+  }
+
+  @Override
+  public long countGroupsForQuery(String query) {
+    return dao.countByCriteria(withNameLike(query), CurrentInstitution.equalityCriteria());
+  }
+
+  @Override
+  public long countValidGroups(Set<String> groupIds) {
+    return dao.countByCriteria(
+        Restrictions.in("uuid", groupIds), CurrentInstitution.equalityCriteria());
+  }
+
+  private Order orderByName() {
+    return Order.asc("name");
+  }
+
+  private Criterion withParent(TLEGroup parent) {
+    return parent == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", parent);
+  }
+
+  private Criterion withNameLike(String name) {
+    return Restrictions.ilike("name", name.replace('*', '%'));
   }
 }

@@ -22,7 +22,7 @@ import {
   CategorySelectorProps,
 } from "../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../__mocks__/CategorySelector.mock";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 
 export default {
   title: "Search/CategorySelector",

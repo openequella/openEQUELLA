@@ -21,17 +21,18 @@ package com.tle.admin.hierarchy;
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.common.accesscontrolbuilder.AccessEditor;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.GridLayout;
+import java.io.Serial;
 
 public class AccessControlTab extends AbstractTopicEditorTab {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final ClientService clientService;
 
@@ -46,7 +47,7 @@ public class AccessControlTab extends AbstractTopicEditorTab {
     editor =
         new AccessEditor(
             clientService.getService(RemoteTLEAclManager.class),
-            clientService.getService(RemoteUserService.class));
+            clientService.getService(AdminUserDirectoryService.class));
 
     setLayout(new GridLayout(1, 1));
     add(editor);

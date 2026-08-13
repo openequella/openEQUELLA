@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
+import { dialogDocsParameters } from "../storyUtils";
 import FavouriteItemDialog, {
   FavouriteItemDialogProps,
 } from "../../tsrc/search/components//FavouriteItemDialog";
@@ -24,6 +25,7 @@ import FavouriteItemDialog, {
 export default {
   title: "Search/FavouriteItemDialog",
   component: FavouriteItemDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "on close dialog" },
     updateFavouriteItem: {

@@ -280,8 +280,7 @@ public class ConnectorServiceImpl
                 connector.getId(),
                 connector.getUuid(),
                 connector.getName().getId(),
-                connector.getOwner(),
-                connector.isSystemType()));
+                connector.getOwner()));
       }
     }
 

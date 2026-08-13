@@ -128,9 +128,19 @@ const buildExtends = (i: InterfaceDeclaration): string[] =>
   i.getExtends().map((e) => e.getText());
 
 const buildProperties = (props: PropertySignature[]): Prop[] => {
+  // The declared type of a property, with any `| undefined` introduced by optionality removed.
+  // Since TypeScript 6.0 `strict` (and therefore `strictNullChecks`) defaults to `true`, so the
+  // type of an optional property `p?: T` is the union `T | undefined`. A union reports
+  // `isObject()`/`isAnonymous()` as false and exposes only the properties common to every member
+  // - i.e. none - which would stop inline object types from being expanded. This parser only
+  // cares about the *shape* of a declaration; optionality is captured separately via
+  // `hasQuestionToken()`.
+  const nonNullableTypeOf = (p: PropertySignature) =>
+    p.getType().getNonNullableType();
+
   const getPropertyType = (p: PropertySignature): string =>
     p.getTypeNode()?.getText() ??
-    p.getType().getText(undefined, TypeFormatFlags.None);
+    nonNullableTypeOf(p).getText(undefined, TypeFormatFlags.None);
 
   const commonFields = (p: PropertySignature) => ({
     name: p.getName(),
@@ -145,13 +155,13 @@ const buildProperties = (props: PropertySignature[]): Prop[] => {
 
   const buildObjectProperty = (p: PropertySignature): Prop => {
     const isFunc = p.getTypeNode()?.isKind(SyntaxKind.FunctionType);
-    const isAnonymous = !isFunc && p.getType().isAnonymous();
+    const isAnonymous = !isFunc && nonNullableTypeOf(p).isAnonymous();
     return {
       ...buildNonObjectProperty(p),
       type: isAnonymous ? 'object' : getPropertyType(p), // For non-anonymous object we need the real name.
       properties: isAnonymous
         ? pipe(
-            p.getType().getProperties(),
+            nonNullableTypeOf(p).getProperties(),
             A.chain((p) => p.getDeclarations() as PropertySignature[]),
             buildProperties
           )
@@ -161,7 +171,7 @@ const buildProperties = (props: PropertySignature[]): Prop[] => {
 
   return props.map(
     pfTernary(
-      (p) => p.getType().isObject(),
+      (p) => nonNullableTypeOf(p).isObject(),
       buildObjectProperty,
       buildNonObjectProperty
     )

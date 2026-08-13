@@ -88,8 +88,8 @@ public class EmailSelectorControlEditor extends AbstractControlEditor<EmailSelec
     final Set<Locale> langs = BundleCache.getLanguages();
     title = new I18nTextField(langs);
     description = new I18nTextField(langs);
-    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
-    selectMultiple = new JCheckBox(getString("emailsel.selectmultiple")); // $NON-NLS-1$
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
+    selectMultiple = new JCheckBox(strings.text("emailsel.selectmultiple"));
 
     final int height1 = title.getPreferredSize().height;
     final int width1 = descriptionLabel.getPreferredSize().width;

@@ -1,3 +1,9 @@
+# Local test configuration (users copy test.properties.sample to test.properties)
+graphql-client/scala/src/test/resources/test.properties
+
+# Local build configuration (users copy local.properties.sample to local.properties)
+graphql-client/scala/local.properties
+
 *.pyc
 *.pmd
 *.iml
@@ -20,8 +26,17 @@ Source/Plugins/Kaltura
 server.xml
 node_modules/
 
+# Build Server Protocol files, typically added by IntelliJ with SBT
+.bsp/
+
 # Library files downloaded and extracted as part of reporting module build
 Source/Plugins/Core/com.equella.reporting/lib
 
 # openEQUELLA dev server PID tracking file (created by .agents/skills/oeq-dev-server)
 .oeq-server.pid
+
+# GraphQL session cookies (created by .agents/skills/oeq-graphql)
+.graphql-cookies.txt
+
+# Per-developer Claude Code settings (shared settings go in .claude/settings.json)
+/.claude/settings.local.json

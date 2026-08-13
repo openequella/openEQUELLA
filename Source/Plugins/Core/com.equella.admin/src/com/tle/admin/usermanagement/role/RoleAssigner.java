@@ -24,15 +24,16 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.ump.RoleMapping;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.ExpressionBuilderFinder;
 import com.tle.common.recipientselector.RecipientFilter;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.KeyListener;
+import java.io.Serial;
 import java.util.List;
 import java.util.UUID;
 import javax.swing.JLabel;
@@ -40,14 +41,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class RoleAssigner extends JChangeDetectorPanel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   private ListWithView<RoleMapping, Editor> listWithView;
 
-  public RoleAssigner(RemoteUserService userService) {
-    this.userService = userService;
+  public RoleAssigner(AdminUserDirectoryService userDirectoryService) {
+    this.userDirectoryService = userDirectoryService;
 
     init();
   }
@@ -55,7 +56,7 @@ public class RoleAssigner extends JChangeDetectorPanel {
   private void init() {
     listWithView =
         new ListWithView<RoleMapping, Editor>() {
-          private static final long serialVersionUID = 1L;
+          @Serial private static final long serialVersionUID = 1L;
           private final Editor editor = new Editor();
 
           @Override
@@ -122,7 +123,7 @@ public class RoleAssigner extends JChangeDetectorPanel {
 
       finder =
           new ExpressionBuilderFinder(
-              userService,
+              userDirectoryService,
               RecipientFilter.USERS,
               RecipientFilter.GROUPS,
               RecipientFilter.IP_ADDRESS,

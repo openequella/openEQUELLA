@@ -20,12 +20,12 @@ package com.tle.admin.usermanagement.ldap;
 
 import com.dytech.gui.TableLayout;
 import com.google.common.base.Objects;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.usermanagement.ldap.LDAPDirectoryTree.TreeNode2;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteLDAPService;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -456,9 +456,9 @@ public class LDAPMappingPanel extends AbstractLDAPPanel implements ActionListene
     manageDns.setText(s(Check.isEmpty(settings.getBases()) ? "dns.add" : "dns.manage"));
   }
 
-  private static String KEY_PFX = AbstractPluginService.getMyPluginId(LDAPMappingPanel.class) + ".";
+  private static final StringLookup strings = Lookup.withPrefix("ldap.mapping");
 
-  private static String s(String keypart) {
-    return CurrentLocale.get(KEY_PFX + "ldap.mapping." + keypart);
+  private static String s(String key) {
+    return strings.text(key);
   }
 }

@@ -25,12 +25,12 @@ import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.helper.JdbcDriver;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.remotesqlquerying.RemoteRemoteSqlQueryingService;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
@@ -63,9 +63,6 @@ public class SqlConnectionAndQueryPanel extends JPanel implements Changeable {
   private final JTextField username;
   private final JPasswordField password;
   private final ListWithView<QueryState, ListWithViewInterface<QueryState>> queryLWV;
-
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(SqlConnectionAndQueryPanel.class) + ".";
 
   public SqlConnectionAndQueryPanel(ClientService clientService) {
     super(new MigLayout("fill, wrap 2", "[align label][grow, fill]"));
@@ -219,8 +216,10 @@ public class SqlConnectionAndQueryPanel extends JPanel implements Changeable {
         }
       };
 
-  private static String s(String keyEnd) {
-    return CurrentLocale.get(KEY_PFX + keyEnd);
+  private static final StringLookup strings = Lookup.lookup;
+
+  private static String s(String key) {
+    return strings.text(key);
   }
 
   private static final class Editor extends JPanel implements ListWithViewInterface<QueryState> {

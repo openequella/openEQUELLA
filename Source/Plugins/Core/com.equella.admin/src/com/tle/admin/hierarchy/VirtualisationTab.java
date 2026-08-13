@@ -21,15 +21,19 @@ package com.tle.admin.hierarchy;
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.search.searchset.virtualisation.VirtualisationEditor;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.hierarchy.SearchSetAdapter;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.plugins.PluginService;
 import java.awt.GridLayout;
 
 @SuppressWarnings("nls")
 public class VirtualisationTab extends AbstractTopicEditorTab {
+  private static final StringLookup strings = Lookup.withPrefix("virtual");
+
   private final PluginService pluginService;
   private final ClientService clientService;
 
@@ -44,10 +48,7 @@ public class VirtualisationTab extends AbstractTopicEditorTab {
   public void setup(ChangeDetector changeDetector) {
     editor =
         new VirtualisationEditor(
-            pluginService,
-            clientService,
-            getKey("virtual.entityname"),
-            getKey("virtual.renameHelp"));
+            pluginService, clientService, strings.key("entityname"), strings.key("renameHelp"));
 
     setLayout(new GridLayout(1, 1));
     add(editor);

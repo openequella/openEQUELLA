@@ -48,12 +48,12 @@ public abstract class AbstractSoapService {
             webServiceContext.getMessageContext().get(AbstractHTTPDestination.HTTP_REQUEST));
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.tle.core.remoting.ClientService#keepAlive()
+  /**
+   * Intentionally a no-op: as with {@code HeartbeatServlet}, simply receiving the request is enough
+   * to keep the caller's session alive.
    */
   public void keepAlive() {
-    userService.keepAlive();
+    // Nothing to do
   }
 
   public String login(String username, String password) {

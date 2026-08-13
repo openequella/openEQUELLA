@@ -22,41 +22,30 @@ import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.JSmartTextField;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.search.searchset.EntityWhereEditor.ItemDefinitionWhereEditor;
 import com.tle.admin.search.searchset.EntityWhereEditor.SchemaWhereEditor;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.search.searchset.SearchSet;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class SearchSetFilter extends JPanel implements Changeable {
+  private static final StringLookup strings = Lookup.withPrefix("searchset.searchsetfilter");
+
   private final ChangeDetector changeDetector;
   private final JTextField freetextQuery;
   private final SchemaWhereEditor schemasEditor;
   private final ItemDefinitionWhereEditor itemDefsEditor;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
   public SearchSetFilter(final EntityCache cache, final ClientService clientService) {
-    final JLabel freetextLabel =
-        new JLabel(getString("searchset.searchsetfilter.freetextlabel")); // $NON-NLS-1$
-    final JLabel schemasAdditionalLabel =
-        new JLabel(getString("searchset.searchsetfilter.searchschemas")); // $NON-NLS-1$
-    final JLabel itemDefsAdditionalLabel =
-        new JLabel(getString("searchset.searchsetfilter.searchcollections")); // $NON-NLS-1$
+    final JLabel freetextLabel = new JLabel(strings.text("freetextlabel"));
+    final JLabel schemasAdditionalLabel = new JLabel(strings.text("searchschemas"));
+    final JLabel itemDefsAdditionalLabel = new JLabel(strings.text("searchcollections"));
 
     freetextQuery = new JSmartTextField(100);
     schemasEditor = new SchemaWhereEditor(cache, clientService);

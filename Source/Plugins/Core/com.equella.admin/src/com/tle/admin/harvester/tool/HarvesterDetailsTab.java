@@ -27,6 +27,8 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.harvester.standard.HarvesterPlugin;
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.common.Format;
@@ -34,8 +36,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.HarvesterProfileSettings;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -158,9 +158,9 @@ public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<List<NameValue>>() {
           @Override
-          public List<NameValue> construct() throws Exception {
+          public List<NameValue> construct() {
             List<BaseEntityLabel> cols =
-                clientService.getService(RemoteItemDefinitionService.class).listAll();
+                clientService.getService(AdminCollectionDefinitionService.class).listAll();
 
             List<NameValue> nvs = BundleCache.getNameUuidValues(cols);
             Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
@@ -204,15 +204,15 @@ public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<List<String>>() {
           @Override
-          public List<String> construct() throws Exception {
+          public List<String> construct() {
             long schemaId =
                 clientService
-                    .getService(RemoteItemDefinitionService.class)
+                    .getService(AdminCollectionDefinitionService.class)
                     .getSchemaIdForCollectionUuid(uuid);
-            List<String> importSchemaTypes =
-                clientService.getService(RemoteSchemaService.class).getImportSchemaTypes(schemaId);
 
-            return importSchemaTypes;
+            return clientService
+                .getService(AdminSchemaService.class)
+                .getImportSchemaTypes(schemaId);
           }
 
           @Override
@@ -223,7 +223,7 @@ public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
               selectedTransform = havProfile.getAttribute("schemaInputTransform");
             }
             List<String> items = get();
-            items.add(0, null);
+            items.addFirst(null);
             AppletGuiUtils.addItemsToJCombo(transforms, items);
             AppletGuiUtils.selectInJCombo(transforms, selectedTransform, 0);
             if (clearChanges) {

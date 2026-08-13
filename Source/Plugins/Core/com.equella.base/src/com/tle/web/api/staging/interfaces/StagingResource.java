@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
@@ -55,7 +56,36 @@ public interface StagingResource {
   @GET
   @Path("/{uuid}")
   @ApiOperation(value = "Get a file area listing", response = StagingBean.class)
-  StagingBean getStaging(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  StagingBean getStaging(
+      @Context UriInfo uriInfo,
+      @PathParam("uuid") String uuid,
+      @ApiParam(
+              value =
+                  "Folder to scope the listing to. When given, returned file names are relative"
+                      + " to this folder. A non-existent folder yields an empty listing. Defaults"
+                      + " to the whole staging area.",
+              required = false)
+          @QueryParam("path")
+          String path,
+      @ApiParam(value = "Include folder entries (including empty folders) in the listing.")
+          @QueryParam("folders")
+          boolean folders,
+      @ApiParam(value = "Compute an MD5-based etag for each file. Disable for faster listings.")
+          @QueryParam("checksums")
+          @DefaultValue("true")
+          boolean checksums);
+
+  @POST
+  @Path("/{uuid}/folder")
+  @ApiOperation(
+      value = "Create a folder (and any missing parent folders) within specified staging area")
+  Response createFolder(
+      @PathParam("uuid") String uuid,
+      @ApiParam(
+              value = "Path of the folder to create, relative to the staging area root.",
+              required = true)
+          @QueryParam("path")
+          String path);
 
   @HEAD
   @Path("/{uuid}/{filepath:(.*)}")

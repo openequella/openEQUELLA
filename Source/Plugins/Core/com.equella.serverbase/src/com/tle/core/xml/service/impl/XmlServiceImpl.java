@@ -19,13 +19,9 @@
 package com.tle.core.xml.service.impl;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.ClassLoaderReference;
-import com.thoughtworks.xstream.core.util.CompositeClassLoader;
-import com.thoughtworks.xstream.io.xml.XppDriver;
-import com.thoughtworks.xstream.security.WildcardTypePermission;
-import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.xml.service.XmlService;
+import com.tle.core.xstream.ExtXStream;
 import java.io.Reader;
 import java.io.Writer;
 import javax.inject.Singleton;
@@ -34,14 +30,9 @@ import javax.inject.Singleton;
 @Singleton
 public final class XmlServiceImpl implements XmlService {
   private final XStream xstream;
-  private final WildcardTypePermission xstreamTypePermission;
 
   public XmlServiceImpl() {
     xstream = new ExtXStream(null);
-    /** Allow all inner classes for the DRMPage class. */
-    xstreamTypePermission =
-        new WildcardTypePermission(true, new String[] {"com.dytech.edge.wizard.beans.DRMPage**"});
-    xstream.addPermission(xstreamTypePermission);
   }
 
   @Override
@@ -55,9 +46,7 @@ public final class XmlServiceImpl implements XmlService {
 
   @Override
   public XStream createDefault(ClassLoader loader) {
-    XStream xs = new ExtXStream(loader);
-    xs.addPermission(xstreamTypePermission);
-    return xs;
+    return new ExtXStream(loader);
   }
 
   @Override
@@ -93,23 +82,5 @@ public final class XmlServiceImpl implements XmlService {
   @Override
   public void serialiseToWriter(Object o, Writer writer) {
     xstream.toXML(o, writer);
-  }
-
-  public static class ExtXStream extends XStream {
-    public ExtXStream(ClassLoader loader) {
-      super(
-          null,
-          new XppDriver(),
-          loader != null ? loader : new ClassLoaderReference(new CompositeClassLoader()));
-      autodetectAnnotations(true);
-      registerConverter(new OldSingletonMapConverter(getMapper(), getReflectionProvider()));
-      registerConverter(new OldSqlTimestampConverter());
-      XStreamSecurityManager.applyPolicy(this);
-    }
-
-    @Override
-    protected boolean useXStream11XmlFriendlyMapper() {
-      return true;
-    }
   }
 }

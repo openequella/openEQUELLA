@@ -19,13 +19,12 @@
 package com.tle.web.api.item.resource.impl;
 
 import com.dytech.edge.common.FileInfo;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.filesystem.staging.service.StagingService;
@@ -46,14 +45,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
@@ -95,25 +93,39 @@ public class StagingResourceImpl implements StagingResource {
     return createdStagingResponse(stagingFile.getUuid());
   }
 
+  /** The parameters shaping a staging listing, threaded through the recursive tree walk. */
+  private record ListingContext(
+      StagingFile stagingFile,
+      String stagingUuid,
+      @Nullable String scope,
+      boolean includeFolders,
+      boolean checksums) {
+
+    /**
+     * The path of {@code relativePath} from the staging area root: listing names are relative to
+     * the scope, but filesystem access and links need the full path.
+     */
+    String storagePath(String relativePath) {
+      return scope == null ? relativePath : PathUtils.filePath(scope, relativePath);
+    }
+  }
+
   @Override
-  public StagingBean getStaging(UriInfo uriInfo, String stagingUuid) {
+  public StagingBean getStaging(
+      UriInfo uriInfo, String stagingUuid, String path, boolean folders, boolean checksums) {
     stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
+    final ListingContext context =
+        new ListingContext(
+            stagingFile, stagingUuid, StringUtils.stripToNull(path), folders, checksums);
 
     try {
-      FileEntry base = fileSystemService.enumerateTree(stagingFile, null, null);
-      List<BlobBean> blobs = Lists.newArrayList();
-      for (FileEntry fileEntry : base.getFiles()) {
-        buildBlobBeans(stagingFile, stagingUuid, blobs, fileEntry, "");
-      }
-      Collections.sort(
-          blobs,
-          new Comparator<BlobBean>() {
-            @Override
-            public int compare(BlobBean o1, BlobBean o2) {
-              return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-          });
+      FileEntry base = fileSystemService.enumerateTree(stagingFile, context.scope(), null);
+      List<BlobBean> blobs =
+          base.getFiles().stream()
+              .flatMap(entry -> blobBeans(context, entry, ""))
+              .sorted(Comparator.comparing(BlobBean::getName, String.CASE_INSENSITIVE_ORDER))
+              .toList();
       URI directUrl = stagingUri(stagingUuid);
 
       StagingBean stagingBean = new StagingBean();
@@ -129,44 +141,63 @@ public class StagingResourceImpl implements StagingResource {
     }
   }
 
-  private void buildBlobBeans(
-      FileHandle fileHandle,
-      String stagingUuid,
-      List<BlobBean> blobs,
-      FileEntry entry,
-      String currentPath) {
-    // Folders are not listed
-    if (entry.isFolder()) {
-      for (FileEntry subEntry : entry.getFiles()) {
-        buildBlobBeans(
-            fileHandle,
-            stagingUuid,
-            blobs,
-            subEntry,
-            PathUtils.filePath(currentPath, entry.getName()));
-      }
-    } else {
-      final BlobBean blobBean = new BlobBean();
-      final String filename = entry.getName();
-      final String filePath = PathUtils.filePath(currentPath, filename);
-      try {
-        String md5CheckSum = fileSystemService.getMD5Checksum(fileHandle, filePath);
-        blobBean.setEtag(new EntityTag(md5CheckSum).toString());
-      } catch (IOException e) {
-        // Whatever
-      }
-      blobBean.setName(filePath);
-      blobBean.setSize(entry.getLength());
-      blobBean.setContentType(mimeService.getMimeTypeForFilename(filename));
-      final Map<String, URI> links = new HashMap<>();
-      links.put(
-          "self",
-          urlLinkService
-              .getMethodUriBuilder(StagingResource.class, "getFile")
-              .build(stagingUuid, filePath));
-      blobBean.set("links", links);
-      blobs.add(blobBean);
+  /**
+   * Recursively flattens a file tree into blob beans: one bean per file, plus one per folder when
+   * folder entries were requested (they are omitted by default, keeping the default response
+   * unchanged).
+   */
+  private Stream<BlobBean> blobBeans(ListingContext context, FileEntry entry, String parentPath) {
+    final String entryPath = PathUtils.filePath(parentPath, entry.getName());
+    if (!entry.isFolder()) {
+      return Stream.of(fileBean(context, entry, entryPath));
     }
+
+    Stream<BlobBean> children =
+        entry.getFiles().stream().flatMap(child -> blobBeans(context, child, entryPath));
+    return context.includeFolders()
+        ? Stream.concat(Stream.of(folderBean(entryPath)), children)
+        : children;
+  }
+
+  private BlobBean folderBean(String path) {
+    final BlobBean bean = new BlobBean();
+    bean.setName(path);
+    bean.setFolder(Boolean.TRUE);
+    return bean;
+  }
+
+  private BlobBean fileBean(ListingContext context, FileEntry entry, String path) {
+    final String storagePath = context.storagePath(path);
+    final BlobBean bean = new BlobBean();
+    bean.setName(path);
+    bean.setSize(entry.getLength());
+    bean.setContentType(mimeService.getMimeTypeForFilename(entry.getName()));
+    if (context.checksums()) {
+      md5Etag(context.stagingFile(), storagePath).ifPresent(bean::setEtag);
+    }
+    bean.set("links", Map.of("self", stagingUri(context.stagingUuid(), storagePath)));
+    return bean;
+  }
+
+  private Optional<String> md5Etag(StagingFile stagingFile, String path) {
+    try {
+      return Optional.of(
+          new EntityTag(fileSystemService.getMD5Checksum(stagingFile, path)).toString());
+    } catch (IOException e) {
+      LOGGER.debug("Unable to compute a checksum for staging file [{}]", path, e);
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public Response createFolder(String uuid, String path) {
+    stagingService.checkStagingPrivileges();
+    final String folderPath = StringUtils.stripToNull(path);
+    if (folderPath == null) {
+      throw new BadRequestException("A folder path is required.");
+    }
+    fileSystemService.mkdir(stagingService.getStagingFile(uuid), folderPath);
+    return Response.status(Status.CREATED).build();
   }
 
   @Override

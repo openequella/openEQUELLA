@@ -20,6 +20,7 @@ package com.tle.core.entity.service.impl;
 
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.EntityPack;
 import com.tle.core.entity.dao.BaseEntityDao;
 import com.tle.core.entity.registry.EntityRegistry;
 import com.tle.core.entity.service.AbstractEntityService;
@@ -27,20 +28,59 @@ import com.tle.core.entity.service.BaseEntityService;
 import com.tle.core.guice.Bind;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.hibernate.Hibernate;
 
 @Bind(BaseEntityService.class)
 @Singleton
 public class BaseEntityServiceImpl implements BaseEntityService {
-  @Inject private BaseEntityDao dao;
-  @Inject private EntityRegistry entityRegistry;
+  private final BaseEntityDao dao;
+  private final EntityRegistry entityRegistry;
+
+  @Inject
+  public BaseEntityServiceImpl(BaseEntityDao dao, EntityRegistry entityRegistry) {
+    this.dao = dao;
+    this.entityRegistry = entityRegistry;
+  }
 
   @Override
   public LanguageBundle getNameForId(long id) {
     return dao.getEntityNameForId(id);
+  }
+
+  @Override
+  public Optional<EntityPack<BaseEntity>> getReadOnlyPack(long id) {
+    // Delegated so that the type specific @SecureOnReturn EDIT_<TYPE> check and any
+    // getOtherTargetListObjects() override apply. The delegate looks the entity up by ID again,
+    // which costs a second SELECT: both lookups are institution filtered, and a filtered query
+    // cannot be answered from the first level cache the way an unfiltered session.get could.
+    return dao.getEntityInCurrentInstitution(id)
+        .map(entity -> serviceFor(entity).getReadOnlyPack(id));
+  }
+
+  /**
+   * The entity service which owns the given entity's type.
+   *
+   * @throws UnsupportedOperationException if no service is registered for the type. The entity does
+   *     exist, so this is not a 'not found' - we simply have no way to determine its ACLs, which is
+   *     not the same as it having none.
+   */
+  private AbstractEntityService<?, BaseEntity> serviceFor(BaseEntity entity) {
+    // EntityRegistry keys on the exact concrete class, and Hibernate may hand back a proxy.
+    Class<? extends BaseEntity> entityClass =
+        Hibernate.getClass(entity).asSubclass(BaseEntity.class);
+
+    return Optional.ofNullable(entityRegistry.getServiceForClass(entityClass))
+        .orElseThrow(
+            () ->
+                new UnsupportedOperationException(
+                    "No entity service is registered for "
+                        + entityClass.getName()
+                        + ", so the access control lists of entity "
+                        + entity.getId()
+                        + " cannot be determined"));
   }
 
   @Override
@@ -53,15 +93,5 @@ public class BaseEntityServiceImpl implements BaseEntityService {
       }
     }
     return result;
-  }
-
-  @Override
-  public Map<Long, String> getUuids(Set<Long> ids) {
-    return dao.getUuids(ids);
-  }
-
-  @Override
-  public List<Long> getIdsFromUuids(Set<String> uuids) {
-    return dao.getIdsFromUuids(uuids);
   }
 }

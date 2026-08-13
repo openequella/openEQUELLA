@@ -36,10 +36,10 @@ import com.tle.core.email.EmailService;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
+import com.tle.core.events.UserAddedEvent;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
-import com.tle.core.events.UserSuspendEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
 import com.tle.core.events.services.EventService;
@@ -56,7 +56,6 @@ import com.tle.exceptions.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -109,9 +108,10 @@ public class TLEUserServiceImpl
     }
 
     dao.save(newUser);
-    // bug #7721
-    userService.clearUserSearchCache();
-    return newUser.getUuid();
+
+    String userUuid = newUser.getUuid();
+    eventService.publishApplicationEvent(new UserAddedEvent(userUuid));
+    return userUuid;
   }
 
   @Override
@@ -150,9 +150,22 @@ public class TLEUserServiceImpl
 
   @Override
   @Transactional
+  public List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit) {
+    return dao.searchUsersInGroup(query, parentGroupID, recursive, limit);
+  }
+
+  @Override
+  @Transactional
+  public List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit, Integer offset) {
+    return dao.searchUsersInGroup(query, parentGroupID, recursive, limit, offset);
+  }
+
+  @Override
+  @Transactional
   public TLEUser get(String id) {
-    return dao.findByCriteria(
-        Restrictions.eq("uuid", id), Restrictions.eq("institution", CurrentInstitution.get()));
+    return dao.findByCriteria(Restrictions.eq("uuid", id), CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -245,7 +258,6 @@ public class TLEUserServiceImpl
 
     String uuid = user.getUuid();
     eventService.publishApplicationEvent(new UserEditEvent(uuid));
-    userService.clearUserSearchCache();
     return uuid;
   }
 
@@ -263,15 +275,9 @@ public class TLEUserServiceImpl
 
       // Tell the world that we have deleted someone.
       eventService.publishApplicationEvent(new UserDeletedEvent(uuid));
-      userService.clearUserSearchCache();
     } else {
       throw new NotFoundException("Cannot find user with ID " + uuid + " to delete.");
     }
-  }
-
-  @Override
-  public void onSuspension(Set<String> uuids) {
-    eventService.publishApplicationEvent(new UserSuspendEvent(uuids));
   }
 
   @Override
@@ -416,5 +422,13 @@ public class TLEUserServiceImpl
     }
 
     return searchString;
+  }
+
+  public int countUsers() {
+    return dao.totalExistingUsers();
+  }
+
+  public int countUsers(String query, String parentGroupID, boolean recursive) {
+    return dao.countUsersInGroup(query, parentGroupID, recursive);
   }
 }

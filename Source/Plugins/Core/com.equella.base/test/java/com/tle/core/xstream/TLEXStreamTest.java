@@ -3,19 +3,15 @@
  */
 package com.tle.core.xstream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.dytech.devlib.PropBagEx;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TLEXStreamTest extends TestCase {
-  private static TLEXStream xstream;
+public class TLEXStreamTest {
+  private static final TLEXStream xstream = TLEXStream.instance();
 
-  @Override
-  protected void setUp() {
-    if (xstream == null) {
-      xstream = TLEXStream.instance();
-    }
-  }
-
+  @Test
   public void testPropBagWriter() {
     TestBean bean = new TestBean();
     bean.string = "string";
@@ -24,6 +20,7 @@ public class TLEXStreamTest extends TestCase {
     assertEquals("test", xml.getNodeName());
   }
 
+  @Test
   public void testPropBagReader() {
     PropBagEx xml = new PropBagEx();
     xml.setNode("string", "string");

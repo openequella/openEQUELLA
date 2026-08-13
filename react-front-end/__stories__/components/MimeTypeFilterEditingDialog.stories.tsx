@@ -17,8 +17,9 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { getMimeTypesFromServer } from "../../__mocks__/MimeTypes.mock";
+import { dialogDocsParameters } from "../storyUtils";
 import MimeTypeFilterEditingDialog, {
   MimeTypeFilterEditingDialogProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
@@ -26,6 +27,7 @@ import MimeTypeFilterEditingDialog, {
 export default {
   title: "MimeTypeFilterDialog",
   component: MimeTypeFilterEditingDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     addOrUpdate: { action: "addOrUpdate" },
     onClose: { action: "onClose" },

@@ -76,7 +76,7 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
     title = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextField(BundleCache.getLanguages());
     mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
-    autoMarkAsResources = new JCheckBox(getString("autoMarkAsResource"));
+    autoMarkAsResources = new JCheckBox(strings.text("autoMarkAsResource"));
 
     final int height1 = title.getPreferredSize().height;
     final int width1 = descriptionLabel.getPreferredSize().width;
@@ -111,7 +111,7 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
         public void actionPerformed(ActionEvent e) {
           if (autoMarkAsResources.isSelected()) {
             JOptionPane.showMessageDialog(
-                autoMarkAsResources, getString("conflict"), null, JOptionPane.WARNING_MESSAGE);
+                autoMarkAsResources, strings.text("conflict"), null, JOptionPane.WARNING_MESSAGE);
           }
         }
       };

@@ -21,7 +21,9 @@ package com.tle.admin.controls.standard.universal;
 import com.dytech.gui.JShuffleBox;
 import com.tle.admin.Driver;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.NameValue;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.mimetypes.RemoteMimetypeService;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings;
@@ -37,6 +39,8 @@ import javax.swing.SpinnerNumberModel;
 @SuppressWarnings("nls")
 public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
   private static final long serialVersionUID = 4826796254818947420L;
+
+  private static final StringLookup settingsStrings = Lookup.withPrefix("fileupload.settings");
 
   private final JLabel packageHeading;
   private final JLabel thumbHeading;
@@ -61,22 +65,22 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
 
   public FileUploadSettingsPanel() {
     super();
-    packageHeading = new JLabel(getString("fileupload.settings.subtitle.packages"));
-    thumbHeading = new JLabel(getString("fileupload.settings.subtitle.thumbnails"));
-    generalHeading = new JLabel(getString("fileupload.settings.subtitle.general"));
-    mimeHeading = new JLabel(getString("fileupload.settings.subtitle.mime"));
-    noUnzip = new JCheckBox(getString("fileupload.settings.nounzip"));
-    packageOnly = new JCheckBox(getString("fileupload.settings.packageonly"));
-    restrictionLabel = new JLabel(getString("fileupload.settings.package.restriction"));
-    qtiPackage = new JCheckBox(getString("fileupload.settings.qti"));
-    scormPackage = new JCheckBox(getString("fileupload.settings.scorm"));
-    suppressThumbnail = new JCheckBox(getString("fileupload.settings.thumbnail"));
-    showSuppressOption = new JCheckBox(getString("fileupload.settings.forcethumboption"));
-    restrictMime = new JCheckBox(getString("fileupload.settings.restrictbymime"));
-    restrictFileSize = new JCheckBox(getString("fileupload.settings.restrictfilesize"));
-    fileDuplicationCheck = new JCheckBox(getString("fileupload.settings.duplicate.check"));
-    fileSizeLabel = new JLabel(getString("fileupload.settings.filesize"));
-    mimeShuffle = new JShuffleBox<NameValue>();
+    packageHeading = new JLabel(settingsStrings.text("subtitle.packages"));
+    thumbHeading = new JLabel(settingsStrings.text("subtitle.thumbnails"));
+    generalHeading = new JLabel(settingsStrings.text("subtitle.general"));
+    mimeHeading = new JLabel(settingsStrings.text("subtitle.mime"));
+    noUnzip = new JCheckBox(settingsStrings.text("nounzip"));
+    packageOnly = new JCheckBox(settingsStrings.text("packageonly"));
+    restrictionLabel = new JLabel(settingsStrings.text("package.restriction"));
+    qtiPackage = new JCheckBox(settingsStrings.text("qti"));
+    scormPackage = new JCheckBox(settingsStrings.text("scorm"));
+    suppressThumbnail = new JCheckBox(settingsStrings.text("thumbnail"));
+    showSuppressOption = new JCheckBox(settingsStrings.text("forcethumboption"));
+    restrictMime = new JCheckBox(settingsStrings.text("restrictbymime"));
+    restrictFileSize = new JCheckBox(settingsStrings.text("restrictfilesize"));
+    fileDuplicationCheck = new JCheckBox(settingsStrings.text("duplicate.check"));
+    fileSizeLabel = new JLabel(settingsStrings.text("filesize"));
+    mimeShuffle = new JShuffleBox<>();
     fileSizeEditModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
     fileSizeEdit = new JSpinner(fileSizeEditModel);
 
@@ -128,7 +132,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("fileupload.settings.title");
+    return strings.key("fileupload.settings.title");
   }
 
   @Override

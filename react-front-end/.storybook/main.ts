@@ -15,36 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { StorybookConfig } from "@storybook/react-webpack5";
-import * as path from "path";
-import { NormalModuleReplacementPlugin } from "webpack";
+import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
-  staticDirs: ["../node_modules", "../__stories__/static-files"],
-  stories: ["../__stories__/**/*.tsx"],
-  addons: [
-    "@storybook/addon-a11y",
-    "@storybook/addon-docs",
-    "@storybook/addon-webpack5-compiler-swc",
+  staticDirs: [
+    // TinyMCE skin CSS is needed statically (for RichEditor.stories.tsx).
+    { from: "../node_modules/tinymce/skins", to: "/tinymce/skins" },
+    "../__stories__/static-files",
   ],
-  framework: {
-    name: "@storybook/react-webpack5",
-    options: { fastRefresh: true },
-  },
-  babel: (options) => ({
-    ...options,
-    configFile: path.resolve(__dirname, ".babelrc.json"),
-  }),
-  webpackFinal: async (cfg) => {
-    cfg.plugins = [
-      ...cfg.plugins,
-      // Remove "url:" prefix from asset imports (it's a syntax of Parcel not supported by Webpack)
-      new NormalModuleReplacementPlugin(/^url:(.*)$/, (resource) => {
-        resource.request = resource.request.replace(/^url:/, "");
-      }),
-    ];
-
-    return cfg;
+  stories: ["../__stories__/**/*.tsx"],
+  addons: ["@storybook/addon-a11y", "@storybook/addon-docs"],
+  framework: "@storybook/react-vite",
+  typescript: {
+    // Explicitly set reactDocgen to react-docgen-typescript, since our root
+    // babel.config.json will make the default reactDocgen (babel-based) skip its
+    // typescript/jsx parser plugins - it only checks that a babel config file
+    // exists, not whether it actually applies here.
+    reactDocgen: "react-docgen-typescript",
+    reactDocgenTypescriptOptions: {
+      exclude: [
+        // "**/*.stories.tsx" is just this plugin's own default exclude, repeated
+        // here because setting `exclude` replaces the default instead of extending it.
+        "**/*.stories.tsx",
+        // ".storybook/**" is the pattern we're actually adding: without it,
+        // preview.tsx matches **/*.tsx and reaches the plugin's docgen step, which
+        // then can't find it in its resolved TypeScript project files and logs a
+        // "not included in the active TypeScript project" warning instead of just
+        // skipping it quietly.
+        ".storybook/**",
+      ],
+    },
   },
 };
 export default config;

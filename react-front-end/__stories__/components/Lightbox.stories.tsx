@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
+import { dialogDocsParameters } from "../storyUtils";
 import Lightbox, {
   LightboxConfig,
   LightboxProps,
@@ -26,6 +27,7 @@ import { CustomMimeTypes } from "../../tsrc/modules/MimeTypesModule";
 export default {
   title: "component/Lightbox",
   component: Lightbox,
+  parameters: dialogDocsParameters,
   argTypes: {
     onClose: { action: "onClose triggered" },
   },

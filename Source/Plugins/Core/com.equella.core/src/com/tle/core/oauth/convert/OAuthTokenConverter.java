@@ -43,7 +43,7 @@ import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.oauth.dao.OAuthTokenDao;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.xml.service.impl.XmlServiceImpl;
+import com.tle.core.xstream.ExtXStream;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
@@ -133,7 +133,7 @@ public class OAuthTokenConverter extends AbstractConverter<OAuthToken> {
   private synchronized XStream getXStream() {
     if (xstream == null) {
       xstream =
-          new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+          new ExtXStream(getClass().getClassLoader()) {
             @Override
             protected MapperWrapper wrapMapper(MapperWrapper next) {
               return new HibernateMapper(next);

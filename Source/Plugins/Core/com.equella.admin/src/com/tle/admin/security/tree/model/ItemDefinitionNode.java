@@ -18,19 +18,19 @@
 
 package com.tle.admin.security.tree.model;
 
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.i18n.BundleCache;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDefinitionNode extends AbstractLazyNode {
-  private final RemoteItemDefinitionService service;
+  private final AdminCollectionDefinitionService service;
   private final BaseEntityLabel label;
 
-  public ItemDefinitionNode(BaseEntityLabel label, RemoteItemDefinitionService service) {
+  public ItemDefinitionNode(BaseEntityLabel label, AdminCollectionDefinitionService service) {
     super(null, Node.COLLECTION);
     this.label = label;
 
@@ -55,7 +55,7 @@ public class ItemDefinitionNode extends AbstractLazyNode {
   protected List<SecurityTreeNode> getChildren() {
     ItemDefinition itemDefinition = new ItemDefinition(label.getId());
 
-    List<SecurityTreeNode> results = new ArrayList<SecurityTreeNode>();
+    List<SecurityTreeNode> results = new ArrayList<>();
     results.add(new ItemStatusParentNode(itemDefinition));
     results.add(new ItemMetadataRuleParentNode(service, itemDefinition));
     return results;

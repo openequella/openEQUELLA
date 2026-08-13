@@ -18,18 +18,19 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
+import java.io.Serial;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class ExpressionTreeCellRenderer extends DefaultTreeCellRenderer {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private ExpressionFormatter formatter;
 
-  public ExpressionTreeCellRenderer(RemoteUserService userService) {
-    formatter = new ExpressionFormatter(userService);
+  public ExpressionTreeCellRenderer(AdminUserDirectoryService userDirectoryService) {
+    formatter = new ExpressionFormatter(userDirectoryService);
   }
 
   @Override

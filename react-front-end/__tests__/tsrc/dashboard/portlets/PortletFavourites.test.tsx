@@ -23,9 +23,11 @@ import { sprintf } from "sprintf-js";
 import { getFavouriteSearchesResp } from "../../../../__mocks__/Favourites.mock";
 import { basicSearchObj } from "../../../../__mocks__/searchresult_mock_data";
 import * as stories from "../../../../__stories__/dashboard/portlets/Favourites.stories";
-import { FAVOURITES_TYPE_PARAM } from "../../../../tsrc/favourites/FavouritesPageHelper";
 import { NEW_FAVOURITES_PATH } from "../../../../tsrc/mainui/routes";
-import { FavouritesType } from "../../../../tsrc/modules/FavouriteModule";
+import {
+  FAVOURITES_TYPE_PARAM,
+  FavouritesType,
+} from "../../../../tsrc/modules/FavouriteModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { RenderContext, setupStoryComponent } from "../../TestSetupHelper";
 

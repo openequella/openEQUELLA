@@ -17,7 +17,8 @@
  */
 import * as React from "react";
 import * as O from "fp-ts/Option";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
+import { dialogDocsParameters } from "../storyUtils";
 import {
   ShareAttachmentDialog,
   ShareAttachmentDialogProps,
@@ -26,6 +27,7 @@ import {
 export default {
   title: "component/ShareAttachmentDialog",
   component: ShareAttachmentDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "on close dialog" },
   },
@@ -38,6 +40,7 @@ export const LinkOnly: StoryFn<ShareAttachmentDialogProps> = (
 LinkOnly.args = {
   open: true,
   src: "https://localhost/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/image.jpg",
+  embedCode: O.none,
 };
 
 export const WithEmbedCode: StoryFn<ShareAttachmentDialogProps> = (

@@ -20,7 +20,14 @@ package com.tle.admin.harvester.standard;
 
 import com.tle.common.harvester.SHEXHarvesterSettings;
 
-@SuppressWarnings("nls")
+/**
+ * SHEX was a metadata harvesting protocol used to collect free digital content from the National
+ * Digital Learning Resource Network (NDLRN). While the long-form of the acronym is not widely
+ * documented, it served a similar purpose to MEX and LORAX, acting as a legacy standard for data
+ * exchange within that specific ecosystem.
+ *
+ * <p>Virtually identical to MEX & LORAXPlugin, differing only in string identifiers
+ */
 public class SHEXPlugin extends AbstractTLFPlugin<SHEXHarvesterSettings> {
   public SHEXPlugin() {
     super(SHEXHarvesterSettings.class);
@@ -28,6 +35,6 @@ public class SHEXPlugin extends AbstractTLFPlugin<SHEXHarvesterSettings> {
 
   @Override
   protected String getPluginsFieldString() {
-    return "shexplugin.settings";
+    return strings.key("shexplugin.settings");
   }
 }

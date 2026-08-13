@@ -23,9 +23,11 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.gui.common.actions.CancelAction;
 import com.tle.admin.gui.common.actions.OkAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SchemaNode;
 import com.tle.admin.schema.SchemaTree;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.client.gui.popup.TreeDoubleClickListener;
@@ -34,13 +36,10 @@ import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.remoting.RemoteSchemaService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.i18n.BundleCache;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,9 +51,16 @@ import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import net.miginfocom.swing.MigLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class SchemaAndTargetChooserDialog {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaAndTargetChooserDialog.class);
+
+  private static final StringLookup strings =
+      Lookup.withPrefix("searchset.virtualisation.xpathchooser");
+
   private final ClientService clientService;
   private final JComboBox chooser;
   private final SchemaTree tree;
@@ -64,15 +70,6 @@ public class SchemaAndTargetChooserDialog {
   private final boolean indexedForPowersearchOnly;
 
   private String selectedNode;
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public SchemaAndTargetChooserDialog(
       final ClientService clientService,
@@ -107,7 +104,7 @@ public class SchemaAndTargetChooserDialog {
     dialog = ComponentHelper.createJDialog(parent);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(panel);
-    dialog.setTitle(getString("searchset.virtualisation.xpathchooser.dialogtitle"));
+    dialog.setTitle(strings.text("dialogtitle"));
     dialog.setModal(true);
     dialog.pack();
 
@@ -163,21 +160,25 @@ public class SchemaAndTargetChooserDialog {
   private final GlassSwingWorker<?> populateSchemasWorker =
       new GlassSwingWorker<List<NameValue>>() {
         @Override
-        public List<NameValue> construct() throws Exception {
+        public List<NameValue> construct() {
           List<BaseEntityLabel> schemas =
-              clientService.getService(RemoteSchemaService.class).listAll();
+              clientService.getService(AdminSchemaService.class).listAll();
           List<NameValue> nvs = BundleCache.getNameValues(schemas);
-          Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
+          nvs.sort(Format.NAME_VALUE_COMPARATOR);
           return nvs;
         }
 
         @Override
         public void finished() {
-          chooser.addItem(
-              new NameValue(getString("searchset.virtualisation.xpathchooser.schemadropdown"), ""));
+          chooser.addItem(new NameValue(strings.text("schemadropdown"), ""));
           AppletGuiUtils.addItemsToJCombo(chooser, get());
 
           chooser.addActionListener(schemaChoiceListener);
+        }
+
+        @Override
+        public void exception() {
+          LOGGER.error("Error populating schema chooser", getException());
         }
       };
 
@@ -195,14 +196,19 @@ public class SchemaAndTargetChooserDialog {
           GlassSwingWorker<?> worker =
               new GlassSwingWorker<Schema>() {
                 @Override
-                public Schema construct() throws Exception {
-                  return clientService.getService(RemoteSchemaService.class).get(schemaId);
+                public Schema construct() {
+                  return clientService.getService(AdminSchemaService.class).get(schemaId);
                 }
 
                 @Override
                 public void finished() {
                   model.loadSchema(get().getDefinitionNonThreadSafe());
                   tree.setEnabled(true);
+                }
+
+                @Override
+                public void exception() {
+                  LOGGER.error("Error loading schema {}", schemaId, getException());
                 }
               };
           worker.setComponent(panel);

@@ -18,11 +18,12 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Pair;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -31,7 +32,7 @@ import javax.swing.table.TableCellEditor;
 
 public class WhoTableCellEditor extends AbstractCellEditor
     implements TableCellEditor, ActionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final Component parent;
 
@@ -40,14 +41,14 @@ public class WhoTableCellEditor extends AbstractCellEditor
   private ExpressionBuilderFinder finder;
   private SingleFinderDialog dialog;
 
-  public WhoTableCellEditor(RemoteUserService userService, Component parent) {
+  public WhoTableCellEditor(AdminUserDirectoryService userDirectoryService, Component parent) {
     this.parent = parent;
 
     button = new JButton();
     button.addActionListener(this);
     button.setBorderPainted(false);
 
-    finder = new ExpressionBuilderFinder(userService);
+    finder = new ExpressionBuilderFinder(userDirectoryService);
     dialog = new SingleFinderDialog(finder);
   }
 

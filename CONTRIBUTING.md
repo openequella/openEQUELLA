@@ -19,7 +19,7 @@ us on one of the following platforms:
 ## Documentation Resources
 
 For a comprehensive overview of the openEQUELLA architecture, technology stack, and coding
-conventions, refer to [.github/copilot-instructions.md](.github/copilot-instructions.md). This
+conventions, refer to [AGENTS.md](AGENTS.md). This
 document provides detailed guidance on:
 
 - Technology stack and architecture (Scala, Java, TypeScript/React)
@@ -307,6 +307,17 @@ task is required to copy the jars into a known location for the runner. This tas
 ```bash
 ./sbt jpfWriteDevJars
 ```
+
+### Dependency on the GraphQL client library
+
+The Admin Console requires the Scala GraphQL client. Until this is published to Maven Central, you must build it locally (and re-run this whenever the library code changes):
+
+```bash
+# From the project root:
+(cd graphql-client/scala && ./sbt publishLocal)
+```
+
+For more details on the client module, see the [GraphQL Client README](graphql-client/scala/README.md).
 
 ### Running SBT task to generate non-java resources
 

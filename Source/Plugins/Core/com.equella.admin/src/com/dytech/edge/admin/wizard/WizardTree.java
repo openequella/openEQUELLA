@@ -44,6 +44,7 @@ import com.tle.admin.gui.common.actions.JTextlessButton;
 import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.client.gui.popup.TreePopupListener;
 import com.tle.common.Check;
 import com.tle.common.applet.client.DialogUtils;
@@ -51,7 +52,6 @@ import com.tle.common.applet.client.FileWorker;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -555,8 +555,8 @@ public class WizardTree extends JPanel
     return def.hasContext(Contexts.CONTEXT_PAGE);
   }
 
-  protected RemoteItemDefinitionService getCollectionService(Driver driver) {
-    return driver.getClientService().getService(RemoteItemDefinitionService.class);
+  protected AdminCollectionDefinitionService getCollectionService(Driver driver) {
+    return driver.getClientService().getService(AdminCollectionDefinitionService.class);
   }
 
   private final TLEAction upAction =

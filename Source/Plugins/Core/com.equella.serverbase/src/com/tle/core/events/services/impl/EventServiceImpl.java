@@ -107,11 +107,10 @@ public class EventServiceImpl implements EventService, ClusterMessageHandler {
   /** Execute and event immediately, synchronously. */
   private void executeEventNow(ApplicationEvent<?> event) {
     // TODO: ApplicationEvent shouldn't need to know about its listeners.
-    // Fix that shit.
     @SuppressWarnings("unchecked")
     ApplicationEvent<ApplicationListener> eventHack = (ApplicationEvent<ApplicationListener>) event;
 
-    LOGGER.debug("Executing event now: " + event.getClass().getName());
+    LOGGER.debug("Posting event: {}", event.getClass().getName());
 
     Set<ApplicationListener> listeners = getListeners(event.getListener());
     Throwable firstEx = null;
@@ -120,10 +119,9 @@ public class EventServiceImpl implements EventService, ClusterMessageHandler {
         eventHack.postEvent(listener);
       } catch (Exception ex) {
         LOGGER.error(
-            "Error while posting event "
-                + event.getClass().getName()
-                + " to listener "
-                + listener.getClass().getName(),
+            "Error while posting event {} to listener {}",
+            event.getClass().getName(),
+            listener.getClass().getName(),
             ex);
         if (firstEx == null) {
           firstEx = ex;
@@ -265,8 +263,12 @@ public class EventServiceImpl implements EventService, ClusterMessageHandler {
   }
 
   private void publishApplicationEvent(Institution institution, ApplicationEvent<?> event) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Publishing event: {}", event);
+    }
     validateEvent(event, getInstitutionId(institution));
 
+    LOGGER.debug("Publishing event to: {}", event.getPostTo());
     switch (event.getPostTo()) {
       case POST_TO_SELF_SYNCHRONOUSLY:
         executeEventNow(event);
@@ -282,6 +284,8 @@ public class EventServiceImpl implements EventService, ClusterMessageHandler {
         postEventToOthers(institution, event);
         break;
     }
+
+    LOGGER.debug("Successfully published event.");
   }
 
   private static long getInstitutionId(Institution institution) {

@@ -19,27 +19,18 @@
 package com.tle.admin.search.searchset.virtualisation;
 
 import com.tle.admin.gui.common.DynamicChoicePanel;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.search.searchset.SearchSet;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 
 @SuppressWarnings("nls")
 public class ContributedValuesVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet> {
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
   public ContributedValuesVirtualiserConfigPanel() {
     super(new GridLayout(1, 1));
-    add(new JLabel("<html>" + getString("searchset.virtualisation.contributedvalues.text")));
+    add(
+        new JLabel(
+            "<html>" + Lookup.lookup.text("searchset.virtualisation.contributedvalues.text")));
   }
 
   @Override

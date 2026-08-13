@@ -51,7 +51,6 @@ import com.tle.core.item.event.ItemOperationEvent;
 import com.tle.core.item.operations.BaseFilter;
 import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.service.SchemaService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.workflow.service.WorkflowService;
@@ -140,14 +139,14 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
     entity.setItemSummaryDisplayTemplate(itemSummaryDisplayTemplate);
 
     if (fileSystemService.isAdvancedFilestore()) {
-      collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
+      collection.setAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
     }
     final String filestoreId = bean.getFilestoreId();
     if (!Strings.isNullOrEmpty(filestoreId)) {
       if (RemoteFileSystemService.DEFAULT_FILESTORE_ID.equals(filestoreId)) {
-        collection.removeAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+        collection.removeAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
       } else {
-        collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE, filestoreId);
+        collection.setAttribute(ItemDefinitionService.ATTRIBUTE_KEY_FILESTORE, filestoreId);
       }
     }
 

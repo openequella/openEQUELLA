@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
+import { dialogDocsParameters } from "../storyUtils";
 import {
   FavouriteSearchDialog,
   FavouriteSearchDialogProps,
@@ -25,6 +26,7 @@ import {
 export default {
   title: "Search/FavouriteSearchDialog",
   component: FavouriteSearchDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     closeDialog: { action: "onClose" },
     onConfirm: {

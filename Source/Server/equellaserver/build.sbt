@@ -28,7 +28,7 @@ val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.22.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
-val tikaVersion       = "3.3.1"
+val tikaVersion       = "3.3.2"
 val luceneVersion     = "10.5.0"
 val nettyVersion      = "4.2.16.Final"
 val rampartVersion    = "1.8.0"
@@ -51,6 +51,11 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.auth0" % "java-jwt" % "4.6.0",
   "com.auth0" % "jwks-rsa" % "0.24.1"
+)
+
+// Libraries needed for GraphQL
+libraryDependencies ++= Seq(
+  "com.github.ghostdogpr" %% "caliban" % "3.0.0"
 )
 
 // Jackson dependencies
@@ -336,6 +341,25 @@ excludeDependencies ++= Seq(
   "log4j" % "log4j"
 )
 
+/** JPMS packages the server needs reflective access to on Java 17+. Installed instances get these
+  * from the v20252 UpdateAddOpens upgrader (see
+  * Source/Tools/UpgradeInstallation/.../UpdateAddOpens.scala); the dev server has to set them here
+  * or XStream fails on institution import/delete with InaccessibleObjectException. Keep the two
+  * lists in step.
+  */
+val devServerAddOpens = Vector(
+  "java.base/java.io",
+  "java.base/java.lang.ref",
+  "java.base/java.lang",
+  "java.base/java.util.concurrent",
+  "java.base/java.util",
+  "java.desktop/javax.swing.tree",
+  "java.naming/com.sun.jndi.ldap",
+  "java.naming/javax.naming.directory",
+  "java.naming/javax.naming.ldap",
+  "java.naming/javax.naming"
+).map(pkg => s"--add-opens=$pkg=ALL-UNNAMED")
+
 run := {
   val cp = (Runtime / fullClasspath).value
   val o  = ForkOptions().withRunJVMOptions(
@@ -344,7 +368,7 @@ run := {
       Path.makeString(cp.files),
       "-Dequella.devmode=true",
       "-Dequella.autotest=true"
-    )
+    ) ++ devServerAddOpens
   )
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }

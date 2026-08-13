@@ -30,7 +30,7 @@ public class LTISettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("lti.settings.title");
+    return strings.key("lti.settings.title");
   }
 
   @Override

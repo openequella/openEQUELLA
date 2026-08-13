@@ -27,7 +27,7 @@ public class GoogleBookSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("gbook.settings.title");
+    return strings.key("gbook.settings.title");
   }
 
   @Override

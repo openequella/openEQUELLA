@@ -22,15 +22,15 @@ import com.google.gson.JsonObject;
 import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.StoredImage;
 import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
-import com.tle.web.resources.PluginResourceHelper;
-import com.tle.web.resources.ResourcesService;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -38,10 +38,6 @@ import javax.ws.rs.core.UriInfo;
 @Singleton
 public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   @Inject LoginNoticeService noticeService;
-
-  @Inject
-  private static PluginResourceHelper helper =
-      ResourcesService.getResourceHelper(PreLoginNoticeResourceImpl.class);
 
   @Override
   public Response retrievePreLoginNotice() throws IOException {
@@ -68,7 +64,18 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
 
   @Override
   public Response getPreLoginNoticeImage(String name) throws IOException {
-    return Response.ok(noticeService.getPreLoginNoticeImage(name), noticeService.getMimeType(name))
+    return noticeService
+        .getPreLoginNoticeImage(name)
+        .map(this::buildImageResponse)
+        .orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
+  }
+
+  private Response buildImageResponse(StoredImage image) {
+    return Response.ok(image.content(), image.contentType())
+        // Forces direct navigation to download the file instead of rendering it on the OEQ origin.
+        // Embedded image requests remain unaffected, so notices can still use the file in an <img>
+        // element.
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
         .build();
   }
 

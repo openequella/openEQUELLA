@@ -28,18 +28,19 @@ import static com.tle.common.security.SecurityConstants.getRecipientValue;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.helper.GroupBox;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.workflow.node.WorkflowItem;
-import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.remoting.RemoteSchemaService;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -62,7 +63,7 @@ import javax.swing.JPanel;
 public class ModeratorsTab extends JPanel implements ActionListener, ItemListener {
 
   private final SchemaModel schemaModel = new SchemaModel();
-  private final RemoteSchemaService schemaService;
+  private final AdminSchemaService schemaService;
 
   private static final long serialVersionUID = 1L;
   private GroupBox staticGroup;
@@ -76,22 +77,18 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
   private JComboBox schemaList;
   private SingleTargetChooser dynamicUserPath;
 
-  private static String KEY_PFX = AbstractPluginService.getMyPluginId(ModeratorsTab.class) + ".";
-
-  private String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
-  }
+  private static final StringLookup strings = Lookup.withPrefix("modtab");
 
   public ModeratorsTab(
       ChangeDetector changeDetector,
-      RemoteUserService userService,
-      RemoteSchemaService schemaService) {
+      AdminUserDirectoryService userDirectoryService,
+      AdminSchemaService schemaService) {
     this.schemaService = schemaService;
-    setupGui(userService);
+    setupGui(userDirectoryService);
     setupChangeDetector(changeDetector);
   }
 
-  private void setupGui(RemoteUserService userService) {
+  private void setupGui(AdminUserDirectoryService userDirectoryService) {
 
     unanimous =
         new JCheckBox(
@@ -106,10 +103,10 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
 
     group = new ButtonGroup();
 
-    finderControl = new MultipleFinderControl(userService);
+    finderControl = new MultipleFinderControl(userDirectoryService);
     finderControl.addActionListener(this);
 
-    staticGroup = GroupBox.withRadioButton(getString("modtab.choosestatic"), false); // $NON-NLS-1$
+    staticGroup = GroupBox.withRadioButton(strings.text("choosestatic"), false);
     staticGroup.getInnerPanel().setLayout(new GridLayout(1, 1));
     staticGroup.add(finderControl);
     staticGroup.addToGroup(group);
@@ -136,7 +133,7 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
     final int pathLabelWidth = schemaLabel.getPreferredSize().width;
     final int[] pathRows = new int[] {pathHeight, pathHeight};
     final int[] pathCols = new int[] {pathLabelWidth, TableLayout.FILL};
-    pathGroup = GroupBox.withRadioButton(getString("modtab.choosepath"), false); // $NON-NLS-1$
+    pathGroup = GroupBox.withRadioButton(strings.text("choosepath"), false);
     pathGroup.getInnerPanel().setLayout(new TableLayout(pathRows, pathCols, 5, 5));
     pathGroup.add(schemaLabel, new Rectangle(0, 0, 1, 1));
     pathGroup.add(schemaList, new Rectangle(1, 0, 1, 1));
