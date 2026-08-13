@@ -1,10 +1,12 @@
-# openEQUELLA Copilot Instructions
+# openEQUELLA Agent Instructions
 
 This file provides guidance for AI assistants and developers working with the openEQUELLA codebase.
+It is the single source of truth, shared by every AI coding agent — vendor-specific entry points such
+as `CLAUDE.md` reference this file rather than duplicating it.
 
 **For developers:** This document offers a comprehensive architectural overview and coding
 conventions reference. For detailed development environment setup and contribution workflow, please
-refer to [CONTRIBUTING.md](../CONTRIBUTING.md).
+refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Project Overview
 

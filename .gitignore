@@ -37,3 +37,6 @@ Source/Plugins/Core/com.equella.reporting/lib
 
 # GraphQL session cookies (created by .agents/skills/oeq-graphql)
 .graphql-cookies.txt
+
+# Per-developer Claude Code settings (shared settings go in .claude/settings.json)
+/.claude/settings.local.json
