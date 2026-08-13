@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react-webpack5";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { dialogDocsParameters } from "../storyUtils";
 import ConfirmDialog, {
   ConfirmDialogProps,

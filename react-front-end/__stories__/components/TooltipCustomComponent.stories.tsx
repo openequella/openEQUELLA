@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { Fab } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";

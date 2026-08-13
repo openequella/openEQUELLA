@@ -26,7 +26,8 @@
     "tsrc/assets/declaration.d.ts",
     "__tests__/**/*",
     "__stories__/**/*",
-    "__mocks__/**/*"
+    "__mocks__/**/*",
+    ".storybook/**/*"
   ],
   "exclude": [
     "node_modules",

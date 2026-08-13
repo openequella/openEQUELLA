@@ -19,7 +19,7 @@ us on one of the following platforms:
 ## Documentation Resources
 
 For a comprehensive overview of the openEQUELLA architecture, technology stack, and coding
-conventions, refer to [.github/copilot-instructions.md](.github/copilot-instructions.md). This
+conventions, refer to [AGENTS.md](AGENTS.md). This
 document provides detailed guidance on:
 
 - Technology stack and architecture (Scala, Java, TypeScript/React)

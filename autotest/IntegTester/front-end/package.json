@@ -16,8 +16,8 @@
     "jss": "10.10.0",
     "md5": "2.3.0",
     "query-string": "9.4.1",
-    "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@types/md5": "2.3.6",
