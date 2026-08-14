@@ -1,8 +1,6 @@
 import Path.rebase
 import sbt.IO
 
-name := "IntegTester"
-
 version := "1.0"
 
 val CirceVersion  = "0.14.12"

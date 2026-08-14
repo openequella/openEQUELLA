@@ -522,9 +522,9 @@ upgradeZip := {
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
-    upgraderJar                                         -> "installation-upgrader.jar",
-    (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
-    (LocalProject("equella") / versionProperties).value -> "version.properties"
+    upgraderJar                                             -> "installation-upgrader.jar",
+    (LocalProject("conversion") / assembly).value           -> "conversion-service.jar",
+    (LocalProject("openEQUELLA") / versionProperties).value -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
