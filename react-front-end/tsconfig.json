@@ -22,6 +22,7 @@
     }
   },
   "include": [
+    "build-tools/**/*",
     "tsrc/**/*",
     "tsrc/assets/declaration.d.ts",
     "__tests__/**/*",
