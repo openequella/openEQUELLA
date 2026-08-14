@@ -108,7 +108,8 @@ public class OAuthTest extends AbstractRestApiTest {
     client.setClientId(CLIENT_ID_SERVER_FLOW);
     client.setDefaultRedirect(false);
     String redirectUrl = OAuthTokenRedirect.getRedirectUri(context);
-    Assert.assertNotNull(redirectUrl, "\"oauth.redirector.url\" in localserver.properties unset?");
+    Assert.assertNotNull(
+        redirectUrl, "\"oauth.redirector.url\" is not set - see config/resources/application.conf");
     client.setUrl(redirectUrl);
     OAuthUtils.createClient(context, client);
     logout();
