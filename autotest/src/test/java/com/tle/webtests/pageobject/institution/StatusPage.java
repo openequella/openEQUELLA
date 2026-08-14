@@ -24,9 +24,6 @@ public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<
   @FindBy(id = "error-list")
   private WebElement errorContent;
 
-  @FindBy(id = "downloadLink")
-  private WebElement downloadLink;
-
   private final WaitingPageObject<T> tab;
 
   public StatusPage(PageContext context, WaitingPageObject<T> tab) {
@@ -56,10 +53,6 @@ public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<
   public T back() {
     getReturnLink().click();
     return tab.get();
-  }
-
-  public String getDownloadLink() {
-    return downloadLink.getAttribute("href");
   }
 
   public String getErrorText() {

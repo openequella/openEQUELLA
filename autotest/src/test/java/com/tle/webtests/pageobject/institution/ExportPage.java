@@ -17,10 +17,6 @@ public class ExportPage extends AbstractPage<ExportPage> {
     this.listTab = institutionListTab;
   }
 
-  public void removeAuditLogs() {
-    driver.findElement(By.id("isexp_auditlogsCheck")).click();
-  }
-
   public StatusPage<InstitutionListTab> export() {
     exportButton.click();
     acceptConfirmation();
