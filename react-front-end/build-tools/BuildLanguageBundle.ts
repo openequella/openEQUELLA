@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { LanguageStrings, languageStrings } from "../tsrc/util/langstrings";
 
 type LanguageStringKey = keyof typeof languageStrings;
@@ -57,5 +59,13 @@ const generateLanguageBundle = (
 
   return output;
 };
-// The output of this log is the input of 'jsbundle.json'.
-console.log(buildLanguageBundle());
+// The caller owns the output location. The sbt build collects the language bundle from where the
+// npm script points this - see `reactFrontEndLanguageBundle` in build.sbt.
+const [outputFile] = process.argv.slice(2);
+if (!outputFile) {
+  throw new Error("Usage: BuildLanguageBundle.ts <output file>");
+}
+
+mkdirSync(dirname(outputFile), { recursive: true });
+// Trailing newline so the generated file is well-formed text.
+writeFileSync(outputFile, `${buildLanguageBundle()}\n`);

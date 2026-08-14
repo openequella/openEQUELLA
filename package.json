@@ -6,25 +6,23 @@
     "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.35.0 -f -o node_modules/.bin/google-java-format --jvm-option-file google-java-format.jvmopts",
     "coursier:scalafmt": "./coursier bootstrap org.scalameta::scalafmt-cli:3.11.4 -f -o node_modules/.bin/scalafmt",
     "postinstall": "run-s coursier:*",
+    "_eslint:ts": "eslint \"{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}\"",
+    "_prettier:scss": "prettier \"Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
-    "format:scss": "prettier --write ${npm_package_config_stylesheet_glob}",
-    "format:ts": "eslint --fix ${npm_package_config_typescript_glob}",
+    "format:scss": "npm run _prettier:scss -- --write",
+    "format:ts": "npm run _eslint:ts -- --fix",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed && ./checkstyle.sh",
     "check:license": "cd react-front-end && licensee --production --errors-only && cd -",
     "check:md": "remark -q --ignore-pattern NOTICE.md .",
-    "check:scss": "prettier --check ${npm_package_config_stylesheet_glob}",
-    "check:ts": "eslint ${npm_package_config_typescript_glob}",
+    "check:scss": "npm run _prettier:scss -- --check",
+    "check:ts": "npm run _eslint:ts --",
     "check:ts-types-source": "tsc --noEmit --project react-front-end/tsconfig.json",
     "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/front-end/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*",
     "prepare": "husky"
-  },
-  "config": {
-    "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
-    "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
     "@babel/eslint-parser": "8.0.1",
@@ -32,7 +30,6 @@
     "@commitlint/config-conventional": "21.2.0",
     "@typescript-eslint/eslint-plugin": "8.65.0",
     "@typescript-eslint/parser": "8.65.0",
-    "cross-env": "10.1.0",
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
@@ -53,6 +50,9 @@
     "remark-lint-no-dead-urls": "2.0.1",
     "remark-validate-links": "13.1.0",
     "typescript": "6.0.3"
+  },
+  "overrides": {
+    "glob": "^13.0.6"
   },
   "commitlint": {
     "extends": [

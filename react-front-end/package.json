@@ -1,24 +1,14 @@
 {
   "name": "openequella-react-front-end",
   "private": true,
-  "config": {
-    "buildlang": "target/resources/lang",
-    "devlang": "../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/lang",
-    "languageBundle": "target/compile-language-bundle",
-    "jest": {
-      "verbose": true
-    },
-    "parcelEntryFiles": "entrypoint/*.html entrypoint/scripts/*.js",
-    "tools": "target/tools"
-  },
+  "source": [
+    "entrypoint/*.html",
+    "entrypoint/scripts/*.js"
+  ],
   "engines": {
-    "node": "24.18.0",
-    "npm": "12.0.1"
+    "node": "24.18.0"
   },
   "targets": {
-    "languageBundle": {
-      "distDir": "target/tools"
-    },
     "mainapp": {
       "distDir": "target/resources/web/reactjs",
       "engines": {
@@ -33,16 +23,14 @@
     }
   },
   "scripts": {
-    "build:bundle": "cross-env-shell NODE_OPTIONS=\"--max_old_space_size=4096\" parcel build --no-scope-hoist --public-url=. --target mainapp ${npm_package_config_parcelEntryFiles}",
-    "build:langbundle-tool": "cross-env-shell parcel build ${npm_package_config_languageBundle}/build-tools/BuildLanguageBundle.js --no-optimize --no-source-maps --target languageBundle",
-    "build:langbundle": "cross-env-shell \"node ${npm_package_config_tools}/BuildLanguageBundle.js > ${npm_package_config_buildlang}/jsbundle.json\"",
+    "build:bundle": "NODE_OPTIONS=--max_old_space_size=4096 parcel build --no-scope-hoist --public-url=. --target mainapp",
+    "build:langbundle": "tsx build-tools/BuildLanguageBundle.ts target/resources/lang/jsbundle.json",
     "build-storybook": "storybook build",
-    "build": "npm-run-all compile:* build:*",
+    "build": "npm-run-all build:*",
     "clean": "rm -rf target/ node_modules/ .parcel-cache/",
-    "compile:langbundle-tool": "cross-env-shell tsc --ignoreConfig --types \"node\" --target es2020 --module commonjs --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
-    "dev": "npm run build && cross-env-shell parcel watch --public-url=. --target mainappdev ${npm_package_config_parcelEntryFiles}",
+    "dev": "npm run build && parcel watch --public-url=. --target mainappdev",
     "explain:patches": "echo 'This project uses patch-package to apply critical modifications to dependencies. See the patches/README.md file for a detailed explanation.'",
-    "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
+    "install": "mkdir -p ../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/lang",
     "postinstall": "patch-package",
     "storybook": "storybook dev  -p 6006",
     "test": "jest test --maxWorkers 50%"
@@ -121,7 +109,6 @@
     "babel-jest": "30.4.1",
     "buffer": "6.0.3",
     "core-js": "3.49.0",
-    "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
     "css-mediaquery": "0.1.2",
     "html-validate": "11.5.6",
@@ -130,7 +117,6 @@
     "jest-config": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "jest-snapshot": "30.4.1",
-    "mkdirp": "3.0.1",
     "npm-run-all2": "9.0.2",
     "parcel": "2.16.4",
     "patch-package": "8.0.1",
@@ -138,6 +124,7 @@
     "rewire": "9.0.1",
     "storybook": "10.5.6",
     "ts-jest": "29.4.11",
+    "tsx": "4.23.12",
     "typescript": "6.0.3"
   }
 }
