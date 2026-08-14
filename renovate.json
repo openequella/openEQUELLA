@@ -13,7 +13,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap com\\.puppycrawl\\.tools:checkstyle:(?<currentValue>[^\\s]+)"
       ],
@@ -22,7 +24,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap com\\.google\\.googlejavaformat:google-java-format:(?<currentValue>[^\\s]+)"
       ],
@@ -31,7 +35,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap org\\.scalameta::scalafmt-cli:(?<currentValue>[^\\s]+)"
       ],
