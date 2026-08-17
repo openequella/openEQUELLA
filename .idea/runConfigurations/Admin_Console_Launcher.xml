@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Admin Console Launcher" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.tle.client.harness.ClientLauncher" />
-    <module name="Equella.adminTool" />
+    <module name="openEQUELLA.adminTool" />
     <option name="VM_PARAMETERS" value="--add-opens=java.base/java.util=ALL-UNNAMED -Dawt.useSystemAAFontSettings=gasp" />
     <extension name="coverage">
       <pattern>
