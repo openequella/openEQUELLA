@@ -11,8 +11,6 @@ import cats.instances.uuid
 
 import scala.jdk.CollectionConverters._
 
-name := "equella-autotests"
-
 // application.conf has to be on the test classpath, because TestConfig reads it with
 // ConfigFactory.load(). AUTOTEST_CONFIG still wins over it, via the config.file system property set
 // below.

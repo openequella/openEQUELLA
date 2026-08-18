@@ -7,106 +7,11 @@ import java.util.Properties
 
 import net.nmoncho.sbt.dependencycheck.settings._
 
-// NVD API key for OWASP Dependency Check.
-// The check may be slower / rate-limited if not set.
-val nvdApiKey: Option[String] =
-  sys.env.get("NVD_API_KEY").filter(_.nonEmpty)
-
-ThisBuild / dependencyCheckNvdApi := {
-  nvdApiKey match {
-    case Some(key) => NvdApiSettings(apiKey = key)
-    case None      => NvdApiSettings()
-  }
-}
-
-lazy val learningedge_config = project in file("Dev/learningedge-config")
-
-lazy val allPlugins      = LocalProject("allPlugins")
-lazy val allPluginsScope = ScopeFilter(inAggregates(allPlugins, includeRoot = false))
-val legacyPaths          = Seq(
-  (Compile / javaSource)                   := baseDirectory.value / "src",
-  (Test / javaSource)                      := baseDirectory.value / "test",
-  (Compile / unmanagedResourceDirectories) := (baseDirectory.value / "resources") :: Nil,
-  (Compile / unmanagedSourceDirectories)   := (Compile / javaSource).value :: Nil,
-  (Test / unmanagedSourceDirectories)      := (Test / javaSource).value :: Nil
-)
-
-// The end-to-end test suite. Its own subprojects are declared in autotest/build.sbt, hence
-// LocalProject here. platformCommon supplies com.dytech.devlib.PropBagEx and the com.tle.common.*
-// utilities the tests use, so they exercise the same classes the server does. Deliberately not part
-// of the `equella` aggregate below - a root `sbt test` must not launch Selenium.
-lazy val autotest = (project in file("autotest"))
-  .dependsOn(LocalProject("IntegTester"), platformCommon)
-
-lazy val equellaserver =
-  (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
-
-lazy val adminTool = (project in file("Source/Server/adminTool"))
-  .settings(legacyPaths)
-  .dependsOn(
-    platformSwing,
-    platformEquella,
-    LocalProject("adminConsoleJar"),
-    LocalProject("com_equella_admin")
-  )
-
-lazy val conversion = (project in file("Source/Server/conversion"))
-  .settings(legacyPaths)
-  .dependsOn(
-    platformCommon
-  )
-
-lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallation"))
-  .settings(legacyPaths)
-  .dependsOn(
-    platformCommon,
-    platformEquella
-  )
-
-lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager"))
-  .settings(legacyPaths)
-  .dependsOn(platformCommon, platformEquella)
-
-lazy val Installer = (project in file("Installer"))
-  .settings(legacyPaths)
-  .dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
-
-lazy val equella = (project in file("."))
-  .enablePlugins(JPFScanPlugin, JarSignerPlugin, GitVersioning)
-  .aggregate(
-    equellaserver,
-    allPlugins,
-    adminTool,
-    Installer,
-    UpgradeManager,
-    conversion,
-    UpgradeInstallation,
-    learningedge_config
-  )
-
-// We currently build for Java 8, so let's drop module info files
-ThisBuild / assemblyMergeStrategy := {
-  case PathList("module-info.class")         => MergeStrategy.discard
-  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
-  case x                                     =>
-    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
-    oldStrategy(x)
-}
-
-(ThisBuild / bundleOracleDriver) := {
-  val path = "build.bundleOracleDriver"
-  if (buildConfig.value.hasPath(path)) {
-    buildConfig.value.getBoolean(path)
-  } else {
-    false
-  }
-}
-(ThisBuild / oracleDriverMavenCoordinate) :=
-  Seq("com.oracle.database.jdbc" % "ojdbc17" % "23.26.2.0.0")
-
 (ThisBuild / buildConfig) := Common.buildConfig
 
-name := "Equella"
+// The display name for the build, rather than anything the product reads at runtime. sbt announces
+// it on startup and IntelliJ derives its module names from it, so every module is `<this>.<project>`.
+name := "openEQUELLA"
 
 (ThisBuild / equellaMajor)   := 2026
 (ThisBuild / equellaMinor)   := 2
@@ -146,6 +51,103 @@ version := {
   IO.write(props, "version", f)
   f
 }
+
+// NVD API key for OWASP Dependency Check.
+// The check may be slower / rate-limited if not set.
+val nvdApiKey: Option[String] =
+  sys.env.get("NVD_API_KEY").filter(_.nonEmpty)
+
+ThisBuild / dependencyCheckNvdApi := {
+  nvdApiKey match {
+    case Some(key) => NvdApiSettings(apiKey = key)
+    case None      => NvdApiSettings()
+  }
+}
+
+lazy val learningedge_config = project in file("Dev/learningedge-config")
+
+lazy val allPlugins      = LocalProject("allPlugins")
+lazy val allPluginsScope = ScopeFilter(inAggregates(allPlugins, includeRoot = false))
+val legacyPaths          = Seq(
+  (Compile / javaSource)                   := baseDirectory.value / "src",
+  (Test / javaSource)                      := baseDirectory.value / "test",
+  (Compile / unmanagedResourceDirectories) := (baseDirectory.value / "resources") :: Nil,
+  (Compile / unmanagedSourceDirectories)   := (Compile / javaSource).value :: Nil,
+  (Test / unmanagedSourceDirectories)      := (Test / javaSource).value :: Nil
+)
+
+// The end-to-end test suite. Its own subprojects are declared in autotest/build.sbt, hence
+// LocalProject here. platformCommon supplies com.dytech.devlib.PropBagEx and the com.tle.common.*
+// utilities the tests use, so they exercise the same classes the server does. Deliberately not part
+// of the `openEQUELLA` aggregate below - a root `sbt test` must not launch Selenium.
+lazy val autotest = (project in file("autotest"))
+  .dependsOn(LocalProject("IntegTester"), platformCommon)
+
+lazy val equellaserver =
+  (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
+
+lazy val adminTool = (project in file("Source/Server/adminTool"))
+  .settings(legacyPaths)
+  .dependsOn(
+    platformSwing,
+    platformEquella,
+    LocalProject("adminConsoleJar"),
+    LocalProject("com_equella_admin")
+  )
+
+lazy val conversion = (project in file("Source/Server/conversion"))
+  .settings(legacyPaths)
+  .dependsOn(
+    platformCommon
+  )
+
+lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallation"))
+  .settings(legacyPaths)
+  .dependsOn(
+    platformCommon,
+    platformEquella
+  )
+
+lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager"))
+  .settings(legacyPaths)
+  .dependsOn(platformCommon, platformEquella)
+
+lazy val Installer = (project in file("Installer"))
+  .settings(legacyPaths)
+  .dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
+
+lazy val openEQUELLA = (project in file("."))
+  .enablePlugins(JPFScanPlugin, JarSignerPlugin, GitVersioning)
+  .aggregate(
+    equellaserver,
+    allPlugins,
+    adminTool,
+    Installer,
+    UpgradeManager,
+    conversion,
+    UpgradeInstallation,
+    learningedge_config
+  )
+
+// We currently build for Java 8, so let's drop module info files
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("module-info.class")         => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x                                     =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
+(ThisBuild / bundleOracleDriver) := {
+  val path = "build.bundleOracleDriver"
+  if (buildConfig.value.hasPath(path)) {
+    buildConfig.value.getBoolean(path)
+  } else {
+    false
+  }
+}
+(ThisBuild / oracleDriverMavenCoordinate) :=
+  Seq("com.oracle.database.jdbc" % "ojdbc17" % "23.26.2.0.0")
 
 updateLicenses := {
   val ourOrg         = organization.value
@@ -278,7 +280,7 @@ def javadocSources(base: File): PathFinder = {
 }
 (Compile / doc / javacOptions) := Seq("--release", "8")
 
-lazy val allEquella = ScopeFilter(inAggregates(equella))
+lazy val allEquella = ScopeFilter(inAggregates(openEQUELLA))
 
 lazy val devrebuild = taskKey[Unit]("clean and build all code - targeting a local dev run")
 
