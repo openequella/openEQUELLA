@@ -33,6 +33,8 @@ const DEV_OUT_DIR =
 const projectDir = import.meta.dirname;
 const entrypointDir = resolve(projectDir, "entrypoint");
 
+const isDevMode = (mode: string) => mode === "development";
+
 export default defineConfig(({ mode }) => ({
   builder: {
     async buildApp(builder) {
@@ -62,17 +64,15 @@ export default defineConfig(({ mode }) => ({
     // Resolved to an absolute path because outDir defaults to being resolved
     // against `root` (entrypoint/ above) - a relative string here would land
     // at entrypoint/target/...
-    outDir: resolve(
-      projectDir,
-      mode === "development" ? DEV_OUT_DIR : PROD_OUT_DIR,
-    ),
+    outDir: resolve(projectDir, isDevMode(mode) ? DEV_OUT_DIR : PROD_OUT_DIR),
     // Directory relative from `outDir` where the built js/css/image assets will be placed.
     assetsDir: ASSETS_DIR,
-    // Never while watching: `builder.build()` returns once a watcher is up
-    // rather than once output is written, so emptying here would race with -
-    // and delete - what the uploadlist environment has already written. Only
-    // the `dev` script watches, hence keying off the mode.
-    emptyOutDir: mode !== "development",
+    // Skipped in dev mode because that is the mode the `dev` script watches in,
+    // and under `--watch` `builder.build()` resolves as soon as the watcher is
+    // up rather than once output is written. The `await`s in buildApp above
+    // then guarantee nothing, and this build can end up emptying the directory
+    // after the uploadList environment has written its file into it.
+    emptyOutDir: !isDevMode(mode),
     // Matches tsconfig's compilerOptions.target.
     target: "es2020",
     // Sized just above RichTextEditor (~1.6MB, bundles TinyMCE), our largest
