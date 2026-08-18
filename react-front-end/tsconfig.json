@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
     "esModuleInterop": true,
     "types": ["node", "jquery", "jest"],
     "target": "ES2020",
@@ -22,6 +22,7 @@
     }
   },
   "include": [
+    "vite.config.mts",
     "build-tools/**/*",
     "tsrc/**/*",
     "tsrc/assets/declaration.d.ts",

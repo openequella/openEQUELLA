@@ -1,37 +1,16 @@
 {
   "name": "openequella-react-front-end",
   "private": true,
-  "source": [
-    "entrypoint/*.html",
-    "entrypoint/scripts/*.js"
-  ],
   "engines": {
     "node": "24.18.0"
   },
-  "@parcel/resolver-default": {
-    "packageExports": true
-  },
-  "targets": {
-    "mainapp": {
-      "distDir": "target/resources/web/reactjs",
-      "engines": {
-        "browserslist": "> 0.5%, last 2 versions, not dead"
-      }
-    },
-    "mainappdev": {
-      "distDir": "../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/web/reactjs",
-      "engines": {
-        "browserslist": "> 0.5%, last 2 versions, not dead"
-      }
-    }
-  },
   "scripts": {
-    "build:bundle": "NODE_OPTIONS=--max_old_space_size=4096 parcel build --no-scope-hoist --public-url=. --target mainapp",
+    "build:bundle": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
     "build:langbundle": "tsx build-tools/BuildLanguageBundle.ts target/resources/lang/jsbundle.json",
     "build-storybook": "storybook build",
     "build": "npm-run-all build:*",
-    "clean": "rm -rf target/ node_modules/ .parcel-cache/",
-    "dev": "npm run build && parcel watch --public-url=. --target mainappdev",
+    "clean": "rm -rf target/ node_modules/",
+    "dev": "npm run build && vite build --mode development --watch",
     "explain:patches": "echo 'This project uses patch-package to apply critical modifications to dependencies. See the patches/README.md file for a detailed explanation.'",
     "install": "mkdir -p ../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/lang",
     "postinstall": "patch-package",
