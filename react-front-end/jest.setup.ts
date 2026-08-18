@@ -15,4 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TextDecoder, TextEncoder } from "node:util";
 import "@html-validate/jest-config";
+
+// Browsers provide these globally; jsdom only started doing so in 28, and
+// jest-environment-jsdom still pulls in 26.
+// TODO: Drop this once it moves on.
+Object.assign(globalThis, { TextDecoder, TextEncoder });

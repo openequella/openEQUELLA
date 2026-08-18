@@ -23,6 +23,7 @@
   },
   "include": [
     "vite.config.mts",
+    "jest.setup.ts",
     "build-tools/**/*",
     "tsrc/**/*",
     "tsrc/assets/declaration.d.ts",

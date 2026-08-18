@@ -149,7 +149,11 @@ const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
   const decodeFormUrlEncodedSpaces = (name: string) => name.replace(/\+/g, " ");
 
   const toBase64 = (name: string) =>
-    Buffer.from(name, "utf8").toString("base64");
+    pipe(
+      new TextEncoder().encode(name),
+      (bytes) => String.fromCharCode(...bytes),
+      btoa,
+    );
 
   return pipe(
     O.fromNullable(encodedNameMaybe),
@@ -171,8 +175,12 @@ const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
 const convertSingleNewIdToLegacyFormat = (compoundUuid: string) => {
   const [uuid, base64NameMaybe] = compoundUuid.split(":");
 
-  const decodeBase64 = (base64: string) =>
-    Buffer.from(base64, "base64").toString("utf8");
+  const decodeBase64 = (base64: string) => {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+
+    return new TextDecoder().decode(bytes);
+  };
 
   // Legacy format expects application/x-www-form-urlencoded encoding:
   //   - spaces → '+'
