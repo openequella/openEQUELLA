@@ -2,9 +2,9 @@
   "name": "openequella",
   "private": true,
   "scripts": {
-    "coursier:checkstyle": "./coursier bootstrap com.puppycrawl.tools:checkstyle:13.8.0 -f -o node_modules/.bin/checkstyle -M com.puppycrawl.tools.checkstyle.Main",
-    "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.35.0 -f -o node_modules/.bin/google-java-format --jvm-option-file google-java-format.jvmopts",
-    "coursier:scalafmt": "./coursier bootstrap org.scalameta::scalafmt-cli:3.11.4 -f -o node_modules/.bin/scalafmt",
+    "coursier:checkstyle": "./coursier bootstrap com.puppycrawl.tools:checkstyle:13.10.0 -f -o node_modules/.bin/checkstyle -M com.puppycrawl.tools.checkstyle.Main",
+    "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.36.1 -f -o node_modules/.bin/google-java-format --jvm-option-file google-java-format.jvmopts",
+    "coursier:scalafmt": "./coursier bootstrap org.scalameta::scalafmt-cli:3.11.5 -f -o node_modules/.bin/scalafmt",
     "postinstall": "run-s coursier:*",
     "_eslint:ts": "eslint \"{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}\"",
     "_prettier:scss": "prettier \"Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}\"",
