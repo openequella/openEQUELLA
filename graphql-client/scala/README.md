@@ -1,20 +1,29 @@
 # Scala GraphQL Client for openEQUELLA
 
-This library is currently intended to be built and published locally before you then run the oEQ
-build. Long term, the idea will be to publish this to a public Maven repository.
+This library has its own SBT build, separate from the main openEQUELLA one, so that it keeps its own
+tests, its own code generation, and stricter compiler options (`-Werror`, scapegoat) than the rest of
+the codebase. The main build consumes it **from source** - `graphqlClient` in
+`project/CommonSettings.scala` - so there is no publishing step and nothing to install before
+building openEQUELLA. Its own test suite runs from this directory with `sbt test`, against a local
+openEQUELLA instance - see [Test Configuration](#test-configuration).
 
 > **Prerequisites:** Ensure you have the openEQUELLA development environment set up as described
 > in the root [CONTRIBUTING.md](../../CONTRIBUTING.md) before following these instructions.
 
-Guide for later on how to do publishing: <https://www.scala-sbt.org/1.x/docs/Publishing.html>
+## Why this is not a published library
 
-To build and publish locally, run the following command from the `graphql-client/scala` directory:
+It was once intended to be published to Maven Central so that integrators could build against
+openEQUELLA in Scala. That is not being pursued: it has no consumers outside this repository, its
+main consumer (the Swing Admin Console) is being migrated to the New UI, and the GraphQL API has no
+versioning policy for a published client to make compatibility promises against. Publishing is a
+commitment that only pays for a real audience, so the module keeps a clean boundary without the
+distribution ceremony - and carries no version of its own, since nothing consumes one.
 
-```bash
-sbt publishLocal
-```
-
-This places the library in your local Ivy repository, where the main oEQ build can then find it.
+Worth revisiting if either of those changes: an external consumer actually asks for it, or the
+GraphQL API gains a versioning policy. Because this remains a standalone build, that is a `publish`
+task and a dependency change away. Note that for enabling integrators the more valuable artefact is
+probably the schema itself (served at `/graphql/schema`, see `downloadSchema` below) rather than a
+Scala-only client.
 
 ## Code Generation
 
@@ -143,9 +152,11 @@ additionally require `vanilla` — see [Test Configuration](#test-configuration)
 
 ### Add the graphql-client module
 
-Because this Scala GraphQL client is a standalone SBT project — not a sub-project of the root
-openEQUELLA build — it must be manually added to IntelliJ to work on it within the same IDE
-instance. To do this:
+This is a standalone SBT project rather than a sub-project of the root openEQUELLA build, but the
+root build depends on it from source, so importing or refreshing the root SBT project should bring
+it in as a module automatically.
+
+If it does not appear, add it by hand:
 
 1. Open `File > Project Structure` (or `Ctrl+Alt+Shift+S`).
 2. Navigate to `Project Settings > Modules`.
