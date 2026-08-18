@@ -45,7 +45,17 @@ public class PluginAwareObjectInputStream extends ObjectInputStream {
           // Xalan copy bundled by the reporting and z3950 plugins. A denylist keyed on class name
           // must deny both, or the standalone copy can be reached through the plugin class loader.
           "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",
-          "org.apache.xalan.xsltc.trax.TemplatesImpl");
+          "org.apache.xalan.xsltc.trax.TemplatesImpl",
+          // Nested-deserialization "smuggling" gadgets: their getObject()/get() reconstructs an
+          // attacker-supplied byte[] using a plain ObjectInputStream that this denylist never sees,
+          // so any sink can be tunnelled past these checks. Deny them (they appear in this, the
+          // checked, stream) so a payload cannot escape resolveClass by nesting.
+          "java.security.SignedObject",
+          "java.rmi.MarshalledObject",
+          // JNDI-lookup sink: connect()/getDatabaseMetaData() performs a naming lookup on an
+          // attacker-controlled name, reaching an object factory (e.g. Tomcat's BeanFactory) ->
+          // RCE.
+          "com.sun.rowset.JdbcRowSetImpl");
 
   public PluginAwareObjectInputStream(InputStream stream) throws IOException {
     super(stream);

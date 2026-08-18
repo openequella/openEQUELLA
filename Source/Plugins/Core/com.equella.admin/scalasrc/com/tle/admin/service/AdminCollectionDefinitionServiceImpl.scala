@@ -101,7 +101,8 @@ class AdminCollectionDefinitionServiceImpl @Inject() (implicit
 
   override def listEditable(): util.List[BaseEntityLabel] = listAll()
 
-  override def listAllIncludingSystem(): util.List[BaseEntityLabel] = listAll()
+  override def listAllIncludingSystem(): util.List[BaseEntityLabel] =
+    listAllFrom(CollectionDefinitionApi.listCollectionsIncludingSystem())
 
   override def identifyByUuid(uuid: String): Long =
     idByUuid(CollectionDefinitionApi.getIdByUuid)(uuid)

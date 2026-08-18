@@ -509,7 +509,7 @@ type CollectionMutations {
 
 type CollectionQueries {
   "List all collections"
-  list: [BaseEntityReference!]!
+  list("Whether to include 'system type' collections such as the \"My Content\" collection backing the Scrapbook. Defaults to false if not provided." includeSystem: Boolean): [BaseEntityReference!]!
   "Export a collection, returning a base64 encoded zip file"
   export("ID of the collection to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the collection ID for a given UUID"
@@ -838,7 +838,7 @@ type MetadataSchemaMutations {
 
 type MetadataSchemaQueries {
   "List all metadata schemas"
-  list: [BaseEntityReference!]!
+  list("Whether to include 'system type' metadata schemas such as the \"My Content\" schema backing the Scrapbook. Defaults to false if not provided." includeSystem: Boolean): [BaseEntityReference!]!
   "Export a metadata schema, returning a base64 encoded zip file"
   export("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the metadata schema ID for a given UUID"

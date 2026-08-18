@@ -23,6 +23,7 @@ import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, Metadat
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   INVALID_ENTITY_UUID,
+  MY_CONTENT_SCHEMA_UUID,
   assertAccessDeniedError,
   assertNotFoundError,
   checkApiError,
@@ -43,6 +44,7 @@ class MetadataSchemaApiQueriesTest
     extends AnyFunSpec
     with ExportTestBehaviours
     with CrossInstitutionTestBehaviours
+    with SystemEntityListingTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
@@ -81,6 +83,13 @@ class MetadataSchemaApiQueriesTest
       .collectFirst { case schema if schema.importTransforms.nonEmpty => schema.details.id }
       .getOrElse(fail("No metadata schema in this institution has an import transformation"))
 
+  private val systemListingConfig = SystemEntityListingBehaviorConfig(
+    entityName = "metadata schema",
+    systemEntityUuid = MY_CONTENT_SCHEMA_UUID,
+    listFn = MetadataSchemaApi.listSchemas()(_),
+    listIncludingSystemFn = MetadataSchemaApi.listSchemasIncludingSystem()(_)
+  )
+
   describe("listSchemas") {
     it("returns all metadata schemas") {
       When("calling listSchemas")
@@ -92,9 +101,15 @@ class MetadataSchemaApiQueriesTest
       result.value.head.uuid should not be empty
     }
 
+    systemEntityExcludedBehavior(systemListingConfig)
+
     it("denies access when not authenticated") {
       assertAccessDeniedError(MetadataSchemaApi.listSchemas()(_))
     }
+  }
+
+  describe("listSchemasIncludingSystem") {
+    systemEntityIncludedBehavior(systemListingConfig)
   }
 
   describe("getIdByUuid") {
@@ -244,10 +259,9 @@ class MetadataSchemaApiQueriesTest
       ExportBehaviorConfig(
         entityName = "metadata schema",
         getFirstIdFn = () => aStableSchema.id,
-        exportFn = MetadataSchemaApi.exportSchema,
-        exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity,
-        expectedEntityClass = "com.tle.beans.entity.Schema",
-        unauthExportFn = cfg => MetadataSchemaApi.exportSchema(1)(cfg)
+        exportFn = MetadataSchemaApi.exportSchema(_)(_),
+        exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity(_)(_),
+        expectedEntityClass = "com.tle.beans.entity.Schema"
       )
     )
   }
