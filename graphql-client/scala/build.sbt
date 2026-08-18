@@ -1,7 +1,9 @@
 name := "graphql-client"
 
-ThisBuild / scalaVersion     := "2.13.18"
-ThisBuild / version          := "0.13.0-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.18"
+// No version is declared: this library is consumed from source by the main openEQUELLA build and is
+// not published, so a version here would be a number nobody has a reason to keep accurate. See the
+// README for what would have to change for that to be worth revisiting.
 ThisBuild / organization     := "io.github.openequella"
 ThisBuild / organizationName := "openEQUELLA GraphQL Client"
 
