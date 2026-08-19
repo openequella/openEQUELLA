@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.tle.admin.Driver;
 import com.tle.admin.controls.EntityShuffler;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.common.NameValue;
 import com.tle.common.Pair;
 import com.tle.common.applet.gui.AppletGuiUtils;
@@ -31,7 +32,6 @@ import com.tle.common.wizard.controls.resource.ResourceSettings;
 import com.tle.common.wizard.controls.resource.ResourceSettings.AllowedSelection;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.core.remoting.RemoteAbstractEntityService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -53,8 +53,8 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
   public ResourceSettingsPanel() {
     super();
 
-    JLabel allowSelectionLabel = new JLabel(getString("allowSelection.title"));
-    JLabel relationTypeLabel = new JLabel(getString("relationType.title"));
+    JLabel allowSelectionLabel = new JLabel(strings.text("allowSelection.title"));
+    JLabel relationTypeLabel = new JLabel(strings.text("relationType.title"));
 
     allowSelection = new JComboBox<>();
     allowSelection.addItem(new ASItem("anything", AllowedSelection.ANYTHING));
@@ -63,7 +63,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
     allowSelection.addItem(new ASItem("attachments", AllowedSelection.ATTACHMENTS));
     allowSelection.addItem(new ASItem("packages", AllowedSelection.PACKAGES));
 
-    skipCheckoutPage = new JCheckBox(getString("resourcesettings.skipcheckout"));
+    skipCheckoutPage = new JCheckBox(strings.text("resourcesettings.skipcheckout"));
 
     relationType = new JComboBox<>();
     AppletGuiUtils.addItemsToJCombo(relationType, getRelationTypes());
@@ -77,23 +77,23 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
 
     restrictions.add(
         new RestrictEntities(
-            getKey("restrict.collections"),
-            RemoteItemDefinitionService.class,
+            strings.key("restrict.collections"),
+            AdminCollectionDefinitionService.class,
             ResourceSettings.KEY_RESTRICT_COLLECTIONS));
     restrictions.add(
         new RestrictEntities(
-            getKey("restrict.powersearches"),
+            strings.key("restrict.powersearches"),
             RemotePowerSearchService.class,
             ResourceSettings.KEY_RESTRICT_POWERSEARCHES));
     restrictions.add(
         new RestrictEntities(
-            getKey("restrict.dynacollection"),
+            strings.key("restrict.dynacollection"),
             RemoteDynaCollectionService.class,
             ResourceSettings.KEY_RESTRICT_DYNACOLLECTION));
     restrictions.add(
         new RestrictEntities(
-            getKey("restrict.contribution"),
-            RemoteItemDefinitionService.class,
+            strings.key("restrict.contribution"),
+            AdminCollectionDefinitionService.class,
             ResourceSettings.KEY_RESTRICT_CONTRIBUTION));
 
     add(skipCheckoutPage, "span 2, gapbottom 8");
@@ -123,7 +123,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("rescontrol.settings.title");
+    return strings.key("rescontrol.settings.title");
   }
 
   @Override
@@ -158,7 +158,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
   private List<RelationType> getRelationTypes() {
     List<RelationType> results = new ArrayList<RelationType>();
 
-    results.add(new RelationType(getKey("relationType.general"), null));
+    results.add(new RelationType(strings.key("relationType.general"), null));
 
     for (Extension ext :
         Driver.instance()
@@ -174,7 +174,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
     private static final long serialVersionUID = 1L;
 
     public ASItem(String key, AllowedSelection as) {
-      super(key == null ? null : CurrentLocale.get(getKey("allowSelection.") + key), as);
+      super(key == null ? null : CurrentLocale.get(strings.key("allowSelection.") + key), as);
     }
 
     @Override

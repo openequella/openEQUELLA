@@ -86,7 +86,9 @@ export const CheckboxList = ({
                   edge="start"
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ "aria-labelledby": labelId(value) }}
+                  slotProps={{
+                    input: { "aria-labelledby": labelId(value) },
+                  }}
                   checked={isChecked(value)}
                 />
               </ListItemIcon>

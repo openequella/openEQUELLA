@@ -17,7 +17,6 @@
  */
 import Axios, { AxiosProgressEvent, CancelTokenSource } from "axios";
 import { sprintf } from "sprintf-js";
-import { v4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 
 const { CancelToken } = Axios;
@@ -154,10 +153,7 @@ interface DeleteUpload extends BasicUploadCommand {
  * String literal type for the response text
  */
 type UploadResponseType =
-  | "updateentry"
-  | "removeentries"
-  | "uploadfailed"
-  | "newuploadresponse";
+  "updateentry" | "removeentries" | "uploadfailed" | "newuploadresponse";
 
 interface BasicUploadResponse {
   response: UploadResponseType;
@@ -464,7 +460,7 @@ export const updateCtrlErrorText = (ctrlId: string, text: string) => {
 };
 
 export const generateLocalFile = (file: File): UploadingFile => ({
-  localId: v4(),
+  localId: crypto.randomUUID(),
   fileEntry: file,
   status: "uploading",
   uploadPercentage: 0,

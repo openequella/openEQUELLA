@@ -22,12 +22,12 @@ import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.ExpressionBuilderFinder;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -50,7 +50,7 @@ public class DRMRequireAcceptanceFromTab extends JPanel {
 
     finder =
         new ExpressionBuilderFinder(
-            Driver.instance().getClientService().getService(RemoteUserService.class));
+            Driver.instance().getClientService().getService(AdminUserDirectoryService.class));
 
     final int[] rows = {
       title.getPreferredSize().height, TableLayout.DOUBLE_FILL, TableLayout.FILL,

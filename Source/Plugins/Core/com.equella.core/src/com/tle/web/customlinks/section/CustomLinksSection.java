@@ -37,12 +37,14 @@ import com.tle.core.customlinks.service.CustomLinkEditingBean;
 import com.tle.core.customlinks.service.CustomLinkEditingSession;
 import com.tle.core.customlinks.service.CustomLinkService;
 import com.tle.core.filesystem.EntityFile;
+import com.tle.core.imagemagick.ImageDimensions;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.web.customlinks.CustomLinkContentHandler;
 import com.tle.web.customlinks.CustomLinkListComponent;
 import com.tle.web.customlinks.menu.CustomLinksMenuContributor;
@@ -310,7 +312,9 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
     if (Check.isEmpty(expression)) {
       model.setExpressionPretty("");
     } else {
-      model.setExpressionPretty(new ExpressionFormatter(userService).convertToInfix(expression));
+      UserServiceEntityResolverAdapter entityResolver =
+          new UserServiceEntityResolverAdapter(userService);
+      model.setExpressionPretty(new ExpressionFormatter(entityResolver).convertToInfix(expression));
     }
     selector.setExpression(context, expression);
 
@@ -490,7 +494,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
       if (dimensions.getHeight() > 20 || dimensions.getWidth() > 20) {
         File temp = fileSystemService.getExternalFile(stagingFile, tempFilename);
         File newFile = fileSystemService.getExternalFile(stagingFile, filename);
-        imageMagickService.sample(temp, newFile, String.valueOf(20), String.valueOf(20));
+        imageMagickService.sample(temp, newFile, ImageDimensions.pixels(20, 20));
       } else {
         fileSystemService.copy(stagingFile, tempFilename, filename);
       }
@@ -572,7 +576,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
       if (dimensions.getHeight() > 20 || dimensions.getWidth() > 20) {
         File temp = fileSystemService.getExternalFile(stagingFile, tempFilename);
         File newFile = fileSystemService.getExternalFile(stagingFile, filename);
-        imageMagickService.sample(temp, newFile, String.valueOf(20), String.valueOf(20));
+        imageMagickService.sample(temp, newFile, ImageDimensions.pixels(20, 20));
       } else {
         fileSystemService.copy(stagingFile, tempFilename, filename);
       }

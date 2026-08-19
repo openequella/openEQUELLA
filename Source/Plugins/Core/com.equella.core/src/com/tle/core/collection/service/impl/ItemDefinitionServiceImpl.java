@@ -20,7 +20,6 @@ package com.tle.core.collection.service.impl;
 
 import static com.tle.beans.entity.LanguageBundle.initBundle;
 
-import com.google.common.io.CharStreams;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -32,7 +31,6 @@ import com.tle.common.Format;
 import com.tle.common.Pair;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
-import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.ItemStatusTarget;
@@ -48,20 +46,11 @@ import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.SchemaReferences;
 import com.tle.core.schema.event.listener.SchemaReferencesListener;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.ValidationHelper;
-import com.tle.core.util.archive.ArchiveType;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,13 +67,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Bind(ItemDefinitionService.class)
 @Singleton
-@SecureEntity(RemoteItemDefinitionService.ENTITY_TYPE)
+@SecureEntity(ItemDefinitionService.ENTITY_TYPE)
 @SuppressWarnings("nls")
 public class ItemDefinitionServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, ItemDefinition, ItemDefinitionService>
     implements ItemDefinitionService, SchemaReferences, SchemaReferencesListener {
   private static final String[] BLANKS = {"name"}; // $NON-NLS-1$
-  private static final String CONTROL_XML = "_control.xml"; // $NON-NLS-1$
 
   private final ItemDefinitionDao itemDefinitionDao;
 
@@ -192,16 +180,6 @@ public class ItemDefinitionServiceImpl
 
   /*
    * (non-Javadoc)
-   * @see com.tle.core.services.entity.ItemDefinitionService#
-   * listUsableItemDefinitionsForSchema(java.lang.String)
-   */
-  @Override
-  public List<BaseEntityLabel> listUsableItemDefinitionsForSchema(long schemaID) {
-    return listAllForSchema(schemaID);
-  }
-
-  /*
-   * (non-Javadoc)
    * @see
    * com.tle.core.services.ItemDefinitionService#enumerateForWorkflow(com.
    * dytech.edge.user.UserState, long)
@@ -286,7 +264,7 @@ public class ItemDefinitionServiceImpl
   protected void beforeAdd(EntityPack<ItemDefinition> pack, boolean lockAfterwards) {
     ItemDefinition collection = pack.getEntity();
     if (fileSystemService.isAdvancedFilestore()) {
-      collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
+      collection.setAttribute(ItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
     }
     for (CollectionSaveExtension ext : saveExtensions.getBeanList()) {
       ext.collectionSaved(null, collection);
@@ -349,38 +327,6 @@ public class ItemDefinitionServiceImpl
   @Override
   protected void processClone(EntityPack<ItemDefinition> pack) {
     pack.getEntity().getSlow().setId(0);
-  }
-
-  @Override
-  public byte[] exportControl(String controlXml) {
-    StagingFile file = stagingService.createStagingArea();
-    try {
-      fileSystemService.write(file, CONTROL_XML, new StringReader(controlXml), false);
-
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      fileSystemService.zipFile(file, out, ArchiveType.ZIP);
-      return out.toByteArray();
-    } catch (IOException io) {
-      throw new RuntimeException(io);
-    } finally {
-      stagingService.removeStagingArea(file, true);
-    }
-  }
-
-  @Override
-  public String importControl(byte[] zipFileData) throws IOException {
-    StagingFile staging = stagingService.createStagingArea();
-    try {
-      fileSystemService.unzipFile(staging, new ByteArrayInputStream(zipFileData), ArchiveType.ZIP);
-      Reader reader = new InputStreamReader(fileSystemService.read(staging, CONTROL_XML));
-      StringWriter writer = new StringWriter();
-      CharStreams.copy(reader, writer);
-      return writer.toString();
-    } catch (IOException io) {
-      throw new RuntimeException(io);
-    } finally {
-      stagingService.removeStagingArea(staging, true);
-    }
   }
 
   @Transactional(propagation = Propagation.MANDATORY)

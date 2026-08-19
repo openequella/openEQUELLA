@@ -28,6 +28,8 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_INSTITUTION;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.tle.admin.service.AdminBaseEntityService;
+import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
@@ -35,16 +37,18 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService.TargetId;
-import com.tle.core.remoting.RemoteBaseEntityService;
 import com.tle.core.remoting.RemoteItemService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.lang.Nullable;
+import scala.jdk.javaapi.OptionConverters;
 
 @SuppressWarnings("nls")
 public class TargetToNameMapping {
   private final ClientService services;
   private final RemotePrivilegeTreeService privilegeTreeService;
+  private final AdminBaseEntityService adminBaseEntityService;
 
   /** Mapping of priorities to names for entries targeting *. */
   @Deprecated private final Map<Integer, String> everythingMapping;
@@ -55,6 +59,7 @@ public class TargetToNameMapping {
   public TargetToNameMapping(ClientService services) {
     this.services = services;
     this.privilegeTreeService = services.getService(RemotePrivilegeTreeService.class);
+    this.adminBaseEntityService = services.getService(AdminBaseEntityService.class);
 
     // TODO: Delete the following rubbish
     everythingMapping = new HashMap<Integer, String>();
@@ -103,58 +108,79 @@ public class TargetToNameMapping {
       String target = entry.getTarget();
 
       if (!mappingCache.containsKey(targetId)) {
-        String name = null;
-
-        if (target.equals(SecurityConstants.TARGET_EVERYTHING)) {
-          name = everythingMapping.get(Math.abs(entry.getPriority()));
-        } else if (target.startsWith(SecurityConstants.TARGET_BASEENTITY)) {
-          long id = Long.parseLong(target.substring(2));
-          name =
-              CurrentLocale.get(
-                  services.getService(RemoteBaseEntityService.class).getNameForId(id));
-        } else if (target.startsWith(SecurityConstants.TARGET_ITEM)) {
-          long id = Long.parseLong(target.substring(2));
-          name = services.getService(RemoteItemService.class).getNameForId(id);
-        } else if (target.startsWith(SecurityConstants.TARGET_ITEM_STATUS)) {
-          String id = target.substring(2);
-          int index = id.indexOf(':');
-          if (index > 0) {
-            name =
-                CurrentLocale.get(
-                    "com.tle.admin.security.tree.targettonamemapping.itemsfor",
-                    id.substring(index + 1),
-                    CurrentLocale.get(
-                        services
-                            .getService(RemoteBaseEntityService.class)
-                            .getNameForId(Long.parseLong(id.substring(0, index)))));
-          } else {
-            name = CurrentLocale.get("com.tle.admin.security.tree.targettonamemapping.items", id);
-          }
-        } else if (target.startsWith(SecurityConstants.TARGET_ITEM_METADATA)) {
-          String id = target.substring(2);
-          int index = id.indexOf(':');
-          name =
-              CurrentLocale.get(
-                  "com.tle.admin.security.tree.targettonamemapping.metarule",
-                  CurrentLocale.get(
-                      services
-                          .getService(RemoteBaseEntityService.class)
-                          .getNameForId(Long.parseLong(id.substring(0, index)))));
-        } else if (target.startsWith(SecurityConstants.TARGET_DYNAMIC_ITEM_METADATA)) {
-          String id = target.substring(2);
-          int index = id.lastIndexOf(':') + 1;
-          name =
-              CurrentLocale.get(
-                  "com.tle.admin.security.tree.targettonamemapping.dynametarule",
-                  CurrentLocale.get(
-                      services
-                          .getService(RemoteBaseEntityService.class)
-                          .getNameForId(Long.parseLong(id.substring(index)))));
-        }
-
+        String name = resolveTargetName(target, entry);
         mappingCache.put(targetId, name);
       }
     }
+  }
+
+  private String resolveTargetName(String target, ACLEntryMapping entry) {
+    if (target.equals(SecurityConstants.TARGET_EVERYTHING)) {
+      return everythingMapping.get(Math.abs(entry.getPriority()));
+    } else if (target.startsWith(SecurityConstants.TARGET_BASEENTITY)) {
+      long id = parseTargetId(target);
+      return getNameById(id);
+    } else if (target.startsWith(SecurityConstants.TARGET_ITEM)) {
+      long id = parseTargetId(target);
+      return services.getService(RemoteItemService.class).getNameForId(id);
+    } else if (target.startsWith(SecurityConstants.TARGET_ITEM_STATUS)) {
+      return resolveItemStatusName(target);
+    } else if (target.startsWith(SecurityConstants.TARGET_ITEM_METADATA)) {
+      return resolveItemMetadataName(target);
+    } else if (target.startsWith(SecurityConstants.TARGET_DYNAMIC_ITEM_METADATA)) {
+      return resolveDynamicItemMetadataName(target);
+    }
+    return null;
+  }
+
+  private String getTargetIdString(String target) {
+    return target.substring(2);
+  }
+
+  private long parseTargetId(String target) {
+    return Long.parseLong(getTargetIdString(target));
+  }
+
+  private String resolveItemStatusName(String target) {
+    String id = getTargetIdString(target);
+    int index = id.indexOf(':');
+    Long entityID = Long.parseLong(id.substring(0, index));
+
+    if (index > 0) {
+      return CurrentLocale.get(
+          "com.tle.admin.security.tree.targettonamemapping.itemsfor",
+          id.substring(index + 1),
+          getNameById(entityID));
+    } else {
+      return CurrentLocale.get("com.tle.admin.security.tree.targettonamemapping.items", id);
+    }
+  }
+
+  private String resolveItemMetadataName(String target) {
+    String id = getTargetIdString(target);
+    int index = id.indexOf(':');
+    Long entityID = Long.parseLong(id.substring(0, index));
+
+    return CurrentLocale.get(
+        "com.tle.admin.security.tree.targettonamemapping.metarule", getNameById(entityID));
+  }
+
+  private String resolveDynamicItemMetadataName(String target) {
+    String id = getTargetIdString(target);
+    int index = id.lastIndexOf(':') + 1;
+    Long entityID = Long.parseLong(id.substring(index));
+
+    return CurrentLocale.get(
+        "com.tle.admin.security.tree.targettonamemapping.dynametarule", getNameById(entityID));
+  }
+
+  private String getNameById(Long id) {
+    return CurrentLocale.get(getBundleOrNull(id));
+  }
+
+  @Nullable
+  private LanguageBundle getBundleOrNull(long id) {
+    return OptionConverters.toJava(adminBaseEntityService.getNameForId(id)).orElse(null);
   }
 
   public String getName(ACLEntryMapping entry) {

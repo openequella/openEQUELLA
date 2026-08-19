@@ -2,7 +2,7 @@ package io.github.openequella.rest
 
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.{GetMethod, PutMethod}
-import org.junit.Assert.assertEquals
+import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
 class OidcConfigurationApiTest extends AbstractRestApiTest {

@@ -37,7 +37,6 @@ import com.tle.core.filesystem.EntityFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.schema.SchemaReferences;
 import com.tle.core.schema.dao.SchemaDao;
 import com.tle.core.schema.event.SchemaDeletionEvent;
@@ -58,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Bind(SchemaService.class)
 @Singleton
-@SecureEntity(RemoteSchemaService.ENTITY_TYPE)
+@SecureEntity(SchemaService.ENTITY_TYPE)
 public class SchemaServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, Schema, SchemaService>
     implements SchemaService {

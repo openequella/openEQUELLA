@@ -21,13 +21,16 @@ package com.tle.admin.harvester.tool;
 import com.tle.admin.baseentity.AccessControlTab;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.EntityPack;
 import com.tle.common.harvester.HarvesterProfile;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HarvesterProfileEditor extends BaseEntityEditor<HarvesterProfile> {
+  private static final StringLookup havesterStrings = Lookup.withPrefix("harvester");
 
   private final HarvesterProfileTool tool2;
   private HarvesterDetailsTab harvestDetailsTab;
@@ -59,17 +62,17 @@ public class HarvesterProfileEditor extends BaseEntityEditor<HarvesterProfile> {
 
   @Override
   protected String getEntityName() {
-    return getString("harvester.entityname"); // $NON-NLS-1$
+    return havesterStrings.text("entityname");
   }
 
   @Override
   protected String getWindowTitle() {
-    return getString("harvester.windowtitle"); // $NON-NLS-1$
+    return havesterStrings.text("windowtitle");
   }
 
   @Override
   public String getDocumentName() {
-    return getString("harvester.name"); // $NON-NLS-1$
+    return havesterStrings.text("name");
   }
 
   @Override

@@ -18,7 +18,7 @@
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Badge, Grid, Paper } from "@mui/material";
+import { Badge, Grid, Paper, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
@@ -176,8 +176,8 @@ export const ShuffleBox = ({
           />
         </Paper>
       </Grid>
-      <Grid size={1}>
-        <Grid container direction="column" alignItems="center">
+      <Grid size="auto">
+        <Stack>
           {buttons.map(([toolTip, handler, icon], idx) => (
             <TooltipIconButton
               key={`${toolTip} ${idx}`}
@@ -187,7 +187,7 @@ export const ShuffleBox = ({
               {icon}
             </TooltipIconButton>
           ))}
-        </Grid>
+        </Stack>
       </Grid>
       <Grid size="grow">
         <Paper

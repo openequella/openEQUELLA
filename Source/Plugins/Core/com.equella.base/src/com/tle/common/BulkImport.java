@@ -38,7 +38,11 @@ public abstract class BulkImport<T> {
 
   public List<T> bulkImport(byte[] file, boolean override) throws Exception {
     CsvReader reader = new CsvReader(new ByteArrayInputStream(file), Charset.forName("UTF-8"));
-    return bulkImport(reader, override);
+    try {
+      return bulkImport(reader, override);
+    } finally {
+      reader.close();
+    }
   }
 
   public List<T> bulkImport(CsvReader reader, boolean override) {

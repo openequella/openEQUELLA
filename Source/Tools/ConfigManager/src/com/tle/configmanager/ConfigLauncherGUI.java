@@ -51,7 +51,10 @@ public class ConfigLauncherGUI extends JFrame implements ActionListener {
 
   private JLabel lblConfig;
   private JComboBox<ConfigProfile> cmbConfigs;
-  private JButton btnNew, btnEdit, btnApply, btnDelete;
+  private JButton btnNew;
+  private JButton btnEdit;
+  private JButton btnApply;
+  private JButton btnDelete;
   private JSeparator sep;
   private List<ConfigProfile> configs;
 

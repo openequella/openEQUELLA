@@ -47,14 +47,13 @@ const { usableBy, usableByDesc } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
 
-export interface UsableByControlProps
-  extends Pick<
-    ACLExpressionBuilderDialogProps,
-    | "searchUserProvider"
-    | "searchGroupProvider"
-    | "searchRoleProvider"
-    | "aclEntityResolversProvider"
-  > {
+export interface UsableByControlProps extends Pick<
+  ACLExpressionBuilderDialogProps,
+  | "searchUserProvider"
+  | "searchGroupProvider"
+  | "searchRoleProvider"
+  | "aclEntityResolversProvider"
+> {
   /**
    * Initial value of AClExpression.
    */
@@ -66,7 +65,7 @@ export interface UsableByControlProps
 }
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
-  "&": { marginRight: theme.spacing(5) },
+  "&": { marginRight: theme.spacing(9) },
 }));
 
 const editIconTitle = `${editLabel} ${usableBy}`;
@@ -110,7 +109,9 @@ const UsableByControl = ({
 
       <ListItem>
         <StyledListItemText
-          secondaryTypographyProps={{ component: "div" }}
+          slotProps={{
+            secondary: { component: "div" },
+          }}
           secondary={<CodeBlock value={readableACLExpressionText} />}
         />
         <ListItemSecondaryAction>

@@ -17,20 +17,22 @@
  */
 import {
   Autocomplete,
+  AutocompleteGetItemProps,
+  Box,
   Chip,
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   Radio,
   RadioGroup,
+  Stack,
   TextField,
 } from "@mui/material";
 import * as React from "react";
 import { useContext, useState } from "react";
-import ConfirmDialog from "./ConfirmDialog";
 import { AppContext } from "../mainui/App";
 import { languageStrings } from "../util/langstrings";
+import ConfirmDialog from "./ConfirmDialog";
 
 const { selectVersion, toThisVersion, versionOptions } =
   languageStrings.selectItemVersionDialog;
@@ -100,30 +102,31 @@ const SelectItemVersionDialog = ({
       onCancel={closeDialog}
       confirmButtonText={languageStrings.common.action.ok}
     >
-      <Grid container direction="column" spacing={2}>
+      <Stack spacing={2}>
         {tagDescription && (
-          <Grid>
-            <Autocomplete
-              multiple
-              freeSolo
-              renderTags={(value: string[], getTagProps) =>
-                value.map((option: string, index: number) => (
-                  <Chip label={option} {...getTagProps({ index })} />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  variant="standard"
-                  {...params}
-                  label={tagDescription}
-                />
-              )}
-              options={[]}
-              onChange={(_, value: string[]) => setTags(value)}
-            />
-          </Grid>
+          <Autocomplete
+            multiple
+            freeSolo
+            renderValue={(
+              value: string[],
+              getItemProps: AutocompleteGetItemProps<true>,
+            ) =>
+              value.map((option: string, index: number) => (
+                <Chip label={option} {...getItemProps({ index })} />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                variant="standard"
+                {...params}
+                label={tagDescription}
+              />
+            )}
+            options={[]}
+            onChange={(_, value: string[]) => setTags(value)}
+          />
         )}
-        <Grid>
+        <Box>
           {isLatestVersion ? (
             <FormControl>
               <FormLabel>{selectVersion}</FormLabel>
@@ -149,8 +152,8 @@ const SelectItemVersionDialog = ({
           ) : (
             toThisVersion
           )}
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
     </ConfirmDialog>
   );
 };

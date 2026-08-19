@@ -1,14 +1,9 @@
 package equellatests
 
+import com.codeborne.selenide.WebDriverRunner
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, StandardDriverFactory, TestConfig}
 import com.tle.webtests.pageobject.UndeterminedPage
-import com.tle.webtests.pageobject.institution.{
-  ImportTab,
-  InstitutionListTab,
-  InstitutionTabInterface,
-  ServerAdminLogonPage
-}
-import equellatests.GlobalConfig.testConfig
+import com.tle.webtests.pageobject.institution._
 import org.openqa.selenium.WebDriver
 
 import scala.util.{Failure, Success, Try}
@@ -19,12 +14,16 @@ object TestChecker {
     val testConfig = GlobalConfig.testConfig
     withBrowserDriver(name, testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getAdminUrl)
-      val choice = new UndeterminedPage[InstitutionTabInterface](
+      // The possible pages after login.
+      val pagesAfterLogin = new UndeterminedPage[InstitutionTabInterface](
         context,
         new InstitutionListTab(context),
-        new ImportTab(context)
+        new ImportTab(context),
+        // If the database migration is still running, after login the admin will be taken to the databases page.
+        new DatabasesPage(context)
       )
-      new ServerAdminLogonPage(context).load.logon(testConfig.getAdminPassword, choice)
+
+      new ServerAdminLogonPage(context).load.logon(testConfig.getAdminPassword, pagesAfterLogin)
       val r = f(context)
       driver.quit()
       r
@@ -34,6 +33,7 @@ object TestChecker {
   def withBrowserDriver[A](name: String, testConfig: TestConfig)(f: WebDriver => A): A = {
     val factory = new StandardDriverFactory(testConfig)
     val driver  = factory.getDriver(getClass)
+    WebDriverRunner.setWebDriver(driver)
     Try(f(driver))
       .transform(
         Success.apply,

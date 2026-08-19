@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ViewsConverter extends AbstractJsonConverter<Object> {
   private static final String VIEWS_FOLDER = "item_views";
+  private static final String EXPORT_FILENAME_PATTERN = "%s_v%d.json";
 
   @Inject private ViewCountService viewCountService;
 
@@ -80,7 +81,7 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
       }
 
       final BucketFile bucketFolder = new BucketFile(viewsExportFolder, uuid);
-      json.write(bucketFolder, uuid + ".json", ive);
+      json.write(bucketFolder, buildExportFilename(uuid, version), ive);
     }
   }
 
@@ -109,11 +110,10 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
 
   @Override
   public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
-    if (!params.hasFlag(ConverterParams.NO_ITEMS)) {
-      if (!(type == ConvertType.DELETE)) {
-        tasks.add(new NameValue("Item Views", "item_views"));
-      }
+    if (params.hasFlag(ConverterParams.NO_ITEMS) || type == ConvertType.DELETE) {
+      return;
     }
+    tasks.add(new NameValue("Item Views", VIEWS_FOLDER));
   }
 
   public static class ItemViewsExport {
@@ -128,5 +128,9 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
     public String attachmentUuid;
     public int count;
     public long lastViewed;
+  }
+
+  private String buildExportFilename(String itemUuid, int itemVersion) {
+    return String.format(EXPORT_FILENAME_PATTERN, itemUuid, itemVersion);
   }
 }

@@ -195,13 +195,13 @@ public class DummyTaxonomyDataSourceFactory implements TaxonomyDataSourceFactory
           if ((restriction == SelectionRestriction.LEAF_ONLY && term.isLeaf())
               || restriction == SelectionRestriction.UNRESTRICTED
               || (restriction == SelectionRestriction.TOP_LEVEL_ONLY /*
-																				 * &&
-																				 * term
-																				 * top
-																				 * level
-																				 * ?
-																				 * ?
-																				 */)) {
+                                                                                 * &&
+                                                                                 * term
+                                                                                 * top
+                                                                                 * level
+                                                                                 * ?
+                                                                                 * ?
+                                                                                 */)) {
             resultCount++;
             if (resultCount <= limit) {
               results.add(termNodeNames.get(termName));

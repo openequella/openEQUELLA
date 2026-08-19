@@ -18,8 +18,11 @@
 
 package com.tle.common.recipientselector;
 
+import com.tle.admin.Driver;
+import com.tle.admin.service.AdminUserDirectoryConfigService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -30,13 +33,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 public class TabbedFinder extends JTabbedPane implements UserGroupRoleFinder, FinderListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private EventListenerList eventListenerList;
   private int currentTab;
 
-  @SuppressWarnings("nls")
-  public TabbedFinder(RemoteUserService userService, RecipientFilter... filters) {
+  public TabbedFinder(AdminUserDirectoryService userDirectoryService, RecipientFilter... filters) {
     List<RecipientFilter> fs = Arrays.asList(filters);
 
     if (fs.contains(RecipientFilter.ROLES)
@@ -44,13 +46,13 @@ public class TabbedFinder extends JTabbedPane implements UserGroupRoleFinder, Fi
         || fs.contains(RecipientFilter.USERS)) {
       addFinder(
           CurrentLocale.get("com.tle.admin.recipients.tabbedfinder.search"),
-          new SearchFinder(userService, filters));
+          new SearchFinder(userDirectoryService, filters));
     }
 
     if (fs.contains(RecipientFilter.GROUPS) || fs.contains(RecipientFilter.USERS)) {
       addFinder(
           CurrentLocale.get("com.tle.admin.recipients.tabbedfinder.browse"),
-          new BrowseFinder(userService, filters));
+          new BrowseFinder(userDirectoryService, filters));
     }
 
     if (fs.contains(RecipientFilter.IP_ADDRESS) || fs.contains(RecipientFilter.HOST_REFERRER)) {
@@ -62,7 +64,11 @@ public class TabbedFinder extends JTabbedPane implements UserGroupRoleFinder, Fi
     if (fs.contains(RecipientFilter.EXPRESSION)) {
       addFinder(
           CurrentLocale.get("com.tle.admin.recipients.tabbedfinder.other"),
-          new SpecialUsersFinder(userService, !fs.contains(RecipientFilter.NO_OWNER)));
+          new SpecialUsersFinder(
+              Driver.instance()
+                  .getClientService()
+                  .getService(AdminUserDirectoryConfigService.class),
+              !fs.contains(RecipientFilter.NO_OWNER)));
     }
 
     addChangeListener(

@@ -27,7 +27,6 @@ import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.i18n.beans.LanguageStringBean;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -216,14 +215,7 @@ public final class LangUtils {
 
   public static LanguageBundle createTempLangugageBundle(String key, Object... values) {
     String text = key == null ? (String) values[0] : CurrentLocale.get(key, values);
-    LanguageString langstring = createLanguageString(null, CurrentLocale.getLocale(), text);
-
-    LanguageBundle bundle = new LanguageBundle();
-    langstring.setBundle(bundle);
-    bundle.ensureStrings().put(langstring.getLocale(), langstring);
-    // bundle.setStrings(Collections.singletonMap(langstring.getLocale(),
-    // langstring));
-    return bundle;
+    return bundleFor(createLanguageString(null, CurrentLocale.getLocale(), text));
   }
 
   public static LanguageBundle createTextTempLangugageBundle(Map<String, String> localeMap) {
@@ -246,13 +238,20 @@ public final class LangUtils {
   }
 
   public static LanguageBundle createTextTempLangugageBundle(String text, Locale locale) {
-    LanguageString langstring = createLanguageString(null, locale, text);
+    return bundleFor(createLanguageString(null, locale, text));
+  }
 
-    // We want to set the bundle on the langstring separately so we can use
-    // SingletonMap.
+  /**
+   * Wraps a single {@code LanguageString} in a new bundle, linking the two together.
+   *
+   * <p>The strings map must be mutable: these bundles end up in XStream-serialised blobs (wizard
+   * pages in particular), and an immutable {@code Collections.singletonMap} serialises to a legacy
+   * format only readable by the XStream configuration oEQ uses for persisted blobs.
+   */
+  private static LanguageBundle bundleFor(LanguageString langstring) {
     LanguageBundle bundle = new LanguageBundle();
     langstring.setBundle(bundle);
-    bundle.setStrings(Collections.singletonMap(langstring.getLocale(), langstring));
+    bundle.ensureStrings().put(langstring.getLocale(), langstring);
     return bundle;
   }
 

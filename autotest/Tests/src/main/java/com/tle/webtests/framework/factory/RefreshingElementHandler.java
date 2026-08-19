@@ -66,11 +66,12 @@ public class RefreshingElementHandler implements InvocationHandler {
                     }
                     return new InvokeResponse(returnVal);
                   } catch (InvocationTargetException ite) {
-                    if (ite.getCause() instanceof StaleElementReferenceException) {
+                    Throwable cause = ite.getCause();
+                    if (isStaleElement(cause)) {
                       locator.invalidateCache();
                       return null;
                     } else {
-                      throw new InvokeException(ite.getCause());
+                      throw new InvokeException(cause);
                     }
                   } catch (Throwable t) {
                     throw new InvokeException(t);
@@ -81,6 +82,14 @@ public class RefreshingElementHandler implements InvocationHandler {
     } catch (InvokeException e) {
       throw e.getCause();
     }
+  }
+
+  private static boolean isStaleElement(Throwable cause) {
+    // Chrome's "-32000 Node with given id does not belong to the document" variant is normalised to
+    // a StaleElementReferenceException at the driver boundary
+    // (StaleNodeTranslatingCommandExecutor),
+    // so a plain instance check covers both.
+    return cause instanceof StaleElementReferenceException;
   }
 
   public static class InvokeException extends RuntimeException {

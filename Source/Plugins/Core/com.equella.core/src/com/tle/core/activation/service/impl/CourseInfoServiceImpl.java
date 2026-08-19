@@ -71,21 +71,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseInfoServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, CourseInfo, CourseInfoService>
     implements CourseInfoService {
-  private static final String[] NON_BLANKS = {
-    "name", "uuid", "code"
-  }; //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+  private static final String[] NON_BLANKS = {"name", "uuid", "code"};
 
-  private static final String CODE_COLUMN = "Code"; // $NON-NLS-1$
-  private static final String NAME_COLUMN = "Name"; // $NON-NLS-1$
-  private static final String DESCRIPTION_COLUMN = "Description"; // $NON-NLS-1$
-  private static final String CITATION_COLUMN = "Citation"; // $NON-NLS-1$
-  private static final String START_COLUMN = "Start"; // $NON-NLS-1$
-  private static final String END_COLUMN = "End"; // $NON-NLS-1$
-  private static final String STUDENTS_COLUMN = "Students"; // $NON-NLS-1$
-  private static final String TYPE_COLUMN = "Type"; // $NON-NLS-1$
-  private static final String DEPT_COLUMN = "DepartmentName"; // $NON-NLS-1$
-  private static final String ARCHIVED_COLUMN = "Archived"; // $NON-NLS-1$
-
+  private static final String CODE_COLUMN = "Code";
+  private static final String NAME_COLUMN = "Name";
+  private static final String DESCRIPTION_COLUMN = "Description";
+  private static final String CITATION_COLUMN = "Citation";
+  private static final String START_COLUMN = "Start";
+  private static final String END_COLUMN = "End";
+  private static final String STUDENTS_COLUMN = "Students";
+  private static final String TYPE_COLUMN = "Type";
+  private static final String DEPT_COLUMN = "DepartmentName";
+  private static final String ARCHIVED_COLUMN = "Archived";
   private final CourseInfoDao dao;
 
   @Inject private ConfigurationService configurationService;
@@ -124,9 +121,7 @@ public class CourseInfoServiceImpl
       errors.add(
           new ValidationError(
               "code",
-              CurrentLocale //$NON-NLS-1$
-                  .get(
-                  "com.tle.core.services.entity.course.validation.unique.code"))); //$NON-NLS-1$
+              CurrentLocale.get("com.tle.core.services.entity.course.validation.unique.code")));
     }
   }
 
@@ -167,15 +162,17 @@ public class CourseInfoServiceImpl
   @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   @Transactional(propagation = Propagation.REQUIRED)
   public List<CourseInfo> bulkImport(byte[] file, boolean override) {
-    return bulkImport(
-        new CsvReader(new ByteArrayInputStream(file), Charset.forName("UTF-8")),
-        override); //$NON-NLS-1$
+    CsvReader reader = new CsvReader(new ByteArrayInputStream(file), Charset.forName("UTF-8"));
+    try {
+      return bulkImport(reader, override);
+    } finally {
+      reader.close();
+    }
   }
 
   @Override
   public CourseInfo getByCode(String code) {
-    return dao.findByCriteria(
-        Restrictions.eq("code", code), getInstitutionCriterion()); // $NON-NLS-1$
+    return dao.findByCriteria(Restrictions.eq("code", code), getInstitutionCriterion());
   }
 
   @Override

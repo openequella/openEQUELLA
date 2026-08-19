@@ -43,8 +43,8 @@ object AttachmentsDisplay {
       attachment: Attachment
   ): AttachmentSummary = {
 
-    val vr   = LegacyGuice.attachmentResourceService.getViewableResource(rc, vi, attachment)
-    val uuid = attachment.getUuid
+    val vr    = LegacyGuice.attachmentResourceService.getViewableResource(rc, vi, attachment)
+    val uuid  = attachment.getUuid
     val deets = (vr.getCommonAttachmentDetails.asScala ++
       Option(vr.getExtraAttachmentDetails).getOrElse(Collections.emptyList()).asScala).map { ad =>
       val descHtml = SectionUtils.renderToString(rc, ad.getDescription)
@@ -79,7 +79,7 @@ object AttachmentsDisplay {
 
     val allUuids =
       metadataTargets.flatMap(n => itemXml.iterateAllValues(n).iterator().asScala.toBuffer).toSet
-    val filterAttach = if (metadataTargets.nonEmpty) allUuids else (u: String) => true
+    val filterAttach   = if (metadataTargets.nonEmpty) allUuids else (u: String) => true
     val attachDisplays = vi.getItem.getAttachmentsUnmodifiable
       .iterator()
       .asScala

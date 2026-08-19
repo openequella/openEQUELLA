@@ -40,7 +40,6 @@ import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.auth.Auth;
 import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
-import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.dashboard.DashboardResource;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
@@ -63,7 +62,6 @@ import com.tle.web.api.settings.SearchFilterResource;
 import com.tle.web.api.settings.SearchSettingsResource;
 import com.tle.web.api.settings.SettingsResource;
 import com.tle.web.api.users.UserQueryResource;
-import com.tle.web.api.wizard.WizardApi;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import java.io.IOException;
@@ -118,8 +116,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
       Arrays.asList(
           AclResource.class,
           AdvancedSearchResource.class,
-          Auth.class,
-          CloudProviderApi.class,
           DrmResource.class,
           FacetedSearchClassificationResource.class,
           GdprResource.class,
@@ -132,12 +128,12 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           SearchSettingsResource.class,
           SelectionApi.class,
           SettingsResource.class,
-          UserQueryResource.class,
-          WizardApi.class);
+          UserQueryResource.class);
 
   // API classes which can use Guice normal Dependency Injection.
   private static final List<Class> apiClasses =
       Arrays.asList(
+          Auth.class,
           BrowseHierarchyResource.class,
           DashboardResource.class,
           FavouriteResource.class,

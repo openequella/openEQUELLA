@@ -1,5 +1,11 @@
 package com.tle.webtests.pageobject.institution;
 
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.or;
+import static com.codeborne.selenide.Selectors.byClassName;
+import static com.codeborne.selenide.Selenide.$;
+
+import com.codeborne.selenide.SelenideElement;
 import com.google.common.base.Function;
 import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.EBy;
@@ -10,7 +16,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class DatabaseRow extends AbstractPage<DatabaseRow> {
 
@@ -19,33 +24,32 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
   // private static final String UNINITIALISED = "Uninitialised";
   private static final String STATUS_ONLINE = "Online";
   private static final String STATUS_OFFLINE = "Offline";
+  private static final String TABLE_ID = "isdt_table";
+  private static final Duration MIGRATE_TIMEOUT = Duration.ofMinutes(1);
   private final WebElement rowElement;
-  private final WebElement statusElement;
-  private final WebDriverWait longWaiter;
+  // The row's locator, used to re-find the row (and its cells/buttons) fresh via Selenide so
+  // reads survive the Databases table's auto-refresh during migration.
+  private final By rowBy;
 
-  public DatabaseRow(PageContext context, WebElement rowElement) {
+  public DatabaseRow(PageContext context, WebElement rowElement, By rowBy) {
     super(context);
     this.rowElement = rowElement;
-    statusElement = rowElement.findElement(By.className("status"));
-    longWaiter = new WebDriverWait(context.getDriver(), Duration.ofMinutes(1));
+    this.rowBy = rowBy;
   }
 
   public void initialise() {
-    rowElement.findElement(EBy.buttonText("Initialise")).click();
+    // Selenide click waits for the button to be clickable and retries on staleness.
+    $(By.id(TABLE_ID)).$(rowBy).$(EBy.buttonText("Initialise")).click();
     acceptConfirmation();
   }
 
-  private String getStatus() {
-    return statusElement.getText();
+  /** The status cell, re-located fresh via Selenide on each access (no stale cache). */
+  private SelenideElement statusCell() {
+    return $(By.id(TABLE_ID)).$(rowBy).$(byClassName("status"));
   }
 
-  // public boolean isUninitialised()
-  // {
-  // return UNINITIALISED.equals(getStatus());
-  // }
-  //
-  private boolean isMigrating() {
-    return getStatus().startsWith(STATUS_MIGRATING);
+  private String getStatus() {
+    return statusCell().getText();
   }
 
   private boolean isChecking() {
@@ -53,24 +57,17 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
   }
 
   public void waitForCheck() {
-    waiter.until(
-        new Function<WebDriver, Boolean>() {
-          @Override
-          public Boolean apply(WebDriver driver) {
-            return !isChecking();
-          }
-        });
+    waiter.until((Function<WebDriver, Boolean>) driver -> !isChecking());
   }
 
   public void waitForMigrate() {
-    longWaiter.until(
-        new Function<WebDriver, Boolean>() {
-          @Override
-          public Boolean apply(WebDriver driver) {
-            return !isMigrating();
-          }
-        });
-    waitForCheck();
+    // Wait for a settled, terminal state (Online or Offline) rather than merely the absence of
+    // "Migrating"/"Checking": the latter can be satisfied by a transient pre-migration status
+    // (e.g. "Requires migration" before the server has started), causing a premature return.
+    statusCell()
+        .shouldBe(
+            or("migration finished", exactText(STATUS_ONLINE), exactText(STATUS_OFFLINE)),
+            MIGRATE_TIMEOUT);
   }
 
   public void migrate() {

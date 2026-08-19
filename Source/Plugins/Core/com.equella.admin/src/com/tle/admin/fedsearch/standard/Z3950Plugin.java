@@ -26,6 +26,7 @@ import com.dytech.gui.JNumberTextField;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.fedsearch.SearchPlugin;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
 import com.tle.beans.search.Z3950Settings;
@@ -36,6 +37,7 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteZ3950Service;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -163,8 +165,10 @@ public class Z3950Plugin extends SearchPlugin<Z3950Settings> {
     }
   }
 
-  private String s(String keyPart) {
-    return getString("z3950plugin." + keyPart); // $NON-NLS-1$
+  private static final StringLookup strings = Lookup.withPrefix("z3950plugin");
+
+  private String s(String key) {
+    return strings.text(key);
   }
 
   private void populateRecordSchema(JComboBox<NameValue> schemaCombo) {

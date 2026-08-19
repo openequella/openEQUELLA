@@ -33,6 +33,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingBean;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserServiceEntityResolverAdapter;
 import com.tle.web.entities.section.AbstractEntityEditor;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -284,8 +285,11 @@ public class LtiConsumerEditorSection
     }
     allowedSelector.setExpression(context, allowedExpression);
     LtiConsumerEditorModel model = getModel(context);
+
+    UserServiceEntityResolverAdapter entityResolver =
+        new UserServiceEntityResolverAdapter(userService);
     model.setPrettyExpression(
-        new ExpressionFormatter(userService).convertToInfix(allowedExpression));
+        new ExpressionFormatter(entityResolver).convertToInfix(allowedExpression));
     customRoleField.setValue(context, null);
     return view.createResult("editconsumer.ftl", context);
   }

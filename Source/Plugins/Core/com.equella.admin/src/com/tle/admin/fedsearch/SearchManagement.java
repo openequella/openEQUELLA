@@ -22,13 +22,16 @@ import com.tle.admin.baseentity.AccessControlTab;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.fedsearch.tool.SearchTool;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.EntityPack;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchManagement extends BaseEntityEditor<FederatedSearch> {
+  private static final StringLookup smStrings = Lookup.withPrefix("searchmanagement");
   private final SearchTool tool2;
   private SearchTab search;
 
@@ -52,12 +55,12 @@ public class SearchManagement extends BaseEntityEditor<FederatedSearch> {
 
   @Override
   protected String getEntityName() {
-    return getString("searchmanagement.name"); // $NON-NLS-1$
+    return smStrings.text("name");
   }
 
   @Override
   protected String getWindowTitle() {
-    return getString("searchmanagement.title"); // $NON-NLS-1$
+    return smStrings.text("title");
   }
 
   @Override
@@ -70,6 +73,6 @@ public class SearchManagement extends BaseEntityEditor<FederatedSearch> {
 
   @Override
   public String getDocumentName() {
-    return getString("searchmanagement.name"); // $NON-NLS-1$
+    return smStrings.text("name");
   }
 }

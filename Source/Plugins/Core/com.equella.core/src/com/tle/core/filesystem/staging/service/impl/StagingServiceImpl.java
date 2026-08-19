@@ -19,18 +19,23 @@
 package com.tle.core.filesystem.staging.service.impl;
 
 import com.dytech.common.io.FileUtils;
-import com.dytech.common.io.FileUtils.GrepFunctor;
 import com.tle.beans.Staging;
+import com.tle.beans.item.Item;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.AllStagingFile;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.security.SecurityConstants;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.filesystem.staging.dao.StagingDao;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.security.ItemSecurityConstants;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
+import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,10 +51,13 @@ public class StagingServiceImpl implements StagingService {
 
   @Inject private StagingDao stagingDao;
   @Inject private FileSystemService fileSystemService;
+  @Inject private TLEAclManager aclService;
 
   @Override
   @Transactional
   public StagingFile createStagingArea() {
+    LOGGER.debug("Creating staging area");
+
     Staging s = new Staging();
     s.setStagingID(UUID.randomUUID().toString());
     s.setUserSession(CurrentUser.getSessionID());
@@ -58,6 +66,8 @@ public class StagingServiceImpl implements StagingService {
 
     StagingFile file = new StagingFile(s.getStagingID());
     fileSystemService.mkdir(file, "");
+
+    LOGGER.debug("Created new staging area [{}] - {}", s.getStagingID(), file.getAbsolutePath());
     return file;
   }
 
@@ -67,13 +77,14 @@ public class StagingServiceImpl implements StagingService {
     Staging s = stagingDao.findById(staging.getUuid());
     if (s == null) {
       LOGGER.error("Staging area does not exist");
-    } else {
-      LOGGER.debug("Deleting Staging entry in DB [" + s.getStagingID() + "]");
-      stagingDao.delete(s);
+      return;
     }
 
+    LOGGER.debug("Deleting Staging entry in DB [{}]", s.getStagingID());
+    stagingDao.delete(s);
+
     if (removeFiles) {
-      LOGGER.debug("Removing Staging area in the filestore [" + s.getStagingID() + "]");
+      LOGGER.debug("Removing Staging area in the filestore [{}]", s.getStagingID());
       fileSystemService.removeFile(staging);
     }
   }
@@ -97,17 +108,14 @@ public class StagingServiceImpl implements StagingService {
         new AllStagingFile(),
         "",
         "*/*",
-        new GrepFunctor() {
-          @Override
-          public void matched(Path file, String relFilepath) {
-            String uuid = file.getFileName().toString();
-            if (!stagingExists(uuid)) {
-              try {
-                LOGGER.debug("Deleting staging area [" + uuid + "]");
-                FileUtils.delete(file, null, true);
-              } catch (IOException ex) {
-                LOGGER.warn("Could not delete staging area [" + uuid + "]", ex);
-              }
+        (file, relFilepath) -> {
+          String uuid = file.getFileName().toString();
+          if (!stagingExists(uuid)) {
+            try {
+              LOGGER.debug("Deleting staging area [{}]", uuid);
+              FileUtils.delete(file, null, true);
+            } catch (IOException ex) {
+              LOGGER.warn("Could not delete staging area [{}]", uuid, ex);
             }
           }
         });
@@ -139,6 +147,34 @@ public class StagingServiceImpl implements StagingService {
   public void ensureFileExists(StagingFile staging, String filepath) {
     if (!fileSystemService.fileExists(staging, filepath)) {
       throw new NotFoundException("File does not exist in staging area: " + filepath);
+    }
+  }
+
+  @Override
+  public void checkStagingPrivileges() {
+    final List<String> requiredStagingPermissions =
+        Arrays.asList(SecurityConstants.CREATE_ITEM, SecurityConstants.EDIT_ITEM);
+
+    if (aclService.filterNonGrantedPrivileges(requiredStagingPermissions).isEmpty()) {
+      throw new PrivilegeRequiredException(requiredStagingPermissions);
+    }
+  }
+
+  @Override
+  public void checkCopyPrivileges(Item item) {
+    final List<String> PRIVS_COPY_ITEM_FILES =
+        List.of(
+            ItemSecurityConstants.EDIT_ITEM,
+            ItemSecurityConstants.NEWVERSION_ITEM,
+            ItemSecurityConstants.CLONE_ITEM,
+            ItemSecurityConstants.REDRAFT_ITEM);
+
+    if (aclService.filterNonGrantedPrivileges(item, PRIVS_COPY_ITEM_FILES).isEmpty()) {
+      LOGGER.warn(
+          "User {} denied access to copy item {} - insufficient privileges",
+          CurrentUser.getUserID(),
+          item.getId());
+      throw new PrivilegeRequiredException(PRIVS_COPY_ITEM_FILES);
     }
   }
 

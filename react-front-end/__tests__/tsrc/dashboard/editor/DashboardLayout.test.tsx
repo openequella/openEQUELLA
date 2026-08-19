@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import {
   dashboardDetailsWithLayout,
   emptyDashboardDetails,
@@ -29,12 +32,8 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { clickButton, isToggleButtonChecked } from "../../MuiTestHelpers";
 import {
   mockDashboardEditorApis,
-  mockRefreshDashboard,
   renderDashboardLayout,
 } from "../DashboardEditorTestHelper";
-import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 
 const { dashboardLayout: strings } = languageStrings.dashboard.editor;
 
@@ -62,7 +61,7 @@ describe("<DashboardLayout />", () => {
   });
 
   it("does not make any API call if the selected layout is already active", async () => {
-    const { container } = renderDashboardLayout(
+    const { container, mockRefreshDashboard } = renderDashboardLayout(
       singleColLayoutDashboardDetails,
     );
 
@@ -81,7 +80,7 @@ describe("<DashboardLayout />", () => {
   ])(
     "only updates the layout and refreshes the dashboard when user chooses %s layout",
     async (label, layoutValue) => {
-      const { container } = renderDashboardLayout(
+      const { container, mockRefreshDashboard } = renderDashboardLayout(
         singleColLayoutDashboardDetails,
       );
 
@@ -95,7 +94,8 @@ describe("<DashboardLayout />", () => {
 
   it("moves second-column portlets to first column when switching to SingleColumn layout", async () => {
     const mockDashboardDetails = dashboardDetailsWithLayout();
-    const { container } = renderDashboardLayout(mockDashboardDetails);
+    const { container, mockRefreshDashboard } =
+      renderDashboardLayout(mockDashboardDetails);
     const { uuid, isMinimised, isClosed, order } = pipe(
       mockDashboardDetails.portlets,
       A.findFirst(isSecondColumnPortlet),

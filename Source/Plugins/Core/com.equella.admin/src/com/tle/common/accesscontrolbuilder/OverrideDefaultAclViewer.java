@@ -18,12 +18,13 @@
 
 package com.tle.common.accesscontrolbuilder;
 
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.ExpressionTableCellRenderer;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
@@ -32,19 +33,19 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 public class OverrideDefaultAclViewer extends JScrollPane {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   public OverrideDefaultAclViewer(
       RemoteTLEAclManager aclManager,
-      RemoteUserService userService,
+      AdminUserDirectoryService userDirectoryService,
       Object domainObj,
       String privilege) {
-    this(aclManager, userService, domainObj, privilege, null);
+    this(aclManager, userDirectoryService, domainObj, privilege, null);
   }
 
   public OverrideDefaultAclViewer(
       RemoteTLEAclManager aclManager,
-      RemoteUserService userService,
+      AdminUserDirectoryService userDirectoryService,
       Object domainObj,
       String privilege,
       Filter filter) {
@@ -66,7 +67,7 @@ public class OverrideDefaultAclViewer extends JScrollPane {
     table
         .getColumnModel()
         .getColumn(1)
-        .setCellRenderer(new ExpressionTableCellRenderer(userService));
+        .setCellRenderer(new ExpressionTableCellRenderer(userDirectoryService));
 
     setViewportView(table);
   }
@@ -76,7 +77,7 @@ public class OverrideDefaultAclViewer extends JScrollPane {
   }
 
   private static class MyTableModel extends AbstractTableModel {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
     private static final String FIRST =
         CurrentLocale.get("security.editor.advanced.columnname.action"); // $NON-NLS-1$
     private static final String SECOND =

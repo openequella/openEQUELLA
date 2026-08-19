@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498643</id>
+  <uuid>5b36d92e-cfd8-4589-a9ae-2ccd8c45710f</uuid>
+  <value>Medical</value>
+  <valueHash>077262cc53a1fb1b5f651d31b6bf81ba</valueHash>
+  <fullValue>Learning Resource Type\Medical</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

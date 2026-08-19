@@ -263,7 +263,7 @@ public class JsonpFilter implements WebFilter {
 
   public static class ByteArrayServletOutputStream extends ServletOutputStream {
 
-    protected byte buf[];
+    protected byte[] buf;
 
     protected int count;
 
@@ -278,7 +278,7 @@ public class JsonpFilter implements WebFilter {
       buf = new byte[size];
     }
 
-    public synchronized byte toByteArray()[] {
+    public synchronized byte[] toByteArray() {
       return copyOf(buf, count);
     }
 

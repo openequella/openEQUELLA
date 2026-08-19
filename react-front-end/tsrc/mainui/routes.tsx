@@ -15,16 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import { getRelativeUrl } from "../AppConfig";
 import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
 import { FavouritesType } from "../modules/FavouriteModule";
 import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
+import { buildMyResourceUrl } from "../modules/MyResourceModule";
 import {
   isDashboardACLGranted,
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
-  isManageCloudProviderACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
   RequiredPermissionCheck,
@@ -45,9 +48,6 @@ const CreateLti13PlatformPage = React.lazy(
 );
 const EditLti13PlatformPage = React.lazy(
   () => import("../settings/Integrations/lti13/components/EditLti13Platform"),
-);
-const CloudProviderListPage = React.lazy(
-  () => import("../cloudprovider/CloudProviderListPage"),
 );
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const SearchPageSettings = React.lazy(
@@ -114,7 +114,6 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 
 interface Routes {
   BrowseHierarchy: OEQRouteNewUI;
-  CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   CreateLti13Platform: OEQRouteNewUI;
   Dashboard: OEQRouteNewUI;
@@ -127,7 +126,12 @@ interface Routes {
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
-  MyResources: OEQRouteNewUI;
+  MyResources: OEQRouteNewUI & {
+    to: (
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.Common.ItemStatus,
+    ) => string;
+  };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
   OidcSettings: OEQRouteNewUI;
@@ -194,11 +198,6 @@ export const routes: Routes = {
     component: BrowseHierarchyPage,
     permissionChecks: [isHierarchyPageACLGranted],
   },
-  CloudProviders: {
-    path: "/page/cloudprovider",
-    component: CloudProviderListPage,
-    permissionChecks: [isManageCloudProviderACLGranted],
-  },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
     component: ContentIndexSettings,
@@ -263,6 +262,15 @@ export const routes: Routes = {
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
     component: MyResourcesPage,
+    to: (
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.Common.ItemStatus,
+    ) =>
+      pipe(
+        buildMyResourceUrl(myResourcesType, status),
+        (url) => url.href,
+        getRelativeUrl,
+      ),
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,

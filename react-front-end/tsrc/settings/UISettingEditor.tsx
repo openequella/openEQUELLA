@@ -20,7 +20,7 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  Grid,
+  Stack,
   Switch,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -94,50 +94,44 @@ const UISettingEditor = () => {
 
   return (
     <StyledAccordionDetails>
-      <Grid container direction="column">
-        <Grid>
-          <div className={classes.enableNewUIColumn}>
-            <FormControl>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={newUIEnabled}
-                    onChange={(_, checked) => setNewUI(checked)}
-                    color="secondary"
-                  />
-                }
-                label={uiconfig.enableNew}
-              />
-            </FormControl>
-          </div>
-        </Grid>
+      <Stack>
+        <div className={classes.enableNewUIColumn}>
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={newUIEnabled}
+                  onChange={(_, checked) => setNewUI(checked)}
+                  color="secondary"
+                />
+              }
+              label={uiconfig.enableNew}
+            />
+          </FormControl>
+        </div>
 
-        <Grid>
-          <div className={classes.enableNewSearchColumn}>
-            <FormControl>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={newSearchEnabled}
-                    disabled={!newUIEnabled}
-                    onChange={(_, checked) => setNewSearch(checked)}
-                    color="secondary"
-                  />
-                }
-                label={uiconfig.enableSearch}
-              />
-            </FormControl>
-          </div>
-        </Grid>
+        <div className={classes.enableNewSearchColumn}>
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={newSearchEnabled}
+                  disabled={!newUIEnabled}
+                  onChange={(_, checked) => setNewSearch(checked)}
+                  color="secondary"
+                />
+              }
+              label={uiconfig.enableSearch}
+            />
+          </FormControl>
+        </div>
 
-        <Grid>
-          <Link to={routes.ThemeConfig.path}>
-            <Button variant="contained" disabled={!newUIEnabled}>
-              {uiconfig.themeSettingsButton}
-            </Button>
-          </Link>
-        </Grid>
-      </Grid>
+        <Link to={routes.ThemeConfig.path}>
+          <Button variant="contained" disabled={!newUIEnabled}>
+            {uiconfig.themeSettingsButton}
+          </Button>
+        </Link>
+      </Stack>
     </StyledAccordionDetails>
   );
 };

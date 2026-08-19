@@ -1,10 +1,10 @@
 package com.tle.webtests.test.webservices.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,6 +23,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String DEFAULT_SORT_ORDER = "defaultSearchSort";
   private static final String SHOW_NON_LIVE = "searchingShowNonLiveCheckbox";
   private static final String AUTHENTICATE_FEEDS = "authenticateFeedsByDefault";
+  private static final String ESCAPE_SPECIAL_CHARS = "escapeSpecialChars";
 
   private static final String DISABLE_OWNER_FILTER = "searchingDisableOwnerFilter";
   private static final String DISABLE_DATE_MODIFIED_FILTER = "searchingDisableDateModifiedFilter";
@@ -74,6 +75,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertNull(initialSearchSettings.get(DEFAULT_SORT_ORDER));
     assertFalse(initialSearchSettings.get(SHOW_NON_LIVE).asBoolean());
     assertFalse(initialSearchSettings.get(AUTHENTICATE_FEEDS).asBoolean());
+    assertFalse(initialSearchSettings.get(ESCAPE_SPECIAL_CHARS).asBoolean());
 
     assertFalse(initialSearchSettings.get(DISABLE_IMAGE).asBoolean());
     assertFalse(initialSearchSettings.get(DISABLE_VIDEO).asBoolean());
@@ -93,6 +95,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     newSearchSettings.put(DEFAULT_SORT_ORDER, "RATING");
     newSearchSettings.put(SHOW_NON_LIVE, true);
     newSearchSettings.put(AUTHENTICATE_FEEDS, true);
+    newSearchSettings.put(ESCAPE_SPECIAL_CHARS, true);
 
     newSearchSettings.put(DISABLE_IMAGE, true);
     newSearchSettings.put(DISABLE_VIDEO, true);
@@ -115,6 +118,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(updatedSearchSettings.get(DEFAULT_SORT_ORDER).asText(), "rating");
     assertTrue(updatedSearchSettings.get(SHOW_NON_LIVE).asBoolean());
     assertTrue(updatedSearchSettings.get(AUTHENTICATE_FEEDS).asBoolean());
+    assertTrue(updatedSearchSettings.get(ESCAPE_SPECIAL_CHARS).asBoolean());
 
     assertTrue(updatedSearchSettings.get(DISABLE_IMAGE).asBoolean());
     assertTrue(updatedSearchSettings.get(DISABLE_VIDEO).asBoolean());

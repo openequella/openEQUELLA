@@ -21,7 +21,6 @@ package com.tle.core.url;
 import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.inject.Singleton;
 import com.tle.beans.Institution;
 import com.tle.beans.ReferencedURL;
@@ -39,6 +38,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -84,13 +84,13 @@ public class CheckURLsScheduledTask implements ScheduledTask {
     // Asynchronously check a maximum number of URLs at any given time. As
     // they complete, remove them from the working set and fill it back up
     // with more.
-    Set<ListenableFuture<ReferencedURL>> workingset =
+    Set<CompletableFuture<ReferencedURL>> workingset =
         Sets.newHashSetWithExpectedSize(MAX_CONCURRENT_CHECKS);
     while (bi.hasNext() || !workingset.isEmpty()) {
       // Remove completed URLs.
-      for (Iterator<ListenableFuture<ReferencedURL>> iter = workingset.iterator();
+      for (Iterator<CompletableFuture<ReferencedURL>> iter = workingset.iterator();
           iter.hasNext(); ) {
-        ListenableFuture<ReferencedURL> f = iter.next();
+        CompletableFuture<ReferencedURL> f = iter.next();
         if (f.isDone()) {
           iter.remove();
 

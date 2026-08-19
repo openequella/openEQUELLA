@@ -37,18 +37,18 @@ import java.util.Map;
  *
  * public void registered(String id, SectionTree tree)
  * {
- * 		super.registered(id, tree);
- * 		...
- * 		tree.registerSections(htmlEditorService.getEditor(),
+ *         super.registered(id, tree);
+ *         ...
+ *         tree.registerSections(htmlEditorService.getEditor(),
  *             id);
  * }
  *
  * public SectionResult renderHtml()
  * {
- * 		...
- * 		htmlEditor.setData(info, properties);
- * 		model.setResults(renderChildren(context, event, new ResultListCollector()).getResultList());
- * 		...
+ *         ...
+ *         htmlEditor.setData(info, properties);
+ *         model.setResults(renderChildren(context, event, new ResultListCollector()).getResultList());
+ *         ...
  * }
  * }</pre>
  */

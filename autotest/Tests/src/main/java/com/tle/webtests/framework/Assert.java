@@ -2,7 +2,11 @@ package com.tle.webtests.framework;
 
 import java.util.Objects;
 
-public class Assert {
+public final class Assert {
+
+  private Assert() {
+    throw new UnsupportedOperationException();
+  }
 
   public static void assertEquals(Object o1, Object o2) {
     assertEquals(o1, o2, null);

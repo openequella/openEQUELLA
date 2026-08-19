@@ -29,7 +29,6 @@ import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import { v4 as uuidv4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 import { simpleUnionMatch } from "../util/match";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
@@ -125,7 +124,7 @@ export const createACLExpression = (
   recipients: ACLRecipient[] = [],
   children: ACLExpression[] = [],
 ): ACLExpression => ({
-  id: uuidv4(),
+  id: crypto.randomUUID(),
   operator: operator,
   recipients: [...recipients],
   children: [...children],
@@ -543,7 +542,7 @@ export const parse = (
             RA.reduce<ACLExpression, AclExpressionBuildingState>(
               {
                 result: {
-                  id: uuidv4(),
+                  id: crypto.randomUUID(),
                   operator: "UNKNOWN",
                   recipients: [],
                   children: [],

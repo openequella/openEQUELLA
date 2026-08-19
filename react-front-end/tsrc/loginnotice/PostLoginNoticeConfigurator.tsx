@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
   Button,
   Card,
@@ -25,18 +24,19 @@ import {
   DialogContentText,
   TextField,
 } from "@mui/material";
-import { commonString } from "../util/commonstrings";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import { AxiosError, AxiosResponse } from "axios";
+import * as React from "react";
+import SettingsListHeading from "../components/SettingsListHeading";
 import {
   clearPostLoginNotice,
   getPostLoginNotice,
   strings,
   submitPostLoginNotice,
 } from "../modules/LoginNoticeModule";
-import { AxiosError, AxiosResponse } from "axios";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import SettingsListHeading from "../components/SettingsListHeading";
+import { commonString } from "../util/commonstrings";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -116,7 +116,6 @@ class PostLoginNoticeConfigurator extends React.Component<
               maxRows="35"
               multiline
               fullWidth
-              inputProps={{ length: 12 }}
               placeholder={strings.postLogin.description}
               onChange={(e) => this.handlePostTextFieldChange(e.target)}
               value={postNotice}

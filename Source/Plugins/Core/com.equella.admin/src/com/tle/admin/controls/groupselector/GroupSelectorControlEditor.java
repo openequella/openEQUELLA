@@ -23,18 +23,18 @@ import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.dytech.gui.filter.FilteredShuffleList;
-import com.tle.admin.Driver;
 import com.tle.admin.common.FilterGroupModel;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.JGroup;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.common.wizard.controls.groupselector.GroupSelectorControl;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,9 +46,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings("nls")
 public class GroupSelectorControlEditor extends AbstractControlEditor<CustomControl> {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private MultiTargetChooser picker;
   private I18nTextField title;
@@ -70,7 +69,9 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
 
     groupRestriction =
         new GroupPanel(
-            getString("restrict.groups"), getString("groups.select"), getString("groups.selected"));
+            strings.text("restrict.groups"),
+            strings.text("groups.select"),
+            strings.text("groups.selected"));
 
     addSection(groupRestriction);
 
@@ -105,15 +106,14 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
   }
 
   private JComponent createDetailsSection() {
-    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
-    final JLabel descriptionLabel =
-        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
+    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title"));
+    final JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description"));
 
     final Set<Locale> langs = BundleCache.getLanguages();
     title = new I18nTextField(langs);
     description = new I18nTextField(langs);
-    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
-    selectMultiple = new JCheckBox(getString("selectmultiple")); // $NON-NLS-1$
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
+    selectMultiple = new JCheckBox(strings.text("selectmultiple"));
 
     final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
 
@@ -131,18 +131,17 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
   }
 
   private final class GroupPanel extends JGroup {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
+    private final AdminUserDirectoryService userDirectoryService;
     private final FilteredShuffleList<NameValue> groupList;
-    private final JLabel groupLabel;
 
     public GroupPanel(String text, String groupText, String restrictGroupText) {
       super(text, false);
 
-      groupLabel = new JLabel(groupText);
+      userDirectoryService = getClientService().getService(AdminUserDirectoryService.class);
+      JLabel groupLabel = new JLabel(groupText);
       groupList =
-          new FilteredShuffleList<NameValue>(
-              restrictGroupText,
-              new FilterGroupModel(getClientService().getService(RemoteUserService.class)));
+          new FilteredShuffleList<>(restrictGroupText, new FilterGroupModel(userDirectoryService));
 
       setInnerLayout(new MigLayout("wrap, insets 0", "[][grow, fill]"));
       addInner(groupLabel, "span 2");
@@ -155,12 +154,10 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
       if (control.isRestricted(GroupSelectorControl.KEY_RESTRICT_GROUPS)) {
         setSelected(true);
         Set<String> groupUuids = control.getRestrictedTo(GroupSelectorControl.KEY_RESTRICT_GROUPS);
-        if (groupUuids.size() > 0) {
-          RemoteUserService userService =
-              Driver.instance().getClientService().getService(RemoteUserService.class);
+        if (!groupUuids.isEmpty()) {
           Collection<NameValue> groups = new ArrayList<NameValue>();
           for (String groupUuid : groupUuids) {
-            groups.add(UserBeanUtils.getGroup(userService, groupUuid));
+            groups.add(UserBeanUtils.getGroup(userDirectoryService, groupUuid));
           }
           addGroups(groups);
         }
@@ -178,7 +175,7 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
       }
     }
 
-    protected List<String> getSelectedGroupUuids() {
+    private List<String> getSelectedGroupUuids() {
       List<NameValue> selected = groupList.getItems();
       List<String> selectedUuids = new ArrayList<String>(selected.size());
       for (NameValue nameVal : selected) {
@@ -187,7 +184,7 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
       return selectedUuids;
     }
 
-    protected void addGroups(Collection<NameValue> groups) {
+    private void addGroups(Collection<NameValue> groups) {
       groupList.removeAllItems();
       groupList.addItems(groups);
     }

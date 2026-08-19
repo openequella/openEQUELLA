@@ -24,4 +24,9 @@ public class ClassPrefixedName implements PrefixedName {
     }
     return false;
   }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
+  }
 }

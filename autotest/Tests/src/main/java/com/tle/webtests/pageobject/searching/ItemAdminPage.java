@@ -191,7 +191,9 @@ public class ItemAdminPage
     WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
     scrollToElement(modOnlyBox);
     boolean isChecked = modOnlyBox.isSelected();
-    if (checked != isChecked) modOnlyBox.click();
+    if (checked != isChecked) {
+      modOnlyBox.click();
+    }
     return waitForResultsReload(waiter);
   }
 

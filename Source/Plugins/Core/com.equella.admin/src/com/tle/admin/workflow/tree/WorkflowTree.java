@@ -19,6 +19,8 @@
 package com.tle.admin.workflow.tree;
 
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.admin.workflow.StepDialog;
 import com.tle.admin.workflow.WorkflowCellRenderer;
 import com.tle.admin.workflow.editor.DecisionEditor;
@@ -29,12 +31,11 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
-import com.tle.core.remoting.RemoteSchemaService;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -45,19 +46,19 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 public class WorkflowTree extends JTree {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private final WorkflowTreeModel model;
-  private final RemoteUserService userService;
-  private final RemoteSchemaService schemaService;
+  private final AdminUserDirectoryService userDirectoryService;
+  private final AdminSchemaService schemaService;
 
   public WorkflowTree(
       final WorkflowTreeModel model,
-      final RemoteUserService userService,
-      final RemoteSchemaService schemaService) {
+      final AdminUserDirectoryService userDirectoryService,
+      final AdminSchemaService schemaService) {
     super(model);
 
     this.model = model;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
     this.schemaService = schemaService;
 
     getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -189,15 +190,15 @@ public class WorkflowTree extends JTree {
     if (node != null && node.getParent() != null) {
       NodeEditor wid;
       if (node.getType() == WorkflowNode.ITEM_TYPE) {
-        wid = new StepEditor(userService, schemaService);
+        wid = new StepEditor(userDirectoryService, schemaService);
       } else if (node.getType() == WorkflowNode.DECISION_TYPE) {
         wid = new DecisionEditor(Driver.instance());
       } else if (node.getType() == WorkflowNode.SCRIPT_TYPE) {
-        wid = new ScriptEditor(userService, schemaService);
+        wid = new ScriptEditor(userDirectoryService, schemaService);
       } else {
         wid =
             new NodeEditor(
-                userService,
+                userDirectoryService,
                 schemaService,
                 "com.tle.admin.workflow.editor.nodeeditor.title"); //$NON-NLS-1$
       }

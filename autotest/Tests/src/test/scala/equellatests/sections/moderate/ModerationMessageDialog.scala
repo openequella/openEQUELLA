@@ -29,10 +29,10 @@ abstract class ModerationMessageDialog(pfx: String) extends WaitingBrowserPage {
     waitFor(expect)
   }
 
-  def byId(post: String)   = findElementById(pfx + post)
-  def msgBy                = By.id(pfx + "_commentField")
-  def msgField: WebElement = pageElement
-  def message: String      = msgField.getText
+  def byId(post: String)     = findElementById(pfx + post)
+  def msgBy                  = By.id(pfx + "_commentField")
+  def msgField: WebElement   = pageElement
+  def message: String        = msgField.getText
   def message_=(msg: String) = {
     msgField.clear()
     msgField.sendKeys(msg)

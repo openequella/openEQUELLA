@@ -22,17 +22,25 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.dao.helpers.Pagination;
 import com.tle.core.dao.impl.AbstractTreeDaoImpl;
 import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.dao.AssociationCountQueryBuilder;
 import com.tle.core.usermanagement.standard.dao.TLEGroupDao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,40 +71,37 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
                 new Object[] {userID, CurrentInstitution.get()});
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.tle.core.dao.user.TLEGroupDao#listAllGroups()
-   */
   @Override
   public List<TLEGroup> listAllGroups() {
-    return (List<TLEGroup>)
-        getHibernateTemplate()
-            .find("from TLEGroup where institution = ?0", CurrentInstitution.get());
+    return (List<TLEGroup>) findByCriteria(CurrentInstitution.equalityCriteria());
   }
 
   @Override
-  public List<String> getUsersInGroup(String parentGroupID, boolean recurse) {
-    final TLEGroup parentGroup = findByUuid(parentGroupID);
-    StringBuilder query = new StringBuilder("SELECT ELEMENTS(g.users) FROM TLEGroup g ");
-    if (recurse) {
-      query.append("LEFT OUTER JOIN g.allParents p ");
-    }
-    query.append("WHERE g.institution = :institution AND (g = :parentGroup");
-    if (recurse) {
-      query.append(" OR p = :parentGroup");
-    }
-    query.append(')');
+  public List<String> getUsersInGroup(String parentGroupID, boolean includeSubGroups) {
+    return getUsersInGroup(parentGroupID, includeSubGroups, null);
+  }
 
-    return (List<String>)
-        getHibernateTemplate()
-            .findByNamedParam(
-                query.toString(),
-                new String[] {
-                  "parentGroup", "institution",
-                },
-                new Object[] {
-                  parentGroup, CurrentInstitution.get(),
-                });
+  @Override
+  public List<String> getUsersInGroup(
+      String parentGroupID, boolean includeSubGroups, Pagination pagination) {
+    final TLEGroup parentGroup =
+        Optional.ofNullable(findByUuid(parentGroupID))
+            .orElseThrow(
+                () -> new NotFoundException("Group with id of " + parentGroupID + " not found."));
+
+    return withSession(
+        session -> {
+          org.hibernate.query.Query<String> q =
+              new UsersInGroupQuery(parentGroup).includeSubGroups(includeSubGroups).build(session);
+          Optional.ofNullable(pagination)
+              .ifPresent(
+                  p -> {
+                    p.getOffset().ifPresent(q::setFirstResult);
+                    p.getLimit().ifPresent(q::setMaxResults);
+                  });
+
+          return q.list();
+        });
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
@@ -171,20 +176,7 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
 
   @Override
   public TLEGroup findByUuid(final String uuid) {
-    return (TLEGroup)
-        getHibernateTemplate()
-            .execute(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) {
-                    Query query =
-                        session.createQuery(
-                            "from TLEGroup g where g.uuid = :uuid AND g.institution = :i");
-                    query.setParameter("uuid", uuid);
-                    query.setParameter("i", CurrentInstitution.get());
-                    return query.uniqueResult();
-                  }
-                });
+    return findByCriteria(Restrictions.eq("uuid", uuid), CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -222,5 +214,88 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
                   });
     }
     return Lists.newArrayList();
+  }
+
+  public long countUsersInGroup(String groupId) {
+    return Optional.ofNullable(groupId)
+        .flatMap(
+            id -> countWithHibernate(entityManager -> buildCountGroupUsersQuery(entityManager, id)))
+        .orElse(0L);
+  }
+
+  private Optional<Long> countWithHibernate(
+      Function<EntityManager, TypedQuery<Long>> queryBuilderFn) {
+    return Optional.ofNullable(
+        queryWithEntityManager(
+            entityManager -> queryBuilderFn.apply(entityManager).getSingleResult()));
+  }
+
+  private TypedQuery<Long> buildCountGroupUsersQuery(EntityManager entityManager, String groupId) {
+    return new AssociationCountQueryBuilder<TLEGroup>(entityManager)
+        .forEntity(TLEGroup.class)
+        .forAssociation("users")
+        .withId("uuid", groupId)
+        .build();
+  }
+
+  private static class UsersInGroupQuery {
+    private static final String paramInstitution = "institution";
+    private static final String paramGroup = "group";
+    private static final String aliasParent = "parent";
+
+    private final TLEGroup group;
+
+    private Boolean includeSubGroups = false;
+
+    public UsersInGroupQuery(TLEGroup group) {
+      this.group = group;
+    }
+
+    public UsersInGroupQuery includeSubGroups(Boolean includeSubGroups) {
+      this.includeSubGroups = includeSubGroups;
+      return this;
+    }
+
+    public org.hibernate.query.Query<String> build(Session session) {
+      String qs = buildQueryString();
+
+      org.hibernate.query.Query<String> query = session.createQuery(qs, String.class);
+      query.setParameter(paramInstitution, CurrentInstitution.get());
+      query.setParameter(paramGroup, group);
+
+      return query;
+    }
+
+    private String buildQueryString() {
+      return "SELECT u FROM TLEGroup g JOIN g.users u "
+          + (includeSubGroups ? subgroupQuery() : basicQuery())
+          + " ORDER BY u ASC"; // Ordering for reliable pagination
+    }
+
+    private String basicQuery() {
+      return whereStatement() + " g = " + namedParam(paramGroup);
+    }
+
+    private String subgroupQuery() {
+      return "LEFT OUTER JOIN g.allParents "
+          + aliasParent
+          + " "
+          + whereStatement()
+          + " (g = "
+          + namedParam(paramGroup)
+          + " OR "
+          + aliasParent
+          + " = "
+          + namedParam(paramGroup)
+          + ")";
+    }
+
+    private String whereStatement() {
+      return "WHERE g.institution = " + namedParam(paramInstitution) + " AND";
+    }
+
+    private String namedParam(String param) {
+      return ":" + param;
+    }
   }
 }

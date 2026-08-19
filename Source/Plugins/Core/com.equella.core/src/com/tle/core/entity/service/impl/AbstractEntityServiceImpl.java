@@ -30,10 +30,10 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.thoughtworks.xstream.XStream;
+import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.IdCloneable;
-import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.LanguageBundle;
@@ -81,6 +81,7 @@ import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
@@ -101,6 +102,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -121,7 +123,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractEntityServiceImpl<
         B extends EntityEditingBean, T extends BaseEntity, S extends AbstractEntityService<B, T>>
     implements AbstractEntityService<B, T>, DeleteHandler, UserChangeListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityServiceImpl.class);
   private static final String ENTITY_XML = "_entity.xml";
 
   private final AbstractEntityDao<T> entityDao;
@@ -167,9 +169,28 @@ public abstract class AbstractEntityServiceImpl<
     return "EDIT_" + privilegeType;
   }
 
+  /**
+   * Retrieve the entity of the current institution with the given ID.
+   *
+   * <p>Institution filtered, as every by-id lookup on an institution owned entity must be. Entity
+   * IDs are globally unique, so an ID originating from another institution would otherwise resolve
+   * here - and the {@code @SecureOnCall} / {@code @SecureOnReturn} checks downstream do not catch
+   * that, because an institution wide grant (e.g. EDIT_COLLECTION at "All collections") is held
+   * against the target "*", which matches an entity of any institution. Contrast {@link
+   * #getByUuid(String)} below, which has always been filtered - UUIDs are unique only per
+   * institution, so there the filter was needed for correctness and not merely for security.
+   *
+   * <p>Filtering within the query keeps the guard atomic with the lookup, and avoids having to
+   * initialise the entity's lazy institution in order to compare it afterwards. With no current
+   * institution the filter matches nothing, so this fails closed.
+   *
+   * @param id the identity of the entity
+   * @return the entity - never null
+   * @throws NotFoundException if the current institution has no entity with that ID
+   */
   @Override
   public T get(long id) {
-    T entity = entityDao.findById(id);
+    T entity = entityDao.findByCriteria(Restrictions.eq("id", id), getInstitutionCriterion());
     if (entity == null) {
       throw new NotFoundException("Couldn't find entity '" + id + "' : " + getClass().getName());
     } else {
@@ -200,6 +221,14 @@ public abstract class AbstractEntityServiceImpl<
   // @Transactional
   public T getByUuid(String uuid) {
     return entityDao.findByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion());
+  }
+
+  @Override
+  @Transactional
+  public boolean existsByUuid(@NonNull String uuid) {
+    Objects.requireNonNull(uuid, "uuid must not be null");
+    Check.checkValidUuid(uuid);
+    return entityDao.countByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion()) > 0;
   }
 
   @Override
@@ -301,13 +330,9 @@ public abstract class AbstractEntityServiceImpl<
     auditLogService.logEntityCreated(id);
 
     BaseEntityLabel label =
-        new BaseEntityLabel(
-            id,
-            entity.getUuid(),
-            entity.getName().getId(),
-            entity.getOwner(),
-            entity.isSystemType());
-    label.setPrivType(privilegeType);
+        new BaseEntityLabel(id, entity.getUuid(), entity.getName().getId(), entity.getOwner());
+    label.setForCollection(BaseEntityLabel.isCollectionType(privilegeType));
+
     return label;
   }
 
@@ -437,10 +462,14 @@ public abstract class AbstractEntityServiceImpl<
     deleteReferences(entity);
   }
 
-  @Override
   public List<Class<?>> getReferencingClasses(long id) {
     // None by default
-    return new ArrayList<Class<?>>();
+    return new ArrayList<>();
+  }
+
+  @Override
+  public boolean hasReferencingClasses(long id) {
+    return !getReferencingClasses(id).isEmpty();
   }
 
   protected void deleteReferences(T entity) {
@@ -492,10 +521,28 @@ public abstract class AbstractEntityServiceImpl<
     return entityDao.listAllIncludingSystem(privilegeType);
   }
 
+  /**
+   * Lists all entities that are editable by the current user. That is, unlike listAll() it includes
+   * an ACL check to ensure that the user has EDIT privileges on the entity.
+   *
+   * @return a list of all entities that the current user can edit
+   */
   @Override
   @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   public List<BaseEntityLabel> listEditable() {
     return listAll();
+  }
+
+  /**
+   * As per listEditable(), but the result also includes 'system type' entities. The ACL check is
+   * identical - system type entities are the only difference between the two.
+   *
+   * @return a list of all entities that the current user can edit, including system type entities
+   */
+  @Override
+  @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  public List<BaseEntityLabel> listEditableIncludingSystem() {
+    return listAllIncludingSystem();
   }
 
   @Override
@@ -769,8 +816,7 @@ public abstract class AbstractEntityServiceImpl<
   }
 
   protected Criterion getInstitutionCriterion() {
-    Institution institution = CurrentInstitution.get();
-    return Restrictions.eq("institution", institution);
+    return CurrentInstitution.equalityCriteria();
   }
 
   @Override
@@ -791,22 +837,12 @@ public abstract class AbstractEntityServiceImpl<
       throw new ModifyingSystemTypeException();
     }
 
-    List<ValidationError> errors = new ArrayList<ValidationError>();
+    List<ValidationError> errors = new ArrayList<>();
 
     // Ask the full implementation to do any checking
     doValidationBean(bean, errors);
 
-    // Only one uuid per institution
-    Criterion c4 = Restrictions.eq("uuid", bean.getUuid());
-    Criterion c5 = Restrictions.eq("institution", CurrentInstitution.get());
-    Criterion c6 = Restrictions.ne("id", bean.getId());
-
-    if (entityDao.countByCriteria(c4, c5, c6) > 0) {
-      errors.add(
-          new ValidationError(
-              "uuid",
-              CurrentLocale.get("com.tle.core.services.entity.generic.validation.unique.uuid")));
-    }
+    validateUuidIsUniqueInInstitution(bean.getUuid(), bean.getId(), errors);
 
     if (!errors.isEmpty()) {
       throw new InvalidDataException(errors);
@@ -820,25 +856,39 @@ public abstract class AbstractEntityServiceImpl<
       ensureNonSystem(entity);
     }
 
-    List<ValidationError> errors = new ArrayList<ValidationError>();
+    List<ValidationError> errors = new ArrayList<>();
 
     // Ask the full implementation to do any checking
     doValidation(session, entity, errors);
 
-    // Only one uuid per institution
-    Criterion c4 = Restrictions.eq("uuid", entity.getUuid());
-    Criterion c5 = Restrictions.eq("institution", CurrentInstitution.get());
-    Criterion c6 = Restrictions.ne("id", entity.getId());
+    validateUuidIsUniqueInInstitution(entity.getUuid(), entity.getId(), errors);
 
-    if (entityDao.countByCriteria(c4, c5, c6) > 0) {
+    if (!errors.isEmpty()) {
+      throw new InvalidDataException(errors);
+    }
+  }
+
+  /**
+   * Records a validation error if another entity of the current institution already uses this UUID.
+   * They are unique per institution rather than globally - see the {@code institution_id, uuid}
+   * unique constraint on {@link BaseEntity}.
+   *
+   * @param uuid the UUID being validated
+   * @param id the identity of the entity it belongs to, excluded from the search so that an entity
+   *     being edited does not clash with itself
+   * @param errors the list to record any error in
+   */
+  private void validateUuidIsUniqueInInstitution(
+      String uuid, long id, List<ValidationError> errors) {
+    long othersWithThisUuid =
+        entityDao.countByCriteria(
+            Restrictions.eq("uuid", uuid), getInstitutionCriterion(), Restrictions.ne("id", id));
+
+    if (othersWithThisUuid > 0) {
       errors.add(
           new ValidationError(
               "uuid",
               CurrentLocale.get("com.tle.core.services.entity.generic.validation.unique.uuid")));
-    }
-
-    if (!errors.isEmpty()) {
-      throw new InvalidDataException(errors);
     }
   }
 
@@ -871,6 +921,7 @@ public abstract class AbstractEntityServiceImpl<
   }
 
   @Override
+  @RequiresPrivilege(priv = SecurityConstants.CREATE_VIRTUAL_BASE)
   public EntityPack<T> importEntity(byte[] xml) {
     ByteArrayInputStream in = new ByteArrayInputStream(xml);
     StagingFile staging = stagingService.createStagingArea();
@@ -945,20 +996,13 @@ public abstract class AbstractEntityServiceImpl<
   @Override
   @SecureOnCall(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   public byte[] exportEntity(T entity, boolean withSecurity) {
-    ImportExportPack<T> pack = new ImportExportPack<T>();
-    pack.setVersion(ApplicationVersion.get().getFull());
-    pack.setEntity(entity);
-    if (withSecurity && privilegeNode != null) {
-      fillTargetLists(pack);
-    }
-
     StagingFile staging = stagingService.createStagingArea();
     prepareExport(
         staging,
         entity,
         new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
+    String xml = xmlForEntity(entity, withSecurity);
 
-    String xml = getXStream().toXML(pack);
     try {
       fileSystemService.copy(new EntityFile(entity), staging);
       fileSystemService.write(staging, ENTITY_XML, new StringReader(xml), false);
@@ -974,8 +1018,29 @@ public abstract class AbstractEntityServiceImpl<
     }
   }
 
+  private String xmlForEntity(T entity, boolean withSecurity) {
+    ImportExportPack<T> pack = new ImportExportPack<>();
+    pack.setVersion(ApplicationVersion.get().getFull());
+    pack.setEntity(entity);
+    if (withSecurity && privilegeNode != null) {
+      fillTargetLists(pack);
+    }
+
+    return getXStream().toXML(pack);
+  }
+
   @Override
   public void prepareExport(TemporaryFileHandle staging, T entity, ConverterParams params) {
+    initialiseBaseEntity(entity);
+  }
+
+  /**
+   * Initialises the entity for export operations, by ensuring any Hibernate proxies and the like
+   * have been fully resolved and removed. This modifies `entity` in place.
+   *
+   * @param entity The entity to be exported.
+   */
+  private void initialiseBaseEntity(T entity) {
     initialiserService.initialise(entity, new EntityInitialiserCallback());
   }
 

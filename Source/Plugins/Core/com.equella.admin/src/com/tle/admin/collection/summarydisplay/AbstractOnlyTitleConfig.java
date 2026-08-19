@@ -21,13 +21,13 @@ package com.tle.admin.collection.summarydisplay;
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.baseentity.EditorState;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import javax.swing.JLabel;
@@ -37,15 +37,7 @@ public abstract class AbstractOnlyTitleConfig extends JPanel implements SummaryD
   protected I18nTextField title;
   protected ChangeDetector changeDetector;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   @SuppressWarnings("nls")
   @Override
@@ -60,7 +52,7 @@ public abstract class AbstractOnlyTitleConfig extends JPanel implements SummaryD
     add(title, "grow, pushx, wrap");
     if (showTitleHelp()) {
       JLabel titleHelpLabel =
-          new JLabel(getString("summarysections.abstractonlytitle.bundletitle.help.label"));
+          new JLabel(strings.text("summarysections.abstractonlytitle.bundletitle.help.label"));
       add(titleHelpLabel, "gapleft 25, wrap");
     }
 
@@ -73,7 +65,7 @@ public abstract class AbstractOnlyTitleConfig extends JPanel implements SummaryD
   }
 
   public String getTitleLabelKey() {
-    return getString("summarysections.abstractonlytitle.bundletitle.label");
+    return strings.text("summarysections.abstractonlytitle.bundletitle.label");
   }
 
   @Override

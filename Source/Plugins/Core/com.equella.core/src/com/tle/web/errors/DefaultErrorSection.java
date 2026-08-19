@@ -156,19 +156,19 @@ public class DefaultErrorSection
       titleKey = "badrequest";
     }
 
-    if (model.isNoLog()) {
-      // Nothing
-    } else if (model.isNoStack()) {
-      if (model.isWarnOnly()) {
-        LOGGER.warn("Warning at " + url + " :" + ex.getMessage());
+    if (!model.isNoLog()) {
+      if (model.isNoStack()) {
+        if (model.isWarnOnly()) {
+          LOGGER.warn("Warning at " + url + " :" + ex.getMessage());
+        } else {
+          LOGGER.error("Error at " + url + " :" + ex.getMessage());
+        }
       } else {
-        LOGGER.error("Error at " + url + " :" + ex.getMessage());
-      }
-    } else {
-      if (model.isWarnOnly()) {
-        LOGGER.warn("Warning at " + url + " :", ex);
-      } else {
-        LOGGER.error("Error at " + url + " :", ex);
+        if (model.isWarnOnly()) {
+          LOGGER.warn("Warning at " + url + " :", ex);
+        } else {
+          LOGGER.error("Error at " + url + " :", ex);
+        }
       }
     }
 

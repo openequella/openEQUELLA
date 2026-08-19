@@ -37,9 +37,7 @@ export default function WebPageIndexSetting({
       <Select
         SelectDisplayProps={{ id: "_contentIndex" }}
         disabled={disabled}
-        onChange={(event) =>
-          setValue(event.target.value as OEQ.SearchSettings.ContentIndexLevel)
-        }
+        onChange={(event) => setValue(event.target.value)}
         variant="outlined"
         value={value}
         autoWidth

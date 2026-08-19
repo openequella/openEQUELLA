@@ -38,8 +38,10 @@ const { selectRole: selectRoleLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 
-export interface SelectRoleControlProps
-  extends Pick<SelectRoleDialogProps, "searchRolesProvider"> {
+export interface SelectRoleControlProps extends Pick<
+  SelectRoleDialogProps,
+  "searchRolesProvider"
+> {
   /**
    * Aria label for the edit icon
    */

@@ -43,7 +43,9 @@ public class GRadioButtonGroup extends GAbstractButtonGroup {
     Iterator i = items.iterator();
     while (i.hasNext()) {
       Item item = (Item) i.next();
-      if (item.getButton().isSelected()) return item.getValue();
+      if (item.getButton().isSelected()) {
+        return item.getValue();
+      }
     }
 
     // We should hopefully never reach here.

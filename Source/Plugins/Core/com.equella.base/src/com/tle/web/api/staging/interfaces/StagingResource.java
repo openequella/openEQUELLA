@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -48,13 +49,43 @@ import javax.ws.rs.core.UriInfo;
 @Api(value = "Staging files", description = "staging")
 public interface StagingResource {
   @POST
+  @StagingAreaCreatedResponse
   @ApiOperation(value = "Create a file area")
   Response createStaging();
 
   @GET
   @Path("/{uuid}")
   @ApiOperation(value = "Get a file area listing", response = StagingBean.class)
-  StagingBean getStaging(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  StagingBean getStaging(
+      @Context UriInfo uriInfo,
+      @PathParam("uuid") String uuid,
+      @ApiParam(
+              value =
+                  "Folder to scope the listing to. When given, returned file names are relative"
+                      + " to this folder. A non-existent folder yields an empty listing. Defaults"
+                      + " to the whole staging area.",
+              required = false)
+          @QueryParam("path")
+          String path,
+      @ApiParam(value = "Include folder entries (including empty folders) in the listing.")
+          @QueryParam("folders")
+          boolean folders,
+      @ApiParam(value = "Compute an MD5-based etag for each file. Disable for faster listings.")
+          @QueryParam("checksums")
+          @DefaultValue("true")
+          boolean checksums);
+
+  @POST
+  @Path("/{uuid}/folder")
+  @ApiOperation(
+      value = "Create a folder (and any missing parent folders) within specified staging area")
+  Response createFolder(
+      @PathParam("uuid") String uuid,
+      @ApiParam(
+              value = "Path of the folder to create, relative to the staging area root.",
+              required = true)
+          @QueryParam("path")
+          String path);
 
   @HEAD
   @Path("/{uuid}/{filepath:(.*)}")
@@ -65,6 +96,7 @@ public interface StagingResource {
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Read a file")
   Response getFile(
+      @Context Request request,
       @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath);
@@ -81,7 +113,7 @@ public interface StagingResource {
   Response deleteStaging(@PathParam("uuid") String uuid) throws IOException;
 
   @POST
-  @Path("/{uuid}/{filepath:(.*)}")
+  @Path("/{uuid}/{filepath:(.*)}/complete")
   @ApiOperation(value = "Complete a multipart upload")
   @Consumes("application/json")
   Response completeMultipart(
@@ -92,27 +124,45 @@ public interface StagingResource {
       throws IOException;
 
   @POST
-  @Path("/{uuid}/{filepath:(.*)}")
+  @Path("/{uuid}/multipart")
   @ApiOperation(value = "Start a multipart upload", response = MultipartBean.class)
-  MultipartBean startMultipart(
+  Response startMultipart(@PathParam("uuid") String uuid);
+
+  @PUT
+  @Path("/{uuid}/multipart/{uploadId}/{partNumber}")
+  @ApiOperation(value = "Upload a multipart chunk")
+  Response uploadChunk(
       @PathParam("uuid") String uuid,
-      @PathParam("filepath") String filepath,
-      @QueryParam("uploads") Boolean uploads);
+      @PathParam("uploadId") String uploadId,
+      @PathParam("partNumber") int partNumber,
+      InputStream data,
+      @HeaderParam("content-type") String contentType)
+      throws IOException;
 
   @PUT
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Put a file")
   Response putFile(
+      @Context Request request,
+      @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,
-      @ApiParam("folder to unzip to") @QueryParam("unzipto") String unzipTo,
-      @ApiParam("path of existing file to copy from") @QueryParam("copyfrom") String copySource,
-      @ApiParam(value = "part number for multipart upload", allowableValues = "range[1,10000]")
-          @QueryParam("partNumber")
-          int partNumber,
-      @ApiParam("id for multipart upload") @QueryParam("uploadId") String uploadId,
-      @HeaderParam("content-length") @DefaultValue("-1") long size,
-      @HeaderParam("content-type") String contentType)
+      @ApiParam("Folder to unzip the uploaded file into. Cannot be combined with 'copyfrom'.")
+          @QueryParam("unzipto")
+          String unzipTo,
+      @ApiParam("Path of an existing staging file to copy from. Cannot be combined with 'unzipto'.")
+          @QueryParam("copyfrom")
+          String copySource)
       throws IOException;
+
+  @POST
+  @Path("/copy")
+  @StagingAreaCreatedResponse
+  @ApiOperation(value = "Creates a staging area and populates it with the specified item's files.")
+  Response createStagingFromItem(
+      @ApiParam(value = "UUID of the source item", required = true) @QueryParam("itemUuid")
+          String itemUuid,
+      @ApiParam(value = "Version of the source item", required = true) @QueryParam("itemVersion")
+          int itemVersion);
 }

@@ -1,0 +1,14 @@
+# Test Configuration for graphql-client Tests
+#
+# Copy this file to test.properties and adjust the values for your local development environment.
+# Do NOT commit test.properties to the repository — it contains local machine configuration.
+#
+# Configuration Precedence:
+#   1. Default value (8080)
+#   2. Value from this file (test.properties)
+#   3. CLI -D option (e.g., -Doeq.test.port=9090)
+
+# The port on which the local openEQUELLA instance is running.
+# Default: 8080 (used by the CI pipeline)
+# Override: -Doeq.test.port=9090
+oeq.test.port=8080

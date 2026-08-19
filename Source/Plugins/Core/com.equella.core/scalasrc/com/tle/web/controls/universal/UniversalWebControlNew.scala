@@ -34,7 +34,6 @@ import com.tle.core.mimetypes.MimeTypeService
 import com.tle.core.services.FileSystemService
 import com.tle.core.workflow.thumbnail.service.ThumbnailService
 import com.tle.core.workflow.video.VideoService
-import com.tle.web.cloudproviders.CloudWizardControl
 import com.tle.web.controls.universal.UniversalWebControlNew._
 import com.tle.web.controls.universal.handlers.FileUploadHandlerNew
 import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{
@@ -94,7 +93,7 @@ object UniversalWebControlNew {
   val DELETE_CONFIRM               = WebFileUploads.label("list.delete.confirm")
   val PREVIEW                      = WebFileUploads.label("list.preview")
   val KEY_HIDDEN_FROM_SUMMARY_NOTE = WebFileUploads.r.key("list.hidden.from.summary")
-  val uploadListSrc = new IncludeFile(
+  val uploadListSrc                = new IncludeFile(
     WebFileUploads.r.url("reactjs/scripts/uploadlist.js"),
     JQueryProgression.PRERENDER,
     FileDropRenderer.CSS,
@@ -155,9 +154,9 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   class AfterRegister(id: String, tree: SectionTree, storageControl: CCustomControl)
       extends ControlContext
       with RenderHelper {
-    val state      = new FileUploadState
-    val definition = new UniversalSettings(control.getControlBean.asInstanceOf[CustomControl])
-    val repository = control.getRepository.asInstanceOf[WebRepository]
+    val state         = new FileUploadState
+    val definition    = new UniversalSettings(control.getControlBean.asInstanceOf[CustomControl])
+    val repository    = control.getRepository.asInstanceOf[WebRepository]
     val fileSettingsO =
       if (definition.getAttachmentTypes.contains("fileHandler"))
         Some(new FileUploadSettings(definition))
@@ -255,8 +254,6 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "toomany_1",
             CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments.1")
           ),
-          "reloadState",
-          CloudWizardControl.reloadState,
           "dialog",
           PartiallyApply.partial(dialog.getOpenFunction, 2),
           "commandUrl",
@@ -268,9 +265,9 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     }
 
     def validate(): Unit = {
-      val attachments         = dialog.getAttachments.asScala
-      val state               = repository.getState
-      val uploadedAttachments = dialog.getAttachments.size
+      val attachments               = dialog.getAttachments.asScala
+      val state                     = repository.getState
+      val uploadedAttachments       = dialog.getAttachments.size
       val fileDuplicateCheckEnabled =
         dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
       val linkDuplicateCheckEnabled =
@@ -378,7 +375,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     }
 
     def processUploadCommand(info: SectionInfo): SectionResult = {
-      val request = info.getRequest
+      val request                                          = info.getRequest
       def uploadStream(uploadId: UUID): AjaxUploadResponse = {
         state.uploadForId(uploadId) match {
           case Some(uf: UploadingFile) =>
@@ -396,7 +393,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                 WebFileUploads.writeStream(uf, this, request.getInputStream) match {
                   case Successful(fileInfo) =>
                     validateContent(info, this, uf.uploadPath) match {
-                      case Left(ifr) => illegal(ifr)
+                      case Left(ifr)       => illegal(ifr)
                       case Right(detected) =>
                         stateAction(info) {
                           val v      = ValidatedUpload(uf.success(fileInfo), detected)

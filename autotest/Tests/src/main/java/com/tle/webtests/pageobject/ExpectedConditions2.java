@@ -35,6 +35,22 @@ public final class ExpectedConditions2 {
     return element;
   }
 
+  /**
+   * Checks if a WebDriverException represents Chrome's specific stale node error.
+   *
+   * <p>Chrome sometimes throws a WebDriverException with the message "Node with given id does not
+   * belong to the document" instead of StaleElementReferenceException when elements become stale.
+   *
+   * @param e the WebDriverException to check
+   * @return true if this is Chrome's stale node error, false otherwise
+   * @see <a href="https://github.com/SeleniumHQ/selenium/issues/15401">Selenium issue on GitHub</a>
+   */
+  public static boolean isChromeStaleNodeException(WebDriverException e) {
+    return Optional.ofNullable(e.getMessage())
+        .map(msg -> msg.contains("Node with given id does not belong to the document"))
+        .orElse(false);
+  }
+
   public static ExpectedCondition<Boolean> updateOfElement(WebElement elem) {
     WebElement element = unwrappedElement(elem);
     return ExpectedConditions.stalenessOf(element);
@@ -109,9 +125,7 @@ public final class ExpectedConditions2 {
         try {
           element.isDisplayed();
           return element;
-        } catch (StaleElementReferenceException ser) {
-          return null;
-        } catch (NoSuchElementException e) {
+        } catch (StaleElementReferenceException | NoSuchElementException e) {
           return null;
         }
       }
@@ -153,7 +167,7 @@ public final class ExpectedConditions2 {
       realElement = element;
     }
 
-    return new ExpectedCondition<WebElement>() {
+    return new ExpectedCondition<>() {
       private String lastValue;
 
       @Override
@@ -202,7 +216,7 @@ public final class ExpectedConditions2 {
 
   // Is this required?
   public static ExpectedCondition<WebElement> invisibilityOf(final WebElement element) {
-    return new ExpectedCondition<WebElement>() {
+    return new ExpectedCondition<>() {
       @Override
       public WebElement apply(WebDriver driver) {
         return element.isDisplayed() ? null : element;
@@ -222,14 +236,12 @@ public final class ExpectedConditions2 {
    */
   public static ExpectedCondition<Boolean> invisibilityOfElementLocated(
       final SearchContext context, final By locator) {
-    return new ExpectedCondition<Boolean>() {
+    return new ExpectedCondition<>() {
       @Override
       public Boolean apply(WebDriver driver) {
         try {
           return !context.findElement(locator).isDisplayed();
-        } catch (NoSuchElementException e) {
-          return true;
-        } catch (StaleElementReferenceException e) {
+        } catch (NoSuchElementException | StaleElementReferenceException e) {
           return true;
         }
       }
@@ -243,15 +255,13 @@ public final class ExpectedConditions2 {
 
   public static ExpectedCondition<WebDriver> frameToBeAvailableAndSwitchToIt(
       final SearchContext context, final By by) {
-    return new ExpectedCondition<WebDriver>() {
+    return new ExpectedCondition<>() {
       @Override
       public WebDriver apply(WebDriver from) {
         try {
           from.switchTo().defaultContent();
           return from.switchTo().frame(context.findElement(by));
-        } catch (NoSuchElementException nsee) {
-          return null;
-        } catch (NoSuchFrameException e) {
+        } catch (NoSuchElementException | NoSuchFrameException e) {
           return null;
         }
       }

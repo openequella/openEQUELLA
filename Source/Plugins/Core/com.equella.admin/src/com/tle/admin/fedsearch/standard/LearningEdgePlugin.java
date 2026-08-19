@@ -19,7 +19,9 @@
 package com.tle.admin.fedsearch.standard;
 
 import com.tle.admin.fedsearch.SearchPlugin;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.search.TLESettings;
+import com.tle.common.i18n.StringLookup;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
@@ -84,8 +86,10 @@ public class LearningEdgePlugin extends SearchPlugin<TLESettings> implements Act
     }
   }
 
-  private String s(String keyPart) {
-    return getString("equella." + keyPart);
+  private static final StringLookup strings = Lookup.withPrefix("equella");
+
+  private String s(String key) {
+    return strings.text(key);
   }
 
   @Override

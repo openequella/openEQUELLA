@@ -18,7 +18,8 @@
 
 package com.tle.integration.oidc.idp
 
-import io.circe.DecodingFailure.Reason.CustomReason
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.{Decoder, DecodingFailure, Encoder, Json, JsonObject}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
@@ -28,8 +29,9 @@ import scala.util.Try
 /** Centralise all the required codecs for different types of IdentityProvider.
   */
 object IdentityProviderCodec {
-  private implicit val uriEncoder = Encoder.encodeString.contramap[URL](_.toString)
-  private implicit val uriDecoder = Decoder.decodeString.emapTry(s => Try(URI.create(s).toURL))
+  private implicit val uriEncoder: Encoder[URL] = Encoder.encodeString.contramap[URL](_.toString)
+  private implicit val uriDecoder: Decoder[URL] =
+    Decoder.decodeString.emapTry(s => Try(URI.create(s).toURL))
 
   private implicit val idpPlatformEncoder: Encoder[IdentityProviderPlatform.Value] =
     Encoder.encodeEnumeration(IdentityProviderPlatform)
@@ -44,8 +46,10 @@ object IdentityProviderCodec {
   private implicit val commonDetailsEncoder: Encoder.AsObject[CommonDetails] =
     deriveEncoder[CommonDetails]
 
+  // This implicit config is required to support decoding new fields added to CommonDetails with default values.
+  private implicit val commonDetailsConfig: Configuration = Configuration.default.withDefaults
   private implicit val commonDetailsDecoder: Decoder[CommonDetails] =
-    deriveDecoder[CommonDetails]
+    deriveConfiguredDecoder[CommonDetails]
 
   private implicit val genericIdPDetailsEncoder: Encoder.AsObject[GenericIdentityProviderDetails] =
     deriveEncoder[GenericIdentityProviderDetails]

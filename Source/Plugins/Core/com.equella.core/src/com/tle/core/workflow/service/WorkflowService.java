@@ -62,7 +62,7 @@ public interface WorkflowService
 
   List<WorkflowMessage> getCommentsForTask(ItemTaskId itemTaskId);
 
-  Collection<BaseEntityLabel> listManagable();
+  Collection<BaseEntityLabel> listManageable();
 
   WorkflowItem getManageableTask(long taskId);
 

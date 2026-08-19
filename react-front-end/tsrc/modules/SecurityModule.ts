@@ -129,12 +129,6 @@ export const isSearchPageACLGranted: RequiredPermissionCheck = hasRequiredAcl(
 );
 
 /**
- * Return a TaskEither to check whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
- */
-export const isManageCloudProviderACLGranted: RequiredPermissionCheck =
-  hasRequiredAcl(OEQ.Acl.ACL_MANAGE_CLOUD_PROVIDER);
-
-/**
  * Return a TaskEither to check whether ACL VIEW_HIERARCHY_TOPIC is granted to the current user for
  * the target topic.
  */
@@ -156,6 +150,18 @@ export const isEditSystemSettingsGranted: (
 export const isDashboardACLGranted: RequiredPermissionCheck = hasRequiredAcl(
   OEQ.Acl.ACL_DASHBOARD_PAGE,
 );
+
+/**
+ * Return a TaskEither to check whether ACL MANAGE_WORKFLOW is granted to the current user.
+ */
+export const isManageWorkflowACLGranted: RequiredPermissionCheck =
+  hasRequiredAcl(OEQ.Acl.ACL_MANAGE_WORKFLOW);
+
+/**
+ * Return a TaskEither to check whether ACL VIEW_MANAGE_PAGE is granted to the current user.
+ */
+export const isViewManagementPageACLGranted: RequiredPermissionCheck =
+  hasRequiredAcl(OEQ.Acl.ACL_VIEW_MANAGEMENT_PAGE);
 
 /**
  * True if the user has authenticated before the initial rendering of New UI.

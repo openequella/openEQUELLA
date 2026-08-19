@@ -316,6 +316,11 @@ public class FreeTextServiceImpl
   }
 
   @Override
+  public int countFromFilter(Search search) {
+    return (search != null) ? indexer.count(search) : -1;
+  }
+
+  @Override
   public void unindexItemEvent(UnindexItemEvent event) {
     unindexDoc(event.getItemId());
   }

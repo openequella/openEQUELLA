@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosResponse, AxiosError } from 'axios';
-import { repackageError } from './Errors';
+import { AxiosError, AxiosResponse } from 'axios';
 
 import { axiosInstance, PUT } from './AxiosInstance';
+import { repackageError } from './Errors';
 
 /**
  * A simple login method which results in the establishment of a session with the oEQ server and
@@ -35,11 +35,9 @@ export const login = (
   password: string
 ): Promise<string | undefined> =>
   axiosInstance()
-    .post(apiBasePath + '/auth/login', null, {
-      params: {
-        username: username,
-        password: password,
-      },
+    .post(apiBasePath + '/auth/login', {
+      username: username,
+      password: password,
     })
     .then((response: AxiosResponse) => {
       const cookies = response.headers['set-cookie'] as Array<string>;

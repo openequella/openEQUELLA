@@ -155,7 +155,7 @@ public class CalendarEditor extends AbstractPowerSearchControlEditor<Calendar> {
   }
 
   protected String getDateString(String key) {
-    return getString("date.format." + key);
+    return strings.text("date.format." + key);
   }
 
   private JComponent createDetails() {
@@ -169,7 +169,7 @@ public class CalendarEditor extends AbstractPowerSearchControlEditor<Calendar> {
 
     formatGroup = new ButtonGroup();
 
-    JLabel formatLabel = new JLabel(getString("date.format"));
+    JLabel formatLabel = new JLabel(strings.text("date.format"));
     dayMonthYear = new JRadioButton(getDateString("full"));
     formatGroup.add(dayMonthYear);
     monthYear = new JRadioButton(getDateString("month"));

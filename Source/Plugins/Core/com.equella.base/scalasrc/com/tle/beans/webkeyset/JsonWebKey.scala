@@ -59,23 +59,23 @@ case class JsonWebKey(
 case class JsonWebKeySet(keys: Array[JsonWebKey])
 
 object JsonWebKey {
-  implicit val jwkKeyUseDecoder = Decoder.decodeEnumeration(JWKUse)
-  implicit val jwkKeyUseEncoder = Encoder.encodeEnumeration(JWKUse)
+  implicit val jwkKeyUseDecoder: Decoder[JWKUse.Value] = Decoder.decodeEnumeration(JWKUse)
+  implicit val jwkKeyUseEncoder: Encoder[JWKUse.Value] = Encoder.encodeEnumeration(JWKUse)
 
-  implicit val jwkKeyTypeDecoder = Decoder.decodeEnumeration(JWKKeyType)
-  implicit val jwkKeyTypeEncoder = Encoder.encodeEnumeration(JWKKeyType)
+  implicit val jwkKeyTypeDecoder: Decoder[JWKKeyType.Value] = Decoder.decodeEnumeration(JWKKeyType)
+  implicit val jwkKeyTypeEncoder: Encoder[JWKKeyType.Value] = Encoder.encodeEnumeration(JWKKeyType)
 
-  implicit val jwkAlgDecoder = Decoder.decodeEnumeration(JWKAlg)
-  implicit val jwkAlgEncoder = Encoder.encodeEnumeration(JWKAlg)
+  implicit val jwkAlgDecoder: Decoder[JWKAlg.Value] = Decoder.decodeEnumeration(JWKAlg)
+  implicit val jwkAlgEncoder: Encoder[JWKAlg.Value] = Encoder.encodeEnumeration(JWKAlg)
 
-  implicit val jsonWebKeyEncoder = deriveEncoder[JsonWebKey]
-  implicit val jsonWebKeyDecoder = deriveDecoder[JsonWebKey]
+  implicit val jsonWebKeyEncoder: Encoder.AsObject[JsonWebKey] = deriveEncoder[JsonWebKey]
+  implicit val jsonWebKeyDecoder: Decoder[JsonWebKey]          = deriveDecoder[JsonWebKey]
 
 }
 
 object JsonWebKeySet {
-  implicit val jsonWebKeySetEncoder = deriveEncoder[JsonWebKeySet]
-  implicit val jsonWebKeySetDecoder = deriveDecoder[JsonWebKeySet]
+  implicit val jsonWebKeySetEncoder: Encoder.AsObject[JsonWebKeySet] = deriveEncoder[JsonWebKeySet]
+  implicit val jsonWebKeySetDecoder: Decoder[JsonWebKeySet]          = deriveDecoder[JsonWebKeySet]
 
   def apply(jwk: JsonWebKey): JsonWebKeySet = JsonWebKeySet(Array(jwk))
 }

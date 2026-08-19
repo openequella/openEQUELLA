@@ -1,11 +1,13 @@
 import Path.{flat, rebase}
 import _root_.io.circe.parser._
 
-libraryDependencies += "org.mockito" % "mockito-core" % "5.20.0" % Test
+libraryDependencies += "org.mockito" % "mockito-core" % "5.23.0" % Test
+
+lazy val adminConsoleJar = project in file("jarsrc")
 
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
-  val bundle =
+  val bundle  =
     decode[Map[String, String]](IO.read(reactFrontEndLanguageBundle.value))
       .fold(throw _, identity)
   val pluginLangStrings = langStrings.value
@@ -105,6 +107,13 @@ Compile / resourceGenerators += Def.task {
 }.taskValue
 
 Compile / resourceGenerators += Def.task {
+  val outJar  = (Compile / resourceManaged).value / "web/adminconsole.jar"
+  val jarFile = (adminConsoleJar / assembly).value
+  IO.copyFile(jarFile, outJar)
+  Seq(outJar)
+}.taskValue
+
+Compile / resourceGenerators += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeInstall(baseSwagger)
   Common.nodeScript("build", baseSwagger)
@@ -112,6 +121,16 @@ Compile / resourceGenerators += Def.task {
   val bundle = baseSwagger / "target/bundle.js"
   val css    = baseSwagger / "node_modules/swagger-ui/dist/swagger-ui.css"
   IO.copy(Seq(bundle, css).pair(flat(outDir))).toSeq
+}.taskValue
+
+// Build the GraphiQL UI
+Compile / resourceGenerators += Def.task {
+  val baseGraphiQL = baseDirectory.value / "graphiql"
+  Common.nodeInstall(baseGraphiQL)
+  Common.nodeScript("build", baseGraphiQL)
+  val outDir = (Compile / resourceManaged).value / "graphql-ui"
+  IO.copyDirectory(baseGraphiQL / "dist", outDir)
+  IO.listFiles(outDir).toSeq
 }.taskValue
 
 // Pull in the react-front-end
@@ -126,6 +145,10 @@ Compile / resourceGenerators += Def.task {
 
 clean := {
   clean.value
-  val baseSwagger = baseDirectory.value / "swaggerui"
+  val baseSwagger  = baseDirectory.value / "swaggerui"
+  val baseGraphiQL = baseDirectory.value / "graphiql"
+
   Common.nodeScript("clean", baseSwagger)
+  Common.nodeScript("clean", baseGraphiQL)
+  (adminConsoleJar / clean).value
 }

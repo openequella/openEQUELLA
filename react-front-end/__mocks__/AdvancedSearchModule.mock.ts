@@ -47,16 +47,15 @@ export const buildTargetNodes = (
 /**
  * The bare necessities to mock a WizardBasicControl.
  */
-export interface BasicControlEssentials
-  extends Pick<
-    OEQ.WizardControl.WizardBasicControl,
-    | "title"
-    | "description"
-    | "mandatory"
-    | "options"
-    | "controlType"
-    | "defaultValues"
-  > {
+export interface BasicControlEssentials extends Pick<
+  OEQ.WizardControl.WizardBasicControl,
+  | "title"
+  | "description"
+  | "mandatory"
+  | "options"
+  | "controlType"
+  | "defaultValues"
+> {
   schemaNodes: TargetNodeEssentials[];
 }
 

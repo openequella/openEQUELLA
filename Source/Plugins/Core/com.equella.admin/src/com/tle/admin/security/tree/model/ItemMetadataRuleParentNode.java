@@ -18,22 +18,22 @@
 
 package com.tle.admin.security.tree.model;
 
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemMetadataRule;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemMetadataRuleParentNode extends AbstractLazyNode {
   private final ItemDefinition itemDefinition;
-  private final RemoteItemDefinitionService service;
+  private final AdminCollectionDefinitionService service;
 
   public ItemMetadataRuleParentNode(
-      RemoteItemDefinitionService service, ItemDefinition itemDefinition) {
+      AdminCollectionDefinitionService service, ItemDefinition itemDefinition) {
     super(
         CurrentLocale.get("com.tle.admin.security.tree.model.itemmetadataruleparentnode.name"),
-        null); //$NON-NLS-1$
+        null);
 
     this.service = service;
     this.itemDefinition = itemDefinition;

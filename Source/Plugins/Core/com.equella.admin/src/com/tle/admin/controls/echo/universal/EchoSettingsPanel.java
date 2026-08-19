@@ -29,7 +29,7 @@ public class EchoSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("echo.settings.title");
+    return strings.key("echo.settings.title");
   }
 
   @Override

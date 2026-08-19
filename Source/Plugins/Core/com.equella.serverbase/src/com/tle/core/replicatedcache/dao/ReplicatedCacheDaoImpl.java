@@ -90,8 +90,7 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
                     Predicate predicateForCacheId =
                         criteriaBuilder.equal(rootType.get("cacheId"), cacheId);
                     Predicate predicateForInstitution =
-                        criteriaBuilder.equal(
-                            rootType.get("institution"), CurrentInstitution.get());
+                        CurrentInstitution.equalityPredicate(criteriaBuilder, rootType);
 
                     Predicate finalPredicate =
                         criteriaBuilder.and(

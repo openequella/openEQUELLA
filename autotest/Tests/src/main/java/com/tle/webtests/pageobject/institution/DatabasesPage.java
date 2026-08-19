@@ -43,7 +43,8 @@ public class DatabasesPage extends InstitutionTab<DatabasesPage> {
   }
 
   public DatabaseRow getDatabaseRow(String name) {
-    return new DatabaseRow(context, tableElement.findElement(getRowSelector(name)));
+    By rowSelector = getRowSelector(name);
+    return new DatabaseRow(context, tableElement.findElement(rowSelector), rowSelector);
   }
 
   public void migrateAll() {

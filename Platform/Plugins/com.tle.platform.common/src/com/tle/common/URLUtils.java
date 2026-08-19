@@ -37,7 +37,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class URLUtils {
+public final class URLUtils {
+
+  private URLUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   public static final String CHARSET_ENCODING = "UTF-8"; // $NON-NLS-1$
   private static final Pattern URL_ENCODE_ANCHORS =
       Pattern.compile("^(.*)%23([^/]*?)$"); // $NON-NLS-1$

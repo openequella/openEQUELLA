@@ -1,0 +1,80 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>2498626</id>
+  <uuid>cd253d51-e246-4fe4-9945-9fe7d29d6971</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-12 15:44:13.215</dateModified>
+  <dateCreated class="sql-timestamp">2013-09-19 16:15:52.888</dateCreated>
+  <name>
+    <id>2498627</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498628</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Journals - Libraries Australia</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>database</key>
+      <value>ANY</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>importRecordSchema</key>
+      <value>http://www.openarchives.org/OAI/oai_marc</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>password</key>
+      <value>xx32hn</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>MARCXML to Journal</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>group</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>collectionUuid</key>
+      <value>1ae3203d-cf33-4160-88be-38ce36402502</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>advanced</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>displayRecordSchema</key>
+      <value>http://www.loc.gov/mods/</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>host</key>
+      <value>192.102.239.140</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>default</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>Bibliographic</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>port</key>
+      <value>210</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>Z3950SearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>1ae3203d-cf33-4160-88be-38ce36402502</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

@@ -7,6 +7,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginPage extends AbstractPage<LoginPage> {
+  private final String LOGIN_PATH = "logon.do";
+
   private By oidcLoginButton = By.name("_oidcLoginSection_loginButton");
 
   public LoginPage(PageContext context) {
@@ -14,8 +16,16 @@ public class LoginPage extends AbstractPage<LoginPage> {
   }
 
   @Override
-  protected void loadUrl() {
-    driver.get(context.getBaseUrl() + "logon.do?logout=true");
+  public LoginPage load() {
+    // Clear session: redirection to Dashboard is possible here.
+    // Note: In a public access institution this can redirect to the Dashboard instead of the login
+    // page.
+    loadPath(LOGIN_PATH + "?logout=true");
+
+    // Force navigation: ensures we land on the actual login form.
+    loadPath(LOGIN_PATH);
+
+    return get();
   }
 
   public LoginPage logout() {

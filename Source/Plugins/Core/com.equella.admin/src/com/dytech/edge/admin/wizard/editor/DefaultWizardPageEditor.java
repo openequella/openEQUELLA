@@ -52,9 +52,9 @@ public class DefaultWizardPageEditor extends ContributionPageEditor {
 
   private void setup() {
 
-    JLabel cssLabel = new JLabel(getString("page.additionalcssclass.label"));
+    JLabel cssLabel = new JLabel(strings.text("page.additionalcssclass.label"));
     additionalCssClass = new JTextField();
-    JLabel cssHelp = new JLabel(getString("page.additionalcssclass.help"));
+    JLabel cssHelp = new JLabel(strings.text("page.additionalcssclass.help"));
 
     final int height1 = additionalCssClass.getPreferredSize().height;
     final int width1 = cssLabel.getPreferredSize().width;

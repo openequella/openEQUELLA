@@ -30,10 +30,11 @@ import com.tle.admin.PluginServiceImpl;
 import com.tle.admin.controls.scripting.BasicModel;
 import com.tle.admin.gui.EditorInterface;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -68,15 +69,7 @@ public abstract class Editor extends JChangeDetectorPanel {
   private JLabel errorMessage;
   private ImageIcon errorIcon;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   /** Constructs a new Editor. */
   public Editor(Control control, int wizardType, SchemaModel schema) {

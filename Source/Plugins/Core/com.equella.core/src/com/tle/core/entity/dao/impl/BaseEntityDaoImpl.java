@@ -18,77 +18,45 @@
 
 package com.tle.core.entity.dao.impl;
 
+import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.entity.dao.BaseEntityDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.AbstractHibernateDao;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import javax.inject.Singleton;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate5.HibernateCallback;
 
 @SuppressWarnings("nls")
 @Bind(BaseEntityDao.class)
 @Singleton
 public class BaseEntityDaoImpl extends AbstractHibernateDao implements BaseEntityDao {
   @Override
+  public Optional<BaseEntity> getEntityInCurrentInstitution(final long id) {
+    return findUnique(
+        BaseEntity.class,
+        (builder, entity) ->
+            builder.and(
+                builder.equal(entity.get("id"), id),
+                CurrentInstitution.equalityPredicate(builder, entity)));
+  }
+
+  @Override
   public LanguageBundle getEntityNameForId(final long id) {
-    return (LanguageBundle)
-        getHibernateTemplate()
-            .execute(
-                new HibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    Query query = session.createQuery("SELECT name FROM BaseEntity WHERE id = :id");
-                    query.setParameter("id", id);
-                    query.setCacheable(true);
-
-                    Iterator<?> iter = query.iterate();
-                    if (iter.hasNext()) {
-                      return iter.next();
-                    } else {
-                      return null;
-                    }
-                  }
-                });
-  }
-
-  @Override
-  public Map<Long, String> getUuids(Set<Long> ids) {
-    Map<Long, String> uuids = new HashMap<Long, String>();
-    if (!ids.isEmpty()) {
-      List<Object[]> entityList =
-          (List<Object[]>)
-              getHibernateTemplate()
-                  .findByNamedParam(
-                      "SELECT id, uuid FROM BaseEntity WHERE id IN (:ids)", "ids", ids);
-
-      for (Object[] o : entityList) {
-        uuids.put((Long) o[0], (String) o[1]);
-      }
-    }
-    return uuids;
-  }
-
-  @Override
-  public List<Long> getIdsFromUuids(Set<String> uuids) {
-    if (uuids.isEmpty()) {
-      return Collections.EMPTY_LIST;
-    }
-
-    return (List<Long>)
-        getHibernateTemplate()
-            .findByNamedParam(
-                "SELECT id FROM BaseEntity WHERE institution = :institution AND uuid IN (:uuids)",
-                new String[] {"institution", "uuids"},
-                new Object[] {CurrentInstitution.get(), uuids});
+    // A projection rather than an entity load, so this stays HQL - the criteriaQuery/findUnique
+    // helpers select instances of a class, which cannot express "SELECT name". The alias is not
+    // optional: selecting the association makes it the query's primary entity, so an unqualified
+    // "institution" resolves against the language bundle rather than the base entity.
+    return withSession(
+            session ->
+                session
+                    .createQuery(
+                        "SELECT be.name FROM BaseEntity be"
+                            + " WHERE be.institution = :institution AND be.id = :id",
+                        LanguageBundle.class)
+                    .setParameter("institution", CurrentInstitution.get())
+                    .setParameter("id", id)
+                    .uniqueResultOptional())
+        .orElse(null);
   }
 }

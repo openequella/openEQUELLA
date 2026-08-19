@@ -21,8 +21,7 @@ import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 
 export interface WizardShuffleBoxProps
-  extends WizardControlBasicProps,
-    ShuffleBoxProps {}
+  extends WizardControlBasicProps, ShuffleBoxProps {}
 
 export const WizardShuffleBox = ({
   mandatory,

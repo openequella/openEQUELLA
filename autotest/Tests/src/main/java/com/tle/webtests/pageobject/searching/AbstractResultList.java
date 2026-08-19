@@ -149,6 +149,12 @@ public abstract class AbstractResultList<
    */
   public boolean isResultsAvailable(boolean newUi) {
     try {
+      // If the result list is empty, return false immediately (it saves time waiting for an element
+      // will never appear).
+      if (isResultEmpty(newUi)) {
+        return false;
+      }
+
       if (newUi) {
         waiter.until(
             ExpectedConditions.presenceOfElementLocated(
@@ -162,5 +168,11 @@ public abstract class AbstractResultList<
     } catch (TimeoutException Time) {
       return false;
     }
+  }
+
+  // Check if the result list is empty.
+  private boolean isResultEmpty(boolean newUi) {
+    String xpath = newUi ? "//p[text()='No results found.']" : "//h3[text()='No results found']";
+    return isVisible(By.xpath(xpath));
   }
 }

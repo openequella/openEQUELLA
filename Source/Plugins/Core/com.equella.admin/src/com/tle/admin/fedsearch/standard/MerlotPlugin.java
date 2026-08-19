@@ -20,8 +20,10 @@ package com.tle.admin.fedsearch.standard;
 
 import com.tle.admin.fedsearch.SearchPlugin;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.search.MerlotSettings;
 import com.tle.common.Check;
+import com.tle.common.i18n.StringLookup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -64,7 +66,9 @@ public class MerlotPlugin extends SearchPlugin<MerlotSettings> {
     }
   }
 
-  private String s(String keyPart) {
-    return getString("merlot." + keyPart);
+  private static final StringLookup strings = Lookup.withPrefix("merlot");
+
+  private String s(String key) {
+    return strings.text(key);
   }
 }

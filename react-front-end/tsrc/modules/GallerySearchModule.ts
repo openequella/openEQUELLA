@@ -74,11 +74,10 @@ export interface GalleryEntry {
  * specific attention been drawn to the absence of `attachments` but the presence of `mainEntry` and
  * `additionalEntries`.
  */
-export interface GallerySearchResultItem
-  extends Pick<
-    OEQ.Search.SearchResultItem,
-    "uuid" | "version" | "name" | "links" | "drmStatus" | "status"
-  > {
+export interface GallerySearchResultItem extends Pick<
+  OEQ.Search.SearchResultItem,
+  "uuid" | "version" | "name" | "links" | "drmStatus" | "status"
+> {
   /**
    * The primary asset to be shown to represent an item. (Typically the first attachment returned
    * for an item.

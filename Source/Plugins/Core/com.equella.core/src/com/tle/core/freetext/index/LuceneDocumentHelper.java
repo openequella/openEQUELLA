@@ -30,6 +30,10 @@ import org.apache.lucene.util.FixedBitSet;
 
 public final class LuceneDocumentHelper {
 
+  private LuceneDocumentHelper() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
    * * Iterate the provided document ID enumeration and apply each ID to the provided function.
    *

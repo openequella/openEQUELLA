@@ -20,8 +20,8 @@ package com.tle.core.settings.service.impl;
 
 import com.dytech.common.net.Proxy;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheLoader;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -61,6 +61,8 @@ import org.hibernate.engine.spi.TypedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Singleton
 @SuppressWarnings("nls")
@@ -68,11 +70,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfigurationServiceImpl implements ConfigurationService, ConfigurationChangeListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
-  private static final Object CACHED_NULL = new Object();
+  // Sentinel value representing a cached null result.
+  // Distinguishes between "not cached yet" and "cached as null".
+  private static final Object CACHED_NULL =
+      new Object() {
+        @Override
+        public String toString() {
+          return "CACHED_NULL_SENTINEL";
+        }
+      };
+
   private InstitutionCache<Cache<Object, Object>> cache;
 
   @Inject private EventService eventService;
   @Inject private ConfigurationDao configurationDao;
+  @Inject private ConfigurationPropertyLoader configurationPropertyLoader;
 
   private final ProxyDetails proxy = new ProxyDetails();
 
@@ -104,7 +116,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
             new CacheLoader<Institution, Cache<Object, Object>>() {
               @Override
               public Cache<Object, Object> load(Institution key) {
-                return CacheBuilder.newBuilder().concurrencyLevel(12).build();
+                return Caffeine.newBuilder().build();
               }
             });
   }
@@ -229,7 +241,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
   @Transactional
   public void setProperty(String property, String value) {
     setPropertyImpl(property, value);
-    invalidateCache();
+    invalidateCacheAfterCommit();
   }
 
   @Override
@@ -244,7 +256,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
       setPropertiesImpl(map);
     }
 
-    invalidateCache();
+    invalidateCacheAfterCommit();
   }
 
   private void setPropertiesImpl(Map<String, String> map) {
@@ -265,15 +277,15 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
   @Transactional
   public void deleteProperty(String property) {
     configurationDao.deletePropertiesLike(Collections.singleton(property));
-    invalidateCache();
+    invalidateCacheAfterCommit();
   }
 
   @Override
   @Transactional
   @SecureOnCallSystem
   public void deleteAllInstitutionProperties() {
-    invalidateCache();
     configurationDao.deleteAll();
+    invalidateCacheAfterCommit();
   }
 
   private Criterion getInstitutionCriterion() {
@@ -307,38 +319,75 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
     cache.clear();
   }
 
-  private void invalidateCache() {
-    ConfigurationChangedEvent event = new ConfigurationChangedEvent();
+  /**
+   * Invalidates the cache after the current transaction commits. This ensures that cache
+   * invalidation only happens after the database changes are successfully committed, preventing
+   * cache inconsistency issues where stale data could be cached between the cache clear and
+   * transaction commit.
+   *
+   * <p><b>Important:</b> The cache invalidation callback is created immediately (before transaction
+   * synchronization registration) to capture the current {@link Institution} context from
+   * ThreadLocal. This prevents incorrect cache invalidation if the ThreadLocal context is cleared
+   * before the callback executes after commit.
+   */
+  private void invalidateCacheAfterCommit() {
+    Runnable clearInstitutionCache = cache.createCacheInvalidationCallback();
 
-    // Call to local handler method to invalidate the local cache, then post
-    // it to everyone else.
-    configurationChangedEvent(event);
-
-    eventService.publishApplicationEvent(event);
-  }
-
-  @Transactional
-  <T> T loadFromDb(String property, CacheLoader<String, T> loader) {
-    try {
-      return loader.load(property);
-    } catch (Exception e) {
-      throw new RuntimeApplicationException("Could not create config object", e); // $NON-NLS-1$
+    // Check if we're in an active transaction with synchronization support
+    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+      TransactionSynchronizationManager.registerSynchronization(
+          new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+              invalidateCache(clearInstitutionCache);
+            }
+          });
+    } else {
+      // Fallback: if not in a transaction context, invalidate immediately
+      LOGGER.warn(
+          "invalidateCacheAfterCommit called outside transaction context - invalidating"
+              + " immediately");
+      invalidateCache(clearInstitutionCache);
     }
   }
 
+  // Invalidates the local cache first, then broadcasts the event.
+  private void invalidateCache(Runnable clearLocalCache) {
+    clearLocalCache.run();
+
+    ConfigurationChangedEvent event = new ConfigurationChangedEvent();
+    eventService.publishApplicationEvent(event);
+  }
+
+  /**
+   * Loads a value from DB for caching, replacing a {@code null} DB result with the {@link
+   * #CACHED_NULL} sentinel so that Guava's cache can distinguish between "not yet cached" and
+   * "cached as null".
+   */
+  private <T> Object loadFromDb(String property, CacheLoader<String, T> loader) {
+    T value = configurationPropertyLoader.loadFromDb(property, loader);
+    return value != null ? value : CACHED_NULL;
+  }
+
+  /**
+   * Retrieves a value from the institution-scoped cache, loading it from the database via {@code
+   * loader} on a cache miss.
+   *
+   * <p>Caffeine's {@link Cache#get(Object, java.util.function.Function)} handles concurrent access
+   * atomically for a given key: only one thread will execute the loader for a given key, and
+   * concurrent callers will block until the value is available. This replaces a manual
+   * double-checked locking (DCL) pattern.
+   */
   @SuppressWarnings("unchecked")
   private <T> T getFromCache(Object key, String property, final CacheLoader<String, T> loader) {
-    Cache<Object, Object> map = cache.getCache();
-
-    Object ro = map.getIfPresent(key);
-    if (ro == null) {
-      T newObj = loadFromDb(property, loader);
-      synchronized (map) {
-        map.put(key, newObj != null ? newObj : CACHED_NULL);
-        return newObj;
-      }
-    } else {
-      return ro.equals(CACHED_NULL) ? null : (T) ro;
+    try {
+      Object result = cache.getCache().get(key, k -> loadFromDb(property, loader));
+      return result == null || result.equals(CACHED_NULL) ? null : (T) result;
+    } catch (RuntimeException e) {
+      throw new RuntimeApplicationException(
+          String.format(
+              "Failed to load configuration from cache [key=%s, property=%s]", key, property),
+          e.getCause() != null ? e.getCause() : e);
     }
   }
 

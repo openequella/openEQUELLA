@@ -38,10 +38,10 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -59,7 +59,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-@SuppressWarnings("nls")
 public abstract class AbstractBasicModel extends IfModel implements ActionListener {
   private static final boolean[][] SET_TABLE = {
     /* NONE, BLOCK, OP_TERM, BLOCK_END, BRACKET_END */
@@ -435,11 +434,9 @@ public abstract class AbstractBasicModel extends IfModel implements ActionListen
   protected void defaultPopulateValues() {
     switch (xpathField.getType()) {
       case MODERATION:
-        {
-          valueSelection.addItem(new NameValue("true", "true"));
-          valueSelection.addItem(new NameValue("false", "false"));
-          break;
-        }
+        valueSelection.addItem(new NameValue("true", "true"));
+        valueSelection.addItem(new NameValue("false", "false"));
+        break;
 
       case ITEM_STATUS:
         addStatuses();
@@ -462,7 +459,10 @@ public abstract class AbstractBasicModel extends IfModel implements ActionListen
   protected void addRoles() {
     if (roles == null) {
       roles =
-          Driver.instance().getClientService().getService(RemoteUserService.class).searchRoles("*");
+          Driver.instance()
+              .getClientService()
+              .getService(AdminUserDirectoryService.class)
+              .searchRoles("*");
       TreeSet<RoleBean> set = new TreeSet<RoleBean>(new NumberStringComparator<RoleBean>());
       set.addAll(roles);
       roles = set;

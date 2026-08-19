@@ -7,8 +7,8 @@ import com.tle.core.services.item.FreetextResult;
 import com.tle.freetext.FreetextIndex;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LanguageConfigurationTest {
   private static final String GERMAN_ANALYSER_PACKAGE =
@@ -19,11 +19,11 @@ public class LanguageConfigurationTest {
   public void languageConfigurationTest() {
     // English is the default language so the default analyser is TLEAnylyzer
     Analyzer defaultAnalyser = getAnalyser("en");
-    Assert.assertTrue(defaultAnalyser.toString().contains(DEFAULT_ANALYSER_PACKAGE));
+    Assertions.assertTrue(defaultAnalyser.toString().contains(DEFAULT_ANALYSER_PACKAGE));
 
     Analyzer germanAnalyser = getAnalyser("de");
     // If ClassGraph is working, the analyser for German is GermanAnalyser.
-    Assert.assertTrue(germanAnalyser.toString().contains(GERMAN_ANALYSER_PACKAGE));
+    Assertions.assertTrue(germanAnalyser.toString().contains(GERMAN_ANALYSER_PACKAGE));
   }
 
   private Analyzer getAnalyser(String language) {

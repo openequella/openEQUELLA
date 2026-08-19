@@ -22,7 +22,7 @@ class ElementFilter(f: Element => Boolean) extends AbstractFilter[Element] {
 case class PluginDeets(bd: File, libs: Classpath) {
   lazy val rootDoc  = Common.saxBuilder.build(bd / "plugin-jpf.xml")
   lazy val rootElem = rootDoc.getRootElement
-  lazy val imports = Option(rootElem.getChild("requires")).toSeq
+  lazy val imports  = Option(rootElem.getChild("requires")).toSeq
     .flatMap(_.getChildren("import").asScala)
     .filter(!_.getAttributeValue("plugin-id").contains(":"))
   lazy val importIds = imports.map(_.getAttributeValue("plugin-id"))
@@ -47,13 +47,12 @@ object PluginRefactor {
     Set("com.tle.platform.common", "com.tle.platform.swing", "com.tle.platform.equella")
 
   val keepPlugins = Set(
-    "com.tle.webstart.admin",
+    "com.equella.admin",
     "com.tle.core.application",
     "com.tle.core.security",
     "com.tle.web.sections",
     "com.tle.web.sections.equella",
     "com.tle.core.guice",
-    "com.tle.web.adminconsole",
     "com.tle.core.remoterepo.srw"
   ) ++ platformPlugins
 
@@ -68,7 +67,7 @@ object PluginRefactor {
 
     def wouldCauseCycle(_toCheck: Set[String]): CycleCheckResult = {
 
-      val randomCheck = scala.util.Random.shuffle(_toCheck.toList)
+      val randomCheck                            = scala.util.Random.shuffle(_toCheck.toList)
       val (actualCheck, toCheck, withExclusions) = randomCheck
         .find(mutualKeys)
         .map { firstMutual =>
@@ -113,7 +112,7 @@ object PluginRefactor {
       @tailrec
       def topLevel(mergeList: List[String], checked: Set[String]): Option[List[String]] =
         mergeList match {
-          case Nil => None
+          case Nil       => None
           case pId :: mt =>
             checkIter(
               List(pId),
@@ -127,7 +126,7 @@ object PluginRefactor {
 
       actualCheck match {
         case singlePlugin :: Nil => CycleFound(List(singlePlugin))
-        case _ =>
+        case _                   =>
           topLevel(actualCheck, Set.empty) match {
             case None      => Success(actualCheck.toSet)
             case Some(bad) => CycleFound(bad)
@@ -141,7 +140,7 @@ object PluginRefactor {
   def choosePlugins(allImports: Seq[PluginDeets], adminPlugins: Boolean): Iterable[String] = {
 
     val initialPlugins = allImports.filter { p =>
-      val r = p.rootElem
+      val r            = p.rootElem
       val adminConsole = r
         .getChildren("attributes")
         .asScala
@@ -183,7 +182,7 @@ object PluginRefactor {
           else {
             val nextSet = iter.next()
             wouldCauseCycle(nextSet) match {
-              case Success(correct) => Right(correct)
+              case Success(correct)     => Right(correct)
               case CycleFound(badCycle) =>
                 val bad = badCycle.last
                 checkSubsets(iter, soFar + 1, stats.updated(bad, stats.getOrElse(bad, 0) + 1))
@@ -225,7 +224,7 @@ object PluginRefactor {
 
     cycleChecker(allPlugins)(toMerge.toSet) match {
       case CycleFound(cycle) => println(s"Sorry that would cause a cycle: ${cycle}")
-      case Success(_) =>
+      case Success(_)        =>
         val baseDir = baseParentDir / "Temporary" / "merged_plugin"
         println("Merging: " + toMerge.sorted.mkString(","))
         IO.delete(baseDir)
@@ -233,7 +232,7 @@ object PluginRefactor {
         val baseRes = baseDir / "resources"
 
         val allowedIds = toMerge.toSet
-        val imp_exts = allPlugins.collect {
+        val imp_exts   = allPlugins.collect {
           case p if allowedIds(p.pId) =>
             val exts =
               p.rootElem.getChildren("extension").asScala.toList.map(e => (p.bd, p.pId, e.detach()))
@@ -296,7 +295,7 @@ object PluginRefactor {
                 .find(_.getAttributeValue("id") == "file")
                 .map { fileElem =>
                   val filename = fileElem.getAttributeValue("value")
-                  val group = params
+                  val group    = params
                     .find(_.getAttributeValue("id") == "group")
                     .map(_.getAttributeValue("value"))
                     .getOrElse("resource-centre")
@@ -356,7 +355,7 @@ object PluginRefactor {
               (Set("nameKey", "linkKey", "descriptionKey"), Set())
             case ("com.tle.mycontent", "contentHandler") => (Set("nameKey"), Set.empty)
             case ("com.tle.admin.tools", "tool")         => (Set("name"), Set("class"))
-            case ("com.tle.admin.controls", "control") =>
+            case ("com.tle.admin.controls", "control")   =>
               (Set("name"), Set("wrappedClass", "editorClass", "modelClass"))
             case ("com.tle.admin.controls.universal", "editor") =>
               (Set("nameKey"), Set("configPanel"))
@@ -374,7 +373,7 @@ object PluginRefactor {
               (Set("nameKey"), Set("configPanel"))
             case ("com.tle.admin.taxonomy.tool", "dataSourceChoice") =>
               (Set("nameKey"), Set("configPanel"))
-            case ("com.tle.admin.taxonomy.tool", "displayType") => (Set("nameKey"), Set())
+            case ("com.tle.admin.taxonomy.tool", "displayType")           => (Set("nameKey"), Set())
             case ("com.tle.admin.taxonomy.tool", "predefinedTermDataKey") =>
               (Set("name", "description"), Set())
             case ("com.tle.core.migration", "migration") => (Set(), Set("id", "obsoletedby"))
@@ -387,8 +386,8 @@ object PluginRefactor {
 
         val afterExt = exts.flatMap { case (bd, pId, e) =>
           (getPluginId(e), e.getAttributeValue("point-id")) match {
-            case ("com.tle.core.guice", "module")  => Seq.empty
-            case ("com.tle.common.i18n", "bundle") => Seq.empty
+            case ("com.tle.core.guice", "module")                              => Seq.empty
+            case ("com.tle.common.i18n", "bundle")                             => Seq.empty
             case (extPlugin, ext) if keyParameters(extPlugin, ext)._1.nonEmpty =>
               Seq(reprefix(pId, e.clone, keyParameters(extPlugin, ext)._1))
             case _ => Seq(e)

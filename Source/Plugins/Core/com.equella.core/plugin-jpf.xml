@@ -4,7 +4,6 @@
   <requires>
     <import plugin-id="com.equella.base" />
     <import plugin-id="com.equella.serverbase" />
-    <import plugin-id="com.tle.common.applet" />
     <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.core.activation" />
     <import plugin-id="com.tle.core.application" />
@@ -192,6 +191,7 @@
     <parameter id="class" value="com.tle.web.resources.ResourcesModule" />
     <parameter id="class" value="com.tle.web.scheduler.SchedulerModule" />
     <parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
+    <parameter id="class" value="com.tle.core.scripting.guice.SystemScriptModule" />
     <parameter id="class" value="com.tle.web.searching.guice.CourseSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SelectOrAddSearchModule" />
     <parameter id="class" value="com.tle.web.searching.guice.SearchTrackerModule" />
@@ -218,6 +218,7 @@
     <parameter id="class" value="com.tle.web.workflow.guice.StaticServices" />
     <parameter id="class" value="com.tle.web.workflow.guice.TaskSearchModule" />
     <parameter id="class" value="com.tle.web.workflow.portal.TaskListModule" />
+    <parameter id="class" value="com.tle.web.remoting.graphql.GraphQLModule" />
     <parameter id="class" value="com.tle.integration.oidc.OidcModule" />
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="equella">
@@ -598,11 +599,6 @@
     <parameter id="serviceInterface" value="com.tle.web.entity.services.SoapCourseService" />
     <parameter id="bean" value="bean:com.tle.web.entity.services.SoapCourseServiceImpl" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="loginService">
-    <parameter id="class" value="com.tle.core.remoting.RemoteLoginService" />
-    <parameter id="bean" value="bean:com.tle.web.remoting.impl.LoginServiceImpl" />
-    <parameter id="enableRequestCapturing" value="true" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="privilegeInvoker">
     <parameter id="class" value="com.tle.common.security.remoting.RemotePrivilegeTreeService" />
     <parameter id="bean" value="bean:remotePrivilegeTreeService" />
@@ -611,25 +607,9 @@
     <parameter id="class" value="com.tle.common.security.remoting.RemoteTLEAclManager" />
     <parameter id="bean" value="bean:remoteAclService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="schemaInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteSchemaService" />
-    <parameter id="bean" value="bean:remoteSchemaService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="collectionInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteItemDefinitionService" />
-    <parameter id="bean" value="bean:remoteItemdefinitionService" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="powerSearchInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemotePowerSearchService" />
     <parameter id="bean" value="bean:remotePowerSearchService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="languageInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteLanguageService" />
-    <parameter id="bean" value="bean:remoteLanguageService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="userInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteUserService" />
-    <parameter id="bean" value="bean:remoteUserService" />
   </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="workflowInvoker">
     <parameter id="class" value="com.tle.common.workflow.RemoteWorkflowService" />
@@ -638,14 +618,6 @@
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="itemInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteItemService" />
     <parameter id="bean" value="bean:remoteItemService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="baseEntityInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteBaseEntityService" />
-    <parameter id="bean" value="bean:remoteBaseEntityService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
-    <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
-    <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="collectionResource">
     <parameter id="class" value="com.tle.web.api.collection.interfaces.CollectionResource" />
@@ -1663,11 +1635,6 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
     <parameter id="date" value="2018-06-01" />
   </extension>
-  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewEntityTable">
-    <parameter id="id" value="NewEntityTable" />
-    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20191.NewEntityTable" />
-    <parameter id="date" value="2019-02-05" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="addIndexes">
     <parameter id="id" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes" />
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.EnsureForeignKeyIndexes" />
@@ -1714,9 +1681,6 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
   </extension>
-  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="cloudProviderSettingPrivilegeTreeProvider">
-    <parameter id="provider" value="bean:com.tle.web.cloudprovider.CloudProviderSettingPrivilegeTreeProvider" />
-  </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="move">
     <parameter id="id" value="move" />
     <parameter id="class" value="bean:com.tle.web.cloneormove.section.MoveItemSection" />
@@ -1759,9 +1723,6 @@
   <extension plugin-id="com.tle.core.workflow.thumbnail" point-id="thumbnailGenerator" id="pdfThumbnailGenerator">
     <parameter id="mimetype" value="application/pdf" />
     <parameter id="generator" value="bean:com.tle.pdf.thumbnail.PdfThumbnailGenerator" />
-  </extension>
-  <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="InstitutionRestService">
-    <parameter id="class" value="com.tle.web.api.institution.interfaces.InstitutionResource" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="other">
     <parameter id="class" value="com.tle.web.api.institution.EquellaRoleResource" />
@@ -3508,6 +3469,10 @@
     <parameter id="class" value="com.tle.common.harvester.RemoteEQUELLAHarvesterService" />
     <parameter id="bean" value="bean:com.tle.core.harvester.EQUELLAHarvesterService" />
   </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="remoteAdminService">
+    <parameter id="class" value="com.tle.common.adminconsole.RemoteAdminService"/>
+    <parameter id="bean" value="bean:com.tle.common.adminconsole.RemoteAdminService"/>
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_3_3">
     <parameter id="class" value="com.tle.common.harvester.HarvesterProfile" />
   </extension>
@@ -4186,7 +4151,6 @@
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemActionsResource" />
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemLockResource" />
     <parameter id="class" value="com.tle.web.api.item.interfaces.ItemModerationResource" />
-    <parameter id="class" value="com.tle.web.api.item.interfaces.FileResource" />
     <parameter id="class" value="com.tle.web.api.item.resource.impl.ItemRelationResourceImpl" />
     <parameter id="class" value="com.tle.web.api.staging.interfaces.StagingResource" />
   </extension>
@@ -4259,6 +4223,14 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="userConfigurableServlet">
     <parameter id="bean" value="bean:com.tle.web.raw.servlet.UserConfigurableServlet" />
     <parameter id="url-pattern" value="/configurable/" />
+  </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="downloadServletMapping">
+    <parameter id="url-pattern" value="/ds/*"/>
+    <parameter id="bean" value="bean:com.tle.core.download.DownloadServlet"/>
+  </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="adminConsoleServlet">
+    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleDownloadServlet"/>
+    <parameter id="url-pattern" value="/adminconsole.jar"/>
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboard">
     <parameter id="type" value="blackboard" />
@@ -4407,10 +4379,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="iconServer">
     <parameter id="path" value="/icon.do" />
     <parameter id="root" value="bean:com.tle.web.mimetypes.service.IconServer" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="javascriptService">
-    <parameter id="class" value="com.tle.common.javascript.RemoteJavascriptService" />
-    <parameter id="bean" value="bean:com.tle.core.javascript.JavascriptService" />
   </extension>
   <extension plugin-id="com.tle.core.collection" point-id="collectionSave" id="itemCollectionSave">
     <parameter id="bean" value="bean:com.tle.core.item.standard.service.ItemStandardService" />
@@ -4764,6 +4732,7 @@
     <parameter id="url-pattern" value="*.png" />
     <parameter id="url-pattern" value="*.gif" />
     <parameter id="url-pattern" value="*.js" />
+    <parameter id="url-pattern" value="*.svg" />
     <parameter id="order" value="550" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webFilter" id="requestFilter">
@@ -4848,14 +4817,6 @@
   <extension plugin-id="com.tle.web.core" point-id="userStateHook" id="tokenUserStateHook">
     <parameter id="bean" value="bean:com.tle.web.core.filter.TokenUserStateHook" />
     <parameter id="order" value="1000" />
-  </extension>
-  <extension plugin-id="com.tle.web.core" point-id="userStateHook" id="systemUserStateHook">
-    <parameter id="bean" value="bean:com.tle.web.core.filter.SystemUserStateHook" />
-    <parameter id="order" value="100" />
-  </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="sessionServlet">
-    <parameter id="bean" value="bean:com.tle.web.core.servlet.SessionServlet" />
-    <parameter id="url-pattern" value="/session" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6_1">
     <parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
@@ -5566,6 +5527,11 @@
     <parameter id="type" value="initial" />
     <parameter id="order" value="1000" />
   </extension>
+  <extension plugin-id="com.tle.core.application" point-id="onStartup" id="adminConsoleExtensions">
+    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleExtensions"/>
+    <parameter id="type" value="web"/>
+    <parameter id="order" value="1"/>
+  </extension>
   <extension plugin-id="com.tle.core.services" point-id="coreTasks" id="institutionsTask">
     <parameter id="id" value="InstitutionKeeper" />
     <parameter id="dependency" value="CheckSystemSchema" />
@@ -5964,13 +5930,10 @@
     <parameter id="settingsClass" value="com.tle.core.usermanagement.standard.logon.NormalLogonFilter" />
     <parameter id="order" value="500" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="tleUserInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteTLEUserService" />
-    <parameter id="bean" value="bean:com.tle.core.usermanagement.standard.service.TLEUserService" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="tleGroupInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteTLEGroupService" />
-    <parameter id="bean" value="bean:com.tle.core.usermanagement.standard.service.TLEGroupService" />
+  <extension plugin-id="com.tle.core.usermanagement" point-id="logonFilter" id="oidc">
+    <parameter id="bean" value="bean:com.tle.integration.oidc.OidcLogonFilter" />
+    <parameter id="settingsClass" value="com.tle.integration.oidc.OidcLogonFilter" />
+    <parameter id="order" value="600" />
   </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="ldapInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteLDAPService" />
@@ -5998,9 +5961,6 @@
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountAttachment">
     <parameter id="class" value="com.tle.beans.viewcount.ViewcountAttachment" />
-  </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
-    <parameter id="class" value="com.tle.beans.newentity.Entity" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="WebKeySet">
     <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
@@ -6129,6 +6089,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
     <parameter id="date" value="2025-07-11"/>
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="DropNewEntityTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
+    <parameter id="date" value="2026-07-10"/>
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
   </extension>
@@ -6247,6 +6212,14 @@
     <parameter id="bean" value="bean:com.tle.core.usermanagement.OktaUserDirectory" />
     <parameter id="platform" value="OKTA" />
     <parameter id="order" value="1200" />
+  </extension>
+  <!-- endregion -->
+  <!-- region GraphQL Support-->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="graphQLServlet">
+    <parameter id="bean" value="bean:com.tle.web.remoting.graphql.GraphQLServlet" />
+    <parameter id="url-pattern" value="/graphql" />
+    <parameter id="url-pattern" value="/graphql/schema" />
+    <parameter id="url-pattern" value="/graphql/ui/*" />
   </extension>
   <!-- endregion -->
 </plugin>

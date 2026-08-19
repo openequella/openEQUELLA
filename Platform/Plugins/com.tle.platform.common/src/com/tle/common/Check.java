@@ -30,29 +30,37 @@ import java.util.UUID;
 
 @SuppressWarnings("nls")
 public final class Check {
+  /**
+   * Parses the given string into a UUID.
+   *
+   * <p>This method is lenient regarding case sensitivity; it accepts any format parseable by {@link
+   * java.util.UUID#fromString(String)}, including non-canonical uppercase UUIDs.
+   *
+   * @param uuid The string to parse.
+   * @return The parsed UUID object.
+   * @throws IllegalArgumentException If the string is null, empty, or not a valid UUID.
+   */
   public static UUID checkValidUuid(String uuid) {
-    UUID jUuid = null;
     try {
-      jUuid = UUID.fromString(uuid);
-      if (!uuid.equals(jUuid.toString())) {
-        jUuid = null;
-      }
-    } catch (Exception e) {
-      jUuid = null;
+      return UUID.fromString(uuid);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid UUID '" + uuid + "'", e);
     }
-    if (jUuid == null) {
-      throw new IllegalArgumentException("Invalid UUID '" + uuid + "'");
-    }
-    return jUuid;
   }
 
+  /**
+   * Checks if the string is a valid UUID.
+   *
+   * <p>Note: This method is lenient. It accepts any format parseable by {@link
+   * java.util.UUID#fromString(String)}, including non-canonical uppercase UUIDs (e.g., "A-B-C").
+   *
+   * @param uuid The string to check.
+   * @return true if the string is a valid UUID, false otherwise.
+   */
   public static boolean isValidUuid(String uuid) {
     try {
-      UUID jUuid = UUID.fromString(uuid);
-      if (uuid.equals(jUuid.toString())) {
-        return true;
-      }
-      return false;
+      UUID.fromString(uuid);
+      return true;
     } catch (Exception e) {
       return false;
     }
@@ -137,14 +145,14 @@ public final class Check {
    * Performs the standard checks, and then does a callback if necessary. See the following web page
    * for why this is like this: http://www.javaworld.com/javaworld/jw-06-2004/jw-0614-equals.html
    * Example: <code>
-   * 	public boolean equals(Object obj)
-   * 	{
-   * 		return Check.commonEquals(this, obj, this);
-   * 	}
+   *     public boolean equals(Object obj)
+   *     {
+   *         return Check.commonEquals(this, obj, this);
+   *     }
    *
    *  public boolean checkFields(SomeClass rhs)
    *  {
-   *  	return this.field.equals(rhs.field);
+   *      return this.field.equals(rhs.field);
    *  }
    * </code>
    */

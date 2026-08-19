@@ -21,20 +21,12 @@ package com.tle.admin.controls;
 import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.beans.control.WizardControl;
-import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
-import java.awt.FlowLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class UnavailableControlEditor extends AbstractControlEditor<WizardControl> {
 
   public UnavailableControlEditor(Control control, int wizardType, SchemaModel schema) {
     super(control, wizardType, schema);
-    // if this UnavailableControl was originally a CloudControl then display an error message
-    if (control.getDefinition().getId().startsWith("cp.")) {
-      setupGUI();
-    }
   }
 
   @Override
@@ -42,11 +34,4 @@ public class UnavailableControlEditor extends AbstractControlEditor<WizardContro
 
   @Override
   protected void loadControl() {}
-
-  private void setupGUI() {
-    JPanel body = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel text = new JLabel(Lookup.lookup.text("unavailablecontrol.message"));
-    body.add(text);
-    addSection(body);
-  }
 }

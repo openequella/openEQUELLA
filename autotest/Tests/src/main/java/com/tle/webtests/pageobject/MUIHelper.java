@@ -4,7 +4,11 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class MUIHelper {
+public final class MUIHelper {
+
+  private MUIHelper() {
+    throw new UnsupportedOperationException();
+  }
 
   public static String getBadgeText(WebElement base) {
     List<WebElement> elems = base.findElements(By.xpath("./button/span/span"));

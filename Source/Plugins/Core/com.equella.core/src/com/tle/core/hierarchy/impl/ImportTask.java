@@ -111,7 +111,7 @@ public class ImportTask extends SingleShotTask {
   @SuppressWarnings("nls")
   private boolean doImportRecursive(ExportedHierarchyNode node, HierarchyTopic parent) {
     HierarchyTopic topic = node.getTopic();
-    topic.setId(0l);
+    topic.setId(0L);
     if (newids) {
       topic.setUuid(UUID.randomUUID().toString());
     } else {

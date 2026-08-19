@@ -52,7 +52,7 @@ public class WorkflowListModel extends DynamicHtmlListModel<BaseEntityLabel> {
 
   @Override
   protected Iterable<BaseEntityLabel> populateModel(SectionInfo info) {
-    return workflowService.listManagable();
+    return workflowService.listManageable();
   }
 
   @Override

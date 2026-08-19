@@ -69,7 +69,7 @@ class DashboardServiceImpl @Inject() (
     val layout: String = userPreferenceService.getPreference(DASHBOARD_LAYOUT)
     Try(Option(layout).map(DashboardLayout.withName)) match {
       case Success(value) => value
-      case Failure(_) =>
+      case Failure(_)     =>
         LOGGER.error(
           "Invalid dashboard layout '{}' found. Default to the single-column layout.",
           layout
@@ -116,7 +116,7 @@ class DashboardServiceImpl @Inject() (
       portletType match {
         case PortletType.recent         => RecentContributionsPortlet(portlet, commonDetails)
         case PortletType.taskstatistics => TaskStatisticsPortlet(portlet, commonDetails)
-        case PortletType.html =>
+        case PortletType.html           =>
           Right(FormattedTextPortlet(commonDetails, rawHtml = portlet.getConfig))
         case PortletType.browse      => Right(BrowsePortlet(commonDetails))
         case PortletType.favourites  => Right(FavouritesPortlet(commonDetails))
@@ -204,8 +204,8 @@ class DashboardServiceImpl @Inject() (
     */
   private def getPortletColumn(pref: PortletPreference): PortletColumn.Value = {
     pref.getPosition match {
-      case 1         => PortletColumn.right
-      case 0 | 2 | 3 => PortletColumn.left
+      case 1          => PortletColumn.right
+      case 0 | 2 | 3  => PortletColumn.left
       case invalidPos =>
         LOGGER.warn(
           s"Invalid portlet position {} found for portlet {}. Default to the left column.",

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "esModuleInterop": true,
+    "target": "es5",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "allowJs": true,
+    "checkJs": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noErrorTruncation": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+  },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".parcel-cache"
+  ]
+}

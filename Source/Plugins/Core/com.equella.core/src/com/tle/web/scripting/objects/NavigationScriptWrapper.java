@@ -242,7 +242,7 @@ public class NavigationScriptWrapper extends AbstractScriptWrapper
         if (attach != null && !itemAttachments.contains(attach)) {
           // throw error? log warning? silently remove?
           // throw new RuntimeException(CurrentLocale.get(
-          //	"com.tle.web.scripting.advanced.navigation.error.badtab", attach //$NON-NLS-1$
+          //    "com.tle.web.scripting.advanced.navigation.error.badtab", attach //$NON-NLS-1$
           // .getDescription()));
           tabs.remove();
         }

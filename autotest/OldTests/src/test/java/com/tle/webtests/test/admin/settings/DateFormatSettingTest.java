@@ -16,12 +16,12 @@ public class DateFormatSettingTest extends AbstractSessionTest {
   public void testSaveDateFormatSetting() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    DateFormatSettingPage dateSettingPage = sp.dateFormatSettingPage();
+    DateFormatSettingPage dateSettingPage = sp.clickDateFormatSetting();
     dateSettingPage.setExactDateFormat();
     dateSettingPage.saveSettings();
     ReceiptPage.waiter("Date format settings saved successfully", dateSettingPage).get();
     sp = new SettingsPage(context).load();
-    dateSettingPage = sp.dateFormatSettingPage();
+    dateSettingPage = sp.clickDateFormatSetting();
     assertTrue(dateSettingPage.isExactDateFormat());
     dateSettingPage.setApproxDateFormat();
     dateSettingPage.saveSettings();

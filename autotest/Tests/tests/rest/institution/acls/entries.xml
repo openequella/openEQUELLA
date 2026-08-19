@@ -262,7 +262,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117688</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -314,7 +314,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117684</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -509,7 +509,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117669</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1120,7 +1120,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117622</id>
     <expression>
-      <id>2923</id>
+      <id>821086</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>
@@ -1560,6 +1560,19 @@
     <aclPriority>1400</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
+    <id>824094</id>
+    <expression>
+      <id>1683609</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:116628</targetObject>
+    <privilege>CREATE_ITEM</privilege>
+    <aggregateOrdering>2000 0004 R</aggregateOrdering>
+    <grantRevoke>R</grantRevoke>
+    <aclOrder>4</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
     <id>117588</id>
     <expression>
       <id>474</id>
@@ -1779,5 +1792,31 @@
     <grantRevoke>G</grantRevoke>
     <aclOrder>0</aclOrder>
     <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>849440</id>
+    <expression>
+      <id>3629</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:848052</targetObject>
+    <privilege>MANAGE_WORKFLOW</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>849471</id>
+    <expression>
+      <id>821085</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:116525</targetObject>
+    <privilege>MANAGE_WORKFLOW</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
   </com.tle.beans.security.AccessEntry>
 </list>

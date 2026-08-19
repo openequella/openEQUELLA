@@ -33,8 +33,8 @@ import com.tle.core.favourites.dao.BookmarkDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.security.impl.RequiresLogin;
 import com.tle.exceptions.AccessDeniedException;
-import com.tle.exceptions.AuthenticationException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -67,11 +67,8 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
 
   @Override
   @Transactional
+  @RequiresLogin(message = "Guest (unauthenticated) users cannot favourite items.")
   public Bookmark add(Item item, Set<String> tags, boolean latest) {
-    if (CurrentUser.isGuest()) {
-      throw new AuthenticationException("Guest(Unauthenticated) users cannot favourite items.");
-    }
-
     Bookmark bookmark = new Bookmark();
     bookmark.setItem(item);
     bookmark.setKeywords(tags);

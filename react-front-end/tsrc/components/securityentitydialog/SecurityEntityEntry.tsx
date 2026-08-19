@@ -53,7 +53,7 @@ const SecurityEntityEntry = ({
     <ListItemSecondaryAction>
       <TooltipIconButton
         title={deleteLabel}
-        aria-label={deleteLabel}
+        aria-label={`${deleteLabel} ${name}`}
         onClick={onDelete}
         size="large"
       >

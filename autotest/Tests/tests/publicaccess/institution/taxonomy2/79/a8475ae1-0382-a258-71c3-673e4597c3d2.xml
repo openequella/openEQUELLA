@@ -1,0 +1,46 @@
+<com.tle.common.taxonomy.Taxonomy>
+  <id>2498629</id>
+  <uuid>a8475ae1-0382-a258-71c3-673e4597c3d2</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-12 13:04:56.864</dateModified>
+  <dateCreated class="sql-timestamp">2013-11-12 13:04:56.864</dateCreated>
+  <description>
+    <id>2498630</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498631</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Select the learning resource type(s) for your item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>2498632</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498633</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Learning Resource Type</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>TERM_ALLOW_ADDITION</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <dataSourcePluginId>internalTaxonomyDataSource</dataSourcePluginId>
+</com.tle.common.taxonomy.Taxonomy>

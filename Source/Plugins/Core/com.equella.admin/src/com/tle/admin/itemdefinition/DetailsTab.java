@@ -25,6 +25,9 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.SchemaTransform;
@@ -39,9 +42,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
-import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -79,7 +79,7 @@ public class DetailsTab extends AbstractItemdefTab
   private boolean advancedFilestore;
   private Collection<NameValue> filestores;
 
-  private RemoteItemDefinitionService itemdefService;
+  private AdminCollectionDefinitionService collectionDefinitionService;
   private RemoteFileSystemService remoteFileSystemService;
 
   @Override
@@ -90,7 +90,7 @@ public class DetailsTab extends AbstractItemdefTab
   @Override
   public void setDriver(Driver driver) {
     super.setDriver(driver);
-    itemdefService = clientService.getService(RemoteItemDefinitionService.class);
+    collectionDefinitionService = clientService.getService(AdminCollectionDefinitionService.class);
     remoteFileSystemService = clientService.getService(RemoteFileSystemService.class);
     advancedFilestore = remoteFileSystemService.isAdvancedFilestore();
     filestores = getFilestores();
@@ -161,7 +161,7 @@ public class DetailsTab extends AbstractItemdefTab
 
     if (filestoreList != null) {
       itemDef.setAttribute(
-          RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE,
+          AdminCollectionDefinitionService.ATTRIBUTE_KEY_FILESTORE(),
           ((NameValue) filestoreList.getSelectedItem()).getValue());
     }
   }
@@ -212,7 +212,7 @@ public class DetailsTab extends AbstractItemdefTab
 
     if (filestoreList != null) {
       String filestoreId =
-          itemDef.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          itemDef.getAttribute(AdminCollectionDefinitionService.ATTRIBUTE_KEY_FILESTORE());
       if (filestoreId == null) {
         filestoreId = RemoteFileSystemService.DEFAULT_FILESTORE_ID;
       }
@@ -246,7 +246,7 @@ public class DetailsTab extends AbstractItemdefTab
     description = new I18nTextArea(BundleCache.getLanguages());
     descriptionLabel.setLabelFor(description);
 
-    owner = new SingleUserSelector(clientService.getService(RemoteUserService.class));
+    owner = new SingleUserSelector(clientService.getService(AdminUserDirectoryService.class));
     ownerLabel.setLabelFor(owner);
 
     schemaList = new JComboBox();
@@ -305,10 +305,10 @@ public class DetailsTab extends AbstractItemdefTab
     final int width5 = wizardCategoryAdd.getPreferredSize().width;
     final int gap = 10;
 
-    final int columns[] = {
+    final int[] columns = {
       width4, TableLayout.DOUBLE_FILL, width5, TableLayout.FILL, TableLayout.FILL,
     };
-    final int rows[] = {
+    final int[] rows = {
       height1,
       height1 * 3,
       height2,
@@ -373,7 +373,7 @@ public class DetailsTab extends AbstractItemdefTab
 
   protected List<NameValue> getSchemaList() {
     try {
-      List<BaseEntityLabel> schemas = clientService.getService(RemoteSchemaService.class).listAll();
+      List<BaseEntityLabel> schemas = clientService.getService(AdminSchemaService.class).listAll();
       List<NameValue> nameValues = BundleCache.getNameValues(schemas);
       Collections.sort(nameValues, Format.NAME_VALUE_COMPARATOR);
       return nameValues;
@@ -386,7 +386,7 @@ public class DetailsTab extends AbstractItemdefTab
 
   protected List<String> getCategories() {
     try {
-      List<String> list = new ArrayList<String>(itemdefService.enumerateCategories());
+      List<String> list = new ArrayList<String>(collectionDefinitionService.enumerateCategories());
       Collections.sort(list, Format.STRING_COMPARATOR);
       return list;
     } catch (Exception ex) {
@@ -533,7 +533,7 @@ public class DetailsTab extends AbstractItemdefTab
     if (schemaPair != null) {
       Schema schemaBean =
           clientService
-              .getService(RemoteSchemaService.class)
+              .getService(AdminSchemaService.class)
               .get(Long.parseLong(schemaPair.getValue()));
       schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
 

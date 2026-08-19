@@ -26,13 +26,14 @@ import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.admin.wizard.model.DrmPageModel;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteUserService;
+import java.io.Serial;
 import java.util.UUID;
 import javax.swing.JTabbedPane;
 
 public class DrmPageEditor extends Editor {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private DRMConfigTab configTab;
   private DRMRightsTab rightsTab;
@@ -57,7 +58,7 @@ public class DrmPageEditor extends Editor {
     configTab = new DRMConfigTab();
     rightsTab = new DRMRightsTab();
     accessControlTab =
-        new DRMAccessControlTab(getClientService().getService(RemoteUserService.class));
+        new DRMAccessControlTab(getClientService().getService(AdminUserDirectoryService.class));
     requireAcceptanceFromTab = new DRMRequireAcceptanceFromTab();
 
     JTabbedPane tabs = new JTabbedPane();

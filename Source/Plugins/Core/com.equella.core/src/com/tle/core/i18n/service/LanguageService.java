@@ -21,16 +21,28 @@ package com.tle.core.i18n.service;
 import com.tle.beans.Language;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.filesystem.LanguageFile;
-import com.tle.core.remoting.RemoteLanguageService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
-public interface LanguageService extends RemoteLanguageService {
+public interface LanguageService {
+  /**
+   * Resolve the display names for the provided language bundle IDs. If a bundle ID cannot be
+   * resolved, it will be omitted from the results.
+   *
+   * @param bundleIds language bundle IDs.
+   * @return a map of bundle ID to resolved display name.
+   */
+  Map<Long, String> getNames(Collection<Long> bundleIds);
+
+  /** List all languages. */
+  List<Language> getLanguages();
+
   boolean isRightToLeft(Locale locale);
 
   ResourceBundle getResourceBundle(Locale locale, String bundleGroup);

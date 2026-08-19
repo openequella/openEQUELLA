@@ -29,6 +29,7 @@ import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.beans.user.UserInfoBackup;
+import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Check;
 import com.tle.common.Triple;
 import com.tle.common.institution.CurrentInstitution;
@@ -42,15 +43,18 @@ import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.auditlog.AuditLogService;
+import com.tle.core.events.GroupAddedEvent;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
 import com.tle.core.events.UMPChangedEvent;
+import com.tle.core.events.UserAddedEvent;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.UserSessionLoginEvent;
 import com.tle.core.events.UserSessionLogoutEvent;
+import com.tle.core.events.UserSuspendEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UMPChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
@@ -58,6 +62,7 @@ import com.tle.core.events.listeners.UserSessionLoginListener;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.institution.events.InstitutionEvent;
 import com.tle.core.institution.events.listeners.InstitutionListener;
 import com.tle.core.plugins.PluginTracker;
@@ -80,14 +85,14 @@ import com.tle.plugins.ump.UserManagementLogonFilter;
 import com.tle.web.dispatcher.FilterResult;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Singleton;
@@ -100,7 +105,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import scala.jdk.javaapi.OptionConverters;
 
-@SuppressWarnings("nls")
 @Bind(UserService.class)
 @Singleton
 public class UserServiceImpl
@@ -126,6 +130,9 @@ public class UserServiceImpl
   @Inject private EventService eventService;
   @Inject private UserSessionService userSessionService;
   @Inject private OidcConfigurationService oidcConfigurationService;
+  // Supplies institution/user context restoration for concurrently executed function in
+  // UserDirectoryChain.
+  @Inject private RunAsInstitution runAs;
 
   @Inject private PluginTracker<UserDirectory> umpTracker;
   @Inject private PluginTracker<OidcUserDirectory> oidcUserDirTracker;
@@ -333,28 +340,28 @@ public class UserServiceImpl
   }
 
   @Override
-  public UserBean getInformationForUser(String userid) {
-    return getCurrentPlugin().getInformationForUser(userid);
+  public UserBean getInformationForUser(String userId) {
+    return getCurrentPlugin().getInformationForUser(userId);
   }
 
   @Override
-  public Map<String, UserBean> getInformationForUsers(Collection<String> userids) {
-    return getCurrentPlugin().getInformationForUsers(userids);
+  public Map<String, UserBean> getInformationForUsers(Collection<String> userIds) {
+    return getCurrentPlugin().getInformationForUsers(userIds);
   }
 
   @Override
-  public List<GroupBean> getGroupsContainingUser(String userid) {
-    return getCurrentPlugin().getGroupsContainingUser(userid);
+  public List<GroupBean> getGroupsContainingUser(String userId) {
+    return getCurrentPlugin().getGroupsContainingUser(userId);
   }
 
   @Override
-  public List<String> getGroupIdsContainingUser(String userid) {
-    List<GroupBean> groupIdsContainingUser = getGroupsContainingUser(userid);
-    List<String> groupids = new ArrayList<String>();
-    for (GroupBean bean : groupIdsContainingUser) {
-      groupids.add(bean.getUniqueID());
-    }
-    return groupids;
+  public List<String> getGroupIdsContainingUser(String userId) {
+    return getCurrentPlugin().getGroupIdsContainingUser(userId);
+  }
+
+  @Override
+  public int countUsersInGroup(String groupId, boolean recursive) {
+    return getCurrentPlugin().countUsersInGroup(groupId, recursive);
   }
 
   @Override
@@ -363,18 +370,39 @@ public class UserServiceImpl
   }
 
   @Override
+  public List<UserBean> getUsersInGroup(String groupId, boolean recursive, int limit, int offset) {
+    return getCurrentPlugin().getUsersInGroup(groupId, recursive, limit, offset);
+  }
+
+  @Override
+  public int countUsers(String query) {
+    return getCurrentPlugin().countUsers(fixQuery(query));
+  }
+
+  @Override
+  public int countUsers(String query, String parentGroupId, boolean recursive) {
+    return getCurrentPlugin().countUsers(fixQuery(query), parentGroupId, recursive);
+  }
+
+  @Override
   public List<UserBean> searchUsers(String query) {
     return getCurrentPlugin().searchUsers(fixQuery(query));
   }
 
   @Override
-  public List<GroupBean> searchGroups(String query, String parentId) {
-    return getCurrentPlugin().searchGroups(fixQuery(query), parentId);
+  public List<UserBean> searchUsers(String query, int limit, int offset) {
+    return getCurrentPlugin().searchUsers(fixQuery(query), limit, offset);
   }
 
   @Override
   public List<UserBean> searchUsers(String query, String parentGroupID, boolean recurse) {
     return getCurrentPlugin().searchUsers(fixQuery(query), parentGroupID, recurse);
+  }
+
+  @Override
+  public List<UserBean> searchUsers(
+      String query, String parentGroupId, boolean recursive, int limit, int offset) {
+    return getCurrentPlugin().searchUsers(fixQuery(query), parentGroupId, recursive, limit, offset);
   }
 
   @Override
@@ -388,8 +416,33 @@ public class UserServiceImpl
   }
 
   @Override
+  public int countGroups(String query, String parentGroupId) {
+    return getCurrentPlugin().countGroups(fixQuery(query), parentGroupId);
+  }
+
+  @Override
+  public int countGroups(String query) {
+    return getCurrentPlugin().countGroups(fixQuery(query));
+  }
+
+  @Override
   public List<GroupBean> searchGroups(String query) {
     return getCurrentPlugin().searchGroups(fixQuery(query));
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, String parentId) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), parentId);
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, int limit, int offset) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), limit, offset);
+  }
+
+  @Override
+  public List<GroupBean> searchGroups(String query, String parentGroupId, int limit, int offset) {
+    return getCurrentPlugin().searchGroups(fixQuery(query), parentGroupId, limit, offset);
   }
 
   @Override
@@ -408,8 +461,18 @@ public class UserServiceImpl
   }
 
   @Override
+  public int countRoles(String query) {
+    return getCurrentPlugin().countRoles(fixQuery(query));
+  }
+
+  @Override
   public List<RoleBean> searchRoles(String query) {
     return getCurrentPlugin().searchRoles(fixQuery(query));
+  }
+
+  @Override
+  public List<RoleBean> searchRoles(String query, int limit, int offset) {
+    return getCurrentPlugin().searchRoles(fixQuery(query), limit, offset);
   }
 
   private String fixQuery(String query) {
@@ -427,11 +490,6 @@ public class UserServiceImpl
   }
 
   @Override
-  public void keepAlive() {
-    getCurrentPlugin().keepAlive();
-  }
-
-  @Override
   public void logoutToGuest(WebAuthenticationDetails details, boolean forceSession) {
     login(authenticateAsGuest(details), forceSession);
   }
@@ -442,12 +500,12 @@ public class UserServiceImpl
 
     // The header is spelt incorrectly on purpose.
     // See -> http://en.wikipedia.org/wiki/Referer
-    String referrer = request.getHeader("Referer"); // $NON-NLS-1$
+    String referrer = request.getHeader("Referer");
 
     String ipAddress = null;
     // Get any proxy forwarded addresses
     if (useXForwardedFor) {
-      String forwardedFor = request.getHeader("X-Forwarded-For"); // $NON-NLS-1$
+      String forwardedFor = request.getHeader("X-Forwarded-For");
       if (forwardedFor != null) {
         Matcher m = FORWARD_FOR_PATTERN.matcher(forwardedFor);
         if (m.matches() && m.groupCount() == 1) {
@@ -580,6 +638,15 @@ public class UserServiceImpl
   public void setPluginConfig(UserManagementSettings config) {
     configurationService.setProperties(config);
     setupCurrentSource(true);
+
+    // The above setupCurrentSource publishes an event which only triggers updates for
+    // User Management related components. This event is to trigger updates for other components
+    // that may be interested in the change. Especially the OAuth components that need to invalidate
+    // any current tokens.
+    if (config instanceof SuspendedUserWrapperSettings) {
+      Set<String> uuids = ((SuspendedUserWrapperSettings) config).getSuspendedUsers();
+      eventService.publishApplicationEvent(new UserSuspendEvent(uuids));
+    }
   }
 
   private InstitutionState getCurrentState() {
@@ -602,7 +669,7 @@ public class UserServiceImpl
   private InstitutionState createInstance() {
     final List<UserDirectory> uds = Lists.newArrayList();
 
-    final UserDirectoryChainImpl chain = new UserDirectoryChainImpl();
+    final UserDirectoryChainImpl chain = new UserDirectoryChainImpl(runAs);
     chain.setChain(uds);
 
     final Map<String, Extension> settingsMap = umpTracker.getExtensionMap();
@@ -663,8 +730,8 @@ public class UserServiceImpl
   }
 
   @Override
-  public List<RoleBean> getRolesForUser(String userid) {
-    return getCurrentPlugin().getRolesForUser(userid);
+  public List<RoleBean> getRolesForUser(String userId) {
+    return getCurrentPlugin().getRolesForUser(userId);
   }
 
   @Override
@@ -694,13 +761,19 @@ public class UserServiceImpl
   @Override
   public void umpChangedEvent(UMPChangedEvent event) {
     String purgeId = event.getPurgeIdFromCaches();
+    // Drop the current chain instance (such as role settings updates) .
     if (purgeId == null) {
       WRAPPER_CHAINS.remove(CurrentInstitution.get());
     } else if (!event.isGroupPurge()) {
-      getCurrentPlugin().purgeFromCaches(purgeId);
+      getCurrentPlugin().purgeUserFromCaches(purgeId);
     } else {
       getCurrentPlugin().purgeGroupFromCaches(purgeId);
     }
+  }
+
+  @Override
+  public void userAddedEvent(UserAddedEvent event) {
+    purgeFromCaches(event.getUserID(), false);
   }
 
   @Override
@@ -718,6 +791,11 @@ public class UserServiceImpl
     purgeFromCaches(event.getFromUserId(), false);
 
     aclManager.userIdChanged(event.getFromUserId(), event.getToUserId());
+  }
+
+  @Override
+  public void groupAddedEvent(GroupAddedEvent event) {
+    purgeFromCaches(event.getGroupID(), true);
   }
 
   @Override
@@ -744,7 +822,7 @@ public class UserServiceImpl
     if (groupPurge) {
       getCurrentPlugin().purgeGroupFromCaches(id);
     } else {
-      getCurrentPlugin().purgeFromCaches(id);
+      getCurrentPlugin().purgeUserFromCaches(id);
     }
     // Tell other nodes to purge it too
     eventService.publishApplicationEvent(new UMPChangedEvent(id, groupPurge));
@@ -799,16 +877,6 @@ public class UserServiceImpl
     Collection<UserManagementLogonFilter> filters;
     Map<?, ?> attributes;
     Cache<String, Triple<Collection<Long>, Collection<Long>, Collection<Long>>> expressionCache =
-        CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
-  }
-
-  @Override
-  public void clearUserSearchCache() {
-    getCurrentPlugin().clearUserSearchCache();
-  }
-
-  @Override
-  public void removeFromCache(String userid) {
-    getCurrentPlugin().purgeFromCaches(userid);
+        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
   }
 }

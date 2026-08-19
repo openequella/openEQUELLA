@@ -73,9 +73,8 @@ public abstract class AbstractPowerSearchControlEditor<T extends WizardControl>
     protected void setupGUI() {
       friendlyName = new I18nTextField(BundleCache.getLanguages());
 
-      JLabel titleLabel = new JLabel(getString("powercontrol.label.sectiontitle")); // $NON-NLS-1$
-      JLabel friendlyNameLabel =
-          new JLabel(getString("powercontrol.label.friendly")); // $NON-NLS-1$
+      JLabel titleLabel = new JLabel(strings.text("powercontrol.label.sectiontitle"));
+      JLabel friendlyNameLabel = new JLabel(strings.text("powercontrol.label.friendly"));
 
       int rowHeight = friendlyName.getPreferredSize().height;
       int width1 = friendlyNameLabel.getPreferredSize().width;

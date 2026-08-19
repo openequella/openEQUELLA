@@ -104,7 +104,8 @@ public class FlickrFunctionTest extends AbstractCleanupAutoTest {
       // we may still only get a small number (in the hundreds)
       assertTrue(howManyAnyTags >= howManyThisOption);
       // On this page?
-      int failedElements = 0, asExpectedElements = 0;
+      int failedElements = 0;
+      int asExpectedElements = 0;
       int sampleSize = searchResultsPage.getResults().size();
       for (int ordinal = 1; ordinal <= sampleSize; ++ordinal) {
         ItemSearchResult aVisible = searchResultsPage.getResult(ordinal);

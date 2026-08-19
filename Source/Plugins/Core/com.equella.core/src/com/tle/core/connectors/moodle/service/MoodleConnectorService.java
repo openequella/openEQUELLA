@@ -81,6 +81,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -97,6 +99,26 @@ import org.xml.sax.XMLReader;
 @Singleton
 public class MoodleConnectorService extends AbstractIntegrationConnectorRespository {
   private static final Logger LOGGER = LoggerFactory.getLogger(MoodleConnectorService.class);
+  private static final String WEBSERVICE_FUNCTION_PREFIX = "mod_equella_";
+  private static final String MOODLE_WS_FUNCTION_PARAM = "wsfunction";
+  private static final String MOODLE_WS_TOKEN_PARAM = "wstoken";
+
+  /**
+   * Mappings for simple string-to-field assignments. Complex logic is handled explicitly in {@link
+   * #populateContentField}.
+   */
+  private static final Map<String, BiConsumer<ConnectorContent, String>> FIELD_MAPPERS =
+      Map.of(
+          "coursecode", ConnectorContent::setCourseCode,
+          "coursename", ConnectorContent::setCourse,
+          "section", ConnectorContent::setFolder,
+          "dateAdded", (c, v) -> c.setDateAdded(new Date(Long.parseLong(v))),
+          "dateModified", (c, v) -> c.setDateModified(new Date(Long.parseLong(v))),
+          "uuid", ConnectorContent::setUuid,
+          "moodlename", ConnectorContent::setExternalTitle,
+          "moodledescription", ConnectorContent::setExternalDescription,
+          "attachment", ConnectorContent::setAttachmentUrl,
+          "attachmentUuid", ConnectorContent::setAttachmentUuid);
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -138,7 +160,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     final IItem<?> resourcesItem = lmsLinkInfo.getResourceItem();
 
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_add_item_to_course");
+    final Map<String, String> data = functionCall(ws, "add_item_to_course");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
     param(data, SECTION_ID_PARAM, sectionId);
@@ -211,7 +233,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, boolean editable, boolean archived, boolean management)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_list_courses_for_user");
+    final Map<String, String> data = functionCall(ws, "list_courses_for_user");
     param(data, USER_PARAM, username);
     param(data, "modifiable", editable);
     param(data, ARCHIVED_PARAM, archived);
@@ -250,7 +272,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_list_sections_for_course");
+    final Map<String, String> data = functionCall(ws, "list_sections_for_course");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
 
@@ -299,7 +321,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       boolean allVersion)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_find_usage_for_item");
+    final Map<String, String> data = functionCall(ws, "find_usage_for_item");
     param(data, USER_PARAM, username);
     param(data, "uuid", uuid);
     param(data, "version", version);
@@ -325,7 +347,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       boolean reverseSort)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_find_all_usage");
+    final Map<String, String> data = functionCall(ws, "find_all_usage");
     param(data, USER_PARAM, username);
     param(data, "query", query.replace("*", "%"));
     param(data, COURSE_ID_PARAM, Check.isEmpty(courseId) ? 0 : Integer.valueOf(courseId));
@@ -377,7 +399,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String query, boolean archived)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_unfiltered_usage_count");
+    final Map<String, String> data = functionCall(ws, "unfiltered_usage_count");
     param(data, USER_PARAM, username);
     param(data, "query", query);
     param(data, ARCHIVED_PARAM, archived);
@@ -396,6 +418,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     return 0;
   }
 
+  // Note: SECTION_ID_PARAM is not handled here because Moodle folders cannot be targeted via the
+  // 'push' interface - only sections are supported.
   @SuppressWarnings("null")
   private List<ConnectorContent> parseResponse(XmlDocument response, String moodleServerUrl) {
     ArrayList<ConnectorContent> contentList = new ArrayList<ConnectorContent>();
@@ -412,90 +436,100 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           contentList.add(content);
           content.setExternalUrl(
               URLUtils.newURL(moodleServerUrl, "mod/equella/view.php?id=" + value).toString());
-        }
-        if (key.equals("coursename")) {
-          content.setCourse(value);
-        } else if (key.equals(COURSE_ID_PARAM)) {
-          content.setCourseUrl(
-              URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
-        } else if (key.equals("section")) {
-          content.setFolder(value);
-        }
-        // else if( key.equals(SECTION_ID_PARAM) )
-        // {
-        // No, this is for folders, not sections. In fact, you can't
-        // add to folders via the 'push' interface. A bit of an
-        // oversight...
-        // if( !Check.isEmpty(value) )
-        // {
-        // int folderId = Integer.parseInt(value);
-        // if( folderId != 0 )
-        // {
-        // content.setFolderUrl(URLUtils.newURL(moodleServerUrl,
-        // "mod/folder/view.php?id=" + value).toString());
-        // }
-        // }
-        // }
-        else if (key.equals("dateAdded")) {
-          content.setDateAdded(new Date(Long.parseLong(value)));
-        } else if (key.equals("dateModified")) {
-          content.setDateModified(new Date(Long.parseLong(value)));
-        } else if (key.equals("uuid")) {
-          content.setUuid(value);
-        } else if (key.equals("version")) {
-          if (!Check.isEmpty(value)) {
-            content.setVersion(Integer.parseInt(value));
-          }
-        } else if (key.equals("moodlename")) {
-          content.setExternalTitle(value);
-        } else if (key.equals("moodledescription")) {
-          content.setExternalDescription(value);
-        } else if (key.equals("attachment")) {
-          content.setAttachmentUrl(value);
-        } else if (key.equals("attachmentUuid")) {
-          content.setAttachmentUuid(value);
-        } else if (key.equals("coursecode")) {
-          content.setCourseCode(value);
-        } else if (key.equals("instructor")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_INSTRUCTOR, getKey("moodle.finduses.instructor"), value);
-          }
-        } else if (key.equals("dateAccessed")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_DATE_ACCESSED,
-                getKey("moodle.finduses.dateAccessed"),
-                new Date(Long.parseLong(value)));
-          }
-        } else if (key.equals("enrollments")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_ENROLLMENTS,
-                getKey("moodle.finduses.enrollments"),
-                Integer.valueOf(value));
-          }
-        } else if (key.equals("visible")) {
-          content.setAvailable(Integer.parseInt(value) == 1);
-          content.setAttribute(
-              "visible", getKey("moodle.finduses.visible"), Integer.parseInt(value) == 1);
         } else if (key.equals("key")) {
           attributeKey = value;
-        } else if (key.equals(VALUE_NODE)) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(attributeKey, getKey("moodle.finduses." + attributeKey), value);
-          }
+        } else if (content != null) {
+          populateContentField(content, key, value, moodleServerUrl, attributeKey);
         }
       }
     }
     return contentList;
   }
 
+  /**
+   * Populates fields on a {@link ConnectorContent} object based on a key-value pair from a Moodle
+   * XML response.
+   *
+   * @param content The content object to populate.
+   * @param key The key derived from the Moodle XML response (e.g., "id", "coursename").
+   * @param value The value associated with the key.
+   * @param moodleServerUrl The base URL of the Moodle server, used for constructing links.
+   * @param attributeKey A specific attribute key if processing a generic value node, otherwise
+   *     null.
+   */
+  private void populateContentField(
+      ConnectorContent content,
+      String key,
+      String value,
+      String moodleServerUrl,
+      String attributeKey) {
+    // Lookup and execute simple mappings
+    if (FIELD_MAPPERS.containsKey(key)) {
+      FIELD_MAPPERS.get(key).accept(content, value);
+      return;
+    }
+
+    // Handle complex context-dependent logic separately
+    switch (key) {
+      case COURSE_ID_PARAM ->
+          content.setCourseUrl(
+              URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
+      case "version" -> {
+        if (!Check.isEmpty(value)) {
+          content.setVersion(Integer.parseInt(value));
+        }
+      }
+      case "instructor" ->
+          setAttributeIfPresent(
+              content, ConnectorContent.KEY_INSTRUCTOR, "instructor", value, Function.identity());
+      case "dateAccessed" ->
+          setAttributeIfPresent(
+              content,
+              ConnectorContent.KEY_DATE_ACCESSED,
+              "dateAccessed",
+              value,
+              v -> new Date(Long.parseLong(v)));
+      case "enrollments" ->
+          setAttributeIfPresent(
+              content, ConnectorContent.KEY_ENROLLMENTS, "enrollments", value, Integer::valueOf);
+      case "visible" -> {
+        boolean isVisible = "1".equals(value);
+        content.setAvailable(isVisible);
+        content.setAttribute("visible", getKey("visible"), isVisible);
+      }
+      case VALUE_NODE ->
+          setAttributeIfPresent(content, attributeKey, attributeKey, value, Function.identity());
+      default -> LOGGER.warn("Ignoring unknown key: {}", key);
+    }
+  }
+
+  /**
+   * Helper utility to set a {@link ConnectorContent} attribute only if the provided value is not
+   * empty. Handles the localization of the attribute label key.
+   *
+   * @param content The content object to update.
+   * @param key The internal key for the attribute.
+   * @param langSuffix The suffix for the I18n key (prefixed with "moodle.finduses.").
+   * @param value The raw string value to parse and set.
+   * @param parser A function to convert the raw string value into the expected attribute type.
+   * @param <T> The type of the attribute value (e.g., String, Date, Integer).
+   */
+  private <T> void setAttributeIfPresent(
+      ConnectorContent content,
+      String key,
+      String langSuffix,
+      String value,
+      Function<String, T> parser) {
+    if (!Check.isEmpty(value)) {
+      content.setAttribute(key, getKey(langSuffix), parser.apply(value));
+    }
+  }
+
   @Override
   public String getCourseCode(Connector connector, String username, String courseId)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_get_course_code");
+    final Map<String, String> data = functionCall(ws, "get_course_code");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
 
@@ -514,10 +548,6 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     return courseCode;
   }
 
-  private String errorString(String partKey) {
-    return CurrentLocale.get("com.tle.core.connectors.moodle." + partKey);
-  }
-
   private MoodleWebService setupService(Connector connector) {
     return setupService(
         connector.getServerUrl(),
@@ -531,8 +561,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 
   private Map<String, String> functionCall(MoodleWebService ws, String function) {
     final Map<String, String> params = Maps.newHashMap();
-    params.put("wsfunction", function);
-    params.put("wstoken", ws.getToken());
+    params.put(MOODLE_WS_FUNCTION_PARAM, WEBSERVICE_FUNCTION_PREFIX + function);
+    params.put(MOODLE_WS_TOKEN_PARAM, ws.getToken());
     return params;
   }
 
@@ -599,8 +629,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           String message = xml.nodeValue("MESSAGE", exception);
           if (message.startsWith(ERROR_USER_NOT_FOUND)) {
             String username = message.substring(ERROR_USER_NOT_FOUND.length());
-            throw new LmsUserNotFoundException(
-                username, CurrentLocale.get(getKey("connector.error"), username));
+            throw new LmsUserNotFoundException(username, connectorString("error", username));
           }
           throw new MoodleException("Error contacting Moodle: " + message);
         }
@@ -629,16 +658,24 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   }
 
   private String getKey(String partKey) {
-    return KEY_PFX + partKey;
+    return KEY_PFX + "moodle.finduses." + partKey;
+  }
+
+  private String connectorString(String partKey, final Object... values) {
+    return CurrentLocale.get(KEY_PFX + "connector." + partKey, values);
+  }
+
+  private String connectorTestString(String partKey) {
+    return connectorString("test.error." + partKey);
   }
 
   @Override
   public ConnectorTerminology getConnectorTerminology() {
     ConnectorTerminology terms = new ConnectorTerminology();
-    terms.setShowArchived(getKey("moodle.finduses.showarchived"));
-    terms.setShowArchivedLocations(getKey("moodle.finduses.showarchived.courses"));
-    terms.setCourseHeading(getKey("moodle.finduses.course"));
-    terms.setLocationHeading(getKey("moodle.finduses.location"));
+    terms.setShowArchived(getKey("showarchived"));
+    terms.setShowArchivedLocations(getKey("showarchived.courses"));
+    terms.setCourseHeading(getKey("course"));
+    terms.setLocationHeading(getKey("location"));
     return terms;
   }
 
@@ -666,7 +703,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   public boolean deleteContent(Connector connector, String username, String id)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_delete_item");
+    final Map<String, String> data = functionCall(ws, "delete_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", id);
 
@@ -687,7 +724,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String contentId, String title, String description)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_edit_item");
+    final Map<String, String> data = functionCall(ws, "edit_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", contentId);
     param(data, "title", title);
@@ -710,7 +747,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String contentId, String courseId, String locationId)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "equella_move_item");
+    final Map<String, String> data = functionCall(ws, "move_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", contentId);
     param(data, COURSE_ID_PARAM, courseId);
@@ -737,10 +774,10 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     final MoodleWebService ws = setupService(serverUrl, webServiceToken);
 
     if (Check.isEmpty(serverUrl)) {
-      return errorString("connector.test.error.nourl");
+      return connectorTestString("nourl");
     }
     if (Check.isEmpty(ws.getToken())) {
-      return errorString("connector.test.error.notoken");
+      return connectorTestString("notoken");
     }
 
     // try the URL. Given that this is a test connection method, we aren't
@@ -752,11 +789,11 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       httpService.getWebContent(request, configService.getProxyDetails());
     } catch (Exception e) // NOSONAR
     {
-      return errorString("connector.test.error.unreachableurl");
+      return connectorTestString("unreachableurl");
     }
 
     // call the webservice test function
-    final Map<String, String> data = functionCall(ws, "equella_test_connection");
+    final Map<String, String> data = functionCall(ws, "test_connection");
     param(data, "param", username);
 
     try {
@@ -771,11 +808,11 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           }
 
           if (key == null || !key.equals(SUCCESS_KEY) || value == null || !value.equals(username)) {
-            return errorString("connector.test.error.invalidresponse");
+            return connectorTestString("invalidresponse");
           }
         }
       } else {
-        return errorString("connector.test.error.emptyresponse");
+        return connectorTestString("emptyresponse");
       }
     } catch (Exception m) {
       return m.getMessage();

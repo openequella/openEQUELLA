@@ -21,6 +21,7 @@ package com.tle.common.accesscontrolbuilder;
 import com.dytech.common.text.NumberStringComparator;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree;
@@ -28,13 +29,13 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -53,9 +54,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 
-@SuppressWarnings("nls")
 public class AccessEditor extends JPanel implements ActionListener, Changeable {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private Map<String, PrivilegeList> privilegeToList;
   private Map<AbstractButton, PrivilegeListEditor> editors;
   private AbstractButton lastSelected;
@@ -71,13 +71,14 @@ public class AccessEditor extends JPanel implements ActionListener, Changeable {
   private Node privilegeNode;
   private TargetList originaList;
 
-  public AccessEditor(RemoteTLEAclManager aclManager, RemoteUserService userService) {
+  public AccessEditor(
+      RemoteTLEAclManager aclManager, AdminUserDirectoryService userDirectoryService) {
     setupGUI();
 
-    editors = new LinkedHashMap<AbstractButton, PrivilegeListEditor>();
-    editors.put(inherited, new InheritedEditor(aclManager, userService));
-    editors.put(basic, new BasicEditor(userService));
-    editors.put(advanced, new AdvancedEditor(aclManager, userService));
+    editors = new LinkedHashMap<>();
+    editors.put(inherited, new InheritedEditor(aclManager, userDirectoryService));
+    editors.put(basic, new BasicEditor(userDirectoryService));
+    editors.put(advanced, new AdvancedEditor(aclManager, userDirectoryService));
   }
 
   public void load(Object domainObj, TargetList targetList, Node privilegeNode) {

@@ -10,8 +10,8 @@ import com.tle.webtests.pageobject.wizard.ConfirmationDialog.ConfirmButton;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.DuplicatesTab;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
-import com.tle.webtests.pageobject.wizard.controls.AbstractWizardControlsTest;
 import com.tle.webtests.pageobject.wizard.controls.ShuffleListControl;
+import com.tle.webtests.test.AbstractCleanupTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -21,7 +21,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
-public class UniquenessTest extends AbstractWizardControlsTest {
+public class UniquenessTest extends AbstractCleanupTest {
 
   private static final String ITEM_NAME = "Simple Control Test";
   private static final String COLLECTION_NAME = "Uniqueness Collection";
@@ -45,7 +45,7 @@ public class UniquenessTest extends AbstractWizardControlsTest {
 
   @BeforeClass
   public void setUp() throws Exception {
-    super.setUp();
+    logon();
     createDuplicateCheckTestData();
   }
 

@@ -27,8 +27,7 @@ import BaseSearch, {
   wildcardQuery,
 } from "./BaseSearch";
 
-export interface GroupSearchProps
-  extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
+export interface GroupSearchProps extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
   search?: (
     query?: string,
     filter?: ReadonlySet<string>,

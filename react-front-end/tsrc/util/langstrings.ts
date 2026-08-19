@@ -319,29 +319,6 @@ export const languageStrings = {
     includeArchived: "Include archived",
     archived: "Archived",
   },
-  cp: {
-    title: "Cloud providers",
-    cloudprovideravailable: {
-      zero: "No cloud providers available",
-      one: "%d cloud provider",
-      more: "%d cloud providers",
-    },
-    newcloudprovider: {
-      title: "Register a new cloud provider",
-      label: "URL",
-      text: "Enter the URL supplied by the cloud provider",
-      help: "The URL should start with either http:// or https://",
-      disclaimer: {
-        text: "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
-        title: "Cloud provider disclaimer",
-      },
-    },
-    deletecloudprovider: {
-      title: "Are you sure you want to delete cloud provider - '%s'?",
-      message: "It will be permanently deleted.",
-    },
-    refreshed: "Completed refresh",
-  },
   dateRangeSelector: {
     defaultStartDatePickerLabel: "From",
     defaultEndDatePickerLabel: "To",
@@ -392,6 +369,29 @@ export const languageStrings = {
         failedToInitialise: "Failed to initialise tasks portlet.",
         nothingReturned: "No tasks and notifications returned.",
         unableToFindItemsOfType: "Unable to find items of type:",
+      },
+      taskStatistics: {
+        failedToFetchStatistics: "Failed to fetch workflow statistics.",
+        failedToFetchWorkflowOptions: "Failed to fetch manageable workflows.",
+        itemCount: "Total resources in workflow: %s",
+        noPermission: "You do not have permission to manage any workflows.",
+        noResult: "There are no results for the selected workflow.",
+        contentSkeletonLabel: "Loading task statistics",
+        trend: {
+          label: "trend period",
+          weekly: "Weekly",
+          monthly: "Monthly",
+        },
+        table: {
+          label: "trend table",
+          colTask: "Task",
+          colWaiting: "Waiting",
+          colTrend: "Trend",
+        },
+        workflow: {
+          label: "Workflow",
+          allWorkflows: "Within all workflows",
+        },
       },
       unsupported: {
         title: "Unsupported portlet configured.",
@@ -527,6 +527,9 @@ export const languageStrings = {
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   kalturaPlayer: {
     title: "Kaltura video player",
+  },
+  legacyModule: {
+    failedToRedirect: "Failed to redirect to page.",
   },
   lightboxComponent: {
     openSummaryPage: "Open resource summary page",
@@ -970,6 +973,9 @@ export const languageStrings = {
           usernameClaimDesc:
             "By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
           enable: "Enable",
+          seamlessSso: "Enable Seamless SSO",
+          seamlessSsoDesc:
+            "Automatically authenticate users with an active Identity Provider session, bypassing the login screen entirely.",
         },
         apiDetails: {
           title: "Identity Provider API",
@@ -1032,7 +1038,10 @@ export const languageStrings = {
         allowStatusControlLabel:
           "Allow users to toggle between live and all statuses via the status selector",
         authFeed: "Authenticated feeds",
-        authFeedLabel: "Generate authenticated RSS and Atom feed links ",
+        authFeedLabel: "Generate authenticated RSS and Atom feed links",
+        escapeSpecialChars: "Escape special characters",
+        escapeSpecialCharsLabel:
+          "Escape special characters in the search query so they are treated as literal text instead of Lucene syntax",
         gallery: "Gallery",
         galleryViews: "Gallery views",
         disableImages: "Disable Images",

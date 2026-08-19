@@ -29,12 +29,22 @@ import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+/**
+ * A tree node that represents a group in the group hierarchy. This is used to display the group
+ * hierarchy in the Admin Console.
+ */
 public class GroupTreeNode extends DefaultMutableTreeNode implements FieldEquality<GroupTreeNode> {
   private String id;
   private String name;
 
   public GroupTreeNode() {
     setAllowsChildren(true);
+  }
+
+  public GroupTreeNode(String id, String name) {
+    this();
+    this.id = id;
+    this.name = name;
   }
 
   public String getId() {

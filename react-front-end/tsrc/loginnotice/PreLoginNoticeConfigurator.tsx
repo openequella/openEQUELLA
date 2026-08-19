@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 import {
+  Box,
   Card,
   CardContent,
   FormControl,
   FormControlLabel,
-  Grid,
   Radio,
   RadioGroup,
+  Stack,
   Typography,
 } from "@mui/material";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
@@ -244,8 +245,8 @@ class PreLoginNoticeConfigurator extends React.Component<
       <Card>
         <CardContent>
           <SettingsListHeading heading={strings.preLogin.title} />
-          <Grid id="preLoginConfig" container spacing={2} direction="column">
-            <Grid>
+          <Stack id="preLoginConfig" spacing={2}>
+            <Box>
               <React.Suspense fallback={<div>Loading editor...</div>}>
                 <RichTextEditor
                   htmlInput={this.state.current.notice}
@@ -253,11 +254,9 @@ class PreLoginNoticeConfigurator extends React.Component<
                   imageUploadCallBack={uploadPreLoginNoticeImage}
                 />
               </React.Suspense>
-            </Grid>
-            <Grid>
-              <ScheduleSettings />
-            </Grid>
-          </Grid>
+            </Box>
+            <ScheduleSettings />
+          </Stack>
         </CardContent>
       </Card>
     );

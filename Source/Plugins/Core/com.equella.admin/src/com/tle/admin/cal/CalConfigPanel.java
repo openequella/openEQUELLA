@@ -88,15 +88,15 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
   private RemoteAdminService adminService;
 
   public CalConfigPanel() {
-    JLabel actErrLabel = new JLabel(getString("activationerror"));
-    JLabel inactErrLabel = new JLabel(getString("inactiveerror"));
-    JLabel percentageLabel = new JLabel(getString("percentagerequirement"));
+    JLabel actErrLabel = new JLabel(strings.text("activationerror"));
+    JLabel inactErrLabel = new JLabel(strings.text("inactiveerror"));
+    JLabel percentageLabel = new JLabel(strings.text("percentagerequirement"));
     JLabel percentageSign = new JLabel("%");
     activationError = new I18nTextArea(BundleCache.getLanguages());
     inactiveError = new I18nTextArea(BundleCache.getLanguages());
-    restrictiveValidation = new JCheckBox(getString("restrictiveValidation"));
-    useCitationAsName = new JCheckBox(getString("usecitationasname"));
-    perCourseValidation = new JCheckBox(getString("perCourseValidation"));
+    restrictiveValidation = new JCheckBox(strings.text("restrictiveValidation"));
+    useCitationAsName = new JCheckBox(strings.text("usecitationasname"));
+    perCourseValidation = new JCheckBox(strings.text("perCourseValidation"));
     percentageField = new JSpinner(new SpinnerNumberModel(10.0d, 0d, 100.0d, 1d));
 
     initUploadPanel();
@@ -147,9 +147,9 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
   }
 
   private void initUploadPanel() {
-    JLabel titleLabel = new JLabel(getString("agreement.instructions")); // $NON-NLS-1$
+    JLabel titleLabel = new JLabel(strings.text("agreement.instructions"));
 
-    final JButton upload = new JButton(getString("agreement.upload")); // $NON-NLS-1$
+    final JButton upload = new JButton(strings.text("agreement.upload"));
     upload.addActionListener(
         new ActionListener() {
           @Override
@@ -158,7 +158,7 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
           }
         });
 
-    final JButton remove = new JButton(getString("agreement.remove")); // $NON-NLS-1$
+    final JButton remove = new JButton(strings.text("agreement.remove"));
     remove.addActionListener(
         new ActionListener() {
           @Override
@@ -170,11 +170,11 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
     agreementField = new JTextField();
     agreementField.setEditable(false);
 
-    int rows[] =
+    int[] rows =
         new int[] {
           TableLayout.PREFERRED, TableLayout.PREFERRED,
         };
-    int cols[] =
+    int[] cols =
         new int[] {
           TableLayout.FILL, upload.getPreferredSize().width, remove.getPreferredSize().width
         };
@@ -186,9 +186,9 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
     uploadPanel.add(upload, new Rectangle(1, 1, 1, 1));
     uploadPanel.add(remove, new Rectangle(2, 1, 1, 1));
 
-    restrictiveValidation = new JCheckBox(getString("restrictiveValidation"));
+    restrictiveValidation = new JCheckBox(strings.text("restrictiveValidation"));
 
-    agreementGroup = new JGroup(getString("cal.agreement.requires")); // $NON-NLS-1$
+    agreementGroup = new JGroup(strings.text("cal.agreement.requires"));
     agreementGroup.setInnerLayout(new BorderLayout());
     agreementGroup.addInner(uploadPanel);
     agreementGroup.addActionListener(
@@ -230,7 +230,7 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
       percentage = Double.valueOf(attributes.get(KEY_PERCENTAGE_REQUIREMENT));
     }
 
-    percentageField.setValue(new Double(percentage));
+    percentageField.setValue(Double.valueOf(percentage));
     restrictiveValidation.setSelected(
         Boolean.valueOf(attributes.get(KEY_HAS_RESTRICTIVE_VALIDATION)));
     useCitationAsName.setSelected(Boolean.valueOf(attributes.get(KEY_USE_CITATION_AS_NAME)));
@@ -284,7 +284,7 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
         new FileFilter() {
           @Override
           public String getDescription() {
-            return getString("agreement.filefilter"); // $NON-NLS-1$
+            return strings.text("agreement.filefilter");
           }
 
           @Override

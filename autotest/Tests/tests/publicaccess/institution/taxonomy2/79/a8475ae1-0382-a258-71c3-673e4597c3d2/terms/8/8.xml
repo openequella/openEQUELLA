@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498642</id>
+  <uuid>0b217483-3035-43df-bd4d-ceef46f1f415</uuid>
+  <value>Lecture</value>
+  <valueHash>7d6df6aae618fcdaedbb63adf496c9d9</valueHash>
+  <fullValue>Learning Resource Type\Lecture</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

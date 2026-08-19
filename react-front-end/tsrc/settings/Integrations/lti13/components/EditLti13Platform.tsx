@@ -57,11 +57,10 @@ const {
   },
 } = languageStrings.settings.integration.lti13PlatformsSettings.editPage;
 
-export interface EditLti13PlatformProps
-  extends Omit<
-    ConfigureLti13PlatformProps,
-    "pageName" | "configurePlatformProvider"
-  > {
+export interface EditLti13PlatformProps extends Omit<
+  ConfigureLti13PlatformProps,
+  "pageName" | "configurePlatformProvider"
+> {
   /**
    * Function to get platform by ID.
    */

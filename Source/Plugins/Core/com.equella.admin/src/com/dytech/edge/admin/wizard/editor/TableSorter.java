@@ -425,6 +425,11 @@ public class TableSorter extends AbstractTableModel {
         {
       return super.equals(obj);
     }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
+    }
   }
 
   protected class MouseHandler extends MouseAdapter implements Serializable {

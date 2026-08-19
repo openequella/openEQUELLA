@@ -3,6 +3,12 @@
  */
 package com.tle.core.xstream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.dytech.devlib.PropBagEx;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -33,11 +39,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 
 /** */
-public class XMLDataConverterTest extends TestCase {
+public class XMLDataConverterTest {
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
   private static final String DATE = "2005-05-25T12:11:20";
@@ -51,62 +58,64 @@ public class XMLDataConverterTest extends TestCase {
   private TestBean bean;
   private PropBagEx xml;
 
-  @Override
-  protected void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     xstream = new TLEXStream();
     stringXml =
         "<xml xml:base=\"attribute\" attribute=\"attribute\" another=\"another\">"
-            + "	<string>string</string>"
+            + "    <string>string</string>"
             + "   <parent><parent reference=\"../..\"/></parent>"
             + "   <subclasser xclass=\""
             + OverideBean.class.getName()
             + "\">"
             + "     <string>string</string>"
             + "   </subclasser>"
-            + "	<attribute attribute=\"attribute\" attribute2=\"attribute\">string</attribute>"
-            + "	<integer>1</integer>"
-            + "	<bool>true</bool>"
-            + "	<floating>1.4</floating>"
-            + "	<doub>1.4</doub>"
-            + "	<shorter>1</shorter>"
-            + "	<default>default</default>"
-            + "	<url>"
+            + "    <attribute attribute=\"attribute\" attribute2=\"attribute\">string</attribute>"
+            + "    <integer>1</integer>"
+            + "    <bool>true</bool>"
+            + "    <floating>1.4</floating>"
+            + "    <doub>1.4</doub>"
+            + "    <shorter>1</shorter>"
+            + "    <default>default</default>"
+            + "    <url>"
             + URL
             + "</url>"
-            + "	<date>"
+            + "    <date>"
             + DATE
             + "</date>"
-            + "	<bean><string>string</string></bean>"
-            + "	<collection>"
-            + "		<string att=\"1\">string</string>"
-            + "		<string att=\"2\">string</string>"
-            + "	</collection>"
-            + "	<urlcollection>"
-            + "		<url>"
+            + "    <bean><string>string</string></bean>"
+            + "    <collection>"
+            + "        <string att=\"1\">string</string>"
+            + "        <string att=\"2\">string</string>"
+            + "    </collection>"
+            + "    <urlcollection>"
+            + "        <url>"
             + URL
             + "</url>"
-            + "		<url>"
+            + "        <url>"
             + URL
-            + "</url>	</urlcollection>	<blankcollection>		<blank/>		<blank/>	</blankcollection>"
-            + "	<datacollection>		<data><string>string</string></data>	"
-            + "	<data><string>string</string></data>	</datacollection>	<diffcollection>	"
-            + "	<type1>type1</type1>		<type2>type2</type2>		<type1>type1</type1>	"
-            + "	<type2>type2</type2>	</diffcollection>	<node empty=\"\">		<empty/>		<empty2/>"
-            + "	</node>	<element a1=\"a1\" a2=\"a2\">		<node>test<node2 a1=\"a1\""
-            + " a2=\"a2\">sdfsdf</node2>test2</node>		<node3><node2 a1=\"a1\""
-            + " a2=\"a2\">sdfsdf</node2></node3>	</element>	<deep"
-            + " deep=\"attribute\"><deep>deep1</deep></deep>"
-            + "	<deep2><deeper><deep>deep2</deep></deeper></deep2>"
-            + "	<prefix:namespace>namespace</prefix:namespace>	<map>		<node key=\"a\""
-            + " ><value>valuea</value></node>		<node key=\"b\" ><value>valueb</value></node>	</map>"
-            + "	<datamap>		<data>			<key><data>a</data></key>			<value><data>valuea</data></value>	"
-            + "	</data>		<data>			<key><data>b</data></key>			<value><data>valueb</data></value>	"
-            + "	</data>	</datamap>	<resolver type=\"override\"><string>resolved</string></resolver>"
-            + "	<resolver2 type=\"testbean2\"><string>resolved</string></resolver2>	<namespaced"
+            + "</url>    </urlcollection>    <blankcollection>        <blank/>        <blank/>   "
+            + " </blankcollection>    <datacollection>        <data><string>string</string></data> "
+            + "       <data><string>string</string></data>    </datacollection>    <diffcollection>"
+            + "        <type1>type1</type1>        <type2>type2</type2>        <type1>type1</type1>"
+            + "        <type2>type2</type2>    </diffcollection>    <node empty=\"\">       "
+            + " <empty/>        <empty2/>    </node>    <element a1=\"a1\" a2=\"a2\">       "
+            + " <node>test<node2 a1=\"a1\" a2=\"a2\">sdfsdf</node2>test2</node>       "
+            + " <node3><node2 a1=\"a1\" a2=\"a2\">sdfsdf</node2></node3>    </element>    <deep"
+            + " deep=\"attribute\"><deep>deep1</deep></deep>   "
+            + " <deep2><deeper><deep>deep2</deep></deeper></deep2>   "
+            + " <prefix:namespace>namespace</prefix:namespace>    <map>        <node key=\"a\""
+            + " ><value>valuea</value></node>        <node key=\"b\" ><value>valueb</value></node> "
+            + "   </map>    <datamap>        <data>            <key><data>a</data></key>           "
+            + " <value><data>valuea</data></value>        </data>        <data>           "
+            + " <key><data>b</data></key>            <value><data>valueb</data></value>       "
+            + " </data>    </datamap>    <resolver"
+            + " type=\"override\"><string>resolved</string></resolver>    <resolver2"
+            + " type=\"testbean2\"><string>resolved</string></resolver2>    <namespaced"
             + " xmlns=\"http://www.imsglobal.org/xsd/imscp_v1p1\""
-            + " xmlns:imsmd=\"http://www.imsglobal.org/xsd/imsmd_v1p2\">test</namespaced> 	<types>	"
-            + "	<type>test1</type>		<type>test2</type>		<type>test3</type>		<type>sdfsdf</type>"
-            + "	</types></xml>";
+            + " xmlns:imsmd=\"http://www.imsglobal.org/xsd/imsmd_v1p2\">test</namespaced>    "
+            + " <types>        <type>test1</type>        <type>test2</type>       "
+            + " <type>test3</type>        <type>sdfsdf</type>    </types></xml>";
 
     converter = new XMLDataConverter();
     mappings = new XMLDataMappings();
@@ -127,6 +136,7 @@ public class XMLDataConverterTest extends TestCase {
     xml = new PropBagEx(xstream.toXML(bean));
   }
 
+  @Test
   public void testPrimitive() {
     mappings.addNodeMapping(new NodeMapping("string", "string"));
     mappings.addNodeMapping(new NodeMapping("integer", "integer"));
@@ -139,8 +149,8 @@ public class XMLDataConverterTest extends TestCase {
 
     assertEquals("string", bean.string);
     assertEquals(1, bean.integer);
-    assertEquals(1.3f, 1.5f, bean.floating);
-    assertEquals(1.3d, 1.5d, bean.doub);
+    assertEquals(1.4f, bean.floating);
+    assertEquals(1.4d, bean.doub);
     assertEquals(1, bean.shorter);
 
     getPropBagEx();
@@ -152,6 +162,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("1", xml.getNode("shorter"));
   }
 
+  @Test
   public void testMissingAttribute() {
     mappings.addNodeMapping(new NodeMapping("notNull", "string/@nossdfsdfsdfthere"));
     getBean();
@@ -159,6 +170,7 @@ public class XMLDataConverterTest extends TestCase {
     getPropBagEx();
   }
 
+  @Test
   public void testNull() {
     mappings.addNodeMapping(new NodeMapping("string", "nothere"));
     getBean();
@@ -167,6 +179,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(0, xml.nodeCount("nothere"));
   }
 
+  @Test
   public void testTwoAttributes() {
     mappings.addNodeMapping(new NodeMapping("another", "@another"));
     mappings.addNodeMapping(new NodeMapping("attribute1", "@attribute"));
@@ -177,6 +190,7 @@ public class XMLDataConverterTest extends TestCase {
     getPropBagEx();
   }
 
+  @Test
   public void testDate() throws ParseException {
     mappings.addNodeMapping(new DateMapping("date", "date", DATE_FORMAT));
 
@@ -192,6 +206,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(DATE_FORMAT.format(date), xml.getNode("date"));
   }
 
+  @Test
   public void testURL() throws MalformedURLException {
     mappings.addNodeMapping(new URLMapping("url", "url"));
     mappings.addNodeMapping(new URLMapping("string", "string")); // Not a
@@ -210,6 +225,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(url.toString(), xml.getNode("url"));
   }
 
+  @Test
   public void testDataMapping() {
     mappings2.addNodeMapping(new NodeMapping("string", "string"));
     mappings.addNodeMapping(new DataMapping("bean", "bean", TestBean2.class));
@@ -223,6 +239,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", xml.getNode("bean/string"));
   }
 
+  @Test
   public void testEmptyNode() {
     mappings2.addNodeMapping(new NodeMapping("string", ""));
     mappings.addNodeMapping(new DataMapping("bean", "string", TestBean2.class));
@@ -236,6 +253,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", xml.getNode("string"));
   }
 
+  @Test
   public void testOverrideMapping() {
     mappings2.addNodeMapping(new NodeMapping("string", "string"));
     mappings.addNodeMapping(new DataMapping("bean", "bean", OverideBean.class));
@@ -249,6 +267,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", xml.getNode("bean/string"));
   }
 
+  @Test
   public void testAttributes() {
     mappings.addNodeMapping(new NodeMapping("attribute1", "@attribute"));
     mappings.addNodeMapping(new NodeMapping("attribute2", "attribute/@attribute"));
@@ -264,6 +283,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("attribute", xml.getNode("attribute/@attribute"));
   }
 
+  @Test
   public void testCollection() {
     mappings.addNodeMapping(new CollectionMapping("collection", "collection/string"));
     getBean();
@@ -277,15 +297,12 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", bean.collection.iterator().next().toString());
   }
 
+  @Test
   public void testIncorrectCollection() {
-    try {
-      new CollectionMapping("", "", HashMap.class);
-      assertTrue("HashMap is not of type Collection", false);
-    } catch (Exception e) {
-      assertTrue(true);
-    }
+    assertThrows(ClassCastException.class, () -> new CollectionMapping("", "", HashMap.class));
   }
 
+  @Test
   public void testMultipleCollections() {
     mappings.addNodeMapping(new CollectionMapping("collection", "diffcollection/type1"));
     mappings.addNodeMapping(new CollectionMapping("collection2", "diffcollection/type2"));
@@ -301,6 +318,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("type1", xml.getNode("diffcollection/type1"));
   }
 
+  @Test
   public void testCollectionAdvanced() throws MalformedURLException {
     String xpath = "urlcollection/url";
     mappings.addNodeMapping(
@@ -313,6 +331,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(URL, xml.getNode(xpath));
   }
 
+  @Test
   public void testCollectionBlank() {
     String xpath = "blankcollection/blank";
     mappings.addNodeMapping(
@@ -325,6 +344,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("", xml.getNode(xpath));
   }
 
+  @Test
   public void testList() {
     mappings.addNodeMapping(new ListMapping("collection", "collection/string"));
     getBean();
@@ -335,6 +355,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", xml.getNode("collection/string"));
   }
 
+  @Test
   public void testAttCollection() {
     mappings.addNodeMapping(new CollectionMapping("collection", "collection/string/@att"));
     getBean();
@@ -344,6 +365,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("2", xml.getNode("collection/string[1]/@att"));
   }
 
+  @Test
   public void testNodeAndAttribute() {
     // Test out of order because if don't evaluate attributes first
     // then an error is thrown
@@ -363,6 +385,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("attribute", xml.getNode("attribute/@attribute2"));
   }
 
+  @Test
   public void testEmpty() {
     mappings.addNodeMapping(new NodeMapping("string", "node/empty"));
     mappings.addNodeMapping(new NodeMapping("another", "node/empty2"));
@@ -378,6 +401,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(true, xml.nodeExists("node/empty2"));
   }
 
+  @Test
   public void testDeep() {
     mappings.addNodeMapping(new NodeMapping("string", "deep/deep"));
     mappings.addNodeMapping(new NodeMapping("attribute1", "deep/@deep"));
@@ -397,6 +421,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(true, xml.nodeExists("deep2/deeper/deep"));
   }
 
+  @Test
   public void testCollectionSuperDuperAdvanced() {
     String xpath = "datacollection/data";
     mappings2.addNodeMapping(new NodeMapping("string", "string"));
@@ -412,6 +437,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("string", xml.getNode(xpath + "/string"));
   }
 
+  @Test
   public void testNullDataMapping() {
     mappings.addNodeMapping(new DataMapping("bean", "nothere", TestBean2.class));
 
@@ -424,6 +450,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(false, xml.nodeExists("nothere"));
   }
 
+  @Test
   public void testElement() {
     mappings.addNodeMapping(new ElementMapping("element", "element"));
 
@@ -438,6 +465,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("sdfsdf", xml.getNode("element/node/node2"));
   }
 
+  @Test
   public void testPropBag() {
     mappings.addNodeMapping(new PropBagMapping("xml", "element"));
     mappings.addNodeMapping(new NodeMapping("string", "namespace"));
@@ -452,6 +480,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("sdfsdf", xml.getNode("element/node/node2"));
   }
 
+  @Test
   public void testNamespaceDeclaration() {
     mappings.addNodeMapping(new NodeMapping("string", "namespaced"));
     mappings.addNodeMapping(new NamespaceMapping("map", "namespaced"));
@@ -466,6 +495,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("http://www.imsglobal.org/xsd/imsmd_v1p2", xml.getNode("namespaced/@xmlns:imsmd"));
   }
 
+  @Test
   public void testNamespace() {
     mappings.setIgnoreNS(true);
     mappings.addNodeMapping(new NodeMapping("string", "namespace"));
@@ -479,6 +509,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("namespace", xml.getNode("namespace"));
   }
 
+  @Test
   public void testNamespace2() {
     mappings.setIgnoreNS(false);
     mappings.addNodeMapping(new NodeMapping("string", "prefix:namespace"));
@@ -492,6 +523,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("namespace", xml.getNode("namespace"));
   }
 
+  @Test
   public void testAttributeNamespace() {
     mappings.addNodeMapping(new NodeMapping("attribute1", "@xml:base"));
 
@@ -504,6 +536,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("attribute", xml.getNode("@xml:base"));
   }
 
+  @Test
   public void testReferences() {
     mappings.addNodeMapping(new DataMapping("parent", "parent", TestBean.class));
 
@@ -516,6 +549,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("../..", xml.getNode("parent/parent/@reference"));
   }
 
+  @Test
   public void testNullsInCollections() {
     mappings.addNodeMapping(new CollectionMapping("collection", "collection/string"));
 
@@ -530,6 +564,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(4, xml.nodeCount("collection/string"));
   }
 
+  @Test
   public void testChildObject() {
     mappings.addNodeMapping(new DataMapping("parent", "parent", TestBean.class));
 
@@ -538,6 +573,7 @@ public class XMLDataConverterTest extends TestCase {
     assertSame(bean, bean.parent.actualParent);
   }
 
+  @Test
   public void testSubclass() {
     mappings.addNodeMapping(new DataMapping("subclasser", "subclasser", TestBean2.class));
     mappings2.addNodeMapping(new NodeMapping("string", "string"));
@@ -551,6 +587,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals(OverideBean.class.getName(), xml.getNode("subclasser/@xclass"));
   }
 
+  @Test
   public void testClassResolver() {
     XMLDataResolver resolver =
         new XMLDataResolver() {
@@ -581,6 +618,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("testbean2", xml.getNode("resolver2/@type"));
   }
 
+  @Test
   public void testClassResolverMapping() {
     XMLDataResolverMapping resolver = new XMLDataResolverMapping("type");
     resolver.addMapping("override", OverideBean.class);
@@ -589,6 +627,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("testbean2", xml.getNode("resolver2/@type"));
   }
 
+  @Test
   public void testClassResolverMappingDefault() {
     XMLDataResolverMapping resolver = new XMLDataResolverMapping("type", TestBean2.class);
     resolver.addMapping("override", OverideBean.class);
@@ -626,6 +665,7 @@ public class XMLDataConverterTest extends TestCase {
     return true;
   }
 
+  @Test
   public void testSimpleMap() {
     mappings.addNodeMapping(new MapMapping("map", "map", "node/@key", "node/value"));
 
@@ -640,6 +680,7 @@ public class XMLDataConverterTest extends TestCase {
     assertTrue(checkPathContainValues(xml, "map/node/value", "valuea", "valueb"));
   }
 
+  @Test
   public void testBasicDataMap() {
     mappings2.addNodeMapping(new NodeMapping("string", "data"));
 
@@ -658,6 +699,7 @@ public class XMLDataConverterTest extends TestCase {
     assertTrue(checkPathContainValues(xml, "datamap/data/value/data", "valuea", "valueb"));
   }
 
+  @Test
   public void testDataMap() {
     mappings2.addNodeMapping(new NodeMapping("string", "data"));
 
@@ -677,6 +719,7 @@ public class XMLDataConverterTest extends TestCase {
     assertTrue(checkPathContainValues(xml, "datamap/data/value/data", "valuea", "valueb"));
   }
 
+  @Test
   public void testTypeMap() {
     BiMap<String, Integer> map = HashBiMap.create();
     map.put("test1", 1);
@@ -705,6 +748,7 @@ public class XMLDataConverterTest extends TestCase {
     assertEquals("test4", xml.getNode("types/type[3]"));
   }
 
+  @Test
   public void testNotNullBean() {
     TestBean bean2 = new TestBean();
     mappings.addNodeMapping(new DataMapping("notNullBean", "bean", TestBean2.class));

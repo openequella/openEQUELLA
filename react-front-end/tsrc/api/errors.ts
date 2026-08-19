@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { AxiosError, AxiosResponse } from "axios";
-import { v4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 
 export interface ErrorResponse {
@@ -32,7 +31,7 @@ export const generateNewErrorID = (
   description?: string,
 ): ErrorResponse => {
   return {
-    id: v4(),
+    id: crypto.randomUUID(),
     error_description: description,
     code,
     error,
@@ -41,14 +40,15 @@ export const generateNewErrorID = (
 
 export const generateFromError = (error: Error): ErrorResponse => {
   return {
-    id: v4(),
+    id: crypto.randomUUID(),
     error: error.name,
     error_description: error.message,
   };
 };
 
-export const isAxiosError = (error: unknown): error is AxiosError =>
-  (error as AxiosError).isAxiosError;
+export const isAxiosError = <T = unknown>(
+  error: unknown,
+): error is AxiosError<T> => (error as AxiosError<T>).isAxiosError;
 
 // For handling standard errors - permissions, 404s, etc.
 export function fromAxiosError(error: AxiosError): ErrorResponse {
@@ -80,7 +80,7 @@ export function fromAxiosResponse(
   response: AxiosResponse<ErrorResponse>,
 ): ErrorResponse {
   if (typeof response.data == "object") {
-    return { ...response.data, id: v4() };
+    return { ...response.data, id: crypto.randomUUID() };
   } else {
     const [error, error_description] = (function () {
       switch (response.status) {
@@ -92,7 +92,7 @@ export function fromAxiosResponse(
     })();
 
     return {
-      id: v4(),
+      id: crypto.randomUUID(),
       error,
       error_description,
       code: response.status,

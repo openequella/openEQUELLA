@@ -35,7 +35,6 @@ import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
-import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.freetext.FreetextIndex;
@@ -233,15 +232,6 @@ public class StandardIndexer extends AbstractIndexingExtension {
     }
 
     StringBuilder bodyTextBuf = gatherLanguageBundles(item.getDescription());
-
-    // The below if statement is added to make this class testable. The challenge is that
-    // CloudProviderService is an Scala object which cannot be mocked by either Mockito
-    // or Scalamock. As a result, we have a find a way to avoid any use of CloudProviderService
-    // in the testing environment. The string literal 'cloud' refers to the custom attachment
-    // type defined in CloudProviderService.
-    if (!attachments.getCustomList("cloud").isEmpty()) {
-      bodyTextBuf.append(CloudProviderService.collectBodyText(attachments));
-    }
 
     if (!Check.isEmpty(item.getComments())) {
       for (Comment comment : item.getComments()) {

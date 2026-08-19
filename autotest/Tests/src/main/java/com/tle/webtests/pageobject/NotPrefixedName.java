@@ -27,4 +27,9 @@ public class NotPrefixedName implements PrefixedName {
     }
     return false;
   }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
+  }
 }

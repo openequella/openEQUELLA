@@ -31,9 +31,7 @@ sealed abstract class Lti13Error {
 
 object Lti13Error {
   // A couple implicit functions to help transform GeneralError to Lti13Error.
-  implicit def fromGeneralError(error: GeneralError): Lti13Error = new Lti13Error {
-    override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
-  }
+  implicit def fromGeneralError(error: GeneralError): Lti13Error = GeneralLtiError(error)
   implicit def fromEither[T](result: Either[GeneralError, T]): Either[Lti13Error, T] =
     result.left.map(fromGeneralError)
 }
@@ -41,6 +39,14 @@ object Lti13Error {
 /** Typically used for an error related to an LTI 1.3 platform configuration.
   */
 final case class PlatformDetailsError(msg: String) extends Lti13Error
+
+/** Wraps the general OAuth2 errors (e.g. InvalidJWT, ServerError) in the same way
+  * [[OAuth2LayerError]] wraps the authorisation errors. Unlike those, general errors carry no error
+  * code — only a message.
+  */
+final case class GeneralLtiError(error: GeneralError) extends Lti13Error {
+  override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
+}
 
 /** Due to not having the feature of union types in Scala v2, this case class is created as a
   * wrapper of the standard OAuth2 errors to help reduce the complexity of error handling.

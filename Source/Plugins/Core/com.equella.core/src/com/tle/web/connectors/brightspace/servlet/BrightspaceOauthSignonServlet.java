@@ -25,35 +25,46 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
 import com.tle.core.connectors.brightspace.service.BrightspaceConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.institution.UriUtils;
 import com.tle.core.services.user.UserSessionService;
 import java.io.IOException;
+import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Served up at /brightspaceauth
- *
- * @author Aaron
- */
-@SuppressWarnings("nls")
+/** Served up at /brightspaceauth */
 @NonNullByDefault
 @Bind
 @Singleton
 public class BrightspaceOauthSignonServlet extends HttpServlet {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BrightspaceOauthSignonServlet.class);
+
   private static final String USER_ID_CALLBACK_PARAMETER = "x_a";
   private static final String USER_KEY_CALLBACK_PARAMETER = "x_b";
   private static final String STATE_CALLBACK_PARAMETER = "x_state";
 
-  @Inject private UserSessionService sessionService;
-  @Inject private BrightspaceConnectorService brightspaceConnectorService;
+  private final UserSessionService sessionService;
+  private final BrightspaceConnectorService brightspaceConnectorService;
+  private final InstitutionService institutionService;
+
+  @Inject
+  public BrightspaceOauthSignonServlet(
+      UserSessionService sessionService,
+      BrightspaceConnectorService brightspaceConnectorService,
+      InstitutionService institutionService) {
+    this.sessionService = sessionService;
+    this.brightspaceConnectorService = brightspaceConnectorService;
+    this.institutionService = institutionService;
+  }
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     String postfixKey = "";
     String forwardUrl = null;
 
@@ -80,8 +91,60 @@ public class BrightspaceOauthSignonServlet extends HttpServlet {
         req.getParameter(USER_KEY_CALLBACK_PARAMETER));
 
     // close dialog OR redirect...
-    if (forwardUrl != null) {
-      resp.sendRedirect(forwardUrl);
+    if (forwardUrl == null) {
+      return;
     }
+
+    switch (resolveForwardUrl(forwardUrl)) {
+      case ForwardUrlResolution.Redirect(URI target) -> resp.sendRedirect(target.toString());
+      case ForwardUrlResolution.Rejected(String reason) -> {
+        LOGGER.warn("Rejected {} forward URL: {}", reason, forwardUrl);
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid forward URL");
+      }
+    }
+  }
+
+  /**
+   * The outcome of validating a decrypted forward URL: either a target that is safe to redirect to,
+   * or a rejection carrying the reason it was refused (used for server-side logging only).
+   */
+  private sealed interface ForwardUrlResolution {
+    record Redirect(URI target) implements ForwardUrlResolution {}
+
+    record Rejected(String reason) implements ForwardUrlResolution {}
+  }
+
+  /**
+   * Parses the raw forward URL string and resolves it against the institution, returning either a
+   * safe {@link ForwardUrlResolution.Redirect} target or a {@link ForwardUrlResolution.Rejected}
+   * describing why it was refused.
+   */
+  private ForwardUrlResolution resolveForwardUrl(String forwardUrl) {
+    final URI parsed;
+    try {
+      parsed = URI.create(forwardUrl);
+    } catch (IllegalArgumentException e) {
+      return new ForwardUrlResolution.Rejected("malformed");
+    }
+
+    return resolveParsedForwardUrl(parsed);
+  }
+
+  /**
+   * Resolves an already-parsed forward URI against the institution base URL. Returns a {@link
+   * ForwardUrlResolution.Redirect} only if it stays within the institution's own
+   * scheme/host/port/path; otherwise a {@link ForwardUrlResolution.Rejected} marked "unsafe". This
+   * covers absolute URLs to other hosts, protocol-relative URLs (//evil.example), scheme
+   * downgrades, non-http(s) schemes (javascript:, data:, etc.) and paths that use ".." to escape
+   * the institution. Safety (including path normalization) is decided by {@link
+   * UriUtils#isSafeRedirectUri}.
+   */
+  private ForwardUrlResolution resolveParsedForwardUrl(URI forwardUri) {
+    final URI base = institutionService.getInstitutionUri();
+    final URI target = base.resolve(forwardUri);
+
+    return UriUtils.isSafeRedirectUri(base, target)
+        ? new ForwardUrlResolution.Redirect(target)
+        : new ForwardUrlResolution.Rejected("unsafe");
   }
 }

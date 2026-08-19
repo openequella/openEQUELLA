@@ -201,7 +201,9 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 
   @Override
   public GlobalTaskStartInfo getGlobalTask(ClusteredTask globalTask, long millis) {
-    if (!globalTask.isGlobal()) throw new Error("Isn't a global task");
+    if (!globalTask.isGlobal()) {
+      throw new Error("Isn't a global task");
+    }
     String globalId = globalTask.getGlobalId();
     String existingTaskId = getRunningGlobalTask(globalId);
     if (existingTaskId != null) {
@@ -1135,15 +1137,13 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
         }
         break;
       case MSG:
-        {
-          MsgMessage mmsg = (MsgMessage) msg;
-          taskId = mmsg.getTaskId();
-          SimpleMessage simpleMessage = mmsg.getMsg();
-          if (taskId == null) {
-            processResponse(simpleMessage);
-          } else {
-            processRequest(taskId, simpleMessage);
-          }
+        MsgMessage mmsg = (MsgMessage) msg;
+        taskId = mmsg.getTaskId();
+        SimpleMessage simpleMessage = mmsg.getMsg();
+        if (taskId == null) {
+          processResponse(simpleMessage);
+        } else {
+          processRequest(taskId, simpleMessage);
         }
         break;
       case FULL_STATUS:

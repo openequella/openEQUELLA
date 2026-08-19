@@ -14,3 +14,14 @@ fca2d19bd92134957a2b474a128a2aa477c42ae1
 # remove authors tag, and applied google-java-format
 d0ffbaf8fd7feaa21a1b6371b05ccd6f3470add9
 50020eb65e3eac2b761c7b0b55f7df388556f066
+
+# Apply new formatting to GraphQL branch
+d6f14dddc338ed7b97e9463b18dffd9e87132d40
+c86e8157842a8e682cd750e8e12a8e7d2274333e
+
+# scalafmt 3.10.3 reformat
+6b3192022bbd49ea10266e932e933015582da77d
+944a6c37a36d2d1ae96415843e9dba6a22a25506
+
+# prettier 3.9.4 reformat
+723ccf6fe987092f39548f24c59075a2a6ec5711

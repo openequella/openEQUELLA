@@ -30,6 +30,7 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.controls.scripting.BasicModel;
 import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemMetadataRule;
 import com.tle.common.Check;
@@ -41,7 +42,6 @@ import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -243,7 +243,7 @@ public class ItemMetadataAccessControlTab extends AbstractItemdefTab {
       aclEditor =
           new AccessEditor(
               clientService.getService(RemoteTLEAclManager.class),
-              clientService.getService(RemoteUserService.class));
+              clientService.getService(AdminUserDirectoryService.class));
       aclEditor.setBorder(AppletGuiUtils.DEFAULT_BORDER);
 
       tabs = new JTabbedPane();

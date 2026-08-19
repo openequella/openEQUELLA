@@ -29,11 +29,11 @@ import com.tle.admin.gui.common.TreeWithViewInterface;
 import com.tle.admin.schema.AbstractSchemaEditor;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SchemaNode;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,6 +47,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,8 +56,12 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EditorTab extends BaseEntityTab<Schema> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EditorTab.class);
+
   private final SchemaModel schemaModel;
 
   private AbstractSchemaEditor editor;
@@ -101,9 +106,7 @@ public class EditorTab extends BaseEntityTab<Schema> {
   }
 
   private JComponent createLockedArea() {
-    JLabel label =
-        new JLabel(
-            CurrentLocale.get("com.tle.admin.schema.manager.editortab.locked")); // $NON-NLS-1$
+    JLabel label = new JLabel(CurrentLocale.get("com.tle.admin.schema.manager.editortab.locked"));
 
     lockedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     lockedPanel.setBorder(new LineBorder(Color.BLACK, 1, 0, 1, 0));
@@ -113,12 +116,12 @@ public class EditorTab extends BaseEntityTab<Schema> {
           @Override
           public void mouseClicked(MouseEvent e) {
             GlassSwingWorker<PartiallyLockedDialog> worker =
-                new GlassSwingWorker<PartiallyLockedDialog>() {
+                new GlassSwingWorker<>() {
                   @Override
-                  public PartiallyLockedDialog construct() throws Exception {
+                  public PartiallyLockedDialog construct() {
                     Collection<BaseEntityLabel> usages =
                         clientService
-                            .getService(RemoteSchemaService.class)
+                            .getService(AdminSchemaService.class)
                             .getSchemaUses(state.getEntity().getId());
                     BundleCache.ensureCached(usages);
                     return new PartiallyLockedDialog(usages);
@@ -139,7 +142,10 @@ public class EditorTab extends BaseEntityTab<Schema> {
 
                   @Override
                   public void exception() {
-                    getException().printStackTrace();
+                    LOGGER.error(
+                        "Error while trying to unlock schema: {}",
+                        state.getEntity().getUuid(),
+                        getException());
                   }
                 };
 
@@ -183,14 +189,13 @@ public class EditorTab extends BaseEntityTab<Schema> {
     updateLockedHeight();
     if (state.isLoaded()) {
       GlassSwingWorker<?> worker =
-          new GlassSwingWorker<Object>() {
+          new GlassSwingWorker<>() {
             @Override
-            public Object construct() throws Exception {
+            public Object construct() {
               locked =
-                  !Check.isEmpty(
-                      clientService
-                          .getService(RemoteSchemaService.class)
-                          .getReferencingClasses(state.getEntity().getId()));
+                  clientService
+                      .getService(AdminSchemaService.class)
+                      .hasReferencingClasses(state.getEntity().getId());
               return null;
             }
 
@@ -201,7 +206,16 @@ public class EditorTab extends BaseEntityTab<Schema> {
                 updateLockedHeight();
               }
             }
+
+            @Override
+            public void exception() {
+              LOGGER.error(
+                  "Error while determining schema locked state: {}",
+                  state.getEntity().getUuid(),
+                  getException());
+            }
           };
+
       worker.setComponent(getComponent());
       worker.start();
     }
@@ -264,11 +278,8 @@ public class EditorTab extends BaseEntityTab<Schema> {
     }
   }
 
-  /**
-   * @author Nicholas Read
-   */
   class Editor extends JPanel implements TreeWithViewInterface<SchemaNode> {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private SchemaNode current;
 

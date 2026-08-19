@@ -6,9 +6,7 @@ import static org.testng.Assert.assertTrue;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
 import com.google.common.io.Closeables;
-import com.tle.webtests.framework.SoapHelper;
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.framework.soap.SoapService50;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -18,7 +16,6 @@ import com.tle.webtests.pageobject.searching.SearchSettingsPage.Order;
 import com.tle.webtests.pageobject.searching.ShareSearchQuerySection;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.auth.Credentials;
@@ -27,14 +24,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 @TestInstitution("flakey")
 public class SearchSettingsTest extends AbstractCleanupAutoTest {
-  private SoapService50 soapService;
-  private SoapHelper soapHelper;
 
   @Override
   protected boolean isCleanupItems() {
@@ -58,7 +52,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     SettingsPage sp = new SettingsPage(context).load();
 
     // Load SearchSettings Page by clicking settings link
-    SearchSettingsPage searchSettingsPage = sp.searchSettings();
+    SearchSettingsPage searchSettingsPage = sp.clickSearchSetting();
     Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -69,7 +63,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = Order.datemodified;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting();
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -79,7 +73,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = SearchSettingsPage.Order.name;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting();
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -89,7 +83,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = SearchSettingsPage.Order.rating;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings().get();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting().get();
 
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -104,7 +98,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   @Test
   public void testShowNonLive() {
     logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
+    SearchSettingsPage ssp = new SettingsPage(context).load().clickSearchSetting().load();
     ssp.includeNonLive(true).save();
 
     SearchPage searchPage = new SearchPage(context).load();
@@ -115,7 +109,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     ItemListPage results = searchPage.search('"' + ITEM_NAME + '"');
     assertTrue(results.doesResultExist(ITEM_NAME, 1));
 
-    ssp = new SettingsPage(context).load().searchSettings();
+    ssp = new SettingsPage(context).load().clickSearchSetting();
     ssp.includeNonLive(false).save();
 
     sso = new SearchPage(context).load().openScreenOptions();
@@ -129,14 +123,24 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   public void testDisableGallery() {
     // Disable Images Gallery view
     logon("AutoTest", "automated");
-    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(true).save();
+    new SettingsPage(context)
+        .load()
+        .clickSearchSetting()
+        .load()
+        .setDisableImageGallery(true)
+        .save();
 
     // Go to search page, test that gallery is disabled
     SearchPage searchPage = new SearchPage(context).load();
     assertFalse(searchPage.isImagesLinkAvailable());
 
     // Now reenable Images Gallery
-    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(false).save();
+    new SettingsPage(context)
+        .load()
+        .clickSearchSetting()
+        .load()
+        .setDisableImageGallery(false)
+        .save();
 
     // Go to search page, test that gallery is enabled
     searchPage = new SearchPage(context).load();
@@ -150,9 +154,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     final String searchTerm = "Relevance";
     final String authString = "auth=basic";
 
-    // Login
-    soapService.login("AutoTest", "automated");
-
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
     searchPage.search(searchTerm);
@@ -165,11 +166,11 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Check results
     Credentials basicCreds = new UsernamePasswordCredentials("AutoTest", "automated");
-    assertTrue(checkRssResponse(getResponse(soapService, rssUrl, null), true));
-    assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, null), true));
+    assertTrue(checkRssResponse(getResponse(rssUrl, null), true));
+    assertTrue(checkAtomResponse(getResponse(atomUrl, null), true));
 
     // Enable authenticated results
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
+    SearchSettingsPage ssp = new SettingsPage(context).load().clickSearchSetting();
     ssp.setGenerateAuthFeeds(true).save();
 
     // Do a search and get RSS url
@@ -182,8 +183,8 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(atomUrl.contains(authString));
 
     // Check results
-    assertTrue(checkRssResponse(getResponse(soapService, rssUrl, basicCreds), false));
-    assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, basicCreds), false));
+    assertTrue(checkRssResponse(getResponse(rssUrl, basicCreds), false));
+    assertTrue(checkAtomResponse(getResponse(atomUrl, basicCreds), false));
   }
 
   private boolean checkRssResponse(PropBagEx response, boolean single) {
@@ -220,8 +221,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     }
   }
 
-  private PropBagEx getResponse(SoapService50 soapService, String uri, Credentials creds)
-      throws Exception {
+  private PropBagEx getResponse(String uri, Credentials creds) throws Exception {
     HttpGet get = new HttpGet(uri);
     if (creds != null) {
       get.addHeader(BasicScheme.authenticate(creds, "US-ASCII", false));
@@ -236,24 +236,13 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     }
   }
 
-  @BeforeClass
-  public void setupSoapService() throws MalformedURLException {
-    soapHelper = new SoapHelper(context);
-    soapService =
-        soapHelper.createSoap(
-            SoapService50.class,
-            "services/SoapService50",
-            "http://soap.remoting.web.tle.com",
-            null);
-  }
-
   @Override
   protected void cleanupAfterClass() throws Exception {
     logon("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
 
     // Load SearchSettings Page by clicking settings link
-    SearchSettingsPage searchSettingsPage = sp.searchSettings();
+    SearchSettingsPage searchSettingsPage = sp.clickSearchSetting();
     Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 

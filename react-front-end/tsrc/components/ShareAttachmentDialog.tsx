@@ -88,7 +88,7 @@ const ShareDetails = ({
   details: string;
 }) => (
   <Grid container>
-    <Grid container justifyContent="space-between" spacing={2}>
+    <Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
       <Grid>
         <Typography variant="h6">{title}</Typography>
       </Grid>

@@ -23,8 +23,9 @@ import org.testng.annotations.Test;
 public class ManageResourcesSearchTest extends AbstractCleanupAutoTest {
   private static final String DATE_METADATA_PATH = "/xml/calendar";
 
-  //	private final static String OLDEST_DATE_STR = "1962-10-30"; // Date somebody arrived on earth.
-  //	private final static String NEWEST_DATE_STR = "2011-09-26"; // Date somebody else left the
+  //    private final static String OLDEST_DATE_STR = "1962-10-30"; // Date somebody arrived on
+  // earth.
+  //    private final static String NEWEST_DATE_STR = "2011-09-26"; // Date somebody else left the
   // building.
 
   @Test

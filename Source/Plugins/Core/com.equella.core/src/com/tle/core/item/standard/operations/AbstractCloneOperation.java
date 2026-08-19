@@ -108,7 +108,7 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
     params.setUpdate(false);
 
     Item item = new Item();
-    item.setId(0l);
+    item.setId(0L);
     item.setNewItem(true);
     item.setItemDefinition(origItem.getItemDefinition());
     item.setInstitution(origItem.getInstitution());

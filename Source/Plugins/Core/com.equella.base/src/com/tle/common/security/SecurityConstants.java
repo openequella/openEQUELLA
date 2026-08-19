@@ -47,6 +47,7 @@ public final class SecurityConstants {
   public static final String ARCHIVE_ITEM = "ARCHIVE_ITEM";
   public static final String VIEW_VIEWCOUNT = "VIEW_VIEWCOUNT";
 
+  public static final String EDIT_USER_MANAGEMENT = "EDIT_USER_MANAGEMENT";
   public static final String EDIT_SYSTEM_SETTINGS = "EDIT_SYSTEM_SETTINGS";
   public static final String LIST_USERS = "LIST_USERS";
 
@@ -131,8 +132,6 @@ public final class SecurityConstants {
   public static final int PRIORITY_MANAGING = 350;
   public static final int PRIORITY_ALL_SYSTEM_SETTINGS = 325;
   public static final int PRIORITY_SYSTEM_SETTING = 300;
-  public static final int PRIORITY_ALL_CLOUD_PROVIDER = 250;
-  public static final int PRIORITY_CLOUD_PROVIDER = 225;
   public static final int PRIORITY_HIERARCHY_TOPIC = 200;
   public static final int PRIORITY_ITEM = 100;
   public static final int PRIORITY_OBJECT_INSTANCE = 0;

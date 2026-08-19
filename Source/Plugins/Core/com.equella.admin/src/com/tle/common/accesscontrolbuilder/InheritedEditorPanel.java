@@ -20,30 +20,31 @@ package com.tle.common.accesscontrolbuilder;
 
 import com.dytech.gui.JLinkButton;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import javax.swing.JComponent;
 
 public class InheritedEditorPanel extends JComponent implements ActionListener {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private final Object domainObj;
   private final String privilege;
 
   private JLinkButton showAll;
   private final RemoteTLEAclManager aclManager;
-  private final RemoteUserService userService;
+  private final AdminUserDirectoryService userDirectoryService;
 
   public InheritedEditorPanel(
       RemoteTLEAclManager aclManager,
-      RemoteUserService userService,
+      AdminUserDirectoryService userDirectoryService,
       Object domainObj,
       String privNode) {
     this.aclManager = aclManager;
-    this.userService = userService;
+    this.userDirectoryService = userDirectoryService;
     this.domainObj = domainObj;
     this.privilege = privNode;
 
@@ -71,7 +72,8 @@ public class InheritedEditorPanel extends JComponent implements ActionListener {
           new GlassSwingWorker<JComponent>() {
             @Override
             public JComponent construct() throws Exception {
-              return new OverrideDefaultAclViewer(aclManager, userService, domainObj, privilege);
+              return new OverrideDefaultAclViewer(
+                  aclManager, userDirectoryService, domainObj, privilege);
             }
 
             @Override

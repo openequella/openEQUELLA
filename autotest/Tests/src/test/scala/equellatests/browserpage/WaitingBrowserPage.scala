@@ -12,7 +12,7 @@ trait WaitingBrowserPage extends BrowserPage {
 
   def updatedExpectation(): ExpectedCondition[_] =
     ExpectedConditions.and(ExpectedConditions.stalenessOf(pageElement), mainExpectation)
-  def pageElement: WebElement = findElement(pageBy)
+  def pageElement: WebElement               = findElement(pageBy)
   def mainExpectation: ExpectedCondition[_] = ExpectedConditions.or(
     ExpectedConditions.visibilityOfElementLocated(pageBy),
     ExpectedConditions.visibilityOfElementLocated(newUiPageBy)

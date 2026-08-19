@@ -66,7 +66,7 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.html.FindHrefHandler;
 import com.tle.core.services.html.HrefCallback;
-import com.tle.core.xml.service.impl.XmlServiceImpl;
+import com.tle.core.xstream.ExtXStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -505,7 +505,7 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
   private synchronized XStream getXStream() {
     if (xstream == null) {
       xstream =
-          new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+          new ExtXStream(getClass().getClassLoader()) {
             @Override
             protected MapperWrapper wrapMapper(MapperWrapper next) {
               return new HibernateMapper(next);

@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 public class PluginAwareObjectInputStream extends ObjectInputStream {
-  private List<ClassLoader> loaders = new ArrayList<ClassLoader>();
-  private Set<String> banned =
+  private final List<ClassLoader> loaders = new ArrayList<>();
+  private final Set<String> banned =
       Sets.newHashSet(
           "org.apache.commons.collections.functors.InvokerTransformer",
           "org.apache.commons.collections4.functors.InvokerTransformer",
@@ -40,7 +40,22 @@ public class PluginAwareObjectInputStream extends ObjectInputStream {
           "org.codehaus.groovy.runtime.ConvertedClosure",
           "org.codehaus.groovy.runtime.MethodClosure",
           "org.springframework.beans.factory.ObjectFactory",
-          "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl");
+          // The XSLTC TemplatesImpl is a code-execution sink (it carries and defines bytecode). It
+          // exists under two fully-qualified names: the JDK-internal copy and the standalone Apache
+          // Xalan copy bundled by the reporting and z3950 plugins. A denylist keyed on class name
+          // must deny both, or the standalone copy can be reached through the plugin class loader.
+          "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",
+          "org.apache.xalan.xsltc.trax.TemplatesImpl",
+          // Nested-deserialization "smuggling" gadgets: their getObject()/get() reconstructs an
+          // attacker-supplied byte[] using a plain ObjectInputStream that this denylist never sees,
+          // so any sink can be tunnelled past these checks. Deny them (they appear in this, the
+          // checked, stream) so a payload cannot escape resolveClass by nesting.
+          "java.security.SignedObject",
+          "java.rmi.MarshalledObject",
+          // JNDI-lookup sink: connect()/getDatabaseMetaData() performs a naming lookup on an
+          // attacker-controlled name, reaching an object factory (e.g. Tomcat's BeanFactory) ->
+          // RCE.
+          "com.sun.rowset.JdbcRowSetImpl");
 
   public PluginAwareObjectInputStream(InputStream stream) throws IOException {
     super(stream);

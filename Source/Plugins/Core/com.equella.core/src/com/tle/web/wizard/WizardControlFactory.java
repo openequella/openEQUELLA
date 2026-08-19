@@ -21,7 +21,6 @@ package com.tle.web.wizard;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.wizard.controls.HTMLControl;
-import com.tle.web.cloudproviders.CloudWizardControl;
 import com.tle.web.wizard.controls.WebControl;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,10 +52,7 @@ public class WizardControlFactory {
 
   public WebControl createWebControl(HTMLControl control) {
     Map<String, Extension> extensions = getWebControlExtensions();
-    WebControl cloudControl = CloudWizardControl.cloudControl(control);
-    if (cloudControl != null) {
-      return cloudControl;
-    }
+
     String classType = control.getControlBean().getClassType();
     Extension extension = extensions.get(classType);
     if (extension != null) {

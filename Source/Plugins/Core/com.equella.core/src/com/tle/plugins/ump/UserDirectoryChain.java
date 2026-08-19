@@ -20,12 +20,7 @@ package com.tle.plugins.ump;
 
 import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.UserState;
-import com.tle.common.usermanagement.user.valuebean.GroupBean;
-import com.tle.common.usermanagement.user.valuebean.RoleBean;
-import com.tle.common.usermanagement.user.valuebean.UserBean;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -39,12 +34,21 @@ import javax.servlet.http.HttpServletRequest;
  *   <li>Unlike UserDirectory implementations, any returned lists or maps from the chain must not be
  *       null.
  * </ol>
- *
- * @author nick
  */
-public interface UserDirectoryChain {
-  void purgeFromCaches(String id);
+public interface UserDirectoryChain extends UserDirectoryQueries {
+  /**
+   * Purges all cached entries associated with the given user.
+   *
+   * @param id the unique ID of the user.
+   */
+  void purgeUserFromCaches(String id);
 
+  /**
+   * Purges all cached entries associated with the given {@code groupId}. This includes the group
+   * info cache, group-membership cache, and all group/role search result caches.
+   *
+   * @param groupId the unique ID of the group.
+   */
   void purgeGroupFromCaches(String groupId);
 
   ModifiableUserState authenticateToken(String token);
@@ -59,26 +63,6 @@ public interface UserDirectoryChain {
 
   String getGeneratedToken(String secretId, String username);
 
-  List<GroupBean> getGroupsContainingUser(String userId);
-
-  List<UserBean> getUsersInGroup(String groupId, boolean recursive);
-
-  GroupBean getInformationForGroup(String groupId);
-
-  Map<String, GroupBean> getInformationForGroups(Collection<String> groupIds);
-
-  RoleBean getInformationForRole(String roleId);
-
-  Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds);
-
-  UserBean getInformationForUser(String userId);
-
-  Map<String, UserBean> getInformationForUsers(Collection<String> userIds);
-
-  GroupBean getParentGroupForGroup(String groupId);
-
-  List<RoleBean> getRolesForUser(String userId);
-
   List<String> getTokenSecretIds();
 
   void initGuestUserState(ModifiableUserState state);
@@ -87,21 +71,7 @@ public interface UserDirectoryChain {
 
   void initSystemUserState(ModifiableUserState state);
 
-  void keepAlive();
-
   void logout(UserState state);
 
-  List<GroupBean> searchGroups(String query);
-
-  List<GroupBean> searchGroups(String query, String parentId);
-
-  List<RoleBean> searchRoles(String query);
-
-  List<UserBean> searchUsers(String query);
-
-  List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive);
-
   boolean verifyUserStateForToken(UserState userState, String token);
-
-  void clearUserSearchCache();
 }

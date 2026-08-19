@@ -219,12 +219,12 @@ public class TasksApiTest extends AbstractRestApiTest {
 
   private void assertInDueDateOrder(JsonNode jsonNode) throws Exception {
     int results = jsonNode.get("available").asInt();
-    Date first = new Date(-3177517600000l); // 1869
+    Date first = new Date(-3177517600000L); // 1869
 
     for (int i = 0; i < results; i++) {
       JsonNode dateNode = jsonNode.get("results").get(i).get("dueDate");
       if (dateNode == null) {
-        first = new Date(2298153600000l); // 2042
+        first = new Date(2298153600000L); // 2042
         continue;
       }
       Date due = ISO8601Utils.parse(dateNode.asText(), new ParsePosition(0));
@@ -237,7 +237,7 @@ public class TasksApiTest extends AbstractRestApiTest {
 
   private void assertInWaitingOrder(JsonNode jsonNode) throws Exception {
     int results = jsonNode.get("available").asInt();
-    Date first = new Date(0l); // 1970
+    Date first = new Date(0L); // 1970
 
     for (int i = 0; i < results; i++) {
       JsonNode dateNode = jsonNode.get("results").get(i).get("startDate");

@@ -17,7 +17,6 @@
  */
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { getBaseUrl, getRenderData } from "../AppConfig";
 import * as React from "react";
 import "tinymce/tinymce";
 import "tinymce/models/dom/model";
@@ -50,9 +49,45 @@ import "tinymce/plugins/table";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import { getBaseUrl, getRenderData } from "../AppConfig";
+import {
+  ErrorResponse,
+  fromAxiosResponse,
+  generateFromError,
+  isAxiosError,
+} from "../api/errors";
 import "tinymce/plugins/emoticons/js/emojis";
 
+/**
+ * The rejection value TinyMCE expects from an upload handler.
+ * Setting `remove` makes TinyMCE delete the `<img>` from the editor content
+ * - without it the image is kept and, on serialisation, inlined as a base64 data URI, which would
+ * smuggle a file the server has just rejected into the saved HTML.
+ *
+ * Mirrors `UploadFailure` in node_modules/tinymce/tinymce.d.ts, which TinyMCE declares but does not export - the same
+ * reason {@link BlobInfo} below is hand written.
+ */
+interface UploadFailure {
+  /** Text shown to the user in TinyMCE's error notification. */
+  message: string;
+  /** Whether to drop the `<img>` from the editor content, rather than leaving it displayed from the local blob. */
+  remove?: boolean;
+}
+
 const renderData = getRenderData();
+
+/**
+ * Text for TinyMCE's error notification, preferring the server's explanation of why the upload was
+ * rejected - for example that the file was not accepted as an image.
+ */
+const uploadErrorMessage = (error: Error): string => {
+  const { error_description }: ErrorResponse =
+    isAxiosError<ErrorResponse>(error) && error.response !== undefined
+      ? fromAxiosResponse(error.response)
+      : generateFromError(error);
+
+  return error_description ?? error.message;
+};
 
 // from https://github.com/tinymce/tinymce/blob/26b948ac85b75991ab9e50d0affdf4f5c0b34f65/modules/tinymce/src/core/main/ts/api/file/BlobCache.ts#L31-L39
 export interface BlobInfo {
@@ -90,7 +125,7 @@ const RichTextEditor = ({
     new Promise<string>(
       (
         resolve: (value: PromiseLike<string> | string) => void,
-        reject: (reason?: string) => void,
+        reject: (reason: UploadFailure) => void,
       ) => {
         if (imageUploadCallBack) {
           imageUploadCallBack(blobInfo)
@@ -98,10 +133,10 @@ const RichTextEditor = ({
               resolve(response.data.link);
             })
             .catch((error: Error) => {
-              reject(error.name + error.message);
+              reject({ message: uploadErrorMessage(error), remove: true });
             });
         } else {
-          reject("No upload path specified.");
+          reject({ message: "No upload path specified.", remove: true });
         }
       },
     );
@@ -111,6 +146,7 @@ const RichTextEditor = ({
 
   return (
     <Editor
+      licenseKey="gpl"
       init={{
         min_height: 500,
         automatic_uploads: true,

@@ -21,6 +21,7 @@ package com.tle.integration.oidc.service
 import cats.implicits._
 import cats.effect.unsafe.implicits.global
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.dytech.edge.web.WebConstants
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
 import com.tle.common.usermanagement.user.{DefaultUserState, WebAuthenticationDetails}
@@ -54,7 +55,7 @@ import com.tle.integration.oidc.{
   verifyIdToken => verifyToken
 }
 import com.tle.integration.util.{NO_FURTHER_INFO, getParam}
-import io.circe.Error
+import io.circe.{Decoder, Encoder, Error}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser._
 import org.apache.http.client.utils.URIBuilder
@@ -69,6 +70,7 @@ import sttp.client3.{
 }
 
 import javax.inject.{Inject, Singleton}
+import javax.servlet.http.HttpServletRequest
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -85,8 +87,9 @@ final case class OidcTokenResponse(
 )
 
 object OidcTokenResponse {
-  implicit val tokenResponseEncoder = deriveEncoder[OidcTokenResponse]
-  implicit val tokenResponseDecoder = deriveDecoder[OidcTokenResponse]
+  implicit val tokenResponseEncoder: Encoder.AsObject[OidcTokenResponse] =
+    deriveEncoder[OidcTokenResponse]
+  implicit val tokenResponseDecoder: Decoder[OidcTokenResponse] = deriveDecoder[OidcTokenResponse]
 }
 
 /** Structure for a successful verification of a callback request.
@@ -148,7 +151,7 @@ class OidcAuthService @Inject() (
     */
   def buildAuthUrl(authUrl: String, clientId: String, targetPage: String): String = {
     val (codeVerifier, codeChallenge) = generatePKCEPair
-    val stateDetails = OidcStateDetails(
+    val stateDetails                  = OidcStateDetails(
       codeVerifier = codeVerifier,
       codeChallenge = codeChallenge,
       targetPage = Option(targetPage).filter(_.nonEmpty)
@@ -183,13 +186,13 @@ class OidcAuthService @Inject() (
   def verifyCallbackRequest(
       params: Map[String, Array[String]]
   ): Either[AuthorisationError, OidcCallbackDetails] = {
-    def paramMap = getParam(params)
+    def paramMap              = getParam(params)
     def paramValue(p: String) =
       paramMap(p).toRight(AuthInvalidRequest(s"Missing required parameter '$p'"))
 
     for {
-      code  <- paramValue(OpenIDConnectParams.CODE)
-      state <- paramValue(OpenIDConnectParams.STATE)
+      code         <- paramValue(OpenIDConnectParams.CODE)
+      state        <- paramValue(OpenIDConnectParams.STATE)
       stateDetails <- stateService
         .getState(state)
         .toRight(InvalidState(s"Invalid state provided: $state"))
@@ -221,7 +224,7 @@ class OidcAuthService @Inject() (
       stateDetails: OidcStateDetails,
       idp: IdentityProviderDetails
   ): Either[OAuth2Error, String] = {
-    val idpDetails = idp.commonDetails
+    val idpDetails   = idp.commonDetails
     val tokenRequest = basicRequest
       .body(
         OpenIDConnectParams.CLIENT_ID     -> idpDetails.authCodeClientId,
@@ -243,7 +246,7 @@ class OidcAuthService @Inject() (
         .map(_.id_token)
     } match {
       case Success(result) => result
-      case Failure(err) =>
+      case Failure(err)    =>
         Left(ServerError(s"Failed to communicate with the Token endpoint: ${err.getMessage}"))
     }
   }
@@ -271,7 +274,7 @@ class OidcAuthService @Inject() (
       decodedToken <- decodeJwt(token)
       idpDetails = idp.commonDetails
       jsonWebKeySetProvider <- jwkProvider.get(idpDetails.keysetUrl)
-      jwk <- Either
+      jwk                   <- Either
         .catchNonFatal(jsonWebKeySetProvider.get(decodedToken.getKeyId))
         .leftMap(_ => InvalidJWT("Failed to retrieve JWK by the obtained ID token's key ID"))
       verifiedToken <- verifyToken(
@@ -310,7 +313,7 @@ class OidcAuthService @Inject() (
     def claim: String => Option[String] = getClaim(idToken)
 
     for {
-      userId <- getUserId(idp, idToken)
+      userId   <- getUserId(idp, idToken)
       username <- idp.commonDetails.usernameClaim
         .filter(_.nonEmpty)
         .map(c =>
@@ -337,6 +340,18 @@ class OidcAuthService @Inject() (
         .leftMap(error => ServerError(s"Failed to setup user state: ${error.getMessage}"))
     } yield userService.login(userState, true)
   }
+
+  /** Check if the 'NO_AUTO_LOGIN' is present and set to 'true' in the request parameters, which
+    * indicates that the Seamless SSO auto login should be bypassed.
+    *
+    * @param parameters
+    *   The request parameters to check. Being `java.util.Map` because this method is mostly called
+    *   from where the parameters are provided in that format.
+    */
+  def shouldBypassAutoLogin(parameters: java.util.Map[String, Array[String]]): Boolean =
+    Option(parameters.get(WebConstants.NO_AUTO_LOGIN))
+      .flatMap(_.headOption)
+      .contains("true")
 
   /** Confirm User ID in two steps:
     *
@@ -390,7 +405,7 @@ class OidcAuthService @Inject() (
       .map { case RoleConfiguration(roleClaim, mappings) =>
         getClaimAsSet(token, roleClaim) match {
           case Some(idpRoles) => Right(idpRoles.flatMap(getOeqRolesFromMappings(mappings)))
-          case None =>
+          case None           =>
             Left(
               InvalidJWT(
                 s"Missing the configured role claim $roleClaim in the ID token, or the claim is not in the format of array."
@@ -406,35 +421,36 @@ class OidcAuthService @Inject() (
     * into two categories: `DeserializationError` and `HttpError`. Depending on the received error
     * type, return either an instance of [[GeneralError]] or [[TokenError]].
     */
-  private def handleTokenError(error: ResponseException[String, Error]): OAuth2Error = error match {
-    case DeserializationException(_, error) =>
-      ServerError(
-        s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}"
-      )
-    // For general HTTP client errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
-    case HttpError(body, status) if status.isClientError =>
-      parse(body)
-        .flatMap(_.as[TokenErrorResponse])
-        .fold(
-          _ => {
-            LOGGER.error(s"Failed to request an ID token. Received response: $body")
-            ServerError(
-              "Failed to request an ID token, but the error is unknown due to unexpected response format."
-            )
-          },
-          resp => {
-            val msg = resp.error_description.getOrElse(NO_FURTHER_INFO)
-            status.code match {
-              case 400 => TokenError(resp.error, msg)
-              case 401 => NotAuthorized(msg)
-              case 403 => AccessDenied(msg)
-              case _   => ServerError(msg)
-            }
-          }
+  private[service] def handleTokenError(error: ResponseException[String, Error]): OAuth2Error =
+    error match {
+      case DeserializationException(_, error) =>
+        ServerError(
+          s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}"
         )
-    case HttpError(body, status) if status.isServerError =>
-      ServerError(s"Failed to request an ID token: $body")
-  }
+      // For general HTTP client errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
+      case HttpError(body, status) if status.isClientError =>
+        parse(body)
+          .flatMap(_.as[TokenErrorResponse])
+          .fold(
+            _ => {
+              LOGGER.error(s"Failed to request an ID token. Received response: $body")
+              ServerError(
+                "Failed to request an ID token, but the error is unknown due to unexpected response format."
+              )
+            },
+            resp => {
+              val msg = resp.error_description.getOrElse(NO_FURTHER_INFO)
+              status.code match {
+                case 400 => TokenError(resp.error, msg)
+                case 401 => NotAuthorized(msg)
+                case 403 => AccessDenied(msg)
+                case _   => ServerError(msg)
+              }
+            }
+          )
+      case HttpError(body, _) =>
+        ServerError(s"Failed to request an ID token: $body")
+    }
 
   private def redirectUri = s"${CurrentInstitution.get().getUrl}oidc/callback"
 }

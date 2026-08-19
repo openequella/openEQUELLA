@@ -23,8 +23,8 @@ import com.dytech.installer.Installer;
 import com.dytech.installer.InstallerException;
 import java.io.InputStream;
 
-public class CacheInstaller {
-  public CacheInstaller() throws InstallerException {
+public final class CacheInstaller {
+  private CacheInstaller() throws InstallerException {
     InputStream script = getClass().getResourceAsStream("/script/cache-script.xml");
     InputStream commands = getClass().getResourceAsStream("/script/cache-commands.xml");
 

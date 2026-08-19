@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498635</id>
+  <uuid>36d7a49b-67da-4993-b645-925ce409a033</uuid>
+  <value>Diagram</value>
+  <valueHash>e410e806f4103450b7214a38b5d75314</valueHash>
+  <fullValue>Learning Resource Type\Diagram</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

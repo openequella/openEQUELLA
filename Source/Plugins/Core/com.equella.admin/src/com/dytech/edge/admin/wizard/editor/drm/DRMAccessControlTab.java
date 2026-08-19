@@ -24,18 +24,18 @@ import com.dytech.edge.wizard.beans.DRMPage.Contributor;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.calendar.CalendarDialog;
 import com.dytech.gui.filter.FilteredShuffleList;
-import com.tle.admin.Driver;
 import com.tle.admin.common.FilterGroupModel;
 import com.tle.admin.common.FilterUserModel;
 import com.tle.admin.helper.Network;
 import com.tle.admin.helper.NetworkShuffleList;
+import com.tle.admin.service.AdminUserDirectoryService;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.JGroup;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.util.UserBeanUtils;
-import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,15 +58,17 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 public class DRMAccessControlTab extends JPanel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private UserGroupPanel usersGroups;
-  private NetworkPanel network;
-  private AccessCountPanel access;
-  private DatePanel dates;
+  private final AdminUserDirectoryService userDirectoryService;
+  private final UserGroupPanel usersGroups;
+  private final NetworkPanel network;
+  private final AccessCountPanel access;
+  private final DatePanel dates;
 
-  public DRMAccessControlTab(RemoteUserService userService) {
-    usersGroups = new UserGroupPanel(userService);
+  public DRMAccessControlTab(AdminUserDirectoryService userDirectoryService) {
+    this.userDirectoryService = userDirectoryService;
+    usersGroups = new UserGroupPanel(userDirectoryService);
     network = new NetworkPanel();
     access = new AccessCountPanel();
     dates = new DatePanel();
@@ -90,52 +92,46 @@ public class DRMAccessControlTab extends JPanel {
   public void load(DRMPage page) {
     Contributor contributor = page.getContributor();
     Container container = page.getContainer();
-    {
-      RemoteUserService userService =
-          Driver.instance().getClientService().getService(RemoteUserService.class);
-      List<String> userIds = Collections.emptyList();
-      List<String> groupIds = Collections.emptyList();
-      if (!contributor.getUsers().isEmpty() || !contributor.getGroups().isEmpty()) {
-        usersGroups.setSelectableByContributor(true);
-        userIds = contributor.getUsers();
-        groupIds = contributor.getGroups();
-      } else {
-        userIds = container.getUsers();
-        groupIds = container.getGroups();
-      }
-      Collection<NameValue> users = new ArrayList<NameValue>();
-      Collection<NameValue> groups = new ArrayList<NameValue>();
+    List<String> userIds = Collections.emptyList();
+    List<String> groupIds = Collections.emptyList();
+    if (!contributor.getUsers().isEmpty() || !contributor.getGroups().isEmpty()) {
+      usersGroups.setSelectableByContributor(true);
+      userIds = contributor.getUsers();
+      groupIds = contributor.getGroups();
+    } else {
+      userIds = container.getUsers();
+      groupIds = container.getGroups();
+    }
+    Collection<NameValue> users = new ArrayList<NameValue>();
+    Collection<NameValue> groups = new ArrayList<NameValue>();
 
-      for (String userId : userIds) {
-        users.add(UserBeanUtils.getUser(userService, userId));
-      }
-      for (String groupId : groupIds) {
-        groups.add(UserBeanUtils.getGroup(userService, groupId));
-      }
-      if (users.size() > 0 || groups.size() > 0) {
-        usersGroups.addUsersAndGroups(users, groups);
-      }
+    for (String userId : userIds) {
+      users.add(UserBeanUtils.getUser(userDirectoryService, userId));
+    }
+    for (String groupId : groupIds) {
+      groups.add(UserBeanUtils.getGroup(userDirectoryService, groupId));
+    }
+    if (users.size() > 0 || groups.size() > 0) {
+      usersGroups.addUsersAndGroups(users, groups);
     }
 
-    {
-      Set<com.dytech.edge.wizard.beans.DRMPage.Network> networks;
-      if (!contributor.getNetworks().isEmpty()) {
-        network.setSelectableByContributor(true);
-        networks = contributor.getNetworks();
-      } else {
-        networks = container.getNetworks();
-      }
+    Set<com.dytech.edge.wizard.beans.DRMPage.Network> networks;
+    if (!contributor.getNetworks().isEmpty()) {
+      network.setSelectableByContributor(true);
+      networks = contributor.getNetworks();
+    } else {
+      networks = container.getNetworks();
+    }
 
-      network.removeAllNetworks();
-      if (networks != null) {
-        for (com.dytech.edge.wizard.beans.DRMPage.Network pagenetwork : networks) {
-          Network nw = new Network();
-          nw.setName(pagenetwork.getName());
-          nw.setMin(pagenetwork.getMin());
-          nw.setMax(pagenetwork.getMax());
+    network.removeAllNetworks();
+    if (networks != null) {
+      for (com.dytech.edge.wizard.beans.DRMPage.Network pagenetwork : networks) {
+        Network nw = new Network();
+        nw.setName(pagenetwork.getName());
+        nw.setMin(pagenetwork.getMin());
+        nw.setMax(pagenetwork.getMax());
 
-          network.addNetwork(nw);
-        }
+        network.addNetwork(nw);
       }
     }
 
@@ -225,7 +221,7 @@ public class DRMAccessControlTab extends JPanel {
     private final JLabel userLabel;
     private final JLabel groupLabel;
 
-    public UserGroupPanel(RemoteUserService userService) {
+    public UserGroupPanel(AdminUserDirectoryService userDirectoryService) {
       super(
           CurrentLocale.get(
               "com.dytech.edge.admin.wizard.editor.drm.drmacccesscontroltab.restrict"), //$NON-NLS-1$
@@ -244,12 +240,12 @@ public class DRMAccessControlTab extends JPanel {
           new FilteredShuffleList<NameValue>(
               CurrentLocale.get(
                   "com.dytech.edge.admin.wizard.editor.drm.drmacccesscontroltab.restrictusers"), //$NON-NLS-1$
-              new FilterUserModel(userService));
+              new FilterUserModel(userDirectoryService));
       groupList =
           new FilteredShuffleList<NameValue>(
               CurrentLocale.get(
                   "com.dytech.edge.admin.wizard.editor.drm.drmacccesscontroltab.restrictgroups"), //$NON-NLS-1$
-              new FilterGroupModel(userService));
+              new FilterGroupModel(userDirectoryService));
 
       selectable =
           new JCheckBox(

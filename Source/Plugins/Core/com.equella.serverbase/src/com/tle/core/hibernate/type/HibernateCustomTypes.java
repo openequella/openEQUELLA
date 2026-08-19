@@ -25,7 +25,12 @@ import java.util.List;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 
-public class HibernateCustomTypes {
+public final class HibernateCustomTypes {
+
+  private HibernateCustomTypes() {
+    throw new UnsupportedOperationException();
+  }
+
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.VARCHAR), new String[] {"blankable"});
 

@@ -26,7 +26,6 @@ import com.tle.core.echo.EchoConstants
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
 import com.tle.legacy.LegacyGuice._
-import com.tle.web.cloudprovider.CloudProviderConstants
 import com.tle.web.mimetypes.MimeEditorUtils
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
@@ -47,10 +46,9 @@ object CoreSettingsPage {
 }
 
 object SettingsList {
-  val General               = "general"
-  val Searching             = "searching"
-  val Integration           = "integration"
-  val CloudProviderListPage = "page/cloudprovider"
+  val General     = "general"
+  val Searching   = "searching"
+  val Integration = "integration"
 
   def +=(setting: EditableSettings): Unit = synchronized {
     allSettings += setting
@@ -77,18 +75,6 @@ object SettingsList {
     "loginnotice.settings.description",
     "page/loginconfiguration",
     loginNoticeEditorPrivilegeTreeProvider.isAuthorised
-  )
-
-  val cloudProviderSettings = CoreSettingsPage(
-    "cloudprovider",
-    Integration,
-    "cloudprovider.settings.title",
-    "cloudprovider.settings.description",
-    CloudProviderListPage,
-    () =>
-      !aclManager
-        .filterNonGrantedPrivileges(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
-        .isEmpty
   )
 
   val echoSettings = CoreSettingsPage(
@@ -251,7 +237,6 @@ object SettingsList {
     contentIndexingSettings,
     facetedSearchSettings,
     searchFilterSettings,
-    cloudProviderSettings,
     CoreSettingsPage(
       "shortcuts",
       General,

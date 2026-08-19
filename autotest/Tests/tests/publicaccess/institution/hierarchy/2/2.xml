@@ -1,0 +1,72 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>2498802</id>
+  <uuid>1d88c6d8-3426-4bec-96c1-f0c6cf37e67e</uuid>
+  <subTopics>
+    <com.tle.beans.hierarchy.HierarchyTopic>
+      <id>2498805</id>
+      <uuid>8e03ea33-4ff1-4be5-9c99-d717ad75ddb9</uuid>
+      <institution>
+        <id>2498549</id>
+        <uniqueId>0</uniqueId>
+        <quota>0.0</quota>
+        <enabled>true</enabled>
+      </institution>
+      <parent reference="../../.."/>
+      <subTopics/>
+      <allParents>
+        <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
+      </allParents>
+      <listPosition>0</listPosition>
+      <showResults>true</showResults>
+      <freetext></freetext>
+      <inheritFreetext>true</inheritFreetext>
+      <addIdefs/>
+      <addSchemas/>
+      <inhIdefs/>
+      <inhSchemas/>
+      <virtualisationId>contributedValuesVirtualiser</virtualisationId>
+      <virtualisationPath>/item/itembody/origination</virtualisationPath>
+      <name>
+        <id>2498806</id>
+        <strings>
+          <entry>
+            <string>en_AU</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>2498807</id>
+              <locale>en_AU</locale>
+              <priority>2</priority>
+              <text>%s</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+      <attributes/>
+    </com.tle.beans.hierarchy.HierarchyTopic>
+  </subTopics>
+  <listPosition>1</listPosition>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>2498803</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498804</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Browse by origin</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

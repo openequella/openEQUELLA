@@ -47,7 +47,7 @@ export const MetadataRow = ({
 }: PropsWithChildren<StackProps>) => (
   <StyledStack
     direction="row"
-    alignItems="center"
+    sx={{ alignItems: "center" }}
     className={classes.metadataRow}
     divider={
       <Divider

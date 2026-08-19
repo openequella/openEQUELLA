@@ -7,10 +7,10 @@ import org.openqa.selenium.WebElement;
 
 public class RecentContributionsEditPage
     extends AbstractPortalEditPage<RecentContributionsEditPage> {
-  public static String LIVE = "live";
-  public static String DRAFT = "draft";
+  private static final String VALUE_ONLY_OPTION = "titleOnly";
+  private static final String TITLE_AND_DESCRIPTION_OPTION = "Show the title and description";
 
-  private EquellaSelect stausList;
+  private EquellaSelect statusList;
   private EquellaSelect displayList;
 
   public RecentContributionsEditPage(PageContext context) {
@@ -20,14 +20,17 @@ public class RecentContributionsEditPage
   @Override
   public void checkLoaded() throws Error {
     super.checkLoaded();
-    stausList = new EquellaSelect(context, driver.findElement(By.id("rct_s")));
+    statusList = new EquellaSelect(context, driver.findElement(By.id("rct_s")));
     displayList = new EquellaSelect(context, driver.findElement(By.id("rct_d")));
   }
 
-  public void checkSelectedCollection() {
+  /** Ensures the "All resources" option is selected in the collections filter. */
+  public void ensureAllResourcesSelected() {
     WebElement allResourceOption =
         driver.findElement(By.xpath("//input[@id=//label[text()='All resources']/@for]"));
-    if (!allResourceOption.isSelected()) allResourceOption.click();
+    if (!allResourceOption.isSelected()) {
+      allResourceOption.click();
+    }
   }
 
   @Override
@@ -41,7 +44,7 @@ public class RecentContributionsEditPage
   }
 
   public void setStatus(String status) {
-    stausList.selectByValue(status);
+    statusList.selectByValue(status);
   }
 
   public void setQuery(String query) {
@@ -53,6 +56,13 @@ public class RecentContributionsEditPage
   }
 
   public void setDisplayTitleOnly(boolean titleOnly) {
-    if (titleOnly) displayList.selectByValue("titleOnly");
+    if (titleOnly) {
+      displayList.selectByValue(VALUE_ONLY_OPTION);
+    }
+    // It uses selectByVisibleText because there is no value attribute for "Show the title and
+    // description".
+    else {
+      displayList.selectByVisibleText(TITLE_AND_DESCRIPTION_OPTION);
+    }
   }
 }

@@ -18,6 +18,7 @@
 
 package com.tle.beans;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Locale;
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @AccessType("field")
 public class Language implements Serializable {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,15 +44,15 @@ public class Language implements Serializable {
 
   @Column(length = 15, nullable = false)
   @Type(type = "blankable")
-  private String language = ""; // $NON-NLS-1$
+  private String language = "";
 
   @Column(length = 15, nullable = false)
   @Type(type = "blankable")
-  private String country = ""; // $NON-NLS-1$
+  private String country = "";
 
   @Column(length = 15, nullable = false)
   @Type(type = "blankable")
-  private String variant = ""; // $NON-NLS-1$
+  private String variant = "";
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)

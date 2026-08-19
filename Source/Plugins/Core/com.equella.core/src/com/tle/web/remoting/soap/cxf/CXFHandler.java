@@ -18,7 +18,10 @@
 
 package com.tle.web.remoting.soap.cxf;
 
+import static com.tle.web.remoting.soap.Module.SOAP_API_ENABLED_KEY;
+
 import com.dytech.edge.exceptions.QuietlyLoggable;
+import com.google.inject.name.Named;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
@@ -94,10 +97,27 @@ public class CXFHandler extends CXFNonSpringServlet {
 
   private final Set<String> registeredServices = Collections.synchronizedSet(new HashSet<String>());
 
+  private boolean soapApiEnabled = false;
+
+  @Inject
+  public void setSoapApiEnabled(@Named(SOAP_API_ENABLED_KEY) boolean enabled) {
+    this.soapApiEnabled = enabled;
+  }
+
+  private static final String HARVESTER_PATH = "/SoapHarvesterService";
+
   @Override
   protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
     String pathInfo = request.getPathInfo();
+
+    // If the legacy SOAP API is disabled and the target service is NOT `SoapHarvesterService`,
+    // returns 404.
+    if (!soapApiEnabled && !HARVESTER_PATH.equals(pathInfo)) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+
     Extension extension = endpointTracker.getExtension(pathInfo);
     if (extension != null) {
       synchronized (extension) {
@@ -112,6 +132,14 @@ public class CXFHandler extends CXFNonSpringServlet {
 
   @Override
   protected void loadBus(ServletConfig sc) {
+    if (soapApiEnabled) {
+      LOGGER.warn(
+          "The legacy SOAP API is enabled (soapapi.enabled=true). "
+              + "The SOAP API is deprecated, no longer meets modern security best practices, "
+              + "and will be removed in a future release. "
+              + "All SOAP services are available. Please migrate to the REST API.");
+    }
+
     Thread currentThread = Thread.currentThread();
     ClassLoader oldLoader = currentThread.getContextClassLoader();
     try {
@@ -402,30 +430,30 @@ public class CXFHandler extends CXFNonSpringServlet {
 
       if (ex instanceof QuietlyLoggable) {
         final QuietlyLoggable ql = (QuietlyLoggable) ex;
-        if (ql.isSilent()) {
-          // Nada
-        } else if (!ql.isShowStackTrace()) {
-          if (ql.isWarnOnly()) {
-            LOGGER.warn(description + ": " + ex.getMessage());
+        if (!ql.isSilent()) {
+          if (!ql.isShowStackTrace()) {
+            if (ql.isWarnOnly()) {
+              LOGGER.warn(description + ": " + ex.getMessage());
+            } else {
+              LOGGER.error(description + ": " + ex.getMessage());
+            }
           } else {
-            LOGGER.error(description + ": " + ex.getMessage());
-          }
-        } else {
-          if (ql.isWarnOnly()) {
-            LOGGER.warn(description, ex);
-          } else {
-            LOGGER.error(description, ex);
+            if (ql.isWarnOnly()) {
+              LOGGER.warn(description, ex);
+            } else {
+              LOGGER.error(description, ex);
+            }
           }
         }
       } else if (ex instanceof IllegalArgumentException) {
         LOGGER.warn(ex.getMessage());
-        //				HttpServletResponse response = (HttpServletResponse)
+        //                HttpServletResponse response = (HttpServletResponse)
         // message.getExchange().getInMessage()
-        //					.get(AbstractHTTPDestination.HTTP_RESPONSE);
-        //				if( response != null )
-        //				{
-        //					response.setStatus(400);
-        //				}
+        //                    .get(AbstractHTTPDestination.HTTP_RESPONSE);
+        //                if( response != null )
+        //                {
+        //                    response.setStatus(400);
+        //                }
       } else {
         LOGGER.error(description, ex);
       }

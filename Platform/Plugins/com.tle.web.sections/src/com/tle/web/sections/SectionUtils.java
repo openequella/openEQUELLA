@@ -462,7 +462,9 @@ public final class SectionUtils {
    */
   public static String ent(@Nullable String szStr) {
     StringBuilder szOut = new StringBuilder();
-    if (szStr == null) return szOut.toString();
+    if (szStr == null) {
+      return szOut.toString();
+    }
     for (int i = 0; i < szStr.length(); i++) {
       char ch = szStr.charAt(i);
       switch (ch) {

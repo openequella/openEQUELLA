@@ -36,7 +36,6 @@ import java.util.Map;
  * A stream based parser for parsing delimited text data from a file or a stream.
  * http://sourceforge.net/projects/javacsv/
  */
-@SuppressWarnings("nls")
 public class CsvReader {
   /** Double up the text qualifier to represent an occurrence of the text qualifier. */
   public static final int ESCAPE_MODE_DOUBLED = 1;
@@ -1448,22 +1447,12 @@ public class CsvReader {
   /** Closes and releases all related resources. */
   public void close() {
     if (!closed) {
-      close(true);
-
-      closed = true;
-    }
-  }
-
-  private void close(boolean closing) {
-    if (!closed) {
-      if (closing) {
-        charset = null;
-        headersHolder.headers = null;
-        headersHolder.indexByName = null;
-        dataBuffer.buffer = null;
-        columnBuffer.buffer = null;
-        rawBuffer.buffer = null;
-      }
+      charset = null;
+      headersHolder.headers = null;
+      headersHolder.indexByName = null;
+      dataBuffer.buffer = null;
+      columnBuffer.buffer = null;
+      rawBuffer.buffer = null;
 
       try {
         if (initialized) {
@@ -1486,12 +1475,6 @@ public class CsvReader {
     if (closed) {
       throw new IOException("This instance of the CsvReader class has already been closed.");
     }
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    close(false);
-    super.finalize();
   }
 
   private enum ComplexEscape {

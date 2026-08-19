@@ -169,6 +169,7 @@ class BrowseHierarchyResource {
         Response.ok(ids).build
       case Failure(e: ItemNotFoundException) =>
         ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
+      case Failure(other) => throw other
     }
   }
 
@@ -195,7 +196,7 @@ class BrowseHierarchyResource {
       ) => Response
   ): Response = {
     validateCompoundUuid(compoundUuid) match {
-      case Left(errorResponse) => errorResponse
+      case Left(errorResponse)                     => errorResponse
       case Right((validCompoundUuid, topicEntity)) =>
         val HierarchyCompoundUuid(_, currentVirtualTopicName, parentCompoundUuidList) =
           validCompoundUuid

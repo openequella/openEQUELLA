@@ -41,8 +41,11 @@ public class GShuffleBox extends GuiControl {
       buff.append(", ");
     }
 
-    if (buff.length() == 0) return buff.toString();
-    else return buff.substring(0, buff.lastIndexOf(","));
+    if (buff.length() == 0) {
+      return buff.toString();
+    } else {
+      return buff.substring(0, buff.lastIndexOf(","));
+    }
   }
 
   @Override

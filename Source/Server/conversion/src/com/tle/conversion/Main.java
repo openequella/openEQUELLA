@@ -21,7 +21,12 @@ package com.tle.conversion;
 import java.io.File;
 import java.io.IOException;
 
-public class Main {
+public final class Main {
+
+  private Main() {
+    throw new UnsupportedOperationException();
+  }
+
   private static Converter exporter = new Converter();
 
   public static void main(String[] args) {

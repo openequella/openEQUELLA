@@ -28,7 +28,7 @@ beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(API_PATH));
 
 describe('/userquery/search', () => {
-  test.each<keyof SearchResult>(['users', 'roles', 'groups'])(
+  it.each<keyof SearchResult>(['users', 'roles', 'groups'])(
     'should be possible to list %s',
     async (property: keyof SearchResult) => {
       const result = await OEQ.UserQuery.search(API_PATH, {
@@ -118,7 +118,7 @@ describe('/userquery/lookup', () => {
     expect(result.roles).toHaveLength(0);
   });
 
-  test.each<[keyof SearchResult, string]>([
+  it.each<[keyof SearchResult, string]>([
     ['users', autoTestUser.id],
     ['groups', systemAdministratorGroup.id],
     ['roles', ssoRole.id],

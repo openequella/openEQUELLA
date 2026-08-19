@@ -20,10 +20,13 @@ package com.tle.core.hibernate.dao;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.core.dao.helpers.Pagination;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
-import javax.persistence.EntityManager;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -159,25 +162,15 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     return getHibernateTemplate().get(getPersistentClass(), id);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.dao.AbstractEntityDao#findByCriteria(org.hibernate.criterion
-   * .Criterion[])
-   */
   @Override
   @SuppressWarnings("unchecked")
   public T findByCriteria(final Criterion... criterion) {
     return (T)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    Criteria criteria = createCriteria(session, criterion);
-                    return criteria.uniqueResult();
-                  }
-                });
+        withSession(
+            session -> {
+              Criteria criteria = withCriteria(session, criterion);
+              return criteria.uniqueResult();
+            });
   }
 
   /*
@@ -274,26 +267,22 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
       final int firstResult,
       final int maxResults,
       final Criterion... criterion) {
-    return (List<T>)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    Criteria criteria = createCriteria(session, criterion);
+    return findAllByCriteria(order, Pagination.ofLegacy(firstResult, maxResults), criterion);
+  }
 
-                    if (order != null) {
-                      criteria.addOrder(order);
-                    }
-                    if (firstResult > 0) {
-                      criteria.setFirstResult(firstResult);
-                    }
-                    if (maxResults >= 0) {
-                      criteria.setMaxResults(maxResults);
-                    }
-                    return criteria.list();
-                  }
-                });
+  @Override
+  public List<T> findAllByCriteria(
+      @Nullable Order order, Pagination pagination, Criterion... criterion) {
+    return withSession(
+        session -> {
+          Criteria criteria = withCriteria(session, criterion);
+
+          Optional.ofNullable(order).ifPresent(criteria::addOrder);
+          pagination.getOffset().ifPresent(criteria::setFirstResult);
+          pagination.getLimit().ifPresent(criteria::setMaxResults);
+
+          return criteria.list();
+        });
   }
 
   /**
@@ -303,15 +292,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
    */
   public abstract class TLEHibernateCallback implements HibernateCallback {
     public Criteria createCriteria(Session session, Criterion... criterion) {
-      Criteria crit = session.createCriteria(getPersistentClass());
-      if (criterion != null) {
-        for (Criterion c : criterion) {
-          if (c != null) {
-            crit.add(c);
-          }
-        }
-      }
-      return crit;
+      return withCriteria(session, criterion);
     }
   }
 
@@ -381,12 +362,10 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     return results.get(0);
   }
 
-  /**
-   * Return an EntityManager to help criteria query building.
-   *
-   * @param session An active Hibernate Session
-   */
-  protected EntityManager createEntityManager(Session session) {
-    return session.getEntityManagerFactory().createEntityManager();
+  private Criteria withCriteria(Session session, Criterion... criterion) {
+    Criteria criteria = session.createCriteria(getPersistentClass());
+    Arrays.stream(criterion).filter(Objects::nonNull).forEach(criteria::add);
+
+    return criteria;
   }
 }

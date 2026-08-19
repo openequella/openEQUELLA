@@ -6,10 +6,10 @@ name := "IntegTester"
 version := "1.0"
 
 val CirceVersion  = "0.14.12"
-val Http4sVersion = "0.23.33"
-val jsoupVersion  = "1.21.2"
+val Http4sVersion = "0.23.36"
+val jsoupVersion  = "1.22.2"
 
-scalaVersion := "2.13.17"
+scalaVersion := "2.13.18"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
@@ -29,11 +29,11 @@ libraryDependencies ++= Seq(
   "org.jsoup"        % "jsoup"             % jsoupVersion,
   "com.nulab-inc"   %% "scala-oauth2-core" % "1.6.0",
   "javax.servlet"    % "javax.servlet-api" % "4.0.1",
-  "com.google.guava" % "guava"             % "33.5.0-jre",
+  "com.google.guava" % "guava"             % "33.6.0-jre",
   jacksonDataBind,
   jacksonModuleScala,
-  "com.auth0" % "jwks-rsa" % "0.23.0",
-  "com.auth0" % "java-jwt" % "4.5.0"
+  "com.auth0" % "jwks-rsa" % "0.24.1",
+  "com.auth0" % "java-jwt" % "4.6.0"
 )
 
 (Compile / resourceGenerators) += Def.task {

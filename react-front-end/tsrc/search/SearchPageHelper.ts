@@ -454,15 +454,15 @@ export const generateSearchPageOptionsFromUrl = async (
 
 /**
  * A function that takes search options and converts it to a JSON representation.
- * Collections and owner properties are both reduced down to their uuid and id properties respectively.
+ * It encodes a subset of `SearchPageOptions` without constructing a full object. Useful where only specific fields (e.g. `status`) need to be stored in a URL or similar.
  * Undefined properties are excluded.
- * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
+ * Intended to be used in conjunction with `newSearchQueryToSearchOptions`.
  *
- * @param searchPageOptions Search options selected on Search page.
+ * @param searchPageOptions The search options to be converted into a query string.
  * @return url encoded key/value pair of JSON searchOptions
  */
 export const generateQueryStringFromSearchPageOptions = (
-  searchPageOptions: SearchPageOptions,
+  searchPageOptions: Partial<SearchPageOptions>,
 ): string => {
   const params = new URLSearchParams();
   params.set(
@@ -471,6 +471,7 @@ export const generateQueryStringFromSearchPageOptions = (
       searchPageOptions,
       (key: string, value: object[] | undefined) =>
         simpleMatch({
+          // Collections and owner properties are both reduced down to their uuid and id properties respectively.
           collections: () =>
             value?.map((collection) => pick(collection, ["uuid"])),
           owner: () => (value ? pick(value, ["id"]) : undefined),
@@ -885,33 +886,33 @@ export const buildSearchPageNavigationConfig = (
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "item-search" for a positive check.
- * @param items - The data to be checked, expected to come from a search operation.
+ * @param _items - The data to be checked, expected to come from a search operation.
  */
 export const isListItems = (
   from: string,
-  items: unknown,
-): items is OEQ.Search.SearchResultItem[] => from === "item-search";
+  _items: unknown,
+): _items is OEQ.Search.SearchResultItem[] => from === "item-search";
 
 /**
  * Type guard for gallery-search results.
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "gallery-search" for a positive check.
- * @param items - The data to be checked, expected to come from a search operation.
+ * @param _items - The data to be checked, expected to come from a search operation.
  */
 export const isGalleryItems = (
   from: string,
-  items: unknown,
-): items is GallerySearchResultItem[] => from === "gallery-search";
+  _items: unknown,
+): _items is GallerySearchResultItem[] => from === "gallery-search";
 
 /**
  * Type guard for favourite-search results.
  *
  * @param from - The `from` attribute in `SearchPageSearchResult` context,
  *               expected be "favourite-search" for a positive check.
- * @param searches - The data to be checked, expected to come from a search operation.
+ * @param _searches - The data to be checked, expected to come from a search operation.
  */
 export const isFavouriteSearches = (
   from: string,
-  searches: unknown,
-): searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";
+  _searches: unknown,
+): _searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";

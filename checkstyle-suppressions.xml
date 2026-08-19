@@ -7,4 +7,6 @@
 <suppressions>
   <suppress files="[/\\]target[/\\]" checks=".*"/>
   <suppress files="Equella\/(.*\/)*build\/" checks=".*"/>
+  <!-- ResourcesService is bound as a Guice eager singleton and cannot have a private constructor -->
+  <suppress files="ResourcesService\.java" checks="HideUtilityClassConstructor"/>
 </suppressions>

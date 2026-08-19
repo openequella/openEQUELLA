@@ -21,6 +21,7 @@ package com.tle.core.settings.loginnotice;
 import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 public interface LoginNoticeService {
 
@@ -32,9 +33,18 @@ public interface LoginNoticeService {
 
   String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException;
 
-  String getMimeType(String name) throws IOException;
-
-  InputStream getPreLoginNoticeImage(String name) throws IOException;
+  /**
+   * Reads the pre-login notice image with the provided name from the file store, along with the
+   * content type it should be served as.
+   *
+   * <p>The stored content is checked against the same allowlist an upload is held to - defence in
+   * depth against a file that never went through that check.
+   *
+   * @param name File name of the image.
+   * @return The image content and its content type, or empty when there is nothing under that name
+   *     to serve as an image - no file at all, or one whose content we do not accept.
+   */
+  Optional<StoredImage> getPreLoginNoticeImage(String name) throws IOException;
 
   String getPostLoginNotice();
 

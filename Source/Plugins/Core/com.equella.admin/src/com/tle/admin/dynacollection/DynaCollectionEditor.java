@@ -52,16 +52,16 @@ public class DynaCollectionEditor extends BaseEntityEditor<DynaCollection> {
 
   @Override
   protected String getEntityName() {
-    return getString("entityname"); // $NON-NLS-1$
+    return strings.text("entityname");
   }
 
   @Override
   protected String getWindowTitle() {
-    return getString("windowtitle"); // $NON-NLS-1$
+    return strings.text("windowtitle");
   }
 
   @Override
   public String getDocumentName() {
-    return getString("entityname"); // $NON-NLS-1$
+    return strings.text("entityname");
   }
 }

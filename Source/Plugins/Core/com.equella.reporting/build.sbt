@@ -29,6 +29,11 @@ jpfLibraryJars := {
   val unmanagedJarBase = baseDirectory.value / "lib"
   val osgiBaseDir      = (Compile / resourceManaged).value / "ReportEngine"
 
+  // Clean the unmanaged Jar base so stale jars from previous dependency versions
+  // (e.g. leftover *.source_*.jar files from a BIRT/OSGi version bump) don't
+  // accumulate and get swept back onto the compile classpath.
+  IO.delete(unmanagedJarBase)
+
   // Copy managed Jars to the unmanaged Jar base.
   def copyManagedJars: Set[File] = {
     val managedJars: Seq[File] =
@@ -62,7 +67,7 @@ jpfLibraryJars := {
         "BirtSample.jar",
         "sampledb.jar",
         "guava-r09.jar"
-      ).contains(file.getName)
+      ).contains(file.getName) || file.getName.contains(".source_")
 
     val fileFilter = "*.jar" -- new SimpleFileFilter(exclusionRule)
     val jars       = osgiBaseDir / "platform" / "plugins" ** fileFilter

@@ -18,12 +18,16 @@
 
 package io.github.openequella.pages.oidc
 
+import com.codeborne.selenide.Condition.checked
+import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selectors.by
+
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.AbstractPage
 import io.github.openequella.pages.components.{SelectCustomRolesDialog, SelectRolesDialog}
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.{By, Keys, WebElement}
+import org.openqa.selenium.{By, WebElement}
 
 class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPage](context) {
   // Title of the page.
@@ -36,7 +40,7 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
   val oidcEnabledBy: By = By.xpath(
     "//span[contains(.,'Enable *')]/ancestor::li//input/parent::span"
   );
-  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']/div");
+  val idpSelectBy: By = By.xpath("//div[@aria-label='Select Identity Provider']");
 
   override def findLoadedElement: WebElement = {
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(spinnerBy))
@@ -69,6 +73,16 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
       enableButton.click()
     }
   }
+
+  private def ssoToggle = $(by("aria-label", "Enable Seamless SSO"))
+
+  private def ssoInput = ssoToggle.$("input[type='checkbox']")
+
+  def enableSeamlessSso(): Unit =
+    if (!ssoInput.is(checked)) ssoToggle.click()
+
+  def disableSeamlessSso(): Unit =
+    if (ssoInput.is(checked)) ssoToggle.click()
 
   // Get the text field element by the label.
   private def getTextField(label: String): WebElement =
@@ -104,16 +118,7 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
 
   /** Select the identity provider.
     */
-  def selectIdP(idp: String): Unit = {
-    val idpSelect = driver.findElement(idpSelectBy)
-    idpSelect.click()
-    val idpOption = waiter.until(
-      ExpectedConditions.presenceOfElementLocated(
-        By.xpath(s"//li[@role='option' and contains(., '$idp')]")
-      )
-    )
-    idpOption.click()
-  }
+  def selectIdP(idp: String): Unit = selectOption(idpSelectBy, idp)
 
   /** Get the value of the identity provider.
     */
