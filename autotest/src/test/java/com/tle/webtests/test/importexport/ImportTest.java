@@ -26,7 +26,7 @@ public class ImportTest extends AbstractInstTest {
   @Test(dataProvider = "toImport")
   public void importInstitutions(File instFolder, String fileName) {
     String shortName = instFolder.getName();
-    String instutionUrl = context.getBaseUrl() + shortName + '/';
+    String instutionUrl = testConfig.getInstitutionUrl(shortName);
     InstitutionListTab listTab = new InstitutionListTab(context).load();
     ImportTab importTab = listTab.importTab();
     if (listTab.institutionExists(instutionUrl)) {
@@ -46,7 +46,7 @@ public class ImportTest extends AbstractInstTest {
       alwaysRun = true)
   public void deleteInstitutions(File instFolder, String fileName) {
     String shortName = instFolder.getName();
-    String instutionUrl = context.getBaseUrl() + shortName + '/';
+    String instutionUrl = testConfig.getInstitutionUrl(shortName);
     InstitutionListTab listTab = null;
 
     listTab = new InstitutionListTab(context).load();

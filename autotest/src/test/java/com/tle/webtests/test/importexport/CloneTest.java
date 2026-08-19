@@ -23,9 +23,9 @@ public class CloneTest extends AbstractInstTest {
 
   @Test(dataProvider = "toClone")
   public void cloneInstitution(File instFolder) {
-    String instutionUrl = institutionUrl(instFolder);
-    String newShortName = instFolder.getName() + CLONE_SUFFIX;
-    String newInstutionUrl = context.getBaseUrl() + newShortName + '/';
+    String instutionUrl = testConfig.getInstitutionUrl(instFolder.getName());
+    String newShortName = cloneShortName(instFolder);
+    String newInstutionUrl = cloneUrl(instFolder);
 
     InstitutionListTab listTab = new InstitutionListTab(context).load();
     if (listTab.institutionExists(newInstutionUrl)) {
@@ -43,7 +43,7 @@ public class CloneTest extends AbstractInstTest {
 
   @Test(dependsOnMethods = "cloneInstitution", dataProvider = "toClone", alwaysRun = true)
   public void deleteInstitutions(File instFolder) {
-    String instutionUrl = context.getBaseUrl() + instFolder.getName() + CLONE_SUFFIX + '/';
+    String instutionUrl = cloneUrl(instFolder);
 
     InstitutionListTab listTab = new InstitutionListTab(context).load();
     if (listTab.institutionExists(instutionUrl)) {
@@ -51,6 +51,15 @@ public class CloneTest extends AbstractInstTest {
       assertTrue(statusPage.waitForFinish());
       statusPage.back();
     }
+  }
+
+  private String cloneShortName(File instFolder) {
+    return instFolder.getName() + CLONE_SUFFIX;
+  }
+
+  /** The clone's URL, on the same scheme as the fixture it was made from. */
+  private String cloneUrl(File instFolder) {
+    return testConfig.getInstitutionUrl(cloneShortName(instFolder), testConfig.isSsl(instFolder));
   }
 
   @DataProvider(parallel = false)

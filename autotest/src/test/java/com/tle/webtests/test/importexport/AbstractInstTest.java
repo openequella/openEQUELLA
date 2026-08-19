@@ -2,7 +2,6 @@ package com.tle.webtests.test.importexport;
 
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.test.AbstractTest;
-import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -22,10 +21,5 @@ public abstract class AbstractInstTest extends AbstractTest {
         .filter(instDir -> TestConfig.getInstitutionTree(instDir.getName()).isDirectory())
         .map(instDir -> new Object[] {instDir})
         .toArray(Object[][]::new);
-  }
-
-  /** The URL an institution fixture is imported to, and so the one to look for on the server. */
-  protected String institutionUrl(File instFolder) {
-    return context.getBaseUrl() + instFolder.getName() + '/';
   }
 }

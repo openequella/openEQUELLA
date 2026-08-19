@@ -21,7 +21,7 @@ public class ExportTest extends AbstractInstTest {
 
   @Test(dataProvider = "toExport")
   public void exportInstitution(File instFolder) {
-    String instutionUrl = institutionUrl(instFolder);
+    String instutionUrl = testConfig.getInstitutionUrl(instFolder.getName());
 
     InstitutionListTab listTab = new InstitutionListTab(context).load();
     if (listTab.institutionExists(instutionUrl)) {
