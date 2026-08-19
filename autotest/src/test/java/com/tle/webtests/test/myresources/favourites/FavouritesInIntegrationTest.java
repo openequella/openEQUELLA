@@ -25,8 +25,8 @@ public class FavouritesInIntegrationTest extends AbstractIntegrationTest {
   private static String FAVOURITE_PRESUMED_TO_EXIST = "Hal's eying Flickr";
 
   /**
-   * Preserved in the exported contributions - tests/myresources/institution.tar.gz being the uuid
-   * for the "Generic Testing Collection".
+   * The uuid of the "Generic Testing Collection" in the {@code myresources} fixture, as committed
+   * under institutions/myresources/institution/itemdefinition.
    */
   private static String GENERIC_TESTING_COLLECTIONS_ID_FROM_TEST_INSTITUTION =
       "ef19a911-0b3c-85ed-efd9-a56e56edcf37";

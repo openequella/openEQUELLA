@@ -18,8 +18,8 @@ public class ContributeXmlTest extends AbstractIntegrationTest {
   private static String ACTION = "contribute";
 
   /**
-   * Preserved in the exported contributions - tests/contribute/institution.tar.gz being the uuid
-   * for the "Basic Items" collection.
+   * The uuid of the "Basic Items" collection in the {@code contribute} fixture, as committed under
+   * institutions/contribute/institution/itemdefinition.
    */
   private static String COLLECTIONS_ID_FROM_TEST_INSTITUTION =
       "b28f1ffe-2008-4f5e-d559-83c8acd79316";

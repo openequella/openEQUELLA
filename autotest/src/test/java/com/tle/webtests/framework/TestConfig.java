@@ -24,6 +24,9 @@ public class TestConfig {
   /** Directory under the base folder holding the per-institution fixture trees. */
   private static final String INSTITUTIONS_DIR = "institutions";
 
+  /** Directory within one fixture folder holding the exploded institution export. */
+  private static final String INSTITUTION_DIR = "institution";
+
   /** The other marker identifying the base folder, alongside {@link #INSTITUTIONS_DIR}. */
   private static final String BUILD_DEFINITION = "build.sbt";
 
@@ -79,6 +82,18 @@ public class TestConfig {
       throw new IllegalStateException("No institution fixtures at " + institutions);
     }
     return institutions;
+  }
+
+  /**
+   * The exploded institution export making up one fixture - the tree that is imported to create the
+   * institution, and the tree a re-export is compared against.
+   *
+   * <p>Not verified to exist: callers use it both to read a fixture and to test whether a directory
+   * under {@value #INSTITUTIONS_DIR} is a fixture at all, {@code importexport} being one that is
+   * not.
+   */
+  public static File getInstitutionTree(String instName) {
+    return new File(findInstitutionFolder(instName), INSTITUTION_DIR);
   }
 
   private static File findInstitutionFolder(String name) {

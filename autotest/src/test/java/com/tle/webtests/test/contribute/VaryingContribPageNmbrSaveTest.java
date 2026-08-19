@@ -29,8 +29,8 @@ public class VaryingContribPageNmbrSaveTest extends AbstractCleanupAutoTest {
   private static String COLLECTIONS_NAME = "Basic Items with variable wizard pages";
 
   /**
-   * Preserved in the exported contributions - tests/contribute/institution.tar.gz being the uuid
-   * for the COLLECTIONS_NAME collection.
+   * The uuid of the COLLECTIONS_NAME collection in the {@code contribute} fixture, as committed
+   * under institutions/contribute/institution/itemdefinition.
    */
   private static String COLLECTIONS_ID_FROM_TEST_INSTITUTION =
       "cfbde79c-dfee-4f44-b5a8-70d11055914b";
