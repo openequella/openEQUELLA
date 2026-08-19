@@ -5,7 +5,6 @@ import static org.testng.Assert.assertTrue;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.institution.ImportTab;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
-import com.tle.webtests.pageobject.institution.StatusPage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -30,13 +29,9 @@ public class ImportTest extends AbstractInstTest {
     String shortName = instFolder.getName();
     String institutionUrl = testConfig.getInstitutionUrl(shortName);
 
-    InstitutionListTab listTab = new InstitutionListTab(context).load();
+    InstitutionListTab listTab =
+        deleteIfPresent(new InstitutionListTab(context).load(), institutionUrl);
     ImportTab importTab = listTab.importTab();
-    if (listTab.institutionExists(institutionUrl)) {
-      StatusPage<InstitutionListTab> statusPage = listTab.delete(institutionUrl);
-      assertTrue(statusPage.waitForFinish(), statusPage.getErrorText());
-      statusPage.back();
-    }
 
     assertTrue(
         importTab
