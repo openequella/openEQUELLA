@@ -19,8 +19,7 @@ libraryDependencies ++= Seq(
   "com.fifesoft"  % "rsyntaxtextarea" % "4.0.1",
   "com.miglayout" % "miglayout-swing" % "11.4.3",
   xstreamDep,
-  "io.github.openequella" %% "graphql-client" % "0.13.0-SNAPSHOT",
-  "com.google.inject"      % "guice"          % guiceVersion excludeAll (
+  "com.google.inject" % "guice" % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     // Maybe it can be removed when all HTTP Invoker code is gone
     ExclusionRule(
@@ -62,4 +61,10 @@ excludeDependencies ++= Seq(
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
-dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_equella_admin"))
+dependsOn(
+  platformCommon,
+  platformSwing,
+  platformEquella,
+  graphqlClient,
+  LocalProject("com_equella_admin")
+)

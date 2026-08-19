@@ -41,8 +41,13 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.13"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.4.0.jre11"
+
+    // graphql-client/scala is a separate sbt build, consumed from source rather than as a
+    // published artefact - see graphql-client/scala/README.md.
+    lazy val graphqlClient = RootProject(file("graphql-client/scala"))
+
+    lazy val postgresDep  = "org.postgresql"          % "postgresql" % "42.7.13"
+    lazy val sqlServerDep = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.4.0.jre11"
 
     lazy val log4jVersion   = "2.26.1"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
