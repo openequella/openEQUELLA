@@ -310,12 +310,9 @@ task is required to copy the jars into a known location for the runner. This tas
 
 ### Dependency on the GraphQL client library
 
-The Admin Console requires the Scala GraphQL client. Until this is published to Maven Central, you must build it locally (and re-run this whenever the library code changes):
-
-```bash
-# From the project root:
-(cd graphql-client/scala && ./sbt publishLocal)
-```
+The Admin Console requires the Scala GraphQL client, which lives in its own SBT build under
+`graphql-client/scala`. The main build depends on it from source, so there is nothing to set up:
+changes to the library are picked up by the next compile, the same as any other module.
 
 For more details on the client module, see the [GraphQL Client README](graphql-client/scala/README.md).
 

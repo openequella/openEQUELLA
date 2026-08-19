@@ -23,6 +23,7 @@ import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, Collect
 import io.github.openequella.graphql.test.TestHelper.{
   INVALID_ENTITY_ID,
   INVALID_ENTITY_UUID,
+  MY_CONTENT_COLLECTION_UUID,
   assertAccessDeniedError,
   loginToRestInstitution
 }
@@ -41,6 +42,7 @@ class CollectionDefinitionApiQueriesTest
     extends AnyFunSpec
     with ExportTestBehaviours
     with CrossInstitutionTestBehaviours
+    with SystemEntityListingTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
@@ -74,6 +76,13 @@ class CollectionDefinitionApiQueriesTest
 
   private def aStableCollectionId: Long = aStableCollection.id
 
+  private val systemListingConfig = SystemEntityListingBehaviorConfig(
+    entityName = "collection",
+    systemEntityUuid = MY_CONTENT_COLLECTION_UUID,
+    listFn = CollectionDefinitionApi.listCollections()(_),
+    listIncludingSystemFn = CollectionDefinitionApi.listCollectionsIncludingSystem()(_)
+  )
+
   describe("listCollections") {
     it("returns all collections") {
       When("calling listCollections")
@@ -85,9 +94,15 @@ class CollectionDefinitionApiQueriesTest
       result.value.head.uuid should not be empty
     }
 
+    systemEntityExcludedBehavior(systemListingConfig)
+
     it("denies access when not authenticated") {
       assertAccessDeniedError(CollectionDefinitionApi.listCollections()(_))
     }
+  }
+
+  describe("listCollectionsIncludingSystem") {
+    systemEntityIncludedBehavior(systemListingConfig)
   }
 
   describe("getIdByUuid") {
@@ -125,10 +140,9 @@ class CollectionDefinitionApiQueriesTest
       ExportBehaviorConfig(
         entityName = "collection",
         getFirstIdFn = () => aStableCollection.id,
-        exportFn = CollectionDefinitionApi.exportCollection,
-        exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity,
-        expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition",
-        unauthExportFn = cfg => CollectionDefinitionApi.exportCollection(1)(cfg)
+        exportFn = CollectionDefinitionApi.exportCollection(_)(_),
+        exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity(_)(_),
+        expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition"
       )
     )
   }

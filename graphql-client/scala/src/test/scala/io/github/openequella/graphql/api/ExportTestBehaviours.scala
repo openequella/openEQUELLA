@@ -39,23 +39,22 @@ import java.util.zip.ZipInputStream
   *   Returns the ID of the first available entity; the caller's implicit [[ClientConfiguration]] is
   *   captured at the call site.
   * @param exportFn
-  *   Export function without security; cfg captured at call site.
+  *   Export function without security, taking the ID and the session to run it against. Called both
+  *   as the authenticated user and, for the access check, as an unauthenticated one.
   * @param exportWithSecurityFn
-  *   Export function with security ACLs included; cfg captured at call site.
+  *   Export function with security ACLs included, taking the ID and the session to run it against.
   * @param expectedEntityClass
   *   Fully-qualified Java class name expected inside `_entity.xml` (e.g.
   *   `"com.tle.beans.entity.Schema"`).
-  * @param unauthExportFn
-  *   Export function that accepts an explicit [[ClientConfiguration]], used to simulate an
-  *   unauthenticated caller.
   */
 case class ExportBehaviorConfig(
     entityName: String,
     getFirstIdFn: () => Long,
-    exportFn: Long => Either[List[ApiError], Option[Array[Byte]]],
-    exportWithSecurityFn: Long => Either[List[ApiError], Option[Array[Byte]]],
-    expectedEntityClass: String,
-    unauthExportFn: ClientConfiguration => Either[List[ApiError], Option[Array[Byte]]]
+    exportFn: (Long, ClientConfiguration) => Either[List[ApiError], Option[Array[Byte]]],
+    exportWithSecurityFn: (Long, ClientConfiguration) => Either[List[ApiError], Option[
+      Array[Byte]
+    ]],
+    expectedEntityClass: String
 )
 
 /** ScalaTest shared behaviour mixin for entity export tests.
@@ -79,10 +78,9 @@ case class ExportBehaviorConfig(
   *     exportBehavior(ExportBehaviorConfig(
   *       entityName            = "my entity",
   *       getFirstIdFn          = () => MyApi.listEntities().value.head.id,
-  *       exportFn              = MyApi.exportEntity,
-  *       exportWithSecurityFn  = MyApi.exportEntityWithSecurity,
-  *       expectedEntityClass   = "com.example.MyEntity",
-  *       unauthExportFn        = cfg => MyApi.exportEntity(1)(cfg)
+  *       exportFn              = MyApi.exportEntity(_)(_),
+  *       exportWithSecurityFn  = MyApi.exportEntityWithSecurity(_)(_),
+  *       expectedEntityClass   = "com.example.MyEntity"
   *     ))
   *   }
   * }
@@ -128,7 +126,7 @@ trait ExportTestBehaviours {
       val entityId = config.getFirstIdFn()
 
       When(s"calling export on the ${config.entityName} without security")
-      val result = config.exportFn(entityId)
+      val result = config.exportFn(entityId, cfg)
 
       Then("returns an Array[Byte] convertable to a ZipInputStream")
       checkExportZip(result) { xml =>
@@ -142,7 +140,7 @@ trait ExportTestBehaviours {
       val entityId = config.getFirstIdFn()
 
       When(s"calling export on the ${config.entityName} with security")
-      val result = config.exportWithSecurityFn(entityId)
+      val result = config.exportWithSecurityFn(entityId, cfg)
 
       Then("returns an Array[Byte] convertable to a ZipInputStream")
       checkExportZip(result) { xml =>
@@ -153,14 +151,16 @@ trait ExportTestBehaviours {
 
     it(s"returns None for an invalid ${config.entityName} ID") {
       Given(s"an invalid ${config.entityName} ID")
-      val result = config.exportFn(INVALID_ENTITY_ID)
+      val result = config.exportFn(INVALID_ENTITY_ID, cfg)
 
       Then("returns None")
       result shouldBe Right(None)
     }
 
+    // The ID is irrelevant - an unauthenticated caller is turned away by the privilege check before
+    // the entity is ever looked up - so use the invalid one rather than inventing a real-looking ID.
     it("denies access when not authenticated") {
-      assertAccessDeniedError(config.unauthExportFn)
+      assertAccessDeniedError(config.exportFn(INVALID_ENTITY_ID, _))
     }
   }
 }

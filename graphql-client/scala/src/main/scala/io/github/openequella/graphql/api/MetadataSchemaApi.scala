@@ -53,18 +53,42 @@ object MetadataSchemaApi
         A
       ] = Mutations.metadataSchema
 
-  /** Lists all metadata schemas available in the system.
+  /** Lists all metadata schemas available in the system, excluding 'system type' schemas.
     *
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of BaseEntityReferenceView representing the metadata schemas or a list of
     *   ApiError if the operation failed. If no schemas are found, an empty list is returned.
+    * @see
+    *   [[listSchemasIncludingSystem]] to also include system schemas.
     */
   def listSchemas()(implicit
       cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] =
+    listSchemas(includeSystem = false)
+
+  /** Lists all metadata schemas available in the system, including 'system type' schemas such as
+    * the "My Content" schema backing the Scrapbook. Needed by callers assigning ACLs, such as the
+    * Admin Console Security Manager.
+    *
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of BaseEntityReferenceView representing the metadata schemas or a list of
+    *   ApiError if the operation failed. If no schemas are found, an empty list is returned.
+    * @see
+    *   [[listSchemas]] to exclude system schemas.
+    */
+  def listSchemasIncludingSystem()(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] =
+    listSchemas(includeSystem = true)
+
+  private def listSchemas(includeSystem: Boolean)(implicit
+      cfg: ClientConfiguration
   ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
-    val q = MetadataSchemaQueries.list {
+    val q = MetadataSchemaQueries.list(Some(includeSystem)) {
       BaseEntityReferenceView.selector
     }
 

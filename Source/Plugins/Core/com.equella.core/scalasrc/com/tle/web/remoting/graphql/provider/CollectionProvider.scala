@@ -63,15 +63,24 @@ class CollectionProvider @Inject() (
 ) {
   private val LOGGER = LoggerFactory.getLogger(classOf[CollectionProvider])
 
-  /** List all collections.
+  /** List all collections the current user can edit.
     *
+    * @param includeSystem
+    *   whether to also include 'system type' collections, which are hidden by default - such as the
+    *   "My Content" collection backing the Scrapbook. Needed by callers assigning ACLs, such as the
+    *   Admin Console Security Manager. The per-collection ACL filtering applies either way - this
+    *   flag only controls the inclusion of system collections.
     * @return
     *   a list of `BaseEntityReference` objects representing the collections.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
-  def listCollections(): List[BaseEntityReference] = {
-    LOGGER.debug("Listing all collections")
-    itemDefinitionService.listEditable().asScala.map(BaseEntityReference(_)).toList
+  def listCollections(includeSystem: Boolean): List[BaseEntityReference] = {
+    LOGGER.debug(s"Listing all collections (includeSystem: $includeSystem)")
+    val collections =
+      if (includeSystem) itemDefinitionService.listEditableIncludingSystem()
+      else itemDefinitionService.listEditable()
+
+    collections.asScala.map(BaseEntityReference(_)).toList
   }
 
   /** Start an editing session for a collection. Locks the collection for editing and returns it as

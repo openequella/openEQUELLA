@@ -26,9 +26,15 @@ object MetadataSchemaQueries {
   /** List all metadata schemas
     */
   def list[A](
-      innerSelection: SelectionBuilder[BaseEntityReference, A]
+      includeSystem: scala.Option[Boolean] = None
+  )(innerSelection: SelectionBuilder[BaseEntityReference, A])(implicit
+      encoder0: ArgEncoder[scala.Option[Boolean]]
   ): SelectionBuilder[MetadataSchemaQueries, List[A]] =
-    _root_.caliban.client.SelectionBuilder.Field("list", ListOf(Obj(innerSelection)))
+    _root_.caliban.client.SelectionBuilder.Field(
+      "list",
+      ListOf(Obj(innerSelection)),
+      arguments = List(Argument("includeSystem", includeSystem, "Boolean"))
+    )
 
   /** Export a metadata schema, returning a base64 encoded zip file
     */

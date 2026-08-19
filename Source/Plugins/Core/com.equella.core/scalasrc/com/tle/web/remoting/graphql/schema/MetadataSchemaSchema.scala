@@ -47,7 +47,7 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
 
   private val queries = Queries(
     metadataSchema = MetadataSchemaQueryOps(
-      list = () => metadataSchemaProvider.listSchemas(),
+      list = args => metadataSchemaProvider.listSchemas(args.includeSystem.getOrElse(false)),
       export = args => metadataSchemaProvider.exportSchema(args.id, args.withSecurity),
       idForUuid = uuid => metadataSchemaProvider.schemaIdForUuid(uuid),
       byId = args => metadataSchemaProvider.schemaById(args.id),
@@ -78,7 +78,7 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
   @GQLName("MetadataSchemaQueries")
   case class MetadataSchemaQueryOps(
       @GQLDescription("List all metadata schemas")
-      list: () => List[BaseEntityReference],
+      list: SchemaListArgs => List[BaseEntityReference],
       @GQLDescription("Export a metadata schema, returning a base64 encoded zip file")
       export: SchemaExportArgs => Option[String],
       @GQLDescription("Get the metadata schema ID for a given UUID")
@@ -91,6 +91,13 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       importTypes: SchemaByIdArgs => List[String],
       @GQLDescription("Check if a metadata schema has an referencing entities")
       hasReferences: SchemaByIdArgs => Boolean
+  )
+
+  case class SchemaListArgs(
+      @GQLDescription(
+        "Whether to include 'system type' metadata schemas such as the \"My Content\" schema backing the Scrapbook. Defaults to false if not provided."
+      )
+      includeSystem: Option[Boolean] = Some(false)
   )
 
   case class SchemaExportArgs(
