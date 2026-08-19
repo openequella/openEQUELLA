@@ -6,7 +6,7 @@
     "entrypoint/scripts/*.js"
   ],
   "engines": {
-    "node": "24.18.0"
+    "node": "24.19.0"
   },
   "@parcel/resolver-default": {
     "packageExports": true

@@ -10,7 +10,7 @@
     "src"
   ],
   "engines": {
-    "node": "24.18.0"
+    "node": "24.19.0"
   },
   "scripts": {
     "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
