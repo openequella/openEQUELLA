@@ -5,38 +5,43 @@ import static org.testng.Assert.assertTrue;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.institution.ImportTab;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
-import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import com.tle.webtests.pageobject.institution.StatusPage;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+/**
+ * Checks that institutions exported by past releases still import, from the archives committed
+ * under {@value #ARCHIVE_FIXTURES}.
+ */
 public class ImportTest extends AbstractInstTest {
+  private static final String ARCHIVE_FIXTURES = "importexport/institutions";
+  private static final List<String> ARCHIVE_EXTENSIONS = List.of(".gz", ".tgz", ".bz2", ".zip");
 
-  @Override
-  protected void prepareBrowserSession() {
-    InstitutionListTab listTab =
-        new ServerAdminLogonPage(context)
-            .load()
-            .logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
-  }
+  /** Long enough for the oldest archives, which run every migration since they were written. */
+  private static final long IMPORT_TIMEOUT_SECONDS = 360;
 
   @Test(dataProvider = "toImport")
   public void importInstitutions(File instFolder, String fileName) {
     String shortName = instFolder.getName();
-    String instutionUrl = testConfig.getInstitutionUrl(shortName);
+    String institutionUrl = testConfig.getInstitutionUrl(shortName);
+
     InstitutionListTab listTab = new InstitutionListTab(context).load();
     ImportTab importTab = listTab.importTab();
-    if (listTab.institutionExists(instutionUrl)) {
-      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-      assertTrue(statusPage.waitForFinish());
+    if (listTab.institutionExists(institutionUrl)) {
+      StatusPage<InstitutionListTab> statusPage = listTab.delete(institutionUrl);
+      assertTrue(statusPage.waitForFinish(), statusPage.getErrorText());
       statusPage.back();
     }
+
     assertTrue(
         importTab
-            .importInstitution(instutionUrl, shortName, new File(instFolder, fileName), 360)
+            .importInstitution(
+                institutionUrl, shortName, new File(instFolder, fileName), IMPORT_TIMEOUT_SECONDS)
             .waitForFinish());
   }
 
@@ -45,36 +50,42 @@ public class ImportTest extends AbstractInstTest {
       dataProvider = "toImport",
       alwaysRun = true)
   public void deleteInstitutions(File instFolder, String fileName) {
-    String shortName = instFolder.getName();
-    String instutionUrl = testConfig.getInstitutionUrl(shortName);
-    InstitutionListTab listTab = null;
+    String institutionUrl = testConfig.getInstitutionUrl(instFolder.getName());
 
-    listTab = new InstitutionListTab(context).load();
-    if (listTab.institutionExists(instutionUrl)) {
-      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-      assertTrue(statusPage.waitForFinish());
-      statusPage.back();
-    }
+    InstitutionListTab listTab =
+        deleteIfPresent(new InstitutionListTab(context).load(), institutionUrl);
+    // Leaves the console on the import tab, ready for the next archive.
     listTab.importTab();
   }
 
+  /** Each release folder paired with the archive inside it. */
   @DataProvider(parallel = false)
-  public Object[][] toImport() throws Exception {
-    File[] institutions =
-        new File(TestConfig.getInstitutionsFolder(), "importexport/institutions").listFiles();
-    List<Object[]> instDirs = new ArrayList<Object[]>();
-    for (File instDir : institutions) {
-      File[] listFiles = instDir.listFiles();
-      if (listFiles.length > 0) {
-        String fileName = listFiles[0].getName();
-        if (fileName.endsWith(".gz")
-            || fileName.endsWith(".tgz")
-            || fileName.endsWith(".bz2")
-            || fileName.endsWith(".zip")) {
-          instDirs.add(new Object[] {instDir, fileName});
-        }
-      }
+  public Object[][] toImport() {
+    return Arrays.stream(releaseFolders())
+        .map(folder -> archiveIn(folder).map(archive -> new Object[] {folder, archive}))
+        .flatMap(Optional::stream)
+        .toArray(Object[][]::new);
+  }
+
+  /** The folders under {@value #ARCHIVE_FIXTURES}, one per past release. */
+  private static File[] releaseFolders() {
+    File archives = new File(TestConfig.getInstitutionsFolder(), ARCHIVE_FIXTURES);
+    File[] folders = archives.listFiles();
+    if (folders == null) {
+      throw new IllegalStateException("No release archives at " + archives);
     }
-    return instDirs.toArray(new Object[instDirs.size()][]);
+    return folders;
+  }
+
+  /** The archive within one release folder, if it holds one. */
+  private static Optional<String> archiveIn(File releaseFolder) {
+    return Arrays.stream(Objects.requireNonNull(releaseFolder.listFiles()))
+        .map(File::getName)
+        .filter(ImportTest::isArchive)
+        .findFirst();
+  }
+
+  private static boolean isArchive(String fileName) {
+    return ARCHIVE_EXTENSIONS.stream().anyMatch(fileName::endsWith);
   }
 }
