@@ -17,9 +17,6 @@
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "paths": {
-      "~*": ["./entrypoint/*", "./tsrc/*"]
-    }
   },
   "include": [
     "vite.config.mts",
