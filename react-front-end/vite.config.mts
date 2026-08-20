@@ -73,8 +73,11 @@ export default defineConfig(({ mode }) => ({
     // then guarantee nothing, and this build can end up emptying the directory
     // after the uploadList environment has written its file into it.
     emptyOutDir: !isDevMode(mode),
-    // Matches tsconfig's compilerOptions.target.
-    target: "es2020",
+    // Syntax floor for the whole bundle, dependencies included. Driven by our
+    // browser support policy - Edge, Chrome and Firefox, all evergreen - not by
+    // tsconfig's compilerOptions.target. Vite never invokes tsc, so the two are
+    // independent knobs that we keep aligned by hand.
+    target: "es2022",
     // Sized just above RichTextEditor (~1.6MB, bundles TinyMCE), our largest
     // chunk. Both it and Template (~780kB) are lazily loaded rather than in an
     // entry's preload list, so warning about them is noise - but anything
