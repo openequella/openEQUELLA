@@ -19,7 +19,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Button, ButtonGroup, Tooltip } from "@mui/material";
 
-import * as React from "react";
 import { ReactElement } from "react";
 import { FavouritesType } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { users } from "../../../__mocks__/UserModule.mock";
 import {

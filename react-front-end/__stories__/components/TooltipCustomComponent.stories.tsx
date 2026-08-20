@@ -18,7 +18,6 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import { Fab } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import * as React from "react";
 import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
 import {
   TooltipCustomComponent,

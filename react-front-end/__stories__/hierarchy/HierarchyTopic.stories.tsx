@@ -17,7 +17,6 @@
  */
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import {
   simpleTopic,
   topicWithChildren,

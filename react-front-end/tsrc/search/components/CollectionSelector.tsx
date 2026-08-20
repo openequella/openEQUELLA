@@ -29,7 +29,6 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import {

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Box, CardContent, Grid, Skeleton } from "@mui/material";
-import * as React from "react";
 import { classes, StyledCard } from "./KeyResource";
 
 /**

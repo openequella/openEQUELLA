@@ -23,7 +23,6 @@ import {
   ListItemText,
   Skeleton,
 } from "@mui/material";
-import * as React from "react";
 
 /** Skeleton for what entities haven been selected in the security entity selection dialog. */
 const SecurityEntityEntrySkeleton = () => (

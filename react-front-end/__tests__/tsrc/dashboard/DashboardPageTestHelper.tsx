@@ -19,7 +19,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import { render, type RenderResult, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as E from "fp-ts/Either";
-import * as React from "react";
 import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import "@testing-library/jest-dom";

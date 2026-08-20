@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import { createPlatform } from "../../../../modules/Lti13PlatformsModule";
 
 import { languageStrings } from "../../../../util/langstrings";

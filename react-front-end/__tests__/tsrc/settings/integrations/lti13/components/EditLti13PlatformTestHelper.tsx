@@ -17,7 +17,6 @@
  */
 import { render, RenderResult } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Route, Router } from "react-router-dom";
 import {
   defaultACLEntityResolversMulti,

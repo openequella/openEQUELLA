@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta } from "@storybook/react-vite";
-import * as React from "react";
 import { action } from "storybook/actions";
 import {
   SearchAttachmentsSelector,

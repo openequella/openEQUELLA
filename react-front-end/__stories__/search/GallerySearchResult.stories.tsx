@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { buildItems } from "../../__tests__/tsrc/search/components/GallerySearchResultHelpers";
 import GallerySearchResult, {
   GallerySearchResultProps,

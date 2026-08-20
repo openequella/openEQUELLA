@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Divider, Grid, IconButton } from "@mui/material";
-import * as React from "react";
 import { Fragment } from "react";
 import { ReactElement } from "react";
 import { FileUploaderActionLink } from "./FileUploaderActionLink";

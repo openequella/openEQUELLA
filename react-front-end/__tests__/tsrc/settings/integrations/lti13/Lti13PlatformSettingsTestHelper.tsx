@@ -34,7 +34,6 @@ import {
 import Lti13PlatformsSettings, {
   Lti13PlatformsSettingsProps,
 } from "../../../../../tsrc/settings/Integrations/lti13/Lti13PlatformsSettings";
-import * as React from "react";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
 
 const { platformsTitle } =

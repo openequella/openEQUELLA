@@ -28,7 +28,6 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import * as React from "react";
 import { useContext, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { languageStrings } from "../util/langstrings";

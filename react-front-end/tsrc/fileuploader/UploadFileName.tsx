@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Link } from "@mui/material";
-import * as React from "react";
 
 interface UploadFileNameProps {
   /**

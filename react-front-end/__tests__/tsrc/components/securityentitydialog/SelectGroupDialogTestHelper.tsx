@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../../tsrc/components/securityentitydialog/SelectGroupDialog";

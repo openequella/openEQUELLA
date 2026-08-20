@@ -17,7 +17,6 @@
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import * as React from "react";
 import {
   ACLTreeOperator,
   ACLTreeOperatorProps,

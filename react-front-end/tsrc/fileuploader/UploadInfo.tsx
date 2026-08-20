@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Grid, LinearProgress } from "@mui/material";
-import * as React from "react";
 import { UploadingFile } from "../modules/FileUploaderModule";
 
 interface UploadInfoProps {

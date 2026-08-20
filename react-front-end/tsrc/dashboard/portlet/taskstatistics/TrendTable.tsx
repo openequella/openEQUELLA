@@ -27,7 +27,6 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import { useHistory } from "react-router";
 
 import { languageStrings } from "../../../util/langstrings";

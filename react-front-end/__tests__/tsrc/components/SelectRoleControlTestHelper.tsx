@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 import {
   findRolesByIds,
   searchRoles,

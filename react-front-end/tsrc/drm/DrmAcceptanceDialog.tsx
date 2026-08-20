@@ -25,7 +25,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useEffect, useReducer } from "react";
 import {
   Action,

@@ -26,7 +26,6 @@ import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";

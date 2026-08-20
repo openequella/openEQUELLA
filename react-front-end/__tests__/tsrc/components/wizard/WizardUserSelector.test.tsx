@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
-import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import { WizardUserSelector } from "../../../../tsrc/components/wizard/WizardUserSelector";
 

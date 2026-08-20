@@ -17,7 +17,6 @@
  */
 import { Slider, SliderProps } from "@mui/material";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import SettingsListControl, {
   SettingsListControlProps,
 } from "../../tsrc/components/SettingsListControl";

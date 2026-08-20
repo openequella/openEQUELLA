@@ -18,7 +18,6 @@
 import { pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import {
   act,
   getByLabelText,

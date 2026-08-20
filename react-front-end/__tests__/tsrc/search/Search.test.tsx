@@ -17,7 +17,6 @@
  */
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { Search } from "../../../tsrc/search/Search";

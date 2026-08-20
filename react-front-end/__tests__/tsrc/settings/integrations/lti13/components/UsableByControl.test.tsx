@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../../../__mocks__/ACLExpressionBuilder.mock";
 import { aclEveryone } from "../../../../../../__mocks__/ACLExpressionModule.mock";
 import UsableByControl, {

@@ -20,7 +20,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import AddIcon from "@mui/icons-material/Add";
 import { pipe } from "fp-ts/function";
 import { useCallback, useContext } from "react";
-import * as React from "react";
 import { useHistory } from "react-router";
 import { sprintf } from "sprintf-js";
 import { TooltipIconButton } from "../../components/TooltipIconButton";

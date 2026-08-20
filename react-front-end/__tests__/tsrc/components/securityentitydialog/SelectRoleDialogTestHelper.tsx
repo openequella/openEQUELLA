@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 
 import SelectRoleDialog, {
   SelectRoleDialogProps,

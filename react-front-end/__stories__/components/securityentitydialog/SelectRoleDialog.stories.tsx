@@ -18,7 +18,6 @@
 import { action } from "storybook/actions";
 import type { Meta } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import { searchRoles, roles } from "../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../tsrc/modules/RoleModule";
 import { dialogDocsParameters } from "../../storyUtils";

@@ -18,7 +18,6 @@
 import { List, ListItem, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import HTMLReactParser from "html-react-parser";
-import * as React from "react";
 import { Link } from "react-router-dom";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";

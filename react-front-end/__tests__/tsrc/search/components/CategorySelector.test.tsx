@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import {
   render,
   queryByText,

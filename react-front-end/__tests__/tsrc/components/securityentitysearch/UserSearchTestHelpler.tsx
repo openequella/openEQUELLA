@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult, waitFor } from "@testing-library/react";
-import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import UserSearch, {
   UserSearchProps,

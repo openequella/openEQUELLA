@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { controls } from "../../__mocks__/WizardHelper.mock";
 import {
   AdvancedSearchPanel,

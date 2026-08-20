@@ -24,7 +24,6 @@ import {
   TextField,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import { languageStrings } from "../../util/langstrings";
 

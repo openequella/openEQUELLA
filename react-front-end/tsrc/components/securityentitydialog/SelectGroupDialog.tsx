@@ -17,7 +17,6 @@
  */
 import GroupIcon from "@mui/icons-material/Group";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import { ordGroup } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import GroupSearch from "../securityentitysearch/GroupSearch";

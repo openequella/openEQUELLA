@@ -24,7 +24,6 @@ import {
   Switch,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBaseUrl } from "../AppConfig";

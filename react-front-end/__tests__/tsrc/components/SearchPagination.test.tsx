@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import { SearchPagination } from "../../../tsrc/search/components/SearchPagination";
 import { queryPaginatorControls } from "./SearchPaginationTestHelper";
 

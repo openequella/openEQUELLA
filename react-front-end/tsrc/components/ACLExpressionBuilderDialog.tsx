@@ -23,7 +23,6 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material";
-import * as React from "react";
 import { languageStrings } from "../util/langstrings";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,

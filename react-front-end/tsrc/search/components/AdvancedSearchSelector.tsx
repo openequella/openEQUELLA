@@ -22,7 +22,6 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
 export interface AdvancedSearchSelectorProps {

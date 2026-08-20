@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Location } from "history";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import { Prompt, useHistory } from "react-router";
 import { commonString } from "../util/commonstrings";

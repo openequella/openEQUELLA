@@ -18,7 +18,6 @@
 import { action } from "storybook/actions";
 import type { Meta } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import { dialogDocsParameters } from "../../storyUtils";
 import { eqGroupById } from "../../../tsrc/modules/GroupModule";
 import SelectGroupDialog, {

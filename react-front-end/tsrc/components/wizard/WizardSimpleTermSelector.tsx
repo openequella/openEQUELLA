@@ -36,7 +36,6 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useContext, useMemo, useState } from "react";
 import { searchTaxonomyTerms } from "../../modules/TaxonomyModule";
 import { languageStrings } from "../../util/langstrings";

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Box, Stack } from "@mui/material";
-import * as React from "react";
 import { CategorySelectorProps } from "./CategorySelector";
 
 import { ClassificationsPanel } from "./ClassificationsPanel";

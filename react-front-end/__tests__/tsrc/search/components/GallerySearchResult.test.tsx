@@ -20,7 +20,6 @@ import { queryByText, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import { Router } from "react-router-dom";
-import * as React from "react";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
 import * as DrmModule from "../../../../tsrc/modules/DrmModule";
 import { GallerySearchResultItem } from "../../../../tsrc/modules/GallerySearchModule";

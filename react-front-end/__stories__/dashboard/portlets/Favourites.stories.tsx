@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { privateFavouritePortlet } from "../../../__mocks__/Dashboard.mock";
 import {

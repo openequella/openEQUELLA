@@ -17,7 +17,6 @@
  */
 import { Chip, Tooltip } from "@mui/material";
 import * as S from "fp-ts/string";
-import * as React from "react";
 
 export interface SearchOptionsChipsProps {
   /**

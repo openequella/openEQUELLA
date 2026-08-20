@@ -21,7 +21,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, ListItem, Typography } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import { JSX, useState } from "react";
-import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 import * as A from "fp-ts/Array";
