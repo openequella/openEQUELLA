@@ -21,6 +21,7 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+import { decodeBase64, encodeBase64 } from "../util/Base64";
 
 /**
  * Get summaries of all the root hierarchy topics.
@@ -148,19 +149,12 @@ const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
 
   const decodeFormUrlEncodedSpaces = (name: string) => name.replace(/\+/g, " ");
 
-  const toBase64 = (name: string) =>
-    pipe(
-      new TextEncoder().encode(name),
-      (bytes) => String.fromCharCode(...bytes),
-      btoa,
-    );
-
   return pipe(
     O.fromNullable(encodedNameMaybe),
     // Replace special character '+' first since the legacy format uses application/x-www-form-urlencoded.
     O.map(decodeFormUrlEncodedSpaces),
     O.map(decodeURIComponent),
-    O.map(toBase64),
+    O.map(encodeBase64),
     O.map((base64Name) => `${uuid}:${base64Name}`),
     O.getOrElse(() => legacyCompoundUuid),
   );
@@ -174,13 +168,6 @@ const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
 //   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
 const convertSingleNewIdToLegacyFormat = (compoundUuid: string) => {
   const [uuid, base64NameMaybe] = compoundUuid.split(":");
-
-  const decodeBase64 = (base64: string) => {
-    const binary = atob(base64);
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-
-    return new TextDecoder().decode(bytes);
-  };
 
   // Legacy format expects application/x-www-form-urlencoded encoding:
   //   - spaces → '+'
