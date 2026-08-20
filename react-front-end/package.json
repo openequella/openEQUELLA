@@ -5,7 +5,7 @@
     "node": "24.18.0"
   },
   "scripts": {
-    "build:bundle": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
+    "build:bundle": "vite build",
     "build:langbundle": "tsx build-tools/BuildLanguageBundle.ts target/resources/lang/jsbundle.json",
     "build-storybook": "storybook build",
     "build": "npm-run-all build:*",
