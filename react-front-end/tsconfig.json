@@ -10,13 +10,13 @@
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "noErrorTruncation": true,
     "strict": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": true
   },
   "include": [
     "vite.config.mts",
