@@ -1,5 +1,6 @@
 package equellatests.tests
 
+import com.tle.webtests.framework.PageContext
 import equellatests.domain.RandomWord
 import equellatests.instgen.fiveo.autoTestLogon
 import equellatests.pages.{LoginNoticePage, LoginPage}
@@ -15,6 +16,9 @@ import testng.annotation.NewUIOnly
   */
 @NewUIOnly
 class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
+
+  private val DISALLOWED_CONTENT_MESSAGE =
+    "This notice contains content that is not allowed and could not be saved. Please refer to documentation for more information."
 
   test("pre login notice creation") {
     check(forAll { w1: RandomWord =>
@@ -97,43 +101,49 @@ class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
     })
   }
 
-  test("pre login notice creation with image, check login screen for image") {
+  test("pre-login notice preserves trusted local images on login screen") {
     check(withLogon(autoTestLogon) { context =>
       val page          = LoginNoticePage(context).load()
       val localImageURL = context.getBaseUrl + "api/theme/newLogo.png"
       page.setPreLoginNoticeWithImageURL(localImageURL)
+      page.save()
 
       val page2 = LoginPage(context).load()
       Prop(page2.loginNoticeHasImageWithSrc(localImageURL))
     })
   }
 
-  test("pre login notice content sanitisation strips an untrusted image") {
+  test("pre login notice content sanitisation rejects an untrusted image, saving nothing") {
     check(withLogon(autoTestLogon) { context =>
-      val page        = LoginNoticePage(context).load()
-      val badImageURL = "https://example.com/badImage.png"
-      page.setPreLoginNoticeWithImageURL(badImageURL)
-
-      val page2      = LoginPage(context).load()
-      val noticeText = page2.findElementO(By.id("loginNotice")).map(_.getText).getOrElse("")
-
-      // Not just "the bad image is gone" - also confirm the accompanying text
-      // setPreLoginNoticeWithImageURL types alongside it survived, proving sanitisation stripped
-      // the untrusted src specifically rather than wiping the whole notice.
-      Prop(page2.loginNoticeHasNoImageWithSrc(badImageURL) && noticeText.contains("Image Test:"))
+      saveInvalidContentAndAssert(
+        context,
+        _.setPreLoginNoticeWithImageURL("https://example.com/badImage.png")
+      )
     })
   }
 
-  test("pre login notice content sanitisation strips a javascript: link") {
+  test("pre login notice content sanitisation rejects a javascript: link, saving nothing") {
     check(withLogon(autoTestLogon) { context =>
-      val page     = LoginNoticePage(context).load()
-      val linkText = "bad link"
-      page.setPreLoginNoticeWithLinkURL("javascript:alert('TEST')", linkText)
-
-      val loginPage  = LoginPage(context).load()
-      val noticeText = loginPage.findElementO(By.id("loginNotice")).map(_.getText).getOrElse("")
-
-      Prop(noticeText.contains(linkText) && !loginPage.loginNoticeHasLinkWithText(linkText))
+      saveInvalidContentAndAssert(
+        context,
+        _.setPreLoginNoticeWithLinkURL("javascript:alert('TEST')", "bad link")
+      )
     })
+  }
+
+  private def saveInvalidContentAndAssert(
+      context: PageContext,
+      insertDisallowedContent: LoginNoticePage => Unit
+  ): Prop = {
+    val page            = LoginNoticePage(context).load()
+    val originalContent = page.getPreNoticeFieldContents
+
+    insertDisallowedContent(page)
+    page.saveExpectingRejection(DISALLOWED_CONTENT_MESSAGE)
+
+    // Not silently corrected and saved - the whole save is refused, so reloading the editor
+    // must show nothing changed.
+    page.load()
+    Prop(page.getPreNoticeFieldContents == originalContent)
   }
 }

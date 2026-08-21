@@ -20,36 +20,75 @@ package com.tle.core.settings.loginnotice.impl
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableDrivenPropertyChecks
 
-class PreLoginNoticeSanitiserTest extends AnyFunSpec with Matchers {
+class PreLoginNoticeSanitiserTest extends AnyFunSpec with Matchers with TableDrivenPropertyChecks {
 
   private val INSTITUTION_BASE_URL = "https://myinst.example.com/institution/"
 
-  private def sanitise(html: String): String =
+  private def sanitise(html: String): SanitisationResult =
     PreLoginNoticeSanitiser.sanitise(html, INSTITUTION_BASE_URL)
 
   describe("PreLoginNoticeSanitiser.sanitise") {
 
     describe("general behaviour") {
-      it("returns an empty string for null input") {
-        PreLoginNoticeSanitiser.sanitise(null, INSTITUTION_BASE_URL) shouldEqual ""
+      it("returns an empty, unmodified result for null input") {
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(null)
+        content shouldEqual ""
+        hadDisallowedContent shouldBe false
       }
 
-      it("removes script tags") {
+      it("removes script tags and reports the content as modified") {
         val input = "<div>test</div><script>alert(1)</script>"
-        sanitise(input) shouldEqual "<div>test</div>"
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual "<div>test</div>"
+        hadDisallowedContent shouldBe true
       }
 
-      it("removes event handler attributes but keeps the element") {
-        val input    = "<div onclick=\"alert(1)\">test</div>"
+      it("removes event handler attributes but keeps the element, and reports modification") {
+        val input    = """<div onclick="alert(1)">test</div>"""
         val expected = "<div>test</div>"
-        sanitise(input) shouldEqual expected
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual expected
+        hadDisallowedContent shouldBe true
       }
 
-      it("strips disallowed attributes but keeps the element and content") {
-        val input    = "<div id=\"foo\" class=\"bar\">hello</div>"
-        val expected = "<div>hello</div>"
-        sanitise(input) shouldEqual expected
+      it("strips id/name but keeps class, the element and content, and reports modification") {
+        val input    = """<div id="foo" name="bar" class="baz">hello</div>"""
+        val expected = """<div class="baz">hello</div>"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual expected
+        hadDisallowedContent shouldBe true
+      }
+
+      it("does not report modification for content that only has a class attribute") {
+        val input = """<div class="baz">hello</div>"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual input
+        hadDisallowedContent shouldBe false
+      }
+
+      it(
+        "does not report modification for already-clean content, despite cosmetic re-serialisation"
+      ) {
+        // Each of these is legitimately rewritten by the sanitiser without anything being
+        // removed - rgb() spacing, mailto entity-encoding, implicit <tbody> insertion - so
+        // hadDisallowedContent must stay false for all of them.
+        val cleanInputs = Table(
+          "html",
+          "<p>clean</p>",
+          """<span style="color: rgb(224, 62, 45);">rgb colour</span>""",
+          """<a href="mailto:help@example.com">mail</a>""",
+          "<table><tr><td>D</td></tr></table>"
+        )
+
+        forAll(cleanInputs) { html =>
+          sanitise(html).hadDisallowedContent shouldBe false
+        }
       }
     }
 
@@ -60,25 +99,25 @@ class PreLoginNoticeSanitiserTest extends AnyFunSpec with Matchers {
         // something our allowlist controls, so the span here carries a style attribute.
         val input =
           "<h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>" +
-            "<p>P</p><span style=\"color:red\">Span</span><div>Div</div>" +
+            """<p>P</p><span style="color:red">Span</span><div>Div</div>""" +
             "<b>B</b><i>I</i><u>U</u><strong>Strong</strong><em>Em</em>" +
             "<strike>Strike</strike><sub>Sub</sub><sup>Sup</sup><code>x</code>"
-        sanitise(input) shouldEqual input
-        sanitise("<blink>blink</blink>") shouldEqual "blink"
+        sanitise(input).content shouldEqual input
+        sanitise("<blink>blink</blink>").content shouldEqual "blink"
       }
 
       it("allows lists but strips definition lists") {
         val input = "<ul><li>one</li></ul><ol><li>two</li></ol>"
-        sanitise(input) shouldEqual input
+        sanitise(input).content shouldEqual input
 
         val definitionList = "<dl><dt>term</dt><dd>desc</dd></dl>"
-        sanitise(definitionList) shouldEqual "termdesc"
+        sanitise(definitionList).content shouldEqual "termdesc"
       }
 
       it("removes disallowed CSS properties but keeps allowed ones") {
         // position is not in CssSchema.DEFAULT's whitelist; width is.
-        val input = "<p style=\"position:fixed;width:100%;color:red\">x</p>"
-        sanitise(input) shouldEqual "<p style=\"width:100%;color:red\">x</p>"
+        val input = """<p style="position:fixed;width:100%;color:red">x</p>"""
+        sanitise(input).content shouldEqual """<p style="width:100%;color:red">x</p>"""
       }
 
       it("does not drop rgb()/rgba() function colours") {
@@ -86,63 +125,119 @@ class PreLoginNoticeSanitiserTest extends AnyFunSpec with Matchers {
         // so colours expressed this way survive - some OWASP schemas drop the whole element (not
         // just the style attribute) when a colour function's key isn't allowlisted.
         val input =
-          "<span style=\"color: rgb(224, 62, 45); background-color: rgb(255,255,0);\">rgb colour</span>"
+          """<span style="color: rgb(224, 62, 45); background-color: rgb(255,255,0);">rgb colour</span>"""
         val expected =
-          "<span style=\"color:rgb( 224 , 62 , 45 );background-color:rgb( 255 , 255 , 0 )\">rgb colour</span>"
-        sanitise(input) shouldEqual expected
+          """<span style="color:rgb( 224 , 62 , 45 );background-color:rgb( 255 , 255 , 0 )">rgb colour</span>"""
+        sanitise(input).content shouldEqual expected
       }
 
       it("allows the direction style property but strips the dir attribute") {
-        val input    = "<p dir=\"rtl\" style=\"direction:rtl\">Arabic text</p>"
-        val expected = "<p style=\"direction:rtl\">Arabic text</p>"
-        sanitise(input) shouldEqual expected
+        val input    = """<p dir="rtl" style="direction:rtl">Arabic text</p>"""
+        val expected = """<p style="direction:rtl">Arabic text</p>"""
+        sanitise(input).content shouldEqual expected
       }
     }
 
     describe("allowAdditionalElements") {
       it("allows hr and pre, which aren't covered by the common element policies") {
         val input = "<p>a</p><hr /><pre>b</pre>"
-        sanitise(input) shouldEqual input
+        sanitise(input).content shouldEqual input
       }
     }
 
     describe("allowLinks") {
-      it("strips a javascript: scheme href but keeps the link text") {
-        val input = "<a href=\"javascript:alert(1)\">click</a>"
-        sanitise(input) shouldEqual "click"
+      it("strips a javascript: scheme href but keeps the link text, and reports modification") {
+        val input = """<a href="javascript:alert(1)">click</a>"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual "click"
+        hadDisallowedContent shouldBe true
       }
 
-      it("allows a mailto: href") {
-        val input    = "<a href=\"mailto:help@example.com\">mail</a>"
-        val expected = "<a href=\"mailto:help&#64;example.com\">mail</a>"
-        sanitise(input) shouldEqual expected
+      it("allows a mailto: href without reporting modification") {
+        val input    = """<a href="mailto:help@example.com">mail</a>"""
+        val expected = """<a href="mailto:help&#64;example.com">mail</a>"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual expected
+        hadDisallowedContent shouldBe false
       }
     }
 
     describe("allowImages") {
-      it("keeps an img whose src matches the trusted prefix, with its alt/width/height") {
+      it(
+        "keeps an img whose src matches the trusted prefix, with its alt/width/height, unmodified"
+      ) {
         val imageUrl = INSTITUTION_BASE_URL + "api/preloginnotice/image/a.png"
         val input    = s"""<img src="$imageUrl" alt="banner" width="300" height="150" />"""
-        sanitise(input) shouldEqual input
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual input
+        hadDisallowedContent shouldBe false
       }
 
-      it("removes an img whose src is from an untrusted origin") {
-        val input = "<div><img src=\"https://evil.example.com/institution/a.png\">image</div>"
-        sanitise(input) shouldEqual "<div>image</div>"
+      it("removes an img whose src is from an untrusted origin, and reports modification") {
+        val input = """<div><img src="https://evil.example.com/institution/a.png">image</div>"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual "<div>image</div>"
+        hadDisallowedContent shouldBe true
+      }
+
+      it("keeps a root-relative img src that resolves under the institution, unmodified") {
+        val input =
+          """<img src="/institution/file/99234d7f-bb5b-4343-81ec-6524153234cc/1/cat.png" />"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual input
+        hadDisallowedContent shouldBe false
+      }
+
+      it("removes a relative img src that resolves outside the institution via path traversal") {
+        val input = """<img src="../../evil/leak.png">"""
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(input)
+        content shouldEqual ""
+        hadDisallowedContent shouldBe true
       }
     }
 
     describe("allowTables") {
       it("allows table structure but strips the caption") {
         val input =
-          "<table><thead><tr><th>H</th></tr></thead><tbody><tr><td>D</td></tr></tbody></table>"
-        sanitise(input) shouldEqual input
+          "<table><thead><tr><th>H</th></tr></thead>" +
+            "<tbody><tr><td>D</td></tr></tbody>" +
+            "<tfoot><tr><td>F</td></tr></tfoot></table>"
+        sanitise(input).content shouldEqual input
 
         // <caption> is dropped (its text survives, unwrapped) and a bare <tr> with no explicit
         // <tbody> gets one added implicitly by the sanitiser's output serialiser.
         val withCaption = "<table><caption>Cap</caption><tr><td>D</td></tr></table>"
         val expected    = "<table>Cap<tbody><tr><td>D</td></tr></tbody></table>"
-        sanitise(withCaption) shouldEqual expected
+
+        val SanitisationResult(content, hadDisallowedContent) = sanitise(withCaption)
+        content shouldEqual expected
+        hadDisallowedContent shouldBe true
+      }
+    }
+
+    describe("hadDisallowedContent") {
+      it(
+        "does not detect a disallowed CSS property/value stripped alongside an allowed one in the same style attribute"
+      ) {
+        // Documented blind spot (see the sanitise scaladoc): OWASP's HtmlChangeListener only
+        // fires once a style attribute is emptied entirely, not when part of it is rewritten.
+        // The output is still safe either way - `position` and the malicious `url()` are both
+        // gone from `content` - but hadDisallowedContent can't see it happened.
+        sanitise(
+          """<p style="position:fixed;color:red">x</p>"""
+        ).hadDisallowedContent shouldBe false
+        sanitise(
+          """<p style="background-image:url(https://evil.example.com/leak.png);color:blue">x</p>"""
+        ).hadDisallowedContent shouldBe false
+
+        // When a style attribute is disallowed *entirely*, that IS detected.
+        sanitise("""<p style="position:fixed">x</p>""").hadDisallowedContent shouldBe true
       }
     }
   }

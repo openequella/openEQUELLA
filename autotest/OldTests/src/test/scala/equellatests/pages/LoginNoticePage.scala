@@ -1,7 +1,7 @@
 package equellatests.pages
 
-import com.codeborne.selenide.Condition
 import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selectors.{byAttribute, byText}
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.ExpectedConditions2
 import equellatests.browserpage.NewTitledPage
@@ -82,20 +82,19 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    save()
   }
 
   def setPreLoginNoticeWithLinkURL(linkURL: String, linkText: String): Unit = {
-    $(By.cssSelector("button[aria-label='Insert/edit link']")).click()
-    val url = $(By.cssSelector(".tox-dialog input[type='url']"))
-    url.sendKeys(linkURL)
+    $(byAttribute("aria-label", "Insert/edit link")).click()
 
-    val text = $(By.cssSelector(".tox-dialog input[type='text']"))
+    val dialog = $(".tox-dialog")
+    dialog.$("input[type='url']").sendKeys(linkURL)
+
+    val text = dialog.$("input[type='text']")
     text.clear()
     text.sendKeys(linkText)
 
-    $(By.xpath("//div[contains(@class,'tox-dialog')]//button[text()='Save']")).click()
-    save()
+    dialog.$(byText("Save")).click()
   }
 
   def clearPreLoginNotice(): Unit = {
@@ -150,5 +149,13 @@ case class LoginNoticePage(ctx: PageContext)
       !saveButtonActive
     })
     waitForSnackBar(SUCCESS_MSG)
+  }
+
+  /** For content the server is expected to reject (422) rather than persist. */
+  def saveExpectingRejection(errorMessage: String): Unit = {
+    val saveBtn = waiter.until(ExpectedConditions.elementToBeClickable(By.id("_saveButton")))
+    saveBtn.click()
+
+    waitForSnackBar(errorMessage)
   }
 }
