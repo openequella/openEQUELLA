@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution
+package com.tle.common.util
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -29,6 +29,25 @@ class UriUtilsTest extends AnyFunSpec with Matchers {
   private def uri(s: String): URI = URI.create(s)
 
   private val base = uri("https://oeq.example.com/inst1/")
+
+  describe("isAbsoluteHttpUrl") {
+    it("accepts only absolute http/https URLs with a host") {
+      val cases = Table(
+        ("name", "url", "expected"),
+        ("https with host", "https://oeq.example.com/page", true),
+        ("http with host", "http://oeq.example.com/page", true),
+        ("relative path", "/page", false),
+        ("scheme-relative, no host component parsed as such", "//oeq.example.com/page", false),
+        ("non-http scheme", "ftp://oeq.example.com/page", false),
+        ("javascript scheme", "javascript:alert(1)", false),
+        ("unparseable", "http://%zz", false)
+      )
+
+      forAll(cases) { (_, url, expected) =>
+        UriUtils.isAbsoluteHttpUrl(url) shouldBe expected
+      }
+    }
+  }
 
   describe("sameOrigin") {
     it("compares scheme, host and port, falling back to default ports when unspecified") {
@@ -67,7 +86,20 @@ class UriUtilsTest extends AnyFunSpec with Matchers {
         // Dot segments are normalized before comparison: ".." escaping the institution is rejected,
         // while ".." that stays inside is accepted.
         ("dot-segments escaping the institution", "https://oeq.example.com/inst1/../app", false),
-        ("dot-segments staying inside", "https://oeq.example.com/inst1/sub/../page", true)
+        ("dot-segments staying inside", "https://oeq.example.com/inst1/sub/../page", true),
+        // Percent-encoded dot segments are not literal ".."/"." at the point normalize() runs, so
+        // they survive it unchanged and only decode into ".." once getPath() is read afterwards -
+        // this must still be rejected, not accepted via a bare startsWith on the decoded string.
+        (
+          "percent-encoded dot-segments escaping the institution",
+          "https://oeq.example.com/inst1/%2e%2e/app",
+          false
+        ),
+        (
+          "fully percent-encoded traversal escaping the institution",
+          "https://oeq.example.com/inst1/%2e%2e%2fapp",
+          false
+        )
       )
 
       forAll(trailingSlashCases) { (_, target, expected) =>
@@ -145,6 +177,12 @@ class UriUtilsTest extends AnyFunSpec with Matchers {
         ("prefix-sibling directory", "https://oeq.example.com/inst1extra/page", false),
         // The bare institution path without its trailing slash is not "under" the base path.
         ("base path without trailing slash", "https://oeq.example.com/inst1", false),
+        // Percent-encoded traversal must be rejected here too, not just at the underPath level.
+        (
+          "percent-encoded dot-segments escaping the institution",
+          "https://oeq.example.com/inst1/%2e%2e/app",
+          false
+        ),
         // --- rejected on scheme even when origin and path would otherwise match ---
         ("non-http scheme (ftp)", "ftp://oeq.example.com/inst1/somepage", false),
         ("non-http scheme (file)", "file://oeq.example.com/inst1/somepage", false),

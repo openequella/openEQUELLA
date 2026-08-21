@@ -18,7 +18,7 @@
 
 package com.tle.core.settings.loginnotice.impl
 
-import com.tle.common.util.HttpUtils.{isSameOrigin, isSamePath}
+import com.tle.common.util.UriUtils.{sameOrigin, underPath}
 import org.owasp.html.{AttributePolicy, HtmlChangeListener, HtmlPolicyBuilder}
 import org.slf4j.LoggerFactory
 
@@ -147,9 +147,9 @@ object PreLoginNoticeSanitiser {
         institutionUri.resolve(value)
       } match {
         case Success(target) =>
-          val sameOrigin = isSameOrigin(institutionUri, target)
-          val samePath   = isSamePath(institutionUri, target)
-          Option.when(sameOrigin && samePath)(value).orNull
+          val originMatches = sameOrigin(institutionUri, target)
+          val pathMatches   = underPath(institutionUri, target)
+          Option.when(originMatches && pathMatches)(value).orNull
         case Failure(exception) =>
           LOGGER.debug(s"Rejected image src due to URI parsing failure: $value", exception)
           null
