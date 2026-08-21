@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import { action } from "storybook/actions";
-import { Meta } from "@storybook/react";
+import type { Meta } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
+import { dialogDocsParameters } from "../../storyUtils";
 import { eqGroupById } from "../../../tsrc/modules/GroupModule";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
@@ -29,6 +30,7 @@ import { searchGroups, groups } from "../../../__mocks__/GroupModule.mock";
 export default {
   title: "component/SecurityEntityDialog/SelectGroupDialog",
   component: SelectGroupDialog,
+  parameters: dialogDocsParameters,
 } as Meta<SelectGroupDialogProps>;
 
 const commonParams: SelectGroupDialogProps = {

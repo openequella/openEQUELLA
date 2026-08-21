@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
+import { dialogDocsParameters } from "../storyUtils";
 import { drmTermsRejected, drmTermsResolved } from "../../__mocks__/Drm.mock";
 import {
   DrmAcceptanceDialog,
@@ -26,6 +27,7 @@ import {
 export default {
   title: "Drm/DrmAcceptanceDialog",
   component: DrmAcceptanceDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     onAccept: { action: "on accept terms" },
     onAcceptCallBack: { action: "on accepting terms is successful" },

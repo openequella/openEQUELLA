@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { DashboardLayoutSelector } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import type { DashboardLayoutSelectorProps } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 

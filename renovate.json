@@ -13,7 +13,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap com\\.puppycrawl\\.tools:checkstyle:(?<currentValue>[^\\s]+)"
       ],
@@ -22,7 +24,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap com\\.google\\.googlejavaformat:google-java-format:(?<currentValue>[^\\s]+)"
       ],
@@ -31,7 +35,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["^package\\.json$"],
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
       "matchStrings": [
         "coursier bootstrap org\\.scalameta::scalafmt-cli:(?<currentValue>[^\\s]+)"
       ],
@@ -117,6 +123,12 @@
       ]
     },
     {
+      "groupName": "Caliban packages",
+      "matchPackageNames": [
+        "/^com.github.ghostdogpr/"
+      ]
+    },
+    {
       "groupName": "ESLint",
       "extends": ["packages:eslint"]
     },
@@ -130,6 +142,14 @@
       "groupName": "Google API Packages",
       "matchPackageNames": [
         "/^com.google.apis/"
+      ]
+    },
+    {
+      "groupName": "GraphiQL packages",
+      "matchPackageNames": [
+        "@graphiql/*",
+        "graphiql",
+        "graphql"
       ]
     },
     {

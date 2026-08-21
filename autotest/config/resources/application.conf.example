@@ -1,3 +1,6 @@
+// Template for your own autotest configuration. Copy this to application.conf in the same folder
+// and edit it - that file is gitignored, so it stays on your machine. Anything you leave commented
+// out falls back to config/defaults.conf.
 server.url = "http://hostname:8080/"
 server.password = autotestpassword
 
@@ -14,7 +17,7 @@ webdriver {
 }
 
 tests {
-//  suitenames = ["testng-codebuild.yaml"]
+//  suitenames = ["all.yaml"]
 //  parallel = true
 //  maxthreads = 2
 }

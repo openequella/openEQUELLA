@@ -1,2 +1,0 @@
-/access/fileman.do
-/plugins.do

@@ -1,17 +1,17 @@
 {
+  "name": "openequella-swagger-ui",
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "clean": "rm -rf target/ node_modules/",
-    "build": "webpack --mode production",
-    "dev": "webpack watch --mode development"
+    "build": "vite build --mode production",
+    "dev": "vite build --watch --mode development"
   },
   "dependencies": {
-    "react-dom": "^18",
+    "react-dom": "18",
     "swagger-ui": "5.32.11"
   },
   "devDependencies": {
-    "webpack": "5.108.4",
-    "webpack-cli": "7.2.1"
+    "vite": "8.2.1"
   }
 }

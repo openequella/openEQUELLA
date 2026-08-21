@@ -486,11 +486,10 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     _.listEnabled()
   }
 
-  /** The default implementation of this method is to delegate to listAll, as in most cases the
-    * system entities are not relevant to the UI. Override in subclasses if a different approach is
-    * needed. Indeed, the only known instances of a 'system type' entity is the "My Content" schema
-    * used for Scrapbook items via MyContentService. There's also some ID constants for it in
-    * `com.tle.mycontent.MyContentConstants`.
+  /** Unlike listAll, the result includes 'system type' entities. The only known instances are the
+    * "My Content" collection and schema used for Scrapbook items via MyContentService, whose UUIDs
+    * are in `com.tle.mycontent.MyContentConstants`. They are hidden from most of the UI, but the
+    * Security Manager needs them so that ACLs can be assigned to them.
     */
   override def listAllIncludingSystem(): util.List[BaseEntityLabel] = implementMe {
     _.listAllIncludingSystem()

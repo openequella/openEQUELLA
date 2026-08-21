@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 import { action } from "storybook/actions";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../__mocks__/ACLExpressionModule.mock";
 import { searchGroups } from "../../__mocks__/GroupModule.mock";
 import { searchRoles } from "../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../__mocks__/UserModule.mock";
+import { dialogDocsParameters } from "../storyUtils";
 import { generate } from "../../tsrc/modules/ACLExpressionModule";
 import ACLExpressionBuilderDialog, {
   ACLExpressionBuilderDialogProps,
@@ -31,6 +32,7 @@ import ACLExpressionBuilderDialog, {
 export default {
   title: "Component/ACLExpressionBuilderDialog",
   component: ACLExpressionBuilderDialog,
+  parameters: dialogDocsParameters,
 } as Meta<ACLExpressionBuilderDialogProps>;
 
 export const Standard: StoryFn<ACLExpressionBuilderDialogProps> = (args) => (

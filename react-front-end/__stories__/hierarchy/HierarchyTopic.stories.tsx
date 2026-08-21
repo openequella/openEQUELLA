@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import {
   simpleTopic,

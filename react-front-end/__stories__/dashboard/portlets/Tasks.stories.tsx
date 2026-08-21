@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { privateTasksPortlet } from "../../../__mocks__/Dashboard.mock";

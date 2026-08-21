@@ -34,4 +34,30 @@ In a nutshell the technique involves:
 * Defining commands which represent the execution flow
 * Verifying that the system matches the model as commands are executed
 
+## How this works here
+
+These suites live in `src/test/scala/equellatests`, and the tests themselves in
+`equellatests/tests`. They used to run under ScalaCheck's own runner; they now run under ScalaTest,
+which drives ScalaCheck through the `scalatestplus/scalacheck-1-19` bridge. The generators and
+`Prop`s are unchanged — ScalaTest supplies discovery and reporting, and ScalaCheck still supplies
+the data.
+
+Extend `PropertyBasedBrowserTest` and `check` your properties. It sets `minSuccessful = 1`, because
+each evaluation drives a real browser: one successful run is the useful unit of work here, not the
+usual hundred.
+
+`StatefulTest` is where the technique above is implemented — a model, a set of commands, and the
+machinery to run them against a browser and compare. `ShotTest` adds screenshots on failure.
+
+Run them with:
+
+```bash
+./sbt "project autotest" ScalaTest/test
+./sbt "project autotest" "ScalaTest/testOnly equellatests.tests.SanityTest"
+```
+
+They are discovered by test framework rather than by package, so a new ScalaTest suite is picked up
+wherever you put it. See the [README](../README.md) for why the two frameworks have separate
+configurations.
+
 

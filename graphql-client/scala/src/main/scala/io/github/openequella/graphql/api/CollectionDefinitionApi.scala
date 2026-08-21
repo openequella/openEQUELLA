@@ -52,18 +52,42 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
         A
       ] = Mutations.collection
 
-  /** Lists all collections available in the system.
+  /** Lists all collections available in the system, excluding 'system type' collections.
     *
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a list of BaseEntityReferenceView representing the collections.
     *   If no collections are found, an empty list is returned.
+    * @see
+    *   [[listCollectionsIncludingSystem]] to also include system collections.
     */
   def listCollections()(implicit
       cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] =
+    listCollections(includeSystem = false)
+
+  /** Lists all collections available in the system, including 'system type' collections such as the
+    * "My Content" collection backing the Scrapbook. Needed by callers assigning ACLs, such as the
+    * Admin Console Security Manager.
+    *
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of BaseEntityReferenceView representing the collections.
+    *   If no collections are found, an empty list is returned.
+    * @see
+    *   [[listCollections]] to exclude system collections.
+    */
+  def listCollectionsIncludingSystem()(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] =
+    listCollections(includeSystem = true)
+
+  private def listCollections(includeSystem: Boolean)(implicit
+      cfg: ClientConfiguration
   ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
-    val q = CollectionQueries.list {
+    val q = CollectionQueries.list(Some(includeSystem)) {
       BaseEntityReferenceView.selector
     }
 

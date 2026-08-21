@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { action } from "storybook/actions";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";

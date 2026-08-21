@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import {
   creatablePortletTypes,
@@ -26,11 +26,13 @@ import {
   DashboardEditor,
   DashboardEditorProps,
 } from "../../tsrc/dashboard/DashboardEditor";
+import { dialogDocsParameters } from "../storyUtils";
 import { buildDashboardPageContextDecorator } from "./editor/DashboardLayout.stories";
 
 export default {
   title: "Dashboard/DashboardEditor",
   component: DashboardEditor,
+  parameters: dialogDocsParameters,
   argTypes: {
     onClose: { action: "onClose" },
   },

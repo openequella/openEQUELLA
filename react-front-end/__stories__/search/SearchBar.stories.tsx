@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "storybook/actions";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import SearchBar, {
   SearchBarProps,
@@ -36,6 +36,9 @@ export default {
 export const NoWildcardToggle: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
+NoWildcardToggle.args = {
+  query: "",
+};
 
 export const NonWildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />

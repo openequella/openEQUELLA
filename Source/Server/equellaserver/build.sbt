@@ -21,7 +21,7 @@ val TomcatVersion             = "9.0.120"
 val axis2Version              = "2.0.1"
 val circeVersion              = "0.14.5"
 val curatorVersion            = "5.9.0"
-val cxfVersion                = "3.6.11"
+val cxfVersion                = "3.6.12"
 val fs2Version                = "3.13.0"
 val guiceVersion              = "6.0.0"
 val jsassVersion              = "5.11.1"
@@ -117,7 +117,7 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "7.1.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
-  "commons-codec"             % "commons-codec"         % "1.22.0",
+  "commons-codec"             % "commons-codec"         % "1.22.1",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.6.1",
@@ -524,9 +524,9 @@ upgradeZip := {
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
-    upgraderJar                                         -> "installation-upgrader.jar",
-    (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
-    (LocalProject("equella") / versionProperties).value -> "version.properties"
+    upgraderJar                                             -> "installation-upgrader.jar",
+    (LocalProject("conversion") / assembly).value           -> "conversion-service.jar",
+    (LocalProject("openEQUELLA") / versionProperties).value -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))

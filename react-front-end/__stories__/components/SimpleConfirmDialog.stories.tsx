@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
+import { dialogDocsParameters } from "../storyUtils";
 import SimpleConfirmDialog, {
   SimpleConfirmDialogProps,
 } from "../../tsrc/components/SimpleConfirmDialog";
@@ -24,6 +25,7 @@ import SimpleConfirmDialog, {
 export default {
   title: "Component/SimpleConfirmDialog",
   component: SimpleConfirmDialog,
+  parameters: dialogDocsParameters,
   argTypes: {
     onCancel: { action: "onCancel" },
     onConfirm: { action: "onConfirm" },

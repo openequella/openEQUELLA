@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as React from "react";
 import { privateTaskStatisticsPortlet } from "../../../__mocks__/Dashboard.mock";

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Slider, TextField } from "@mui/material";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as React from "react";
 import SettingsList, {
   SettingsListProps,

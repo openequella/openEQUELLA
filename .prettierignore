@@ -2,4 +2,4 @@ node_modules/
 storybook-static/
 Source/Plugins/Core/com.equella.core/resources/web/reactjs/tinymce/skins/
 # Institution fixtures for the autotests: third-party content that must be preserved byte-for-byte.
-autotest/**/tests/**
+autotest/institutions/**

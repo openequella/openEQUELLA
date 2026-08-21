@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { mockedSearchTaxonomyTerms } from "../../../__mocks__/TaxonomyTerms.mock";
 import {
   WizardSimpleTermSelector,

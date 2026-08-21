@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react-vite";
 import { SingleColumnIcon } from "../../tsrc/icons/SingleColumnIcon";
 import { TwoColumnsEqualIcon } from "../../tsrc/icons/TwoColumnsEqualIcon";
 import { TwoColumnsRatio1to2Icon } from "../../tsrc/icons/TwoColumnsRatio1to2Icon";

@@ -23,6 +23,7 @@ import * as H from "history";
 import type { ReactNode } from "react";
 import * as React from "react";
 import {
+  FAVOURITES_TYPE_PARAM,
   type FavouritesType,
   FavouritesTypeUnion,
   searchFavouriteSearches,
@@ -45,8 +46,6 @@ const { title } = languageStrings.searchpage.sortOptions;
 const { dateFavourited } = languageStrings.favourites.sortOptions;
 
 export const SORT_ORDER_ADDED_AT = "added_at";
-
-export const FAVOURITES_TYPE_PARAM = "favouritesType";
 
 export const defaultFavouritesPageOptions: SearchPageOptions = {
   ...defaultSearchPageOptions,

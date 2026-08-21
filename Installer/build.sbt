@@ -2,7 +2,7 @@ import Path.relativeTo
 
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"         % "33.6.0-jre",
-  "commons-codec"    % "commons-codec" % "1.22.0",
+  "commons-codec"    % "commons-codec" % "1.22.1",
   postgresDep,
   sqlServerDep
 )

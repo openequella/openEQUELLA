@@ -1,8 +1,6 @@
 import Path.rebase
 import sbt.IO
 
-name := "IntegTester"
-
 version := "1.0"
 
 val CirceVersion  = "0.14.12"
@@ -23,7 +21,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpclient" % "4.5.14",
-  "org.http4s" %% "http4s-blaze-server" % "0.23.17", // The latest version of blzae server is still 0.23.17 by 13/05/2025.
+  "org.http4s" %% "http4s-blaze-server" % "0.23.18", // The latest version of blzae server is still 0.23.17 by 13/05/2025.
   "org.http4s"      %% "http4s-dsl"        % Http4sVersion,
   "org.http4s"      %% "http4s-circe"      % Http4sVersion,
   "org.jsoup"        % "jsoup"             % jsoupVersion,
