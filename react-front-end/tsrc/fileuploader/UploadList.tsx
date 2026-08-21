@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Grid, List, ListItem, Stack } from "@mui/material";
-import * as React from "react";
 import {
   isUploadedFile,
   UploadedFile,

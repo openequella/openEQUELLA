@@ -22,7 +22,6 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
-import * as React from "react";
 
 /**
  * A skeleton view for the hierarchy panel component.

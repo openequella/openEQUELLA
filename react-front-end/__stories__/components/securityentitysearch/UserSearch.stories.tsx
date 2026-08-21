@@ -22,7 +22,6 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { CheckboxMode } from "../../../tsrc/components/securityentitysearch/BaseSearch";

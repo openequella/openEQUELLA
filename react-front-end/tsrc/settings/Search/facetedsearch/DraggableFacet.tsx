@@ -30,7 +30,6 @@ import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as t from "io-ts";
-import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import type { FacetedSearchClassificationWithFlags } from "../../../modules/FacetedSearchSettingsModule";

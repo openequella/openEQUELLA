@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
 import UnknownUserHandlingControl, {
   UnknownUserHandlingControlProps,

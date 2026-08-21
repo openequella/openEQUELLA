@@ -19,7 +19,6 @@
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
-import * as React from "react";
 import HierarchyTopicSkeleton from "./HierarchyTopicSkeleton";
 
 const HierarchyTreeSkeleton = ({

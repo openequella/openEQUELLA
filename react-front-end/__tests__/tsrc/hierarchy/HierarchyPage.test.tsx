@@ -26,7 +26,6 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Route, Router } from "react-router-dom";
 import {
   getHierarchyDetails,

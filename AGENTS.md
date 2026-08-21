@@ -87,7 +87,7 @@ by [Edalex](https://edalex.com).
 **Frontend Build:**
 
 - **NPM** - Package management (Node 24.11.0)
-- **Parcel**(v2.x) - Bundler for TypeScript/React code
+- **Vite**(v8.x) - Bundler for TypeScript/React code
 - Build commands in `react-front-end/package.json`
 
 **JPF Plugins:**

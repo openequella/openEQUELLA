@@ -17,7 +17,6 @@
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import { SelectList, SelectListProps } from "../../tsrc/components/SelectList";
 import * as M from "fp-ts/Map";
 

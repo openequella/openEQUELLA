@@ -17,7 +17,6 @@
  */
 import { action } from "storybook/actions";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
   aclEveryone,

@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
 import { queryByLabelText, render } from "@testing-library/react";
-import * as React from "react";
 import {
   brokenFileDetails,
   equellaItemDetails,

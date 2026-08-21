@@ -20,7 +20,6 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import HierarchyTree from "../../hierarchy/components/HierarchyTree";
 import { getRootHierarchies } from "../../modules/HierarchyModule";

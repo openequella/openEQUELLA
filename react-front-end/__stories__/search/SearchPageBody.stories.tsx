@@ -24,7 +24,6 @@ import {
   ListItem,
 } from "@mui/material";
 import type { Decorator, Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
 import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
 import { getRemoteSearchesFromServer } from "../../__mocks__/RemoteSearchModule.mock";

@@ -22,7 +22,6 @@ import {
   RenderResult,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
   searchGroups,

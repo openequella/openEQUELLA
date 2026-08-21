@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { ListItem, ListItemText } from "@mui/material";
-import * as React from "react";
 import SearchOptionsChips from "./SearchOptionsChips";
 
 export interface SearchOptionsChipsWithLabelProps {

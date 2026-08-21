@@ -27,7 +27,6 @@ import {
 } from "@mui/material";
 import { pipe } from "fp-ts/lib/function";
 import * as NEA from "fp-ts/NonEmptyArray";
-import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import { classes } from "./TaskStatisticsContent";
 

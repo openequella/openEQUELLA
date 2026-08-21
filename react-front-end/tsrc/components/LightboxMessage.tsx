@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Card, CardContent, Typography } from "@mui/material";
-import * as React from "react";
 
 export interface LightboxMessageProps {
   /**

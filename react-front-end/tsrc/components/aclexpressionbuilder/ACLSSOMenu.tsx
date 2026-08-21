@@ -21,7 +21,6 @@ import * as NA from "fp-ts/NonEmptyArray";
 import { flow, pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import { getTokens } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";

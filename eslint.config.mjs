@@ -43,6 +43,9 @@ export default defineConfig([
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
+      // Matches tsconfig's `"jsx": "react-jsx"` - the automatic runtime injects
+      // the JSX factory itself, so React no longer needs to be in scope.
+      "plugin:react/jsx-runtime",
       "plugin:jest/recommended",
       "plugin:jest/style",
       "plugin:jsx-a11y/recommended",
@@ -76,7 +79,7 @@ export default defineConfig([
         version: 29,
       },
       react: {
-        version: "18",
+        version: "19",
       },
     },
 

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { SvgIcon, SvgIconProps } from "@mui/material";
-import * as React from "react";
 
 /**
  * An icon representing a single-column dashboard layout.

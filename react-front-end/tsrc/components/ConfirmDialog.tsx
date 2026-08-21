@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Breakpoint } from "@mui/system";
-import * as React from "react";
 import { FunctionComponent, ReactNode } from "react";
 import {
   Dialog,

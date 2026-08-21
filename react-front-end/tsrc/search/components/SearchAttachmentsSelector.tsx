@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Button, ButtonGroup } from "@mui/material";
-import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
 export interface SearchAttachmentsSelectorProps {

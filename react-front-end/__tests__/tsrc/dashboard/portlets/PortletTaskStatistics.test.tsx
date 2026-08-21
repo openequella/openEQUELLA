@@ -18,7 +18,6 @@
 
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
-import * as React from "react";
 import { allManageableWorkflows } from "../../../../__mocks__/WorkflowModule.mock";
 import * as stories from "../../../../__stories__/dashboard/portlets/TaskStatistics.stories";
 import { languageStrings } from "../../../../tsrc/util/langstrings";

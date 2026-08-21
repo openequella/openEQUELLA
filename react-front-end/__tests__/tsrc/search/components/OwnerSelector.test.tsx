@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
 import { languageStrings } from "../../../../tsrc/util/langstrings";

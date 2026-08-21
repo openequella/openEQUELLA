@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { CircularProgress, Stack } from "@mui/material";
-import * as React from "react";
 
 /**
  * A rotating circle placed in the middle of the parent component.

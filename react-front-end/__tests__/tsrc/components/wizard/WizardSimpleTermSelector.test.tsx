@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import { mockedTaxonomyTerms } from "../../../../__mocks__/TaxonomyTerms.mock";
 import { WizardSimpleTermSelector } from "../../../../tsrc/components/wizard/WizardSimpleTermSelector";
 import { languageStrings } from "../../../../tsrc/util/langstrings";

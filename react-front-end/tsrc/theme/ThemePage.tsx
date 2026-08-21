@@ -26,7 +26,6 @@ import {
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { API_BASE_URL } from "../AppConfig";
 import SettingPageTemplate from "../components/SettingPageTemplate";

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Box, ListItem, ListItemText } from "@mui/material";
-import * as React from "react";
 import { ReactNode } from "react";
 
 export interface SettingsListControlProps {

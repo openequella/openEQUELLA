@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { dialogDocsParameters } from "../storyUtils";
 import FavouriteItemDialog, {
   FavouriteItemDialogProps,

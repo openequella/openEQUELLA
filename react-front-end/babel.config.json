@@ -2,11 +2,7 @@
   // This config is intentionally scoped to node_modules only. It exists purely
   // so Jest can transpile ESM-only dependencies (e.g. query-string and its
   // transitive deps decode-uri-component, filter-obj, split-on-first) that
-  // would otherwise fail to parse under Jest's CommonJS module system. Parcel
-  // (used for the production bundle via `build:bundle`) also auto-discovers
-  // this file and, unlike Jest, applies it project-wide by default - an
-  // unscoped @babel/preset-env would then be run over our own TypeScript/JSX
-  // source, which it can't parse, breaking the Parcel build. Restricting via
+  // would otherwise fail to parse under Jest's CommonJS module system. Restricting via
   // `overrides` to only files under node_modules avoids touching our own
   // source while still covering whichever transitive deps need transpiling.
   "overrides": [

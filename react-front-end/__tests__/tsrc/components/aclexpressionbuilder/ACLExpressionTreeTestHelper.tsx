@@ -23,7 +23,6 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import ACLExpressionTree from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionTree";
 import { classes } from "../../../../tsrc/components/aclexpressionbuilder/ACLTreeItem";
 import {

@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
 import { getTokens, tokens } from "../../../../__mocks__/UserModule.mock";
 import ACLSSOMenu, {
   ACLSSOMenuProps,

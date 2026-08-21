@@ -18,7 +18,6 @@
 import { IconButton, IconButtonProps } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { TooltipProps } from "@mui/material/Tooltip";
-import * as React from "react";
 
 /**
  * A combined type including TooltipProps and IconButtonProps.

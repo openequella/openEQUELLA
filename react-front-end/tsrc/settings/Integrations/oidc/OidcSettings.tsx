@@ -19,7 +19,6 @@ import { Card, CardContent, Divider, Grid } from "@mui/material";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import { useContext, useEffect, useState, useReducer } from "react";
-import * as React from "react";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
   checkValidations,

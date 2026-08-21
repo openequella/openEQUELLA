@@ -18,6 +18,7 @@
 import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { composeStories } from "@storybook/react";
+import { DateTime } from "luxon";
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { publicRecentContributionsPortlet } from "../../../../__mocks__/Dashboard.mock";
@@ -235,9 +236,9 @@ describe("<PortletRecentContributions />", () => {
     expect(mockSearchProvider).toHaveBeenCalled();
 
     // Calculate what the modifiedAfter date should be (30 days ago)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const expectedModifiedAfter = thirtyDaysAgo.toISOString().split("T")[0];
+    const expectedModifiedAfter = DateTime.now()
+      .minus({ days: 30 })
+      .toISODate();
 
     // Verify the search provider was called with modifiedAfter set to 30 days ago
     expect(mockSearchProvider).toHaveBeenCalledWith(

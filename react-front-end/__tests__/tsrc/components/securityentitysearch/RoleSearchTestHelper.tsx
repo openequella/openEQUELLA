@@ -18,7 +18,6 @@
 import { ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult, waitFor } from "@testing-library/react";
-import * as React from "react";
 import * as RoleModuleMock from "../../../../__mocks__/RoleModule.mock";
 import { BaseSearchProps } from "../../../../tsrc/components/securityentitysearch/BaseSearch";
 import RoleSearch, {

@@ -19,7 +19,6 @@ import { ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { searchRoles } from "../../modules/RoleModule";
 import { languageStrings } from "../../util/langstrings";
 import BaseSearch, {

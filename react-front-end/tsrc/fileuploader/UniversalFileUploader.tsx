@@ -19,7 +19,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, Stack } from "@mui/material";
-import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { getRenderData } from "../AppConfig";

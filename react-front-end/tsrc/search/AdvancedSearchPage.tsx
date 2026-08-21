@@ -20,7 +20,6 @@ import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import {

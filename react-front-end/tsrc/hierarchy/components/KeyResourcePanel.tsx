@@ -18,7 +18,6 @@
 
 import { Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import KeyResource from "./KeyResource";
 
 export interface KeyResourcePanelProps {

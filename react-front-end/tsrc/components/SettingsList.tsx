@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { List } from "@mui/material";
-import * as React from "react";
 import { ReactNode } from "react";
 import SettingsListHeading from "./SettingsListHeading";
 

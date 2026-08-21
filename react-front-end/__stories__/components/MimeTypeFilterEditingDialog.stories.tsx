@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import { getMimeTypesFromServer } from "../../__mocks__/MimeTypes.mock";
 import { dialogDocsParameters } from "../storyUtils";

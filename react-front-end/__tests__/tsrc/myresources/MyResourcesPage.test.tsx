@@ -34,7 +34,6 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import {

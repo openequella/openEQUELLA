@@ -19,7 +19,6 @@ import { Alert } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import type { PageContent } from "../../legacycontent/LegacyContent";

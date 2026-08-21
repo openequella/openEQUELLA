@@ -17,7 +17,6 @@
  */
 import { Button, Grid } from "@mui/material";
 import { ReactElement } from "react";
-import * as React from "react";
 import { ButtonProps } from "@mui/material";
 
 export interface LabelledIconButtonProps {

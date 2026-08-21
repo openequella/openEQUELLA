@@ -18,7 +18,6 @@
 
 import { Grid, Skeleton } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 
 import * as RNA from "fp-ts/ReadonlyNonEmptyArray";
 

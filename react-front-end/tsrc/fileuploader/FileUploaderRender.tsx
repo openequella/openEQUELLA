@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { ThemeProvider } from "@mui/material";
-import * as React from "react";
 import * as ReactDom from "react-dom/client";
 import { getRenderData } from "../AppConfig";
 import {

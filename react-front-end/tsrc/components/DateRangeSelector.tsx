@@ -25,7 +25,6 @@ import clsx from "clsx";
 import { flow, pipe, constVoid } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { DateTime } from "luxon";
-import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import type { DateRange, ISODateFormat } from "../util/Date";
 import { languageStrings } from "../util/langstrings";

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import * as React from "react";
 import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import { languageStrings } from "../util/langstrings";
 import { TooltipIconButton } from "./TooltipIconButton";

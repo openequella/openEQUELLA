@@ -17,7 +17,6 @@
  */
 import { action } from "storybook/actions";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
 import StatusSelector, {
   StatusSelectorProps,

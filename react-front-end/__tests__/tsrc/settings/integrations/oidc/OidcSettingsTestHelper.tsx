@@ -28,7 +28,6 @@ import userEvent from "@testing-library/user-event";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import * as OidcModule from "../../../../../tsrc/modules/OidcModule";
 import OidcSettings from "../../../../../tsrc/settings/Integrations/oidc/OidcSettings";

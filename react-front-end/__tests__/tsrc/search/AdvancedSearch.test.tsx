@@ -25,7 +25,6 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import {
   getAdvancedSearchDefinition,

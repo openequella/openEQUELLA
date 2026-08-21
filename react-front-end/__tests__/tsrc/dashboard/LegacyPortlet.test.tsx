@@ -19,7 +19,6 @@ import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as React from "react";
 import { privateSearchPortlet } from "../../../__mocks__/Dashboard.mock";
 import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
 import * as LegacyPortletHelper from "../../../tsrc/dashboard/portlet/LegacyPortletHelper";

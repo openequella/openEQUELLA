@@ -21,7 +21,6 @@ import userEvent from "@testing-library/user-event";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { WizardShuffleList } from "../../../../tsrc/components/wizard/WizardShuffleList";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 

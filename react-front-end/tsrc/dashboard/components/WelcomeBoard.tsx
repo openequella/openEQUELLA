@@ -19,7 +19,6 @@ import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import HTMLReactParser from "html-react-parser";
-import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
 const {

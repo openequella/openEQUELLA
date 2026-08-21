@@ -29,7 +29,6 @@ import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { useState } from "react";
 import { languageStrings } from "../../util/langstrings";
 import UserSearch from "../securityentitysearch/UserSearch";

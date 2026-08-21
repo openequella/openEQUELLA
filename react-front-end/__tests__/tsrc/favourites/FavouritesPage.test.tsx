@@ -20,7 +20,6 @@ import { createTheme } from "@mui/material/styles";
 import "@testing-library/jest-dom";
 import { render, type RenderResult } from "@testing-library/react";
 import { createMemoryHistory, MemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import {
   getEmptyGallerySearchResp,

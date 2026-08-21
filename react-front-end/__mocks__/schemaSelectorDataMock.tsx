@@ -17,7 +17,6 @@
  */
 import { buildSchemaTree, SchemaNode } from "../tsrc/modules/SchemaModule";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import * as React from "react";
 
 export const testSchema: SchemaNode = {
   name: "schemaRoot",
