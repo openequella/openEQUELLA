@@ -2,41 +2,27 @@ package com.tle.webtests.test.importexport;
 
 import static org.testng.Assert.assertTrue;
 
-import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.institution.ClonePage;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
-import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import com.tle.webtests.pageobject.institution.StatusPage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class CloneTest extends AbstractInstTest {
-  @Override
-  protected void prepareBrowserSession() {
-    new ServerAdminLogonPage(context)
-        .load()
-        .logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
-  }
+  /** Distinguishes the clone from the institution it was made from, in both URL and short name. */
+  private static final String CLONE_SUFFIX = "clone";
 
   @Test(dataProvider = "toClone")
   public void cloneInstitution(File instFolder) {
-    String shortName = instFolder.getName();
-    String instutionUrl = context.getBaseUrl() + shortName + '/';
-    String newInstutionUrl = context.getBaseUrl() + shortName + "clone/";
-    String newShortName = instFolder.getName() + "clone";
+    String institutionUrl = testConfig.getInstitutionUrl(instFolder.getName());
+    String cloneShortName = cloneShortName(instFolder);
 
     InstitutionListTab listTab = new InstitutionListTab(context).load();
-    if (listTab.institutionExists(newInstutionUrl)) {
-      StatusPage<InstitutionListTab> statusPage = listTab.delete(newInstutionUrl);
-      assertTrue(statusPage.waitForFinish(), statusPage.getErrorText());
-      listTab = statusPage.back();
-    }
-    if (listTab.institutionExists(instutionUrl)) {
-      ClonePage clone = listTab.clone(instutionUrl);
-      StatusPage<InstitutionListTab> statusPage = clone.clone(newInstutionUrl, newShortName);
+    listTab = deleteIfPresent(listTab, cloneUrl(instFolder));
+    if (listTab.institutionExists(institutionUrl)) {
+      ClonePage clone = listTab.clone(institutionUrl);
+      StatusPage<InstitutionListTab> statusPage = clone.clone(cloneUrl(instFolder), cloneShortName);
       assertTrue(statusPage.waitForFinish(), statusPage.getErrorText());
       statusPage.back();
     }
@@ -44,26 +30,20 @@ public class CloneTest extends AbstractInstTest {
 
   @Test(dependsOnMethods = "cloneInstitution", dataProvider = "toClone", alwaysRun = true)
   public void deleteInstitutions(File instFolder) {
-    String origShortName = instFolder.getName();
-    String instutionUrl = context.getBaseUrl() + origShortName + "clone/";
+    deleteIfPresent(new InstitutionListTab(context).load(), cloneUrl(instFolder));
+  }
 
-    InstitutionListTab listTab = new InstitutionListTab(context).load();
-    if (listTab.institutionExists(instutionUrl)) {
-      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-      assertTrue(statusPage.waitForFinish());
-      statusPage.back();
-    }
+  private String cloneShortName(File instFolder) {
+    return instFolder.getName() + CLONE_SUFFIX;
+  }
+
+  /** The clone's URL, on the same scheme as the fixture it was made from. */
+  private String cloneUrl(File instFolder) {
+    return testConfig.getInstitutionUrl(cloneShortName(instFolder), testConfig.isSsl(instFolder));
   }
 
   @DataProvider(parallel = false)
-  public Object[][] toClone() throws Exception {
-    File[] institutions = TestConfig.getInstitutionsFolder().listFiles();
-    List<Object[]> instDirs = new ArrayList<Object[]>();
-    for (File instDir : institutions) {
-      if (new File(instDir, INSTITUTION_FOLDER).exists()) {
-        instDirs.add(new Object[] {instDir});
-      }
-    }
-    return instDirs.toArray(new Object[instDirs.size()][]);
+  public Object[][] toClone() {
+    return institutionFixtures();
   }
 }

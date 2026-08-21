@@ -13,7 +13,7 @@ autotest/
 ├── build.sbt         The one project: the tests, and the tasks that install and drive a server
 ├── config/           Configuration - see below
 ├── docs/             Notes on particular styles of test
-├── institutions/     Institution fixtures, imported by `sbt setupForTests`
+├── institutions/     Institution fixtures - see institutions/README.md
 ├── IntegTester/      Support services the tests need, started as part of the run
 ├── src/test/java     The tests, the com.tle.webtests framework, and the page objects
 ├── src/test/scala    Newer tests; this is where new ones should go
@@ -126,6 +126,10 @@ Then import the institution fixtures, which the tests expect to exist:
 ```bash
 ./sbt "project autotest" setupForTests
 ```
+
+Name one or more institutions to import just those. If you need to *change* a fixture rather than just
+load it, read [institutions/README.md](institutions/README.md) first: an export cannot simply be copied
+over one, and that document explains what to copy and why.
 
 ## Running the tests
 

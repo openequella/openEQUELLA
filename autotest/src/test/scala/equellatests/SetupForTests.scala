@@ -14,8 +14,7 @@ object ImportInsts {
       .map(_.split(",").map(_.trim).toSet)
       .getOrElse((_: String) => true)
   }
-  val INSTITUTION_FILE = "institution"
-  val DEFAULT_SCHEMA   = "Default schema"
+  val DEFAULT_SCHEMA = "Default schema"
 }
 
 class ImportInsts(allowed: String => Boolean) {
@@ -25,7 +24,7 @@ class ImportInsts(allowed: String => Boolean) {
 
   val insts: Seq[File] = {
     TestConfig.getInstitutionsFolder.listFiles.toSeq.filter { testDir =>
-      allowed(testDir.getName) && new File(testDir, INSTITUTION_FILE).isDirectory
+      allowed(testDir.getName) && TestConfig.getInstitutionTree(testDir.getName).isDirectory
     }
   }
 
@@ -75,7 +74,7 @@ class ImportInsts(allowed: String => Boolean) {
               .importInstitution(
                 institutionUrl,
                 shortName,
-                new File(instFolder, INSTITUTION_FILE).toPath
+                TestConfig.getInstitutionTree(shortName).toPath
               )
               .waitForFinish
           )

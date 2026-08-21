@@ -46,6 +46,19 @@ object TestHelper {
   /** An entity UUID guaranteed not to match any entity, for exercising not-found behaviour. */
   val INVALID_ENTITY_UUID: String = "invalid-uuid"
 
+  /** UUID of the "My Content" collection backing the Scrapbook - the only 'system type' collection,
+    * and so the one which distinguishes the listings which include system entities from those which
+    * do not. Mirrors `MY_CONTENT_UUID` in `com.tle.mycontent.MyContentConstants`, which lives in a
+    * separate build and so cannot be referenced from here.
+    */
+  val MY_CONTENT_COLLECTION_UUID: String = "6b356e2e-e6a0-235a-5730-15ad1d8ad630"
+
+  /** UUID of the "My Content" metadata schema, the schema equivalent of
+    * [[MY_CONTENT_COLLECTION_UUID]]. Mirrors `MY_CONTENT_SCHEMA_UUID` in
+    * `com.tle.mycontent.MyContentConstants`.
+    */
+  val MY_CONTENT_SCHEMA_UUID: String = "2df3df71-bbff-da39-e0c7-52a856ef8b49"
+
   /** Load the test server port from configuration with CLI -D override support.
     *
     * Precedence order:
