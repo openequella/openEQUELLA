@@ -21,7 +21,7 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
-import { decodeBase64, encodeBase64 } from "../util/Base64";
+import { encode as encodeBase64, decode as decodeBase64 } from "js-base64";
 
 /**
  * Get summaries of all the root hierarchy topics.

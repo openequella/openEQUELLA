@@ -39,6 +39,7 @@
     "html-react-parser": "6.1.5",
     "io-ts": "2.2.22",
     "io-ts-types": "0.5.19",
+    "js-base64": "3.9.3",
     "lodash": "4.18.1",
     "luxon": "3.7.2",
     "object-hash": "3.0.0",
