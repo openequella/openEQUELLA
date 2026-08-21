@@ -19,13 +19,26 @@
 package com.tle.core.settings.loginnotice.impl
 
 import com.tle.common.util.HttpUtils.{isSameOrigin, isSamePath}
-import org.owasp.html.{AttributePolicy, HtmlPolicyBuilder}
+import org.owasp.html.{AttributePolicy, HtmlChangeListener, HtmlPolicyBuilder}
+import org.slf4j.LoggerFactory
 
 import java.net.URI
+import java.util.concurrent.atomic.AtomicBoolean
 import scala.util.{Failure, Success, Try}
+
+/** The result of HTML content sanitisation.
+  *
+  * @param content
+  *   the HTML with anything outside the allowlist removed.
+  * @param hadDisallowedContent
+  *   `true` if `html` contained something outside the allowlist that had to be removed.
+  */
+final case class SanitisationResult(content: String, hadDisallowedContent: Boolean)
 
 /** Utility class providing allowlist-based HTML sanitisation for the pre-login notice. */
 object PreLoginNoticeSanitiser {
+
+  private val LOGGER = LoggerFactory.getLogger(getClass)
 
   /** Sanitise the supplied raw HTML by applying a list of rules to the HTML content. This is not an
     * exhaustive list, just the highlights:
@@ -37,11 +50,14 @@ object PreLoginNoticeSanitiser {
     *     below) - both fully-qualified and root-relative URLs are accepted.
     *   - Inline `style`, limited to the properties in `CssSchema.DEFAULT` (colour, alignment,
     *     sizing, etc.) - arbitrary CSS is not allowed through wholesale.
+    *   - `class`, on any element - it isn't a DOM-clobbering vector like `id`/`name` are, so
+    *     there's no security reason to drop it.
     *
     * Dropped:
     *   - `<script>`, event handler attributes (`onclick` etc.), and `javascript:`/other disallowed
     *     URL schemes.
-    *   - `id`/`class` on any element - `id` in particular is a DOM-clobbering vector.
+    *   - `id`/`name` on any element - both are DOM-clobbering vectors (they create named references
+    *     reachable via `document`/`window`/`document.forms`).
     *   - Images whose `src` isn't same-origin/same-path with the institution (see
     *     `trustedImageSrcPrefix`), including path-traversal attempts (`../`, percent-encoded or
     *     not) to escape that containment.
@@ -56,16 +72,33 @@ object PreLoginNoticeSanitiser {
     *   `/fiveo/file/<uuid>/<version>/<name>`, which is what this app's own attachment links
     *   normally look like).
     * @return
-    *   The sanitised HTML content.
+    *   The sanitised HTML content, plus whether it had any disallowed content removed.
     */
-  def sanitise(html: String, trustedImageSrcPrefix: String): String = {
+  def sanitise(html: String, trustedImageSrcPrefix: String): SanitisationResult = {
     val builder = applyStandardRules
       .andThen(allowAdditionalElements)
       .andThen(allowImages(trustedImageSrcPrefix))
       .andThen(allowLinks)
-      .andThen(allowTables)(new HtmlPolicyBuilder())
+      .andThen(allowTables)
+      .andThen(allowClass)(new HtmlPolicyBuilder())
 
-    builder.toFactory.sanitize(html)
+    val hadDisallowedContent = new AtomicBoolean(false)
+
+    // The OWASP's `HtmlChangeListener` listens to events triggered by the report of
+    // dropped tags or dropped/replaced attributes.
+    val listener = new HtmlChangeListener[Unit] {
+      override def discardedTag(context: Unit, elementName: String): Unit =
+        hadDisallowedContent.set(true)
+      override def discardedAttributes(
+          context: Unit,
+          tagName: String,
+          attributeNames: String*
+      ): Unit =
+        hadDisallowedContent.set(true)
+    }
+
+    val sanitised = builder.toFactory.sanitize(html, listener, ())
+    SanitisationResult(sanitised, hadDisallowedContent.get())
   }
 
   private val applyStandardRules: HtmlPolicyBuilder => HtmlPolicyBuilder = builder =>
@@ -76,11 +109,14 @@ object PreLoginNoticeSanitiser {
       .allowStandardUrlProtocols()
 
   private val allowTables: HtmlPolicyBuilder => HtmlPolicyBuilder = builder =>
-    builder.allowElements("table", "thead", "tbody", "tr", "th", "td")
+    builder.allowElements("table", "thead", "tbody", "tfoot", "tr", "th", "td")
 
   // Elements that are safe and common to use but not in the standard list.
   private val allowAdditionalElements: HtmlPolicyBuilder => HtmlPolicyBuilder = builder =>
     builder.allowElements("hr", "pre")
+
+  private val allowClass: HtmlPolicyBuilder => HtmlPolicyBuilder = builder =>
+    builder.allowAttributes("class").globally()
 
   private val allowLinks: HtmlPolicyBuilder => HtmlPolicyBuilder = builder =>
     builder.allowElements("a").allowAttributes("href").onElements("a")
@@ -96,8 +132,13 @@ object PreLoginNoticeSanitiser {
           .allowAttributes("alt", "width", "height")
           .onElements("img")
 
-  // `AttributePolicy` requires returning `null` to disallow the attribute.
-
+  /** Build an `AttributePolicy` that validates if an image's `src` attribute shares the trusted
+    * origin and path.
+    *
+    * @return
+    *   An `AttributePolicy` which returns the original value if allowed, or `null` to reject (per
+    *   OWASP AttributePolicy contract)
+    */
   private def imageSrcPolicy(trustedImageSrcPrefix: String): AttributePolicy = {
     val institutionUri = new URI(trustedImageSrcPrefix)
 
@@ -109,7 +150,9 @@ object PreLoginNoticeSanitiser {
           val sameOrigin = isSameOrigin(institutionUri, target)
           val samePath   = isSamePath(institutionUri, target)
           Option.when(sameOrigin && samePath)(value).orNull
-        case Failure(exception) => null
+        case Failure(exception) =>
+          LOGGER.debug(s"Rejected image src due to URI parsing failure: $value", exception)
+          null
       }
   }
 }

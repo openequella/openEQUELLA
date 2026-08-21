@@ -37,6 +37,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.WebApplicationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -83,7 +84,14 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (Check.isEmpty(preLoginNotice)) {
       return null;
     }
-    return objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
+
+    PreLoginNotice notice = objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
+    String original = notice.getNotice();
+    String sanitised =
+        PreLoginNoticeSanitiser.sanitise(original, CurrentInstitution.get().getUrl()).content();
+
+    notice.setNotice(sanitised);
+    return notice;
   }
 
   @Override
@@ -96,10 +104,15 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
         throw new BadRequestException("Invalid date range.");
       }
 
-      String sanitisedNoticeContent =
+      SanitisationResult sanitisationResult =
           PreLoginNoticeSanitiser.sanitise(notice.getNotice(), CurrentInstitution.get().getUrl());
-      notice.setNotice(sanitisedNoticeContent);
 
+      if (sanitisationResult.hadDisallowedContent()) {
+        throw new WebApplicationException(
+            "Pre-login notice content contains disallowed HTML.", 422);
+      }
+
+      notice.setNotice(sanitisationResult.content());
       configurationService.setProperty(
           PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
     }
