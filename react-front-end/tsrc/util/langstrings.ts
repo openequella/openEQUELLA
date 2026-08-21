@@ -552,6 +552,8 @@ export const languageStrings = {
     },
     errors: {
       permissions: "You do not have permission to edit these settings.",
+      disallowedContent:
+        "This notice contains content that is not allowed and could not be saved. Please refer to documentation for more information.",
     },
     scheduling: {
       title: "Schedule settings",
