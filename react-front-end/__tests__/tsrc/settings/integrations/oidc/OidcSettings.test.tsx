@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import { act } from "@testing-library/react";
 import { pipe } from "fp-ts/function";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import { mockRoleAndGroupApis } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
@@ -192,11 +193,31 @@ describe("Mapping section", () => {
 });
 
 describe("Save button", () => {
-  jest
-    .spyOn(OidcModule, "updateOidcSettings")
-    .mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 1000)),
-    );
+  // Saves succeed immediately by default, so no test can reach the real endpoint.
+  beforeEach(() => {
+    jest.spyOn(OidcModule, "updateOidcSettings").mockResolvedValue(undefined);
+  });
+
+  /**
+   * Holds the save open so that the UI shown only while a save is in flight can be asserted on,
+   * instead of racing a timer for it.
+   *
+   * Everything is scoped to the calling test: the returned function completes that test's own save
+   * and waits for the resulting updates to settle, so nothing is shared between tests and nothing
+   * is left pending at teardown.
+   */
+  const holdSaveInFlight = (): (() => Promise<void>) => {
+    let completeSave!: () => void;
+    const saveInFlight = new Promise<void>((resolve) => {
+      completeSave = resolve;
+    });
+    jest.spyOn(OidcModule, "updateOidcSettings").mockReturnValue(saveInFlight);
+
+    return () =>
+      act(async () => {
+        completeSave();
+      });
+  };
 
   it("Enable save button if settings are changed", async () => {
     const { container } = await renderOidcSettings();
@@ -221,21 +242,27 @@ describe("Save button", () => {
   });
 
   it("Disable save button while saving", async () => {
+    const completeSave = holdSaveInFlight();
     const { container } = await renderOidcSettings();
 
     await fillAllRequiredFields(container);
     await clickSaveButton(container);
 
     expect(getSaveButton(container)).toBeDisabled();
+
+    await completeSave();
   });
 
   it("Display loading circle while saving", async () => {
+    const completeSave = holdSaveInFlight();
     const { container } = await renderOidcSettings();
 
     await fillAllRequiredFields(container);
     await clickSaveButton(container);
 
     expect(getLoadingCircle(container)).toBeInTheDocument();
+
+    await completeSave();
   });
 });
 
