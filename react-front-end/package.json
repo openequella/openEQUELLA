@@ -31,7 +31,7 @@
     "@mui/x-tree-view": "9.11.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "6.3.0",
-    "axios": "1.18.1",
+    "axios": "1.19.0",
     "clsx": "2.1.1",
     "fp-ts": "2.16.11",
     "fp-ts-contrib": "0.1.29",
