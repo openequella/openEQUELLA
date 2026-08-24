@@ -15,7 +15,7 @@
     "install": "mkdir -p ../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/lang",
     "postinstall": "patch-package",
     "storybook": "storybook dev  -p 6006",
-    "test": "jest test --maxWorkers 50%"
+    "test": "jest test"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "2.0.1",

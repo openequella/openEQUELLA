@@ -15,4 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { configure } from "@testing-library/react";
 import "@html-validate/jest-config";
+
+// testing-library defaults `asyncUtilTimeout` to 1s, which every `waitFor`, `findBy*` and
+// `waitForElementToBeRemoved` in the suite inherits. That is too tight for CI runners roughly 3x
+// slower per thread than a dev machine - waiting for a mocked search to settle and re-render
+// measured ~350ms locally, so the default left barely any margin.
+configure({ asyncUtilTimeout: 5000 });

@@ -62,8 +62,6 @@ const {
   },
 } = languageStrings.settings.integration.oidc.apiDetails;
 
-jest.setTimeout(10000);
-
 mockRoleAndGroupApis();
 
 const mockedOidcSettings: OEQ.Oidc.IdentityProvider = {
