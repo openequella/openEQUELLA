@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "react-dom": "18",
-    "swagger-ui": "5.32.11"
+    "swagger-ui": "5.32.14"
   },
   "devDependencies": {
     "vite": "8.2.1"
