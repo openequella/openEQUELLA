@@ -26,6 +26,7 @@ import { searchGroups } from "../../../../../../__mocks__/GroupModule.mock";
 import { getPlatform } from "../../../../../../__mocks__/Lti13PlatformsModule.mock";
 import { searchRoles } from "../../../../../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../../../../../__mocks__/UserModule.mock";
+import { EDIT_LTI13_PLATFORM_PATH } from "../../../../../../tsrc/mainui/routes";
 import EditLti13Platform, {
   EditLti13PlatformProps,
 } from "../../../../../../tsrc/settings/Integrations/lti13/components/EditLti13Platform";
@@ -50,7 +51,7 @@ export const renderEditLti13Platform = async (
   props: EditLti13PlatformProps = commonEditLti13PlatformProps,
   encodedPlatformId: string,
 ): Promise<RenderResult> => {
-  const urlPrefix = "/page/editLti13Platform/";
+  const urlPrefix = `${EDIT_LTI13_PLATFORM_PATH}/`;
   const history = createMemoryHistory();
   history.push(`${urlPrefix}${encodedPlatformId}`);
 

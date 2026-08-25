@@ -38,6 +38,9 @@ const {
 const { unknownUserHandlingCreate } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
+const { title: generalDetailsTitle } =
+  languageStrings.settings.integration.lti13PlatformsSettings.createPage
+    .generalDetails;
 const { ok: okLabel } = languageStrings.common.action;
 
 mockRoleAndGroupApis();
@@ -142,4 +145,35 @@ describe("EditLti13Platform", () => {
 
     expect(rotateKeyPair).toHaveBeenCalled();
   });
+
+  it.each([
+    [
+      "a plain ASCII platform ID",
+      "aHR0cHM6Ly9sbXMuZWR1L2E_eA",
+      "https://lms.edu/a?x",
+    ],
+    [
+      "a non-Latin-1 platform ID",
+      "aHR0cHM6Ly_mtYvor5UuZXhhbXBsZQ",
+      "https://测试.example",
+    ],
+  ])(
+    "decodes %s from the URL and renders the edit page",
+    async (_, encodedPlatformId, expectedPlatformId) => {
+      const getPlatform = jest.fn().mockResolvedValue(platforms[0]);
+
+      const { findByText } = await renderEditLti13Platform(
+        {
+          ...commonEditLti13PlatformProps,
+          getPlatformProvider: getPlatform,
+        },
+        encodedPlatformId,
+      );
+
+      // A failed decode is reported to the error handler and the fetch never runs, so being
+      // called at all means the ID was decoded successfully.
+      expect(getPlatform).toHaveBeenCalledWith(expectedPlatformId);
+      expect(await findByText(generalDetailsTitle)).toBeInTheDocument();
+    },
+  );
 });

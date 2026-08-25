@@ -82,7 +82,27 @@ export const blackboard: OEQ.LtiPlatform.LtiPlatform = {
   enabled: false,
 };
 
-export const platforms = [canvas, moodle, blackboard];
+/**
+ * A platform whose ID is an internationalised domain name.
+ */
+export const unicodeLms: OEQ.LtiPlatform.LtiPlatform = {
+  platformId: "https://测试.example",
+  name: "unicode LMS",
+  clientId: "test client unicode",
+  authUrl: "https://测试.example/auth",
+  keysetUrl: "https://测试.example/jwks",
+  usernamePrefix: "hello",
+  usernameSuffix: "unicode",
+  unknownUserHandling: "CREATE",
+  unknownUserDefaultGroups: new Set(),
+  instructorRoles: new Set(),
+  unknownRoles: new Set(),
+  customRoles: new Map(),
+  allowExpression: "",
+  enabled: true,
+};
+
+export const platforms = [canvas, moodle, blackboard, unicodeLms];
 
 /**
  * Helper function to inject into component for platforms retrieval.

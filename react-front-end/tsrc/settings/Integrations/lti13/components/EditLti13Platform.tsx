@@ -43,6 +43,7 @@ import ConfigureLti13Platform, {
   ConfigurePlatformValue,
   LtiGeneralDetails,
 } from "./ConfigureLti13Platform";
+import { decode } from "js-base64";
 
 const {
   name: editPageName,
@@ -112,7 +113,7 @@ const EditLti13Platform = ({
   React.useEffect(() => {
     // decode platform ID and update state
     const pid: E.Either<string, string> = E.tryCatch(
-      () => atob(platformIdBase64),
+      () => decode(platformIdBase64),
       (e) => `${wrongURL}: ${e}`,
     );
 
