@@ -62,7 +62,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion = "2.22.1"
+    lazy val jacksonVersion = "2.22.2"
     // Jackson Annotations has chosen to split for sync versions.
     // See https://github.com/FasterXML/jackson-annotations/issues/294
     lazy val jacksonAnnotationsVersion = "2.20"
