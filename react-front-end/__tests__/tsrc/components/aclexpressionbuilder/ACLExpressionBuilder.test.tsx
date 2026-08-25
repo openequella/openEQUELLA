@@ -92,8 +92,6 @@ const {
   roles: rolesRadioLabel,
 } = searchFilters;
 
-jest.setTimeout(15000);
-
 describe("<ACLExpressionBuilder/>", () => {
   it("displays home panel's user search on initial render", () => {
     const { queryByText } = renderACLExpressionBuilder();

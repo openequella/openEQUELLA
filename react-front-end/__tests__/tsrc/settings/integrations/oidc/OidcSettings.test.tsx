@@ -62,8 +62,6 @@ const {
   },
 } = languageStrings.settings.integration.oidc.apiDetails;
 
-jest.setTimeout(10000);
-
 mockRoleAndGroupApis();
 
 const mockedOidcSettings: OEQ.Oidc.IdentityProvider = {
@@ -194,11 +192,15 @@ describe("Mapping section", () => {
 });
 
 describe("Save button", () => {
-  jest
-    .spyOn(OidcModule, "updateOidcSettings")
-    .mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 1000)),
-    );
+  /**
+   * Mocks the save with a promise that never settles, so the page stays in its saving state for as
+   * long as the test needs. Use it when asserting on UI that is only present mid-save.
+   */
+  const mockNeverCompletingSave = (): void => {
+    jest
+      .spyOn(OidcModule, "updateOidcSettings")
+      .mockReturnValue(new Promise<void>(() => {}));
+  };
 
   it("Enable save button if settings are changed", async () => {
     const { container } = await renderOidcSettings();
@@ -223,6 +225,7 @@ describe("Save button", () => {
   });
 
   it("Disable save button while saving", async () => {
+    mockNeverCompletingSave();
     const { container } = await renderOidcSettings();
 
     await fillAllRequiredFields(container);
@@ -232,6 +235,7 @@ describe("Save button", () => {
   });
 
   it("Display loading circle while saving", async () => {
+    mockNeverCompletingSave();
     const { container } = await renderOidcSettings();
 
     await fillAllRequiredFields(container);

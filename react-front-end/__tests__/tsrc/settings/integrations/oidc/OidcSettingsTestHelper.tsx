@@ -64,10 +64,16 @@ export const renderOidcSettings = async (
     updateTemplate: () => {},
   };
 
+  const getOidcSettings = jest.spyOn(OidcModule, "getOidcSettings");
   if (initialSettings) {
-    jest
-      .spyOn(OidcModule, "getOidcSettings")
-      .mockResolvedValueOnce(initialSettings);
+    getOidcSettings.mockResolvedValueOnce(initialSettings);
+  } else {
+    // Always mock, even with nothing configured - otherwise the page issues a real request, and the
+    // test only passes because that request is refused. A 404 is what the server returns when no
+    // provider has been configured, and what the page reads as "not set up yet".
+    getOidcSettings.mockRejectedValue(
+      new OEQ.Errors.ApiError("Not found", 404),
+    );
   }
 
   const history = createMemoryHistory();

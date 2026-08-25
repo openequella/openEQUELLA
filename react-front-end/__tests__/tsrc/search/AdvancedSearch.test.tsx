@@ -59,8 +59,6 @@ import {
 // This has some big tests for rendering the Search Page, but also going through and testing
 // all components as one big wizard - e.g.:
 // "stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered"
-jest.setTimeout(25000);
-
 const {
   showAdvancedSearchFilter: filterButtonLabel,
   AdvancedSearchPanel: { title: defaultPanelTitle },
@@ -255,10 +253,10 @@ describe("Rendering of wizard", () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { container } = await renderAdvancedSearchPage();
 
-    // The follow section is known to be long running because it has to manipulate all the controls
-    // which in turn triggers re-renders etc. It is due to this block that we set jest.setTimeout
-    // at the top of the file. To track things though, we've added the various time tracking
-    // and console.table call(s) below.
+    // The following section is known to be long running because it has to manipulate all the
+    // controls, and each interaction re-renders far more of the tree than it needs to. It relies on
+    // the generous `testTimeout` in jest.config.js rather than a per-file override. To track things
+    // though, we've added the various time tracking and console.table call(s) below.
     const setValuesTimeSummary = [];
     const setValuesTimer = startTimer("Set control values - TOTAL");
     // For each control, trigger an event to update or select their values.
