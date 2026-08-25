@@ -192,11 +192,6 @@ describe("Mapping section", () => {
 });
 
 describe("Save button", () => {
-  // Saves succeed immediately by default, so no test can reach the real endpoint.
-  beforeEach(() => {
-    jest.spyOn(OidcModule, "updateOidcSettings").mockResolvedValue(undefined);
-  });
-
   /**
    * Mocks the save with a promise that never settles, so the page stays in its saving state for as
    * long as the test needs. Use it when asserting on UI that is only present mid-save.
