@@ -85,7 +85,7 @@ libraryDependencies ++= Seq(
   "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
   "com.google.api-client"         % "google-api-client"           % "2.9.0",
   "com.google.apis"               % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260709-2.0.0",
+  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260817-2.0.0",
   "com.google.code.gson"          % "gson"                        % "2.14.0",
   "com.google.guava"              % "guava"                       % "33.6.0-jre",
   "com.google.inject"             % "guice"                       % guiceVersion excludeAll (
