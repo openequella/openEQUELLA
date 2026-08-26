@@ -55,7 +55,7 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for GraphQL
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr" %% "caliban" % "3.0.0"
+  "com.github.ghostdogpr" %% "caliban" % "3.1.5"
 )
 
 // Jackson dependencies
