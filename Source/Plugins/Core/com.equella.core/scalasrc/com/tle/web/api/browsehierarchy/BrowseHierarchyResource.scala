@@ -75,7 +75,9 @@ class BrowseHierarchyResource {
     response = classOf[HierarchyTopicSummary]
   )
   def browseSubHierarchies(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam(HierarchyCompoundUuid.ApiParamDescription) @PathParam(
+        "compound-uuid"
+      ) compoundUuid: String,
       @ApiParam("Collection UUID(s) to filter by") @QueryParam(
         "collections"
       ) collectionUuids: java.util.List[String]
@@ -103,7 +105,9 @@ class BrowseHierarchyResource {
     response = classOf[HierarchyTopic]
   )
   def browseHierarchyDetails(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam(HierarchyCompoundUuid.ApiParamDescription) @PathParam(
+        "compound-uuid"
+      ) compoundUuid: String,
       @ApiParam("Collection UUID(s) to filter by") @QueryParam(
         "collections"
       ) collectionUuids: java.util.List[String]
@@ -163,7 +167,7 @@ class BrowseHierarchyResource {
           .map(legacyCompoundUuid =>
             HierarchyCompoundUuid
               .applyWithLegacyFormat(legacyCompoundUuid)
-              .buildString(inLegacyFormat = false)
+              .buildString()
           )
 
         Response.ok(ids).build

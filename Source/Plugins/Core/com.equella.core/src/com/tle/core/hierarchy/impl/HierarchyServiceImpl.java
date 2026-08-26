@@ -190,7 +190,7 @@ public class HierarchyServiceImpl
   @Transactional(propagation = Propagation.REQUIRED)
   public void addKeyResource(HierarchyCompoundUuid compoundUuid, ItemKey itemId) {
     HierarchyTopicKeyResource newKeyResources = new HierarchyTopicKeyResource();
-    newKeyResources.setHierarchyCompoundUuid(compoundUuid.buildString(true));
+    newKeyResources.setHierarchyCompoundUuid(compoundUuid.buildLegacyFormatString());
     newKeyResources.setItemUuid(itemId.getUuid());
     newKeyResources.setItemVersion(itemId.getVersion());
     newKeyResources.setInstitution(CurrentInstitution.get());
@@ -230,7 +230,8 @@ public class HierarchyServiceImpl
   @Override
   @Transactional
   public void deleteKeyResources(HierarchyCompoundUuid compoundUuid, ItemKey itemId) {
-    dao.deleteKeyResource(compoundUuid.buildString(true), itemId.getUuid(), itemId.getVersion());
+    dao.deleteKeyResource(
+        compoundUuid.buildLegacyFormatString(), itemId.getUuid(), itemId.getVersion());
   }
 
   @Override
@@ -760,7 +761,7 @@ public class HierarchyServiceImpl
 
   @Override
   public List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid) {
-    return dao.getKeyResources(compoundUuid.buildString(true), CurrentInstitution.get());
+    return dao.getKeyResources(compoundUuid.buildLegacyFormatString(), CurrentInstitution.get());
   }
 
   @Override
@@ -790,7 +791,7 @@ public class HierarchyServiceImpl
   public Optional<HierarchyTopicKeyResource> getKeyResource(
       HierarchyCompoundUuid compoundUuid, String itemUuid, int itemVersion) {
     return dao.getKeyResource(
-        compoundUuid.buildString(true), itemUuid, itemVersion, CurrentInstitution.get());
+        compoundUuid.buildLegacyFormatString(), itemUuid, itemVersion, CurrentInstitution.get());
   }
 
   @Override

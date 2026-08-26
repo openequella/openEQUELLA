@@ -23,8 +23,10 @@ import com.tle.web.api.search.model.SearchResultItem
 /** Provides summary of a topic, including the number of matching Items.
   *
   * @param compoundUuid
-  *   The unique identifier for the topic. For virtual topics, the compoundUuid consist with uuid
-  *   and match text, for example: `0a8bde97-66f8-4114-8c7c-365545ce00da:textA`.
+  *   Identifier of the topic. A non virtual topic is just its UUID. A virtual topic is the UUID, a
+  *   colon, and its name in unpadded URL-safe base64 (RFC 4648 section 5), followed by each of its
+  *   virtual ancestors in the same form separated by commas. For example
+  *   `0a8bde97-66f8-4114-8c7c-365545ce00da:dGV4dEE` is the topic named `textA`.
   * @param matchingItemCount
   *   Count of items matching this topic, including key resources.
   * @param name
@@ -60,7 +62,8 @@ case class HierarchyTopicSummary(
 /** Contains basic topic info to represent an parent topic.
   *
   * @param compoundUuid
-  *   The string representation of HierarchyCompoundUuid class.
+  *   The unique identifier for the topic, in the same format as
+  *   [[HierarchyTopicSummary.compoundUuid]].
   * @param name
   *   The name of the topic.
   */
