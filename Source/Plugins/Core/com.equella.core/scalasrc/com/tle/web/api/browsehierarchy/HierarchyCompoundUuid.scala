@@ -19,7 +19,7 @@
 package com.tle.web.api.browsehierarchy
 
 import com.tle.common.URLUtils
-import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid.base64Encode
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid.base64UrlSafeEncode
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64
@@ -40,38 +40,47 @@ case class HierarchyCompoundUuid(
     name: Option[String],
     parentCompoundUuidList: Option[List[HierarchyCompoundUuid]] = None
 ) {
-  // Combine uuid and virtual name into a compound UUID, which the name part will encoded in base64 format or legacy application/x-www-form-urlencoded format.
+  // Combine uuid and virtual name into a compound UUID, which the name part will be encoded in
+  // unpadded URL-safe base64 format or legacy application/x-www-form-urlencoded format.
   private def buildSingleCompoundUuid(
       id: String,
       virtualName: Option[String],
       isLegacy: Boolean
   ): String =
     virtualName
-      .map(if (isLegacy) URLUtils.basicUrlEncode else base64Encode)
+      .map(if (isLegacy) URLUtils.basicUrlEncode else base64UrlSafeEncode)
       .map(n => s"$id:$n")
       .getOrElse(id)
 
   /** Return the string representation of HierarchyCompoundUuid based on topic UUID, name and the
-    * parent compound UUID map.
-    *
-    * @param inLegacyFormat
-    *   Whether to return string representation in legacy format.
+    * parent compound UUID list, with each virtual name encoded in unpadded URL-safe base64 format.
+    * This is the format the New UI and the REST API use.
     *
     * Example:
     * {{{
     * uuid = 46249813-019d-4d14-b772-2a8ca0120c99
     * name = D, David
-    * parentCompoundUuidMap = Some(Map("886aa61d-f8df-4e82-8984-c487849f80ff" -> "A James"))
+    * parentCompoundUuidList = Some(List(HierarchyCompoundUuid("886aa61d-...", Some("A James"))))
     *
-    * inLegacyFormat = false:
     * Output:
-    * "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ=,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
-    * inLegacyFormat = true:
-    * Output:
+    * "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"
+    * }}}
+    */
+  def buildString(): String = buildString(inLegacyFormat = false)
+
+  /** The same as [[buildString]] except each virtual name is encoded in the legacy
+    * `application/x-www-form-urlencoded` format. This is the format the Legacy UI uses and the one
+    * the virtual name is stored in, so it is what belongs in the database.
+    *
+    * Example, for the same values as [[buildString]]:
+    * {{{
     * "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
     * }}}
     */
-  def buildString(inLegacyFormat: Boolean = false): String = {
+  def buildLegacyFormatString(): String = buildString(inLegacyFormat = true)
+
+  // Join this hierarchy and each of its virtual ancestors into a comma separated compound UUID.
+  private def buildString(inLegacyFormat: Boolean): String = {
     val mainCompoundUuid = buildSingleCompoundUuid(uuid, name, inLegacyFormat)
 
     parentCompoundUuidList
@@ -106,20 +115,23 @@ case class HierarchyCompoundUuid(
   *
   * A compound UUID can have 3 different forms:
   *   - Normal hierarchy UUID: "886aa61d-f8df-4e82-8984-c487849f80ff"
-  *   - Virtual hierarchy compound UUID: "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+  *   - Virtual hierarchy compound UUID: "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"
   *   - Sub virtual hierarchy compound UUID:
-  *     "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+  *     "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"
   *
-  * Note: `QSBKYW1lcw==` is the base 64 format of `A James`. `SG9iYXJ0` is the base 64 format of
+  * Note: `QSBKYW1lcw` is the base 64 format of `A James`. `SG9iYXJ0` is the base 64 format of
   * `Hobart`.
   *
   * Since we are using the character comma to separate the compound UUID such as `UUID: topic1,
   * UUID: parent1`, If any virtual topic name contains a comma, it will break the workflow.
   *
-  * Thus in our the new code, it will encode the name in `base64` format and return it to frontend.
-  * For example, if a topic virtual name is `D, David`:
+  * Thus, here we encode the name in unpadded URL-safe `base64` format and return it to frontend.
+  * The URL-safe alphabet (RFC 4648 section 5) is used without padding, since a compound UUID will
+  * be embedded directly in URL path segments (such as the API endpoints and frontend routers) - the
+  * standard alphabet's `/` would split the segment and its `+` would be decoded as a space by query
+  * parameter decoders. For example, if a topic virtual name is `D, David`:
   *   - Virtual hierarchy compound UUID presents in the new UI:
-  *     "886aa61d-f8df-4e82-8984-c487849f80ff:RCwgRGF2aWQ="
+  *     "886aa61d-f8df-4e82-8984-c487849f80ff:RCwgRGF2aWQ"
   *
   * But the legacy code has has more complex logic to handle this issue. It will double encode the
   * virtual topic name, it first encoded it in `application/x-www-form-urlencoded` format, and then
@@ -136,11 +148,27 @@ case class HierarchyCompoundUuid(
   */
 object HierarchyCompoundUuid {
 
+  /** Describes the string form of a compound UUID for the REST API documentation. Shared by every
+    * endpoint which takes one, so that they cannot drift apart.
+    *
+    * Deliberately declared without a type ascription: that is what keeps it a compile time
+    * constant, which any Java defined annotation requires of its arguments. Adding `: String`
+    * widens the constant type away and the annotations stop compiling.
+    */
+  final val ApiParamDescription =
+    "The identifier of a hierarchy topic, which takes one of three forms. A non virtual topic " +
+      "is just its UUID, e.g. '886aa61d-f8df-4e82-8984-c487849f80ff'. A virtual topic adds a " +
+      "colon and its name in unpadded URL-safe base64, e.g. " +
+      "'886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw' for the name 'A James'. A nested " +
+      "virtual topic then adds each of its virtual parents in that same form, separated by " +
+      "commas, e.g. '46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw'."
+
   /** Create a HierarchyCompoundUuid instance based on the given compound UUID. Since name encode
     * method is different between legacy and new UI, it will decode the name based on the given
     * flag.
     *
-    * New encode method: base64 Legacy encode method: application/x-www-form-urlencoded
+    * New encode method: unpadded URL-safe base64 Legacy encode method:
+    * application/x-www-form-urlencoded
     */
   def apply(
       compoundUuid: String,
@@ -165,13 +193,21 @@ object HierarchyCompoundUuid {
   def applyWithLegacyFormat(legacyCompoundUuid: String): HierarchyCompoundUuid =
     apply(legacyCompoundUuid, inLegacyFormat = true).fold(throw _, identity)
 
-  // Encodes a plain string into a base64 string.
-  private def base64Encode(originalString: String): String =
-    Base64.getEncoder.encodeToString(originalString.getBytes(StandardCharsets.UTF_8))
+  /** Encodes a plain string into an unpadded URL-safe `base64` string.
+    *
+    * The unpadded URL-safe format is required because a compound UUID is embedded directly in URL
+    * path segments (e.g. `page/hierarchy/{compound-uuid}` and `browsehierarchy2/{compound-uuid}`).
+    * The standard alphabet's `/` would split the segment, and its `+` would be decoded as a space
+    * by query parameter decoders.
+    */
+  private def base64UrlSafeEncode(originalString: String): String =
+    Base64.getUrlEncoder.withoutPadding
+      .encodeToString(originalString.getBytes(StandardCharsets.UTF_8))
 
-  // Decodes a base64 string into a plain string.
+  /** Decodes an unpadded URL-safe base64 string into a plain string.
+    */
   private def base64Decode(base64String: String): String = {
-    val decoded = Base64.getDecoder.decode(base64String)
+    val decoded = Base64.getUrlDecoder.decode(base64String)
     new String(decoded, StandardCharsets.UTF_8)
   }
 

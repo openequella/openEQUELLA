@@ -53,7 +53,9 @@ class HierarchyResource {
     response = classOf[HierarchyTopicAcl]
   )
   def getAcls(
-      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String
+      @ApiParam(HierarchyCompoundUuid.ApiParamDescription) @PathParam(
+        "compound-uuid"
+      ) compoundUuid: String
   ): Response = {
     withValidCompoundUuid(compoundUuid) { hierarchyCompoundUuid =>
       val currentTopicUuid = hierarchyCompoundUuid.uuid
@@ -82,7 +84,9 @@ class HierarchyResource {
     value = "Add an Item to a Hierarchy topic as a key resource"
   )
   def addKeyResource(
-      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam(HierarchyCompoundUuid.ApiParamDescription) @PathParam(
+        "compound-uuid"
+      ) compoundUuid: String,
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
       @ApiParam("The item version") @PathParam("version") version: Int
   ): Response =
@@ -94,7 +98,9 @@ class HierarchyResource {
     value = "Delete a key resource from a Hierarchy topic"
   )
   def deleteKeyResource(
-      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam(HierarchyCompoundUuid.ApiParamDescription) @PathParam(
+        "compound-uuid"
+      ) compoundUuid: String,
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
       @ApiParam("The item version: 0 means always point to latest version") @PathParam(
         "version"

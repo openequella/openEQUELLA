@@ -24,8 +24,7 @@ import org.testng.annotations.Test;
 
 public class Search2ApiTest extends AbstractRestApiTest {
   private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
-  private final String VIRTUAL_HIERARCHY_TOPIC =
-      "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  private final String VIRTUAL_HIERARCHY_TOPIC = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw";
   // Parent topic.
   private final String NORMAL_HIERARCHY_TOPIC = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
   private final String CAL_BOOK_COLLECTION = "4c147089-cddb-e67c-b5ab-189614eb1463";
@@ -525,7 +524,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             null,
             new NameValuePair(
                 "hierarchy",
-                "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="),
+                "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"),
             new NameValuePair("modifiedBefore", "2023-01-01"));
     assertEquals(getAvailable(result), 0);
   }

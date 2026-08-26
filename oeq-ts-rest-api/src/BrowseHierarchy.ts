@@ -39,8 +39,11 @@ const BROWSE_HIERARCHY_ROOT_PATH = '/browsehierarchy2';
  */
 export interface HierarchyTopicSummary {
   /**
-   * The unique identifier for the topic. For virtual topics, it consists of uuid and match text,
-   * e.g., '0a8bde97-66f8-4114-8c7c-365545ce00da:textA'.
+   * Identifier of the topic, to be passed back unchanged to the endpoints which take one. A non
+   * virtual topic is just its UUID. A virtual topic is the UUID, a colon, and its name in unpadded
+   * URL-safe base64 (RFC 4648 section 5), followed by each of its virtual ancestors in the same
+   * form separated by commas. For example
+   * '0a8bde97-66f8-4114-8c7c-365545ce00da:dGV4dEE' is the topic named 'textA'.
    */
   compoundUuid: string;
   /**
@@ -86,7 +89,8 @@ export interface HierarchyTopicSummary {
  */
 export interface ParentTopic {
   /**
-   * The compound uuid of the topic.
+   * The unique identifier for the topic, in the same format as
+   * {@link HierarchyTopicSummary.compoundUuid}.
    */
   compoundUuid: string;
   /**

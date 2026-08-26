@@ -24,20 +24,20 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
       getTestConfig().getInstitutionUrl() + "api/browsehierarchy2";
   private final String CLIENT_API_HIERARCHY_UUID = "43e60e9a-a3ed-497d-b79d-386fed23675c";
   // Topic name: A James
-  private final String JAMES_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  private final String JAMES_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw";
   // Topic name: B Bob
-  private final String BOB_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QiBCb2I=";
+  private final String BOB_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QiBCb2I";
   // Topic name: C Candy
-  private final String CANDY_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QyBDYW5keQ==";
+  private final String CANDY_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QyBDYW5keQ";
   // Topic name: D, David
-  private final String DAVID_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RCwgRGF2aWQ=";
+  private final String DAVID_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RCwgRGF2aWQ";
   // Topic name: F, Frank
-  private final String FRANK_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RiBGcmFuaw==";
+  private final String FRANK_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RiBGcmFuaw";
   // Topic name: G Garry
-  private final String GARRY_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RyBHYXJyeQ==";
+  private final String GARRY_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RyBHYXJyeQ";
   // Topic name: Hobart
   private final String HOBART_HIERARCHY_UUID =
-      "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+      "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw";
   private final String PARENT_HIERARCHY_UUID = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
   private final String INVALID_HIERARCHY_UUID = "invalidUuid:123,456:!@";
 

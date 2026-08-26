@@ -15,11 +15,11 @@ import testng.annotation.NewUIOnly
 class VirtualHierarchyTest extends AbstractCleanupAutoTest {
   private val TOPIC_1 = "dynamic_topic 1"
   // Topic 1
-  private val TOPIC_1_UUID = "666446e4-542a-4ee3-8668-bca5fabf4f3b:dG9waWMgMQ=="
+  private val TOPIC_1_UUID = "666446e4-542a-4ee3-8668-bca5fabf4f3b:dG9waWMgMQ"
   private val TOPIC_2      = "dynamic_topic 2"
   private val TOPIC_3      = "dynamic_topic 3"
   // Topic 3
-  private val TOPIC_3_UUID = "666446e4-542a-4ee3-8668-bca5fabf4f3b:dG9waWMgMw=="
+  private val TOPIC_3_UUID = "666446e4-542a-4ee3-8668-bca5fabf4f3b:dG9waWMgMw"
 
   private val TESTING_ITEM = "Testing item 3"
 

@@ -30,69 +30,93 @@ const virtualNestedHierarchyId =
   "5ec580b5-c6d6-4b25-b828-18dbaca3e898:Q291cnNlIG1hdGVyaWFs,db45a4e7-7d64-4eec-a119-97643de10ace:Q291cnNlIG1hdGVyaWFs";
 const virtualNestedHierarchyLegacyId =
   "5ec580b5-c6d6-4b25-b828-18dbaca3e898%3ACourse%2Bmaterial%2Cdb45a4e7-7d64-4eec-a119-97643de10ace%3ACourse%2Bmaterial";
+// Virtual name 'Music? Theory > Jazz'. Under the standard base64 alphabet this encodes to
+// 'TXVzaWM/IFRoZW9yeSA+IEpheno=' - the '/' would split the URL path segment and the '+' would be
+// read back as a space. Hence the unpadded URL-safe alphabet is used.
+const urlUnsafeNameHierarchyId =
+  "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:TXVzaWM_IFRoZW9yeSA-IEpheno";
+const urlUnsafeNameHierarchyLegacyId =
+  "9bc71fcc-ff0f-4a70-b11a-05eb903cf468%3AMusic%253F%2BTheory%2B%253E%2BJazz";
 const origin = "http://localhost:8080";
 
+const topicIdFrom = (path: string) => getTopicIdFromUrl(new URL(path, origin));
+
 describe("getTopicIdFromUrl", () => {
+  // The New UI carries the topic ID in the path already in the new format, so it comes back as is.
+  it.each([
+    { name: "a non virtual topic", topicId: hierarchyId },
+    { name: "a virtual topic", topicId: virtualHierarchyId },
+    { name: "a nested virtual topic", topicId: virtualNestedHierarchyId },
+    {
+      name: "a virtual topic whose name base64 is not URL safe",
+      topicId: urlUnsafeNameHierarchyId,
+    },
+  ])("extracts the topic ID of $name from the new UI path", ({ topicId }) => {
+    expect(topicIdFrom(`/page/hierarchy/${topicId}`)).toBe(topicId);
+  });
+
+  // The Old UI carries it in the 'topic' query parameter in the legacy format, so it is converted.
   it.each([
     {
-      name: "extract topic ID from new UI hierarchy page path",
-      path: `/page/hierarchy/${hierarchyId}`,
+      name: "a non virtual topic",
+      legacyTopicId: hierarchyId,
       expected: hierarchyId,
     },
     {
-      name: "extract virtual topic ID from new UI virtual hierarchy page path",
-      path: `/page/hierarchy/${virtualHierarchyId}`,
+      name: "a virtual topic",
+      legacyTopicId: virtualHierarchyLegacyId,
       expected: virtualHierarchyId,
     },
     {
-      name: "extract nested virtual topic ID from new UI virtual hierarchy page path",
-      path: `/page/hierarchy/${virtualNestedHierarchyId}`,
+      name: "a nested virtual topic",
+      legacyTopicId: virtualNestedHierarchyLegacyId,
       expected: virtualNestedHierarchyId,
     },
     {
-      name: "extract topic ID from old UI hierarchy page query parameter",
-      path: `/hierarchy.do?topic=${hierarchyId}`,
-      expected: hierarchyId,
+      name: "a virtual topic whose name base64 is not URL safe",
+      legacyTopicId: urlUnsafeNameHierarchyLegacyId,
+      expected: urlUnsafeNameHierarchyId,
     },
-    {
-      name: "extract topic ID from old UI virtual hierarchy page query parameter",
-      path: `/hierarchy.do?topic=${virtualHierarchyLegacyId}`,
-      expected: virtualHierarchyId,
+  ])(
+    "converts the legacy topic ID of $name from the old UI query parameter",
+    ({ legacyTopicId, expected }) => {
+      expect(topicIdFrom(`/hierarchy.do?topic=${legacyTopicId}`)).toBe(
+        expected,
+      );
     },
-    {
-      name: "extract nested topic ID from old UI virtual hierarchy page query parameter",
-      path: `/hierarchy.do?topic=${virtualNestedHierarchyLegacyId}`,
-      expected: virtualNestedHierarchyId,
-    },
-    {
-      name: "return undefined if no topic ID is found",
-      path: "/page/not-hierarchy/",
-      expected: undefined,
-    },
-  ])("$name", ({ path, expected }) => {
-    const urlObj = new URL(path, origin);
-    expect(getTopicIdFromUrl(urlObj)).toBe(expected);
+  );
+
+  it("returns undefined if no topic ID is found", () => {
+    expect(topicIdFrom("/page/not-hierarchy/")).toBeUndefined();
   });
 });
 
 describe("convertNewTopicIdToLegacyFormat", () => {
   it.each([
     {
-      name: "return the same ID for non-virtual topics",
+      name: "a non virtual topic",
       newFormat: hierarchyId,
       legacyFormat: hierarchyId,
     },
     {
-      name: "return legacy format for virtual topics",
+      name: "a virtual topic",
       newFormat: virtualHierarchyId,
       legacyFormat: virtualHierarchyLegacyId,
     },
     {
-      name: "return legacy format for nested virtual topics",
+      name: "a nested virtual topic",
       newFormat: virtualNestedHierarchyId,
       legacyFormat: virtualNestedHierarchyLegacyId,
     },
-  ])("$name", ({ newFormat, legacyFormat }) => {
-    expect(convertNewTopicIdToLegacyFormat(newFormat)).toBe(legacyFormat);
-  });
+    {
+      name: "a virtual topic whose name base64 is not URL safe",
+      newFormat: urlUnsafeNameHierarchyId,
+      legacyFormat: urlUnsafeNameHierarchyLegacyId,
+    },
+  ])(
+    "converts the topic ID of $name to the legacy format",
+    ({ newFormat, legacyFormat }) => {
+      expect(convertNewTopicIdToLegacyFormat(newFormat)).toBe(legacyFormat);
+    },
+  );
 });
