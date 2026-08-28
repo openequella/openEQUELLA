@@ -214,7 +214,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"               % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"               % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"               % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                % "bcprov-jdk18on"                 % "1.85",
+  "org.bouncycastle"                % "bcprov-jdk18on"                 % "1.85.2",
   "org.ccil.cowan.tagsoup"          % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                      % "cql-java"                       % "1.0",
