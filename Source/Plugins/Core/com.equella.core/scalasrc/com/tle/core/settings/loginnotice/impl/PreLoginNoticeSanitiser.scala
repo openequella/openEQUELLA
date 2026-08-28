@@ -82,22 +82,21 @@ object PreLoginNoticeSanitiser {
       .andThen(allowTables)
       .andThen(allowClass)(new HtmlPolicyBuilder())
 
+    val disallowedContentListener: HtmlChangeListener[AtomicBoolean] =
+      new HtmlChangeListener[AtomicBoolean] {
+        override def discardedTag(context: AtomicBoolean, elementName: String): Unit =
+          context.set(true)
+        override def discardedAttributes(
+            context: AtomicBoolean,
+            tagName: String,
+            attributeNames: String*
+        ): Unit =
+          context.set(true)
+      }
+
     val hadDisallowedContent = new AtomicBoolean(false)
-
-    // The OWASP's `HtmlChangeListener` listens to events triggered by the report of
-    // dropped tags or dropped/replaced attributes.
-    val listener = new HtmlChangeListener[Unit] {
-      override def discardedTag(context: Unit, elementName: String): Unit =
-        hadDisallowedContent.set(true)
-      override def discardedAttributes(
-          context: Unit,
-          tagName: String,
-          attributeNames: String*
-      ): Unit =
-        hadDisallowedContent.set(true)
-    }
-
-    val sanitised = builder.toFactory.sanitize(html, listener, ())
+    val sanitised            =
+      builder.toFactory.sanitize(html, disallowedContentListener, hadDisallowedContent)
     SanitisationResult(sanitised, hadDisallowedContent.get())
   }
 
