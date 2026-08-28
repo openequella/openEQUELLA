@@ -17,7 +17,6 @@
  */
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchDefinition } from "../../../../__mocks__/AdvancedSearchModule.mock";
 import {

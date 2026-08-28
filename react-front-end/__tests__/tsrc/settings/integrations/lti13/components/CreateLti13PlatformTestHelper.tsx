@@ -18,7 +18,6 @@
 import { getByText, render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import { defaultACLEntityResolvers } from "../../../../../../__mocks__/ACLExpressionBuilder.mock";
 import { searchGroups } from "../../../../../../__mocks__/GroupModule.mock";

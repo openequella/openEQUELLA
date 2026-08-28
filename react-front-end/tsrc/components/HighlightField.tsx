@@ -18,7 +18,6 @@
 import { styled } from "@mui/material/styles";
 import HTMLReactParser from "html-react-parser";
 import { highlight } from "../util/TextUtils";
-import * as React from "react";
 
 export interface HighlightFieldProps {
   /**

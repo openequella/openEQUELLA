@@ -21,7 +21,6 @@ import { render, waitFor } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
   mockPortlets,

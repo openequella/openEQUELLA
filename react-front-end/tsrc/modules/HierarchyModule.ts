@@ -21,6 +21,10 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+import {
+  encodeURL as encodeBase64UrlSafe,
+  decode as decodeBase64,
+} from "js-base64";
 
 /**
  * Get summaries of all the root hierarchy topics.
@@ -137,42 +141,37 @@ const getTopicIDFromQueryParam = (queryParam: string): string | undefined =>
     O.toUndefined,
   );
 
-// Converts a single legacy formatted compound UUID to new base64 format.
+// Converts a single legacy formatted compound UUID to new unpadded URL-safe base64 format.
 //
 // Legacy format:
 //   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
 // New format:
-//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ="
+//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ"
 const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
   const [uuid, encodedNameMaybe] = legacyCompoundUuid.split(":");
 
   const decodeFormUrlEncodedSpaces = (name: string) => name.replace(/\+/g, " ");
-
-  const toBase64 = (name: string) =>
-    Buffer.from(name, "utf8").toString("base64");
 
   return pipe(
     O.fromNullable(encodedNameMaybe),
     // Replace special character '+' first since the legacy format uses application/x-www-form-urlencoded.
     O.map(decodeFormUrlEncodedSpaces),
     O.map(decodeURIComponent),
-    O.map(toBase64),
+    // `encodeBase64UrlSafe` produces unpadded URL-safe base64, which is what the server encodes and expects.
+    O.map(encodeBase64UrlSafe),
     O.map((base64Name) => `${uuid}:${base64Name}`),
     O.getOrElse(() => legacyCompoundUuid),
   );
 };
 
-// Converts a single new base64 formatted compound UUID back to legacy URL-encoded format.
+// Converts a single new unpadded URL-safe base64 formatted compound UUID back to legacy URL-encoded format.
 //
 // New format:
-//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ="
+//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ"
 // Legacy format:
 //   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
 const convertSingleNewIdToLegacyFormat = (compoundUuid: string) => {
   const [uuid, base64NameMaybe] = compoundUuid.split(":");
-
-  const decodeBase64 = (base64: string) =>
-    Buffer.from(base64, "base64").toString("utf8");
 
   // Legacy format expects application/x-www-form-urlencoded encoding:
   //   - spaces → '+'
@@ -190,7 +189,7 @@ const convertSingleNewIdToLegacyFormat = (compoundUuid: string) => {
 };
 
 /**
- * Convert new base64 formatted compound UUIDs to legacy application/x-www-form-urlencoded format.
+ * Convert new unpadded URL-safe base64 formatted compound UUIDs to legacy application/x-www-form-urlencoded format.
  * To follow the legacy logic the final result will be encoded again, to handle the case if the virtual topic name also contains commas.
  *
  * @param compoundUuid The compound UUIDs in new format, separated by commas.

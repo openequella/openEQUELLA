@@ -29,7 +29,6 @@ import { Box, useTheme } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { useEffect, useRef, useState } from "react";
-import * as React from "react";
 import {
   PortletPosition,
   PortletPositionCodec,

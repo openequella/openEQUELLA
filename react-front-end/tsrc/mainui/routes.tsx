@@ -40,6 +40,7 @@ import {
   SEARCH_OPTIONS_PARAM,
 } from "../search/SearchPageHelper";
 import { TemplateUpdate } from "./Template";
+import { encodeURL as encodeBase64UrlSafe } from "js-base64";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const LtiPlatformsSettingsPage = React.lazy(
@@ -194,6 +195,8 @@ export const OLD_HIERARCHY_PATH = "/hierarchy.do";
 export const NEW_DASHBOARD_PATH = "/page/home";
 export const OLD_DASHBOARD_PATH = "/home.do";
 
+export const EDIT_LTI13_PLATFORM_PATH = "/page/editLti13Platform";
+
 export const routes: Routes = {
   BrowseHierarchy: {
     path: "/page/hierarchies",
@@ -217,8 +220,9 @@ export const routes: Routes = {
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first
-    to: (platformId: string) => `/page/editLti13Platform/${btoa(platformId)}`,
-    path: `/page/editLti13Platform/:platformIdBase64`,
+    to: (platformId: string) =>
+      `${EDIT_LTI13_PLATFORM_PATH}/${encodeBase64UrlSafe(platformId)}`,
+    path: `${EDIT_LTI13_PLATFORM_PATH}/:platformIdBase64`,
     component: EditLti13PlatformPage,
     permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },

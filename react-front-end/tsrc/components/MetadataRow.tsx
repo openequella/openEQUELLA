@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { styled } from "@mui/material/styles";
-import * as React from "react";
 import { PropsWithChildren } from "react";
 import Stack, { StackProps } from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";

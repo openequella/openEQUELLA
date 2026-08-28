@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import {
   ReactNode,
   useCallback,

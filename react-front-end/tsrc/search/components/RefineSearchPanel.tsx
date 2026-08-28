@@ -30,7 +30,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
-import * as React from "react";
 import { ReactNode } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";

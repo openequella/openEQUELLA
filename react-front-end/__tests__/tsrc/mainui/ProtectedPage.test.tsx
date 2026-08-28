@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import ProtectedPage, {
   ProtectedPageProps,

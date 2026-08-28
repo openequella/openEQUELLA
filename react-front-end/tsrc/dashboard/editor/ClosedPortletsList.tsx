@@ -26,7 +26,6 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
-import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
 const { restore: restoreLabel } = languageStrings.common.action;

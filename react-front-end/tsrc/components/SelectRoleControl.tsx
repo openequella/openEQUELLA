@@ -21,7 +21,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { findRolesByIds, roleIds } from "../modules/RoleModule";

@@ -18,7 +18,6 @@
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "../../util/Either.extended";
-import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { defaultSortingOptions } from "../SearchPageHelper";
 

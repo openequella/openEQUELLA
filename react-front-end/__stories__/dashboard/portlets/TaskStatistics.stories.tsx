@@ -17,7 +17,6 @@
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import * as TE from "fp-ts/lib/TaskEither";
-import * as React from "react";
 import { privateTaskStatisticsPortlet } from "../../../__mocks__/Dashboard.mock";
 import { neverReturn } from "../../../__mocks__/Utils";
 import {

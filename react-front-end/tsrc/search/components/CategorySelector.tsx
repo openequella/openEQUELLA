@@ -27,7 +27,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import { useState } from "react";
 import {
   Classification,

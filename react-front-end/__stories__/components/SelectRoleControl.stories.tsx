@@ -19,7 +19,6 @@ import { action } from "storybook/actions";
 import type { Meta, StoryFn } from "@storybook/react-vite";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
-import * as React from "react";
 import { eqRoleById, roleIds } from "../../tsrc/modules/RoleModule";
 import SelectRoleControl, {
   SelectRoleControlProps,

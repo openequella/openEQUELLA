@@ -22,7 +22,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningIcon from "@mui/icons-material/Warning";
-import * as React from "react";
 import { commonString } from "../util/commonstrings";
 
 import { amber, green } from "@mui/material/colors";

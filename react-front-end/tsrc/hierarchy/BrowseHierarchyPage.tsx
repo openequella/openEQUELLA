@@ -21,7 +21,6 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";

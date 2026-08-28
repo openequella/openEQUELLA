@@ -21,7 +21,6 @@ import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { DateTime } from "luxon";
-import * as React from "react";
 import type { DateRange } from "../../util/Date";
 import { getISODateString } from "../../util/Date";
 import { pfTernary } from "../../util/pointfree";

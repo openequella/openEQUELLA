@@ -22,7 +22,6 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPage from "@mui/icons-material/LastPage";
 import type { TablePaginationProps } from "@mui/material/TablePagination";
-import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
 const StyledTablePagination = styled(TablePagination)<TablePaginationProps>({

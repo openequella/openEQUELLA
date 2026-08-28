@@ -18,7 +18,6 @@
 import Star from "@mui/icons-material/Star";
 import StarBorder from "@mui/icons-material/StarBorder";
 import StarHalf from "@mui/icons-material/StarHalf";
-import * as React from "react";
 import { range } from "lodash";
 
 export interface StarRatingProps {

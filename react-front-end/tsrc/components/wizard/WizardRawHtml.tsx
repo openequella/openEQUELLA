@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { flow, pipe } from "fp-ts/function";
-import * as React from "react";
 import HTMLReactParser from "html-react-parser";
 import {
   FieldValueMap,

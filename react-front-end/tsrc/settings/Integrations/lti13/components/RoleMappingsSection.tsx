@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import type { CustomRolesMappings } from "../../../../components/CustomRoleHelper";
 import SettingsList from "../../../../components/SettingsList";
 import { languageStrings } from "../../../../util/langstrings";

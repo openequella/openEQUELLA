@@ -17,7 +17,6 @@
  */
 import { action } from "storybook/actions";
 import type { Meta } from "@storybook/react-vite";
-import * as React from "react";
 import {
   DateRangeSelector,
   DateRangeSelectorProps,

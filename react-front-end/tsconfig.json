@@ -1,27 +1,26 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
     "esModuleInterop": true,
     "types": ["node", "jquery", "jest"],
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "noErrorTruncation": true,
     "strict": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "paths": {
-      "~*": ["./entrypoint/*", "./tsrc/*"]
-    }
+    "noUnusedLocals": true
   },
   "include": [
+    "vite.config.mts",
+    "jest.setup.ts",
     "build-tools/**/*",
     "tsrc/**/*",
     "tsrc/assets/declaration.d.ts",

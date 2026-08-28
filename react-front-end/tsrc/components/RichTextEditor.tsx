@@ -17,7 +17,6 @@
  */
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import * as React from "react";
 import "tinymce/tinymce";
 import "tinymce/models/dom/model";
 import "tinymce/themes/silver";

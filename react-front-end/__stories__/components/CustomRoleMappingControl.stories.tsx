@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { findRolesByIds, searchRoles } from "../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,

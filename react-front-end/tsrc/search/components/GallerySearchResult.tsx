@@ -18,7 +18,6 @@
 import { ImageList } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import {
   buildEmbedCode,

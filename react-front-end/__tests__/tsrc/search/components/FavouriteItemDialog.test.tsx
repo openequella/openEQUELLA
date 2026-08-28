@@ -17,7 +17,6 @@
  */
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import * as React from "react";
 import FavouriteItemDialog from "../../../../tsrc/search/components/FavouriteItemDialog";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 

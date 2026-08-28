@@ -20,7 +20,6 @@ import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 
 const StyledLi = styled("li")(({ theme }) => ({
   marginTop: theme.spacing(1),

@@ -19,7 +19,6 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as OEQ from "@openequella/rest-api-client";
 import { render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import * as React from "react";
 import { Router } from "react-router-dom";
 import {
   topicWithChildren,

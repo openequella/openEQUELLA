@@ -17,7 +17,6 @@
  */
 
 import { Link as MuiLink } from "@mui/material";
-import * as React from "react";
 import { useHistory } from "react-router";
 import { sprintf } from "sprintf-js";
 import { UuidString } from "../../../../../oeq-ts-rest-api/src/Common";

@@ -19,7 +19,6 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import { Button, ButtonGroup, Tooltip } from "@mui/material";
-import * as React from "react";
 import { ReactElement } from "react";
 import type { DisplayMode } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";

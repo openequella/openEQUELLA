@@ -17,7 +17,6 @@
  */
 import { PropTypes } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import * as React from "react";
 import { useHistory } from "react-router";
 import { buildOpenSummaryPageHandler } from "../search/SearchPageHelper";
 import { TooltipIconButton } from "./TooltipIconButton";

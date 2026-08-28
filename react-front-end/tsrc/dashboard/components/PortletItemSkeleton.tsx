@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { CardContent, Skeleton } from "@mui/material";
-import * as React from "react";
 
 /** Test ID for the portlet item skeleton component. Can be used
  *  in tests to find the portlet item skeleton element.

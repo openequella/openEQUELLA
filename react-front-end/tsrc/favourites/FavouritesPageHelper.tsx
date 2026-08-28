@@ -21,7 +21,6 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as H from "history";
 import type { ReactNode } from "react";
-import * as React from "react";
 import {
   FAVOURITES_TYPE_PARAM,
   type FavouritesType,

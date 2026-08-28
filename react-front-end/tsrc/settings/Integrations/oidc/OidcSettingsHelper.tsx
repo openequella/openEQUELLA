@@ -33,7 +33,6 @@ import {
   Select,
 } from "@mui/material";
 import { absurd, constTrue, pipe } from "fp-ts/function";
-import * as React from "react";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
 import { keysetUrlDetails } from "../../../modules/Lti13PlatformsModule";

@@ -25,13 +25,13 @@ val cxfVersion                = "3.6.12"
 val fs2Version                = "3.13.0"
 val guiceVersion              = "6.0.0"
 val jsassVersion              = "5.11.1"
-val jsoupVersion              = "1.22.2"
+val jsoupVersion              = "1.23.1"
 val owaspHtmlSanitizerVersion = "20260313.1"
 val prometheusVersion         = "0.16.0"
 val sttpVersion               = "3.11.0"
 val tikaVersion               = "3.3.2"
 val luceneVersion             = "10.5.0"
-val nettyVersion              = "4.2.16.Final"
+val nettyVersion              = "4.2.17.Final"
 val rampartVersion            = "1.8.0"
 
 libraryDependencies ++= Seq(
@@ -56,7 +56,7 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for GraphQL
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr" %% "caliban" % "3.0.0"
+  "com.github.ghostdogpr" %% "caliban" % "3.1.5"
 )
 
 // Jackson dependencies
@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
   "com.github.ben-manes.caffeine" % "caffeine"                    % "3.2.4",
   "com.google.api-client"         % "google-api-client"           % "2.9.0",
   "com.google.apis"               % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260709-2.0.0",
+  "com.google.apis"               % "google-api-services-youtube" % "v3-rev20260817-2.0.0",
   "com.google.code.gson"          % "gson"                        % "2.14.0",
   "com.google.guava"              % "guava"                       % "33.6.0-jre",
   "com.google.inject"             % "guice"                       % guiceVersion excludeAll (
@@ -228,7 +228,6 @@ libraryDependencies ++= Seq(
   "org.jboss.spec.javax.ws.rs"      % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "javax.json.bind"                 % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                       % "jsoup"                          % jsoupVersion,
-  "com.googlecode.owasp-java-html-sanitizer" % "owasp-java-html-sanitizer" % owaspHtmlSanitizerVersion,
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",

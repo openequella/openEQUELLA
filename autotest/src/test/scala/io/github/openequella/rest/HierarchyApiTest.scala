@@ -17,9 +17,9 @@ class HierarchyApiTest extends AbstractRestApiTest {
 
   private val nonExistingUuid        = "non-existing-uuid"
   private val normaTopicUuid         = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
-  private val virtualTopicJamesUuid  = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+  private val virtualTopicJamesUuid  = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"
   private val virtualTopicHobartUuid =
-    "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+    "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw"
 
   @Test(description = "Get ACLs for a non-existing topic")
   def aclNotFound(): Unit = getAcls(nonExistingUuid, 404)

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import ThemePage from "../../tsrc/theme/ThemePage";
 import { ThemePageProps } from "../../tsrc/theme/ThemePage";
 

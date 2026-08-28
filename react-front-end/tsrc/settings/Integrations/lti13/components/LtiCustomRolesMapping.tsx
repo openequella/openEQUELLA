@@ -17,7 +17,6 @@
  */
 import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import {
   CustomRole,
   CustomRolesMappings,

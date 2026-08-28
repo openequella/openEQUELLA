@@ -17,7 +17,6 @@
  */
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import {
   TooltipIconButton,
   TooltipIconButtonProps,

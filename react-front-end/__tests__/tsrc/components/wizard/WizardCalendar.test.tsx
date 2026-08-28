@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { WizardCalendar } from "../../../../tsrc/components/wizard/WizardCalendar";

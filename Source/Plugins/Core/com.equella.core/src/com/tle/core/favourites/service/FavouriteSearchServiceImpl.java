@@ -173,7 +173,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
               .ifPresent(
                   legacyUuid -> {
                     String newCompoundUuid =
-                        HierarchyCompoundUuid.applyWithLegacyFormat(legacyUuid).buildString(false);
+                        HierarchyCompoundUuid.applyWithLegacyFormat(legacyUuid).buildString();
                     uriBuilder.setParameter("topic", newCompoundUuid);
                   });
         }

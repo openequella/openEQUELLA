@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { fireEvent, render, RenderResult, act } from "@testing-library/react";
-import * as React from "react";
 import {
   failedUploadResponse,
   files,

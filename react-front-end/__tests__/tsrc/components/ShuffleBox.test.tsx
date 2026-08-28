@@ -18,7 +18,6 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
-import * as React from "react";
 import { ShuffleBox } from "../../../tsrc/components/ShuffleBox";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 

@@ -13,8 +13,8 @@ lazy val root = (project in file("."))
   )
 
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr" %% "caliban-client" % "3.0.0",
-  "io.scalaland"          %% "chimney"        % "1.9.0",
+  "com.github.ghostdogpr" %% "caliban-client" % "3.1.5",
+  "io.scalaland"          %% "chimney"        % "1.11.0",
   "org.typelevel"         %% "cats-core"      % "2.13.0",
   "com.lihaoyi"           %% "upickle"        % "4.4.3",
   // Add Scala Test

@@ -21,7 +21,6 @@ import { Card, CardContent, IconButton, List, Typography } from "@mui/material";
 import * as A from "fp-ts/Array";
 import { constVoid, constTrue, pipe, flow } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";

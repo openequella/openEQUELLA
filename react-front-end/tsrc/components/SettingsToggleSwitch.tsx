@@ -17,7 +17,6 @@
  */
 import SearchSettingFormControl from "./SearchSettingFormControl";
 import { Switch } from "@mui/material";
-import * as React from "react";
 
 export interface SettingsToggleSwitchProps {
   /**

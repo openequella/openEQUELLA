@@ -30,7 +30,6 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Predicate } from "fp-ts/Predicate";
 import * as TE from "../../../../tsrc/util/TaskEither.extended";
-import * as React from "react";
 import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import BaseSearch, {

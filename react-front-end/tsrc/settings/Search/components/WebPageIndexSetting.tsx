@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
-import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 

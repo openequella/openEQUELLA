@@ -21,7 +21,6 @@ import {
   ListItemText,
   Skeleton,
 } from "@mui/material";
-import * as React from "react";
 
 const HierarchyTopicSkeleton = () => (
   <ListItem>

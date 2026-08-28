@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import * as React from "react";
 import { privateMyResourcesPortlet } from "../../../__mocks__/Dashboard.mock";
 import { getMyResourceCategoriesTransformedResp } from "../../../__mocks__/myResourcesCategories_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
