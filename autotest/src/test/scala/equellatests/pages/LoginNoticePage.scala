@@ -1,5 +1,7 @@
 package equellatests.pages
 
+import com.codeborne.selenide.Condition.enabled
+
 import com.codeborne.selenide.Selenide.$
 import com.codeborne.selenide.Selectors.{byAttribute, byText}
 import com.tle.webtests.framework.PageContext
@@ -153,9 +155,7 @@ case class LoginNoticePage(ctx: PageContext)
 
   /** For content the server is expected to reject (422) rather than persist. */
   def saveExpectingRejection(errorMessage: String): Unit = {
-    val saveBtn = waiter.until(ExpectedConditions.elementToBeClickable(By.id("_saveButton")))
-    saveBtn.click()
-
+    $(By.id("_saveButton")).shouldBe(enabled).click()
     waitForSnackBar(errorMessage)
   }
 }
