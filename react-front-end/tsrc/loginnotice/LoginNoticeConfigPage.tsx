@@ -75,6 +75,9 @@ class LoginNoticeConfigPage extends React.Component<
         case 400:
           errResponse = generateNewErrorID(strings.scheduling.endbeforestart);
           break;
+        case 422:
+          errResponse = generateNewErrorID(strings.errors.disallowedContent);
+          break;
         case 403:
           errResponse = generateNewErrorID(strings.errors.permissions);
           break;

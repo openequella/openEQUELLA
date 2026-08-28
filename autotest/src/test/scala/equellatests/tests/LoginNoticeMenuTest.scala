@@ -1,5 +1,6 @@
 package equellatests.tests
 
+import com.tle.webtests.framework.PageContext
 import equellatests.domain.RandomWord
 import equellatests.instgen.fiveo.autoTestLogon
 import equellatests.pages.{LoginNoticePage, LoginPage}
@@ -16,11 +17,8 @@ import testng.annotation.NewUIOnly
 @NewUIOnly
 class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
 
-  // Deliberately points at the upstream GitHub repository rather than a local path: the test needs a
-  // remotely hosted image to check that the login notice renders it. The path is upstream's layout,
-  // so it does not track moves of our own fixture tree and must not be "corrected" to match it.
-  private val equellaGithubAvatarURL =
-    "https://raw.githubusercontent.com/openequella/openEQUELLA/develop/autotest/Tests/tests/fiveo/institution/items/42/216490/cat1.jpg"
+  private val DISALLOWED_CONTENT_MESSAGE =
+    "This notice contains content that is not allowed and could not be saved. Please refer to documentation for more information."
 
   test("pre login notice creation") {
     check(forAll { w1: RandomWord =>
@@ -103,13 +101,49 @@ class LoginNoticeMenuTest extends PropertyBasedBrowserTest with ShotTest {
     })
   }
 
-  test("pre login notice creation with image, check login screen for image") {
+  test("pre-login notice preserves trusted local images on login screen") {
     check(withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
-      page.setPreLoginNoticeWithImageURL(equellaGithubAvatarURL)
+      val page          = LoginNoticePage(context).load()
+      val localImageURL = context.getBaseUrl + "api/theme/newLogo.png"
+      page.setPreLoginNoticeWithImageURL(localImageURL)
+      page.save()
 
       val page2 = LoginPage(context).load()
-      Prop(page2.loginNoticeHasImageWithSrc(equellaGithubAvatarURL))
+      Prop(page2.loginNoticeHasImageWithSrc(localImageURL))
     })
+  }
+
+  test("pre login notice content sanitisation rejects an untrusted image, saving nothing") {
+    check(withLogon(autoTestLogon) { context =>
+      saveInvalidContentAndAssert(
+        context,
+        _.setPreLoginNoticeWithImageURL("https://example.com/badImage.png")
+      )
+    })
+  }
+
+  test("pre login notice content sanitisation rejects a javascript: link, saving nothing") {
+    check(withLogon(autoTestLogon) { context =>
+      saveInvalidContentAndAssert(
+        context,
+        _.setPreLoginNoticeWithLinkURL("javascript:alert('TEST')", "bad link")
+      )
+    })
+  }
+
+  private def saveInvalidContentAndAssert(
+      context: PageContext,
+      insertDisallowedContent: LoginNoticePage => Unit
+  ): Prop = {
+    val page            = LoginNoticePage(context).load()
+    val originalContent = page.getPreNoticeFieldContents
+
+    insertDisallowedContent(page)
+    page.saveExpectingRejection(DISALLOWED_CONTENT_MESSAGE)
+
+    // Not silently corrected and saved - the whole save is refused, so reloading the editor
+    // must show nothing changed.
+    page.load()
+    Prop(page.getPreNoticeFieldContents == originalContent)
   }
 }

@@ -16,14 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution
+package com.tle.common.util
+
+import sttp.model.Uri
 
 import java.net.URI
 
-/** Helpers for validating that a candidate URI is safe to follow as a redirect target. */
+/** Helpers for validating that a candidate URI is safe to follow, whether as a redirect target or
+  * as the source of embedded content, relative to a trusted base.
+  */
 object UriUtils {
 
-  private val defaultPorts = Map("http" -> 80, "https" -> 443)
+  val HTTP = "http"
+
+  val HTTPS = "https"
+
+  private val defaultPorts = Map(HTTP -> 80, HTTPS -> 443)
 
   /** Scheme lower-cased (schemes are case-insensitive per RFC 3986); None for a schemeless URI. */
   private def scheme(uri: URI): Option[String] = Option(uri.getScheme).map(_.toLowerCase)
@@ -33,6 +41,32 @@ object UriUtils {
     */
   private def portOrDefault(uri: URI): Int =
     if (uri.getPort != -1) uri.getPort else scheme(uri).flatMap(defaultPorts.get).getOrElse(-1)
+
+  /** Safely checks if a given string is a valid, absolute HTTP or HTTPS URL.
+    *
+    * To return true, the URL string must:
+    *   1. Be successfully parsed without errors.
+    *   2. Have a scheme of either "http" or "https".
+    *   3. Contain a defined host (e.g., "example.com").
+    *
+    * @param url
+    *   The URL string to validate.
+    * @return
+    *   True if the string meets all absolute HTTP/HTTPS criteria, false otherwise.
+    */
+  def isAbsoluteHttpUrl(url: String): Boolean =
+    Uri
+      .parse(url)
+      .toOption
+      .exists(u =>
+        u.scheme.exists(Set(HTTP, HTTPS)) &&
+          u.host.isDefined
+      )
+
+  /** True if the uri's scheme is http or https. Guards against schemes such as javascript: and
+    * data: that must never be used as a redirect target.
+    */
+  def isHttpUri(uri: URI): Boolean = scheme(uri).exists(s => s == HTTP || s == HTTPS)
 
   /** True if base and target share scheme, host, and port - falling back to the scheme's default
     * port (http 80, https 443) when the port is unspecified, so a default port and an omitted port
@@ -51,7 +85,11 @@ object UriUtils {
     *
     * Both paths are normalized first (dot segments removed) so a target such as "/inst1/../app"
     * cannot escape the base path - URI.resolve leaves ".." in an absolute-path reference intact, so
-    * an unnormalized target would otherwise slip through.
+    * an unnormalized target would otherwise slip through. Normalizing alone still isn't enough:
+    * percent-encoded dot segments (e.g. "%2e%2e") are not literal "." / ".." at the point
+    * normalize() runs, so they survive it unchanged and only decode into ".." afterwards, when
+    * getPath() reads the (now normalized) URI - so any dot segment still present in the decoded
+    * path is rejected outright as well, closing that gap.
     *
     * The base path is then treated as a directory boundary so that a plain string prefix can't
     * produce a false match between sibling paths - e.g. base "/app" must not match target
@@ -62,13 +100,12 @@ object UriUtils {
     val basePath   = Option(base.normalize().getPath).getOrElse("")
     val targetPath = Option(target.normalize().getPath).getOrElse("")
     val baseDir    = if (basePath.endsWith("/")) basePath else basePath + "/"
-    targetPath == basePath || targetPath.startsWith(baseDir)
-  }
 
-  /** True if the uri's scheme is http or https. Guards against schemes such as javascript: and
-    * data: that must never be used as a redirect target.
-    */
-  def isHttpUri(uri: URI): Boolean = scheme(uri).exists(s => s == "http" || s == "https")
+    val noDotSegments =
+      !targetPath.split("/").exists(segment => segment == ".." || segment == ".")
+
+    noDotSegments && (targetPath == basePath || targetPath.startsWith(baseDir))
+  }
 
   /** True if target is safe to use as a redirect target relative to base: an http(s) URI of the
     * same origin, and under base's path.

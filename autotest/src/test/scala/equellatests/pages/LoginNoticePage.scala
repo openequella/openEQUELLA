@@ -1,5 +1,9 @@
 package equellatests.pages
 
+import com.codeborne.selenide.Condition.enabled
+
+import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selectors.{byAttribute, byText}
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.ExpectedConditions2
 import equellatests.browserpage.NewTitledPage
@@ -80,7 +84,19 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    save()
+  }
+
+  def setPreLoginNoticeWithLinkURL(linkURL: String, linkText: String): Unit = {
+    $(byAttribute("aria-label", "Insert/edit link")).click()
+
+    val dialog = $(".tox-dialog")
+    dialog.$("input[type='url']").sendKeys(linkURL)
+
+    val text = dialog.$("input[type='text']")
+    text.clear()
+    text.sendKeys(linkText)
+
+    dialog.$(byText("Save")).click()
   }
 
   def clearPreLoginNotice(): Unit = {
@@ -135,5 +151,11 @@ case class LoginNoticePage(ctx: PageContext)
       !saveButtonActive
     })
     waitForSnackBar(SUCCESS_MSG)
+  }
+
+  /** For content the server is expected to reject (422) rather than persist. */
+  def saveExpectingRejection(errorMessage: String): Unit = {
+    $(By.id("_saveButton")).shouldBe(enabled).click()
+    waitForSnackBar(errorMessage)
   }
 }

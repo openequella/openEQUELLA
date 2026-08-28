@@ -23,6 +23,7 @@ import static com.tle.legacy.LegacyGuice.loginNoticeEditorPrivilegeTreeProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
@@ -36,6 +37,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.WebApplicationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -82,7 +84,14 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (Check.isEmpty(preLoginNotice)) {
       return null;
     }
-    return objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
+
+    PreLoginNotice notice = objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
+    String original = notice.getNotice();
+    String sanitised =
+        PreLoginNoticeSanitiser.sanitise(original, CurrentInstitution.get().getUrl()).content();
+
+    notice.setNotice(sanitised);
+    return notice;
   }
 
   @Override
@@ -94,6 +103,16 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       if (notice.getStartDate().isAfter(notice.getEndDate())) {
         throw new BadRequestException("Invalid date range.");
       }
+
+      SanitisationResult sanitisationResult =
+          PreLoginNoticeSanitiser.sanitise(notice.getNotice(), CurrentInstitution.get().getUrl());
+
+      if (sanitisationResult.hadDisallowedContent()) {
+        throw new WebApplicationException(
+            "Pre-login notice content contains disallowed HTML.", 422);
+      }
+
+      notice.setNotice(sanitisationResult.content());
       configurationService.setProperty(
           PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
     }

@@ -18,12 +18,21 @@
 
 package com.tle.core.settings.loginnotice
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.tle.beans.Institution
+import com.tle.common.filesystem.FileEntry
 import com.tle.common.institution.CurrentInstitution
+import com.tle.core.jackson.ObjectMapperService
 import com.tle.core.services.FileSystemService
-import com.tle.core.settings.loginnotice.impl.{LoginNoticeImageStore, LoginNoticeServiceImpl}
+import com.tle.core.settings.loginnotice.impl.{
+  LoginNoticeImageStore,
+  LoginNoticeServiceImpl,
+  PreLoginNotice
+}
 import com.tle.core.settings.service.ConfigurationService
-import org.mockito.Mockito.{mock, mockStatic, when}
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.Mockito.{mock, mockStatic, never, verify, when}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -32,8 +41,9 @@ import org.scalatest.{BeforeAndAfterAll, GivenWhenThen}
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets
+import java.time.ZonedDateTime
 import javax.imageio.ImageIO
-import javax.ws.rs.BadRequestException
+import javax.ws.rs.{BadRequestException, WebApplicationException}
 
 class LoginNoticeServiceTest
     extends AnyFunSpec
@@ -43,18 +53,25 @@ class LoginNoticeServiceTest
     with TableDrivenPropertyChecks {
 
   private val fileSystemService: FileSystemService = mock(classOf[FileSystemService])
+  when(fileSystemService.enumerate(any(), anyString(), any())).thenReturn(Array.empty[FileEntry])
 
   private val configurationService: ConfigurationService = mock(classOf[ConfigurationService])
+
+  private val objectMapperService: ObjectMapperService = mock(classOf[ObjectMapperService])
+  private val objectMapper                             = new ObjectMapper()
+  when(objectMapperService.createObjectMapper()).thenReturn(objectMapper)
 
   private val loginNoticeService: LoginNoticeService =
     new LoginNoticeServiceImpl(configurationService, new LoginNoticeImageStore(fileSystemService)) {
       override def checkPermissions(): Unit = ()
+      setObjectMapperService(objectMapperService)
     }
 
   override def beforeAll: Unit = {
     mockStatic(classOf[CurrentInstitution])
     val inst = new Institution
     inst.setUniqueId(2026L)
+    inst.setUrl("https://example.com/institution/")
     when(CurrentInstitution.get()).thenReturn(inst)
   }
 
@@ -149,6 +166,63 @@ class LoginNoticeServiceTest
           loginNoticeService.uploadPreLoginNoticeImage(stream, filename)
         }
       }
+    }
+  }
+
+  describe("LoginNoticeServiceImpl.setPreLoginNotice") {
+
+    def noticeWithContent(content: String): PreLoginNotice = {
+      val notice = new PreLoginNotice()
+      notice.setNotice(content)
+      notice.setStartDate(ZonedDateTime.now())
+      notice.setEndDate(ZonedDateTime.now().plusDays(1))
+      notice
+    }
+
+    it("rejects saving a notice with disallowed content") {
+      Given("a notice containing a script tag")
+      val notice = noticeWithContent("<div>ok</div><script>alert(1)</script>")
+
+      Then("saving it throws an exception and the content is never persisted")
+      assertThrows[WebApplicationException] {
+        loginNoticeService.setPreLoginNotice(notice)
+      }
+      verify(configurationService, never()).setProperty(anyString(), anyString())
+    }
+
+    it("saves a clean notice without any disallowed content") {
+      Given("a notice that is already clean")
+      val input  = "<p>hello</p>"
+      val notice = noticeWithContent(input)
+
+      When("it is saved")
+      loginNoticeService.setPreLoginNotice(notice)
+
+      Then("the store is written to with the notice content unchanged")
+      val persistedJson = ArgumentCaptor.forClass(classOf[String])
+      verify(configurationService).setProperty(anyString(), persistedJson.capture())
+
+      val saved = objectMapper.readValue(persistedJson.getValue, classOf[PreLoginNotice])
+      saved.getNotice shouldBe input
+    }
+  }
+
+  describe("LoginNoticeServiceImpl.getPreLoginNotice") {
+    val PRE_LOGIN_NOTICE_KEY = "pre.login.notice"
+
+    it("sanitises content that was stored before this sanitisation existed") {
+      Given("a notice stored with a script tag")
+
+      val uncleanNotice = new PreLoginNotice()
+      uncleanNotice.setNotice("<div>ok</div><script>alert(1)</script>")
+      when(configurationService.getProperty(PRE_LOGIN_NOTICE_KEY))
+        .thenReturn(objectMapper.writeValueAsString(uncleanNotice))
+
+      When("it is retrieved")
+      val result = loginNoticeService.getPreLoginNotice
+
+      Then("the script tag is stripped before it is returned")
+      result.getNotice shouldBe "<div>ok</div>"
     }
   }
 
