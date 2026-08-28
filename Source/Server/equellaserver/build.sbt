@@ -228,6 +228,7 @@ libraryDependencies ++= Seq(
   "org.jboss.spec.javax.ws.rs"      % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "javax.json.bind"                 % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                       % "jsoup"                          % jsoupVersion,
+  "com.googlecode.owasp-java-html-sanitizer" % "owasp-java-html-sanitizer" % owaspHtmlSanitizerVersion,
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
