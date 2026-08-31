@@ -18,10 +18,32 @@
 
 package com.tle.core.migration;
 
+/** A single step of the upgrade applied to an institution's schema or data. */
 public interface Migration {
+  /**
+   * Whether an older build - one which does not know this migration ran - can still work against
+   * the institution afterwards.
+   *
+   * <p>Rewriting the values held in a column is backwards compatible, because the shape the older
+   * build expects has not changed. Dropping a column, renaming one, or changing its type is not.
+   *
+   * <p>What this decides in practice is whether a later release may delete the migration. One which
+   * answers true can be dropped from the codebase once it is old enough, and an institution which
+   * ran it still upgrades without it. One which answers false cannot: its log entry is marked as
+   * having to exist, and a build which no longer carries it refuses the upgrade outright with
+   * "missing required backwards incompatible migration".
+   */
   boolean isBackwardsCompatible();
 
+  /**
+   * Does the work of the migration. Implementations report progress through the given {@link
+   * MigrationResult} so that the upgrade screen can show how far along they are.
+   */
   void migrate(MigrationResult status) throws Exception;
 
+  /**
+   * Describes this migration to the administrator running the upgrade. The name it is created with
+   * is a language string key, resolved against the plugin's i18n properties.
+   */
   MigrationInfo createMigrationInfo();
 }

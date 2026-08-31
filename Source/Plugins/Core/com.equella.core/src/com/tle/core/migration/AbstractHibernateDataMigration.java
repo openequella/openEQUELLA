@@ -61,9 +61,19 @@ public abstract class AbstractHibernateDataMigration extends AbstractHibernateMi
     return true;
   }
 
+  /**
+   * Does the actual work of the migration. Implementations are expected to call {@link
+   * MigrationResult#incrementStatus()} once per unit of work, so that the progress reported to the
+   * administrator advances.
+   */
   protected abstract void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception;
 
+  /**
+   * How many units of work {@link #executeDataMigration} is about to do, used as the denominator of
+   * the progress bar. It therefore has to match how many times that method calls {@link
+   * MigrationResult#incrementStatus()}, typically the number of rows it walks.
+   */
   protected abstract int countDataMigrations(HibernateMigrationHelper helper, Session session);
 
   @Override

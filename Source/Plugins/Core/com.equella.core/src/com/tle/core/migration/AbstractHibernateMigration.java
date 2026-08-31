@@ -31,6 +31,15 @@ import org.hibernate.Transaction;
 public abstract class AbstractHibernateMigration extends AbstractMigration {
   @Inject private HibernateFactoryService hibernateService;
 
+  /**
+   * The entities the migration's own Hibernate configuration is built from, so that only the tables
+   * it touches are mapped rather than the whole schema.
+   *
+   * <p>These are conventionally private "Fake" copies of the real entities, declaring just the
+   * columns the migration needs and as they are at the time it is written. Pointing at the real
+   * entity instead would tie the migration to whatever that class later grows into, and it would
+   * start failing against the older schema it is supposed to be upgrading.
+   */
   protected abstract Class<?>[] getDomainClasses();
 
   @Override

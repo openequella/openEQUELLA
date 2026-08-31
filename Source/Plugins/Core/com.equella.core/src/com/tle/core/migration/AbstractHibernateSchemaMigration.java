@@ -79,6 +79,15 @@ public abstract class AbstractHibernateSchemaMigration extends AbstractHibernate
   protected abstract void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception;
 
+  /**
+   * How many units of work {@link #executeDataMigration} is about to do, which is added to the
+   * number of statements from {@link #getAddSql} and {@link #getDropModifySql} to size the progress
+   * bar. It therefore has to match how many times that method calls {@link
+   * MigrationResult#incrementStatus()}.
+   *
+   * <p>A migration which only changes the schema has no rows to walk, so returning 1 for the empty
+   * data step is the norm.
+   */
   protected abstract int countDataMigrations(HibernateMigrationHelper helper, Session session);
 
   protected abstract List<String> getDropModifySql(HibernateMigrationHelper helper);
