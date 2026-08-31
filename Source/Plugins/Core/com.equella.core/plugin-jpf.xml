@@ -835,6 +835,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.MigrateFavouritesDateModifiedXml" />
     <parameter id="date" value="2025-07-14" />
   </extension>
+    <extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="migrateHierarchyFavouriteSearchUrlXml">
+      <parameter id="id" value="com.tle.core.institution.migration.v20262.MigrateHierarchyFavouriteSearchUrlXml" />
+      <parameter id="bean" value="bean:com.tle.core.institution.migration.v20262.MigrateHierarchyFavouriteSearchUrlXml" />
+      <parameter id="date" value="2026-08-25" />
+    </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemDaoExtension" id="calItemDao">
     <parameter id="class" value="bean:com.tle.cal.dao.CALDao" />
     <parameter id="order" value="100" />
@@ -6093,6 +6098,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20261.DropNewEntityTable"/>
     <parameter id="date" value="2026-07-10"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="MigrateHierarchyFavouriteSearchUrl">
+    <parameter id="id" value="com.tle.core.institution.migration.v20262.MigrateHierarchyFavouriteSearchUrl"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20262.MigrateHierarchyFavouriteSearchUrl"/>
+    <parameter id="date" value="2026-08-25"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
