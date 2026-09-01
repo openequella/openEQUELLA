@@ -72,17 +72,17 @@ trait LogonTestCase {
 
   def createInital: BrowserPage => Browser
 
+  // The browser outlives this method, so it takes the open/close pair rather than
+  // TestChecker.withBrowserDriver's loan pattern. destroyBrowser is the matching half.
   def createBrowser: Browser = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
-    TestChecker.withBrowserDriver("opening", testConfig) { driver =>
+    TestChecker.openBrowserDriver("opening", testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
-      createInital(new LoginPage(context).load().login(logon.username, logon.password))
+      createInital(LoginPage(context).load().login(logon.username, logon.password))
     }
   }
 
-  def destroyBrowser(sut: Browser): Unit = {
-    sut.page.driver.quit()
-  }
+  def destroyBrowser(): Unit = TestChecker.closeBrowserDriver()
 
 }
 
@@ -107,7 +107,10 @@ trait StatefulTest { self: PropertyBasedBrowserTest =>
 
   def createBrowser: Browser
 
-  def destroyBrowser(b: Browser): Unit
+  /** Closes the browser [[createBrowser]] opened. Takes no argument because Selenide tracks the
+    * driver per thread, so this must run on the thread that created it.
+    */
+  def destroyBrowser(): Unit
 
   def runCommand(c: Command, s: State): State
 
@@ -137,7 +140,7 @@ trait StatefulTest { self: PropertyBasedBrowserTest =>
       }
 
     nextCommand(initialState, allCommands.toList).map { r =>
-      destroyBrowser(b); r
+      destroyBrowser(); r
     }
   }
 

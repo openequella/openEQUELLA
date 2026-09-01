@@ -2,6 +2,7 @@ package com.tle.webtests.test;
 
 import static org.testng.Assert.assertEquals;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -173,34 +174,19 @@ public abstract class AbstractTest implements HasTestConfig {
   @AfterClass(alwaysRun = true)
   public void finishedClass(ITestContext testContext) throws Exception {
     try {
-      if (context == null) {
-        return;
-      }
-      String delValue = testConfig.getProperty("test.deleteitems");
-      if (alwaysCleanup() || delValue == null || Boolean.parseBoolean(delValue)) {
+      boolean deleteItems = testConfig.getBooleanProperty("test.deleteitems", true);
+      if (context != null && (alwaysCleanup() || deleteItems)) {
         cleanupAfterClass();
       }
-    } catch (Throwable t) {
-      t.printStackTrace();
+    } catch (Exception e) {
+      logger.warn("cleanupAfterClass failed.", e);
+    } finally {
+      // Selenide holds a reference to every driver passed to setWebDriver until it is closed
+      // through Selenide; a bare driver.quit() would leave it registered. The close is thread
+      // keyed rather than context bound, so it must run even when setupContext never got as far
+      // as building the PageContext.
+      Selenide.closeWebDriver();
     }
-    try {
-      context.getDriver().quit();
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
-
-    // If we leave the browsers open on grid they will timeout if they are
-    // not used in a certain amount of time
-    // if( !Check.isEmpty(gridUrl) )
-    // {
-    // DriverPool driverPool = getDriverPool(testContext);
-    // WebDriver driver = driverPool.getCurrentDriver();
-    // if( driver != null )
-    // {
-    // driverPool.removeForGrid(driver);
-    // driver.quit();
-    // }
-    // }
   }
 
   protected void cleanupAfterClass() throws Exception {
