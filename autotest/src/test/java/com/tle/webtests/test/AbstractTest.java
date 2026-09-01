@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -29,17 +30,18 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 public abstract class AbstractTest implements HasTestConfig {
 
+  Logger logger = LoggerFactory.getLogger(AbstractTest.class);
+
   private static final String RANDOM_STRING_CHARS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  private static final String KEY_DRIVERPOOL = "DriverPool";
-  protected static final String KEY_LISTENEREADDED = "ListenerAdded";
-  protected static final String KEY_SETUPLISTENEREADDED = "SetupListenerAdded";
   protected PageContext context;
   protected TestConfig testConfig;
 
@@ -61,9 +63,7 @@ public abstract class AbstractTest implements HasTestConfig {
               PrefixedName pfxName = new ClassPrefixedName(myClass, name.value());
               field.set(null, pfxName);
               nameMap.put(name.group(), pfxName);
-            } catch (IllegalArgumentException e) {
-              throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
               throw new RuntimeException(e);
             }
           }
@@ -104,8 +104,7 @@ public abstract class AbstractTest implements HasTestConfig {
       customisePageContext();
       prepareBrowserSession();
     } catch (Throwable t) {
-      System.err.println("setupContext failed");
-      t.printStackTrace();
+      logger.error("setupContext failed", t);
     }
   }
 
@@ -135,9 +134,8 @@ public abstract class AbstractTest implements HasTestConfig {
       Alert alert = currentDriver.switchTo().alert();
       String alertText = alert.getText();
       alert.dismiss();
-      System.err.println("An alert was left open on the previous test: " + alertText);
-    } catch (NoAlertPresentException e) {
-
+      logger.warn("An alert was left open on the previous test: {}", alertText);
+    } catch (NoAlertPresentException ignored) {
     }
   }
 
@@ -156,7 +154,9 @@ public abstract class AbstractTest implements HasTestConfig {
   private void clearCookies(WebDriver currentDriver) {
     // http://code.google.com/p/selenium/issues/detail?id=267#c11
     // Can only cookies of current domain
-    String url = currentDriver.getCurrentUrl();
+    String url =
+        Objects.requireNonNull(
+            currentDriver.getCurrentUrl(), "Failed to get the URL for the current WebDriver.");
     String baseUrl = context.getBaseUrl();
 
     if (!url.startsWith(baseUrl)) {
@@ -237,12 +237,10 @@ public abstract class AbstractTest implements HasTestConfig {
     }
 
     if (actual == null || expected == null) {
-      if (message != null) {
-        throw new AssertionError(message);
-      } else {
-        throw new AssertionError(
-            "Collections not equal: expected: " + expected + " and actual: " + actual);
-      }
+      throw new AssertionError(
+          Objects.requireNonNullElseGet(
+              message,
+              () -> "Collections not equal: expected: " + expected + " and actual: " + actual));
     }
 
     Iterator<?> actIt = actual.iterator();
