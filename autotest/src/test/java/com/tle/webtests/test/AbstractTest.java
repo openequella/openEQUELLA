@@ -39,7 +39,7 @@ import org.testng.annotations.BeforeClass;
 
 public abstract class AbstractTest implements HasTestConfig {
 
-  Logger logger = LoggerFactory.getLogger(AbstractTest.class);
+  private final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
   private static final String RANDOM_STRING_CHARS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
