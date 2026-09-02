@@ -18,7 +18,7 @@
     "test": "jest test"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "2.0.2",
+    "@atlaskit/pragmatic-drag-and-drop": "3.0.0",
     "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "4.1.2",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
