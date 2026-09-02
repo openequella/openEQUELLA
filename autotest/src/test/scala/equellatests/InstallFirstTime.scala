@@ -19,8 +19,6 @@ object InstallFirstTime extends App {
     installPage = validateEmptyFormFields(installPage)
     installPage = validateInvalidEmails(installPage)
     completeInstallation(installPage)
-
-    driver.quit()
   }
 
   private def validateEmptyFormFields(page: InstallPage): InstallPage = {

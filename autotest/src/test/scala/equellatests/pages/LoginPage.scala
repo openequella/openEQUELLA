@@ -8,7 +8,7 @@ import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 case class LoginPage(ctx: PageContext) extends LoadablePage {
 
   def login(username: String, password: String): HomePage =
-    loginWithRedirect(username, password, new HomePage(ctx).pageExpectation)
+    loginWithRedirect(username, password, HomePage(ctx).pageExpectation)
 
   def loginWithRedirect[A](
       username: String,
@@ -30,7 +30,7 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
     get()
   }
 
-  def pageBy = By.id("_logonButton")
+  def pageBy: By = By.id("_logonButton")
 
   private def loginNotice: WebElement = findElementById("loginNotice")
 

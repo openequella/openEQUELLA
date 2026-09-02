@@ -6,8 +6,6 @@ import equellatests.TestChecker.withBrowserDriver
 import equellatests.domain.TestLogon
 import org.scalacheck.Prop
 
-import scala.util.Try
-
 /** For property-based suites whose properties are each a self-contained browser session: opens a
   * driver, logs on, evaluates the property, then quits.
   *
@@ -15,14 +13,12 @@ import scala.util.Try
   */
 trait ShotTest { self: PropertyBasedBrowserTest =>
 
-  def withLogon[A](logon: TestLogon)(f: PageContext => Prop): Prop = {
+  def withLogon(logon: TestLogon)(f: PageContext => Prop): Prop = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
     withBrowserDriver(suiteName, testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
       new LoginPage(context).load().login(logon.username, logon.password)
-      val p = f(context)
-      Try(driver.quit())
-      p
+      f(context)
     }
   }
 }
