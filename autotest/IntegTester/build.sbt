@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
   "org.jsoup"        % "jsoup"             % jsoupVersion,
   "com.nulab-inc"   %% "scala-oauth2-core" % "1.6.0",
   "javax.servlet"    % "javax.servlet-api" % "4.0.1",
-  "com.google.guava" % "guava"             % "33.6.0-jre",
+  "com.google.guava" % "guava"             % "33.7.1-jre",
   jacksonDataBind,
   jacksonModuleScala,
   "com.auth0" % "jwks-rsa" % "0.24.1",

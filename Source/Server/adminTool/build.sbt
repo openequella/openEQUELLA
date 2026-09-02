@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonDataFormatYaml,
   // General dependencies
-  "com.google.guava"       % "guava"           % "33.6.0-jre",
+  "com.google.guava"       % "guava"           % "33.7.1-jre",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
   "com.fifesoft"           % "rsyntaxtextarea" % "4.0.1",
   "com.miglayout"          % "miglayout-swing" % "11.4.3",
