@@ -16,6 +16,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -39,6 +40,17 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 public class StandardDriverFactory {
+
+  static {
+    // Selenium logs through java.util.logging, which log4j2.yaml does not govern, so its output
+    // arrives unformatted and unfiltered. Bridge it into log4j2 so every line lands in the one
+    // place in the one format. Removing the root handlers stops each record printing twice, and
+    // propagating levels lets a suppressed record be dropped before its LogRecord is built.
+    // Selenium logs nothing before a driver exists and every driver is built here, so installing
+    // on class initialisation catches all of it.
+    Log4jBridgeHandler.install(true, null, true);
+  }
+
   Logger logger = LoggerFactory.getLogger(StandardDriverFactory.class);
   private final String firefoxBinary;
   private final String chromeBinary;

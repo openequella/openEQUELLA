@@ -60,6 +60,7 @@ libraryDependencies ++= Seq(
   "com.typesafe"              % "config"               % "1.4.9",
   "org.apache.logging.log4j"  % "log4j"                % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-core"           % log4jVersion,
+  "org.apache.logging.log4j"  % "log4j-jul"            % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl"    % log4jVersion,
   "org.http4s" %% "http4s-blaze-client" % "0.23.18", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
   "org.http4s"    %% "http4s-circe"      % http4sVersion,

@@ -1,5 +1,6 @@
 Configuration:
-  status: info
+  # Only surface log4j2's own configuration problems, not its start/stop chatter.
+  status: warn
 
   Appenders:
     Console:
@@ -27,3 +28,8 @@ Configuration:
     Logger:
       - name: org.testng.internal.Utils
         level: "off"
+      # Bridged from java.util.logging by StandardDriverFactory. Selenium chatters at INFO once
+      # per driver ("WebDriver augmented with DevTools interface", "Using OpenTelemetry for
+      # tracing"); anything genuinely wrong still comes through.
+      - name: org.openqa.selenium
+        level: warn
