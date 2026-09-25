@@ -40,10 +40,9 @@ public class OAuthResourceImpl
   @Inject private OAuthService oauthService;
   @Inject private OAuthBeanSerializer serializer;
 
-  // WTF, tests expect *heavy* results on the list endpoint
   @Override
-  public OAuthClientBean serialize(OAuthClient entity, Object data, boolean heavy) {
-    return super.serialize(entity, data, true);
+  protected void redactSecrets(OAuthClientBean bean) {
+    bean.setClientSecret(null);
   }
 
   @Override

@@ -39,6 +39,11 @@ public class LtiConsumerResourceImpl
   @Inject private LtiConsumerBeanSerializer ltiConsumerSerializer;
 
   @Override
+  protected void redactSecrets(LtiConsumerBean bean) {
+    bean.setConsumerSecret(null);
+  }
+
+  @Override
   protected List<Node> getGlobalPrivilegeNodes() {
     return List.of(Node.ALL_LTI_CONSUMERS);
   }

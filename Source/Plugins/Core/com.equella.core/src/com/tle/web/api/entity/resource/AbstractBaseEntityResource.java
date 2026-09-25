@@ -199,8 +199,32 @@ public abstract class AbstractBaseEntityResource<
       int length,
       boolean full) {
     final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-    return PagedResults.pagedResults(
-        this, q, privilege, resumption, length, full | isExport, isExport, true);
+    final PagingBean<B> results =
+        PagedResults.pagedResults(
+            this, q, privilege, resumption, length, full | isExport, isExport, true);
+    // Institution export is exempt because in theory it requires the secrets to recreate the
+    // entities, and is restricted to the system user (TLE_ADMINISTRATOR) by
+    // RestImportExportHelper.
+    if (!isExport) {
+      results.getResults().forEach(this::redactSecrets);
+    }
+    return results;
+  }
+
+  /**
+   * Removes any credentials from an entity before it is included in a list response.
+   *
+   * <p>Secrets should only ever be exposed by the single-entity endpoint. Redacting them from
+   * listings also prevents any future ACL filtering mistake from becoming a bulk secret disclosure.
+   *
+   * <p>Most entity types do not contain credentials, so the default implementation is a no-op.
+   * Resources that expose credentials, such as OAuth clients and LTI consumers, should override
+   * this method.
+   *
+   * @param bean the bean to redact, modified in place
+   */
+  protected void redactSecrets(B bean) {
+    // No-op
   }
 
   public B serialize(BE entity, Object data, boolean heavy) {
