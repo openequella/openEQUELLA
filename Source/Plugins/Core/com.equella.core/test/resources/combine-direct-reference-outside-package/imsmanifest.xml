@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--A manifest whose adlcp:location points outside its own package directory. Combining it must not
+    inline the referenced document, but must still emit the manifest's own content - hence the
+    marker in the organization title, which the test asserts survives.-->
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="Manifest" version="1.1">
+  <metadata>
+    <adlcp:location>../test-secret-xml/secret.xml</adlcp:location>
+  </metadata>
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1" structure="hierarchical">
+      <title>OEQ-SCORM-IN-PACKAGE-CONTENT-a7c2e9</title>
+    </organization>
+  </organizations>
+  <resources />
+</manifest>

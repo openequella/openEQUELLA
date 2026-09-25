@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The reference leaves this document's directory but remains within the package.
+  This is valid because containment is enforced against the package root.
+-->
+<nested xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <adlcp:location>../document2/document2.xml</adlcp:location>
+</nested>

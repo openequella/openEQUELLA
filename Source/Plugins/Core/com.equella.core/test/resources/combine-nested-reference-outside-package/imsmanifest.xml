@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--The manifest itself only references a document inside the package. That document is the one which
+    traverses out, so the check has to hold at every level of the recursion.-->
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="Manifest" version="1.1">
+  <metadata>
+    <adlcp:location>document1/document1.xml</adlcp:location>
+  </metadata>
+  <resources />
+</manifest>

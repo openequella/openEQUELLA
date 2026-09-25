@@ -22,26 +22,28 @@ import com.dytech.common.io.UnicodeReader;
 import com.dytech.devlib.PropBagEx;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
+import com.tle.annotation.Nullable;
 import com.tle.common.Utils;
 import com.tle.core.util.ims.beans.IMSManifest;
 import io.github.xstream.mxparser.MXParser;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -52,6 +54,8 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 @SuppressWarnings("nls")
 public final class IMSUtilities {
+  private static final Logger LOGGER = LoggerFactory.getLogger(IMSUtilities.class);
+
   public static final String KEY_EXPAND_IMS_PACKAGE = "EXPAND_IMS_PACKAGE";
   public static final String IMS_MANIFEST = "imsmanifest.xml";
   public static final String IMS_MANIFEST_COMBINED = "imsmanifest-combined.xml";
@@ -61,7 +65,7 @@ public final class IMSUtilities {
   }
 
   /** Combines a split-up IMS manifest into a single entity. */
-  public static void combine(ManifestResolver resolver, Writer output)
+  public static void combine(FileManifestResolver resolver, Writer output)
       throws IOException, XmlPullParserException {
     @SuppressWarnings("unused")
     Combiner c = new Combiner(resolver, output);
@@ -230,9 +234,9 @@ public final class IMSUtilities {
         new CollectionHashMap<Integer, String>();
     private XmlPullParser parser;
     private final Writer output;
-    private final ManifestResolver resolver;
+    private final FileManifestResolver resolver;
 
-    public Combiner(ManifestResolver resolver, Writer output)
+    public Combiner(FileManifestResolver resolver, Writer output)
         throws IOException, XmlPullParserException {
       this.output = output;
       this.resolver = resolver;
@@ -370,7 +374,7 @@ public final class IMSUtilities {
         event = parser.next();
       }
 
-      ManifestResolver newResolver = resolver.getResolverForPath(parser.getText());
+      FileManifestResolver newResolver = resolver.getResolverForPath(parser.getText());
       if (newResolver != null) {
         @SuppressWarnings("unused")
         Combiner c = new Combiner(newResolver, output);
@@ -383,111 +387,102 @@ public final class IMSUtilities {
   }
 
   /**
-   * An interface for resolving relative paths in manifests.
+   * Resolves manifests stored on disk.
    *
-   * @author Nicholas Read
-   */
-  public interface ManifestResolver {
-    /** Returns the stream for the current manifest. */
-    Reader getStream() throws IOException;
-
-    /** Gets a new manifest resolver based on a path relative to the current one. */
-    ManifestResolver getResolverForPath(String path);
-  }
-
-  /**
-   * Implements the manifest resolver for files.
+   * <p>Used by the manifest combiner to open manifests and resolve sub-manifest paths from {@code
+   * <adlcp:location>} elements relative to the manifest that references them.
    *
-   * @author Nicholas Read
+   * <p>Manifest paths come from the uploaded package rather than from openEQUELLA, so every
+   * resolved path must be validated to remain within the package root. The package root is the
+   * directory containing the top-level manifest and is preserved across nested resolvers, allowing
+   * subdirectories while preventing path traversal outside the package.
    */
-  public static class FileManifestResolver implements ManifestResolver {
+  public static class FileManifestResolver {
+    // The manifest file read by this resolver.
     private final File baseFile;
 
+    // The canonical package root that all resolved paths must remain within.
+    private final Path canonicalPackageRoot;
+
+    /**
+     * Creates a resolver for the top level manifest of a package. The directory containing the
+     * manifest becomes the boundary that this resolver, and every resolver derived from it, must
+     * stay within.
+     */
     public FileManifestResolver(File baseFile) {
-      this.baseFile = baseFile;
+      this(baseFile, getCanonicalPackageRoot(baseFile));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.dytech.IMS.IMSUtilities.ManifestResolver#getStream()
+    private FileManifestResolver(File baseFile, Path canonicalPackageRoot) {
+      this.baseFile = baseFile;
+      this.canonicalPackageRoot = canonicalPackageRoot;
+    }
+
+    // Resolves a file to its canonical form.
+    private static File canonicalise(File file) {
+      try {
+        return file.getCanonicalFile();
+      } catch (IOException e) {
+        throw new UncheckedIOException("Failed to canonicalise " + file.getAbsolutePath(), e);
+      }
+    }
+
+    /**
+     * Returns the canonical directory containing the given manifest.
+     *
+     * <p>Canonicalising first makes the path absolute, so any manifest - even one named without a
+     * directory - has a parent directory to use as the root.
      */
-    @Override
+    private static Path getCanonicalPackageRoot(File manifest) {
+      return canonicalise(manifest).getParentFile().toPath();
+    }
+
+    /** Returns the stream for the current manifest. */
     public Reader getStream() throws IOException {
       return new UnicodeReader(new FileInputStream(baseFile), "UTF-8");
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * com.dytech.IMS.IMSUtilities.ManifestResolver#getResolverForPath(java
-     * .lang.String)
+    /**
+     * Resolves a manifest path relative to the current manifest.
+     *
+     * <p>The resolved path must remain within the package root. If the file exists, a resolver for
+     * that manifest is returned; otherwise {@code null} is returned.
+     *
+     * @param path the manifest path to resolve
+     * @return a resolver for the referenced manifest, or {@code null} if it does not exist
      */
-    @Override
-    public ManifestResolver getResolverForPath(String path) {
+    @Nullable
+    public FileManifestResolver getResolverForPath(String path) {
+      return resolveWithinRoot(path)
+          .filter(File::exists)
+          .map(f -> new FileManifestResolver(f, canonicalPackageRoot))
+          .orElse(null);
+    }
+
+    /**
+     * Resolves a manifest path relative to the current manifest, rejecting any path that would
+     * escape the package root.
+     *
+     * @param path the manifest path to resolve
+     * @return the resolved file, or empty if it would fall outside the package root
+     */
+    private Optional<File> resolveWithinRoot(String path) {
       File f = new File(baseFile.getParentFile(), path);
-      if (f.exists()) {
-        return new FileManifestResolver(f);
-      } else {
-        return null;
+      if (!isFileWithinPackageRoot(f)) {
+        LOGGER.warn("Ignoring manifest path that resolves outside the package root: {}", path);
+        return Optional.empty();
       }
-    }
-  }
-
-  /**
-   * Implements the manifest resolver for a zipped up IMS package.
-   *
-   * @author Nicholas Read
-   */
-  public static class ZipManifestResolver implements ManifestResolver {
-    private final ZipFile zip;
-    private String base;
-    private String file;
-
-    public ZipManifestResolver(ZipFile zip) {
-      this(zip, "imsmanifest.xml");
+      return Optional.of(f);
     }
 
-    private ZipManifestResolver(ZipFile zip, String file) {
-      this.zip = zip;
-
-      int i = file.lastIndexOf('/');
-      if (i < 0) {
-        i = file.lastIndexOf('\\');
-      }
-
-      if (i < 0) {
-        this.base = "";
-        this.file = file;
-      } else {
-        this.base = file.substring(0, i + 1);
-        this.file = file.substring(i + 1);
-      }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.dytech.IMS.IMSUtilities.ManifestResolver#getStream()
+    /**
+     * Checks whether the resolved file remains within the package root.
+     *
+     * @param file the file resolved from the manifest path
+     * @return {@code true} if the file is within the package root; otherwise {@code false}
      */
-    @Override
-    public Reader getStream() throws IOException {
-      ZipEntry entry = zip.getEntry(base + file);
-      if (entry != null) {
-        System.out.println("Returning " + entry.getName());
-        return new BufferedReader(new InputStreamReader(zip.getInputStream(entry)));
-      } else {
-        return null;
-      }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * com.dytech.IMS.IMSUtilities.ManifestResolver#getResolverForPath(java
-     * .lang.String)
-     */
-    @Override
-    public ManifestResolver getResolverForPath(String path) {
-      return new ZipManifestResolver(zip, base + path);
+    private boolean isFileWithinPackageRoot(File file) {
+      return canonicalise(file).toPath().startsWith(canonicalPackageRoot);
     }
   }
 }

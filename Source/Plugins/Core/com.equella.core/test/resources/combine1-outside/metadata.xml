@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--A sibling of the combine1 package whose directory name starts with "combine1". Nothing includes
+    this document; it exists so that a test can point at a real file whose path shares a string
+    prefix with the package root but lies outside it.-->
+<lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1">
+  <general>
+    <title>
+      <langstring xml:lang="en">Outside the package</langstring>
+    </title>
+  </general>
+</lom>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1">
+  <general>
+    <title>
+      <langstring xml:lang="en">Referenced document within package</langstring>
+    </title>
+  </general>
+</lom>

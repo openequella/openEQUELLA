@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--A package whose manifest includes a document in a sub-directory, which in turn reaches back up to
+    a sibling directory. Both references stay inside the package and must keep working.-->
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="Manifest" version="1.1">
+  <metadata>
+    <adlcp:location>document1/document1.xml</adlcp:location>
+  </metadata>
+  <resources />
+</manifest>

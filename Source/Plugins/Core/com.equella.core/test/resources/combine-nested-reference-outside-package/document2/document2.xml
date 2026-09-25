@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Resolves outside the package root, so the containment check must reject it.
+-->
+<nested xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <adlcp:location>../../test-secret-xml/secret.xml</adlcp:location>
+</nested>
