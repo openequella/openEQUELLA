@@ -104,7 +104,7 @@ name := "Equella"
 
 (ThisBuild / equellaMajor)   := 2026
 (ThisBuild / equellaMinor)   := 1
-(ThisBuild / equellaPatch)   := 0
+(ThisBuild / equellaPatch)   := 1
 (ThisBuild / equellaStream)  := "Stable"
 (ThisBuild / equellaBuild)   := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
