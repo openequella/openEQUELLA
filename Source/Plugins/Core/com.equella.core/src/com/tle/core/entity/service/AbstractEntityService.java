@@ -28,6 +28,7 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
+import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.TargetList;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.EntityEditingSession;
@@ -65,6 +66,16 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
   String getEditPrivilege();
 
   String getPrivilegeType();
+
+  /**
+   * The security tree node this entity type's instances are targeted by - for example {@code
+   * Node.COLLECTION}. Null for the handful of services which opt out of entity level security
+   * altogether.
+   *
+   * @return the node instances of this entity type hang off, or null if there is none
+   */
+  @Nullable
+  PrivilegeTree.Node getPrivilegeNode();
 
   T getWithNoSecurity(long id);
 

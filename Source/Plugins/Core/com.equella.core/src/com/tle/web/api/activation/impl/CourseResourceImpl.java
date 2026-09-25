@@ -126,8 +126,8 @@ public class CourseResourceImpl
   }
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_COURSE_INFO};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_COURSE_INFO);
   }
 
   @Override

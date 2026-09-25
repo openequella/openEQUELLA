@@ -67,8 +67,8 @@ public class WorkflowResourceImpl
   @Inject private BundleCache bundleCache;
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_WORKFLOWS};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_WORKFLOWS);
   }
 
   @Override

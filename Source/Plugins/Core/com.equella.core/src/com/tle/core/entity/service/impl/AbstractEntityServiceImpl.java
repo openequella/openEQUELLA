@@ -1627,6 +1627,12 @@ public abstract class AbstractEntityServiceImpl<
     return privilegeType;
   }
 
+  @Nullable
+  @Override
+  public PrivilegeTree.Node getPrivilegeNode() {
+    return privilegeNode;
+  }
+
   protected void publishEventAfterCommit(final ApplicationEvent<?> event) {
     TransactionSynchronizationManager.registerSynchronization(
         new TransactionSynchronizationAdapter() {

@@ -34,6 +34,7 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.staging.interfaces.StagingResource;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -144,8 +145,8 @@ public class ReportResourceImpl
   }
 
   @Override
-  protected PrivilegeTree.Node[] getAllNodes() {
-    return new PrivilegeTree.Node[] {PrivilegeTree.Node.ALL_REPORTS};
+  protected List<PrivilegeTree.Node> getGlobalPrivilegeNodes() {
+    return List.of(PrivilegeTree.Node.ALL_REPORTS);
   }
 
   @Override

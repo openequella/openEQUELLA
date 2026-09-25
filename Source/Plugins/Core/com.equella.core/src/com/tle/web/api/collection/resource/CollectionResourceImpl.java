@@ -29,6 +29,7 @@ import com.tle.web.api.collection.interfaces.CollectionResource;
 import com.tle.web.api.collection.interfaces.beans.AllCollectionsSecurityBean;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -57,8 +58,8 @@ public class CollectionResourceImpl
   }
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS);
   }
 
   @Override

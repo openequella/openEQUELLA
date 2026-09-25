@@ -42,8 +42,8 @@ public class SchemaResourceImpl
   @Inject private SchemaBeanSerializer serializer;
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_SCHEMAS};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_SCHEMAS);
   }
 
   @Override

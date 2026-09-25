@@ -28,6 +28,7 @@ import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.lti.consumers.api.beans.LtiConsumerBean;
 import com.tle.web.lti.consumers.api.serializer.LtiConsumerBeanSerializer;
+import java.util.List;
 import javax.inject.Inject;
 
 @Bind(LtiConsumerResource.class)
@@ -38,8 +39,8 @@ public class LtiConsumerResourceImpl
   @Inject private LtiConsumerBeanSerializer ltiConsumerSerializer;
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_LTI_CONSUMERS};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_LTI_CONSUMERS);
   }
 
   @Override

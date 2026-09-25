@@ -28,6 +28,7 @@ import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.oauth.interfaces.OAuthResource;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -61,8 +62,8 @@ public class OAuthResourceImpl
   }
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_OAUTH_CLIENTS};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_OAUTH_CLIENTS);
   }
 
   @Override

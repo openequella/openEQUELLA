@@ -468,8 +468,8 @@ public class TaxonomyResourceImpl
   }
 
   @Override
-  protected Node[] getAllNodes() {
-    return new Node[] {Node.ALL_TAXONOMIES};
+  protected List<Node> getGlobalPrivilegeNodes() {
+    return List.of(Node.ALL_TAXONOMIES);
   }
 
   @Override

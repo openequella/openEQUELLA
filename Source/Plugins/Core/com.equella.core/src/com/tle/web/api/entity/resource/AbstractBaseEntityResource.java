@@ -21,11 +21,13 @@ package com.tle.web.api.entity.resource;
 import com.dytech.edge.common.LockedException;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.EntityLock;
 import com.tle.beans.security.AccessEntry;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.TargetList;
@@ -51,6 +53,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -69,7 +75,41 @@ public abstract class AbstractBaseEntityResource<
         BE extends BaseEntity, SB extends BaseEntitySecurityBean, B extends BaseEntityBean>
     implements BaseEntityResource<B, SB> {
 
-  protected abstract Node[] getAllNodes();
+  /**
+   * The institution-wide ACL nodes for this entity type. Rules defined against these nodes apply to
+   * every entity of this type. Each node must be virtual, as enforced at runtime by {@link
+   * TLEAclManager#getExistingEntriesForVirtualNodes}. For example, collections return {@code
+   * List.of(Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS)}.
+   *
+   * <p>The first element represents this entity type's own global privilege node; see {@link
+   * #getEntityGlobalPrivilegeNode()}.
+   *
+   * @return the global privilege nodes for this entity type
+   */
+  protected abstract List<Node> getGlobalPrivilegeNodes();
+
+  /**
+   * The non-virtual ACL node for an individual entity. Rules defined against this node apply to a
+   * specific entity rather than every entity of this type. For example, collections use {@code
+   * Node.COLLECTION}.
+   *
+   * @return the per-entity ACL node for this entity type, or {@code null} if entity-level security
+   *     is not used
+   */
+  @Nullable
+  protected final Node getEntityPrivilegeNode() {
+    return getEntityService().getPrivilegeNode();
+  }
+
+  /**
+   * The virtual node representing this entity type as a whole, so rules set here apply to every
+   * entity of the type at once. For example, Collection returns {@code Node.ALL_COLLECTIONS}.
+   *
+   * @return the {@code ALL_*} node for this entity type
+   */
+  protected final Node getEntityGlobalPrivilegeNode() {
+    return getGlobalPrivilegeNodes().getFirst();
+  }
 
   protected abstract SB createAllSecurityBean();
 
@@ -83,6 +123,27 @@ public abstract class AbstractBaseEntityResource<
     return getEntityService().getPrivilegeType();
   }
 
+  /**
+   * The privileges that apply to this entity type, taken from both its global and per-entity nodes
+   * because neither necessarily defines the complete set. For example, for collections the global
+   * node does not define {@code SEARCH_COLLECTION}, while the per-entity node does not define
+   * {@code VIEW_COLLECTION}.
+   *
+   * <p>This deliberately uses {@link PrivilegeTree#getPrivilegesForNode} rather than {@link
+   * PrivilegeTree#getAllPrivilegesForNode}, so privileges from child nodes are excluded. For
+   * example, {@code Node.ITEM} is a child of {@code Node.COLLECTION}, and item privileges govern a
+   * collection's contents rather than the collection itself.
+   *
+   * @return the privileges registered directly on this entity type's global and per-entity nodes
+   */
+  public Set<String> getEntityFilterPrivileges() {
+    return Stream.of(getEntityGlobalPrivilegeNode(), getEntityPrivilegeNode())
+        .filter(Objects::nonNull)
+        .map(PrivilegeTree::getPrivilegesForNode)
+        .flatMap(Set::stream)
+        .collect(Collectors.toSet());
+  }
+
   @Inject protected TLEAclManager aclManager;
   @Inject private EntityLockingService lockingService;
   @Inject private UrlLinkService urlLinkService;
@@ -94,12 +155,13 @@ public abstract class AbstractBaseEntityResource<
       throw new AccessDeniedException(getString("error.acls.viewpriv"));
     }
 
-    Node[] allNodes = getAllNodes();
     ListMultimap<String, AccessEntry> entries =
-        aclManager.getExistingEntriesForVirtualNodes(allNodes);
+        aclManager.getExistingEntriesForVirtualNodes(
+            getGlobalPrivilegeNodes().toArray(Node[]::new));
     SB securityBean = createAllSecurityBean();
 
-    List<AccessEntry> list = entries.get(aclManager.getKeyForVirtualNode(allNodes[0], null));
+    List<AccessEntry> list =
+        entries.get(aclManager.getKeyForVirtualNode(getEntityGlobalPrivilegeNode(), null));
 
     List<TargetListEntryBean> entryBeans = Lists.newLinkedList();
     for (AccessEntry accessEntry : list) {
@@ -117,7 +179,7 @@ public abstract class AbstractBaseEntityResource<
 
   @RequiresPrivilege(priv = "EDIT_SECURITY_TREE")
   @Transactional
-  protected void updateAcls(SB securityBean) {
+  public void updateAcls(SB securityBean) {
     List<TargetListEntry> entries = new ArrayList<>();
     List<TargetListEntryBean> rules = securityBean.getRules();
     for (TargetListEntryBean rule : rules) {
@@ -125,7 +187,7 @@ public abstract class AbstractBaseEntityResource<
           new TargetListEntry(
               rule.isGranted(), rule.isOverride(), rule.getPrivilege(), rule.getWho()));
     }
-    aclManager.setTargetList(getAllNodes()[0], null, new TargetList(entries));
+    aclManager.setTargetList(getEntityGlobalPrivilegeNode(), null, new TargetList(entries));
   }
 
   @Transactional
