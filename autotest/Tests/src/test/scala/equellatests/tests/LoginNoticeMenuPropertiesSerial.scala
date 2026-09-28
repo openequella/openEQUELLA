@@ -81,12 +81,11 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
 
   property("pre login notice creation with image, check login screen for image") =
     withLogon(autoTestLogon) { context =>
-      val page                   = LoginNoticePage(context).load()
-      val equellaGithubAvatarURL =
-        "https://raw.githubusercontent.com/openequella/openEQUELLA/develop/autotest/Tests/tests/fiveo/institution/items/42/216490/cat1.jpg"
-      page.setPreLoginNoticeWithImageURL(equellaGithubAvatarURL)
+      val page          = LoginNoticePage(context).load()
+      val localImageURL = context.getBaseUrl + "api/theme/newLogo.png"
 
+      page.setPreLoginNoticeWithImageURL(localImageURL)
       val page2 = LoginPage(context).load()
-      Prop(page2.loginNoticeHasImageWithSrc(equellaGithubAvatarURL))
+      Prop(page2.loginNoticeHasImageWithSrc(localImageURL))
     }
 }
